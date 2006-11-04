@@ -1,0 +1,36 @@
+/*
+	Web:Extend
+	Copyright (c) 2006 Dev:Extend
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+/*TODO:ie/fix*/
+*{font-family:Verdana,sans-serif}
+body{background-color:#ccdbfa;font-size:0.8em}
+h1{font-size:1.5em;height:2em;width:100%;text-align:right}
+h2{font-size:1.3em}
+ul{padding-top:1em}
+li{padding-bottom:1em}
+a{color:#0000e0}
+a:hover{color:#4444e0}
+body>div{width:40em;background-color:#fff;padding:0em 2em;padding-bottom:1em;margin:2em auto;border:1px solid #7d8cb9}
+#footer{padding:1em 2em;text-align:center;background:#f3f3fd}
+#error{background:#fdf3f3;text-align:justify}
+#exception,#php{background:#f3fdf3}
+h3{width:5em;font-size:1em}
+#php h2{font-size:1em}
+#php h3,#php span{float:left;margin:0 0 1em 0}
+#php br{clear:left}

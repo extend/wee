@@ -1,0 +1,107 @@
+<?php
+
+/*
+	Web:Extend
+	Copyright (c) 2006 Dev:Extend
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+if (!defined('ALLOW_INCLUSION')) die;
+if (version_compare(phpversion(), '5.0.0', '<')) die;
+
+// Paths and files extensions
+
+if (!defined('BASE_PATH'))
+{
+	$i = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/');
+	for ($s = null; $i > 0; $i--)
+		$s .= '../';
+
+	define('BASE_PATH', $s);
+}
+if (!defined('ROOT_PATH'))	define('ROOT_PATH',	'./');
+if (!defined('APP_PATH'))
+{
+	if (ROOT_PATH == './')	define('APP_PATH', BASE_PATH);
+	else					define('APP_PATH', BASE_PATH . ROOT_PATH);
+}
+if (!defined('WEE_PATH'))	define('WEE_PATH', ROOT_PATH . 'wee/');
+if (!defined('PHP_EXT'))	define('PHP_EXT',  strrchr(__FILE__, '.'));
+if (!defined('CLASS_EXT'))	define('CLASS_EXT',	'.class' . PHP_EXT);
+
+if (defined('DEBUG'))
+{
+	error_reporting(E_ALL | E_STRICT);
+	ini_set('display_errors', 1);
+}
+else
+{
+	error_reporting(0);
+	ini_set('display_errors', 0);
+}
+
+// Statistics - TODO:nothing to see here, remove
+
+function weeGetTime()			{ $a = explode(' ', microtime()); return (float)$a[0] + (float)$a[1]; }
+function weeGetElapsedTime()	{ return weeGetTime() - $GLOBALS['fStartTime']; }
+$fStartTime = weeGetTime();
+
+// Don't use it
+$_REQUEST = array();
+
+// Atomize magic quotes
+
+set_magic_quotes_runtime(0);
+if (get_magic_quotes_gpc())
+{
+	//TODO:check if it's not needed by $_FILES
+	// Note:	stripslashes converts null to empty string -- we may need an alternative here
+
+	function mqs(&$sValue, $sKey) { $sValue = stripslashes($sValue); }
+	array_walk_recursive($_GET,		'mqs');
+	array_walk_recursive($_POST,	'mqs');
+	array_walk_recursive($_COOKIE,	'mqs');
+
+	// PHP configuration should reflect the fact that magic quotes have been removed
+
+	ini_set('magic_quotes_gpc',		0);
+	ini_set('magic_quotes_sybase',	0);
+}
+
+// Core components
+
+class Namespace		{ private function __construct() {}		}
+interface Singleton	{ public static function instance();	}
+
+require(WEE_PATH . 'weeAutoload'	. CLASS_EXT);
+require(WEE_PATH . 'weeException'	. CLASS_EXT);
+
+weeAutoload::addPath(WEE_PATH);
+
+// PHP Functions/Extensions emulation
+
+function array_value($aArray, $sKey, $mIfNotSet = null)
+{
+	return isset($aArray[$sKey]) ? $aArray[$sKey] : $mIfNotSet;
+}
+
+require(WEE_PATH . 'emul_php'		. PHP_EXT);
+
+if (!function_exists('ctype_digit'))			require(WEE_PATH . 'emul_ctype'		. PHP_EXT);//TODO
+if (!function_exists('gettext'))				require(WEE_PATH . 'emul_gettext'	. PHP_EXT);//TODO
+if (!function_exists('simplexml_load_file'))	require(WEE_PATH . 'emul_simplexml'	. PHP_EXT);//TODO
+
+?>

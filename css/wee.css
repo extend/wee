@@ -1,0 +1,95 @@
+/*
+	Web:Extend
+	Copyright (c) 2006 Dev:Extend
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+/* HTML defaults */
+
+body				{cursor:default;font-family:Verdana,sans-serif;font-size:0.8em;line-height:1.2em;margin:0;padding:0}
+h1,h2,h3,h4,h5,h6	{font-size:1em;margin:0}
+p,pre				{display:block;margin:0;padding:0}
+tt,code,samp,kbd,
+input[type="text"],
+input[type="password"],
+input[type="file"],
+textarea			{font-family:Courier,fixed}
+code				{font-size:1.2em}
+big					{font-size:1.4em}
+small,sub,sup		{font-size:0.8em}
+acronym,abbr		{border-bottom:1px dotted black}
+cite:before			{content:'"'}
+cite:after			{content:'"'}
+cite cite:before	{content:"'"}
+cite cite:after		{content:"'"}
+blockquote			{margin:1em}
+a,a *				{cursor:pointer}
+img					{border:0}
+form				{margin:0}
+fieldset			{border:1px solid gray;margin:0;padding:0}
+fieldset fieldset	{border:0}
+input[type="text"],
+input[type="password"],
+textarea			{cursor:text;font-size:12px}
+label>input[type="radio"],
+label>input[type="checkbox"]	{vertical-align:middle}
+optgroup			{background:#ddd;color:black;font-style:normal;font-weight:bold}
+option				{background:#fff}
+ul,ol,dl			{margin:0;padding:0}
+li					{margin-left:3em}
+table				{border-collapse:collapse;border-spacing:0;empty-cells:show}
+td					{margin:0;padding:0}
+hr					{margin:1em 0}
+
+/* Special classes */
+
+.invisible	{display:none}
+
+/* Forms defaults */
+
+form.block ol						{margin:0;padding:0}
+form.block li						{list-style:none;margin:0;padding:.5em 0}
+form.block legend					{font-weight:bold;padding-right:0.2em}
+form.block label					{display:inline-block;padding-left:1em;vertical-align:top;width:14em}
+form.block label+*					{margin-left:1em}
+form.block>ol>li					{margin:.5em 0}
+form.block>ol>li+li					{margin-top:0}
+form.block fieldset					{background:#f8f8f8;border:0;border-top:1px solid #bbb;margin:0 1em;width:40em}
+form.block fieldset fieldset		{border:0;margin:0;padding:0}
+form.block fieldset fieldset legend	{font-weight:normal;padding:0 0 0 1em}
+form.block fieldset fieldset li		{display:block;padding:.2em 0}
+form.block>ol>li>fieldset>ol>li		{border-bottom:1px solid #bbb}
+form.block fieldset fieldset label	{padding:0}
+form.block fieldset fieldset ol,
+form.block .checkbox,
+form.block .dateinput				{margin-left:16em;padding:0;width:auto}
+form.block label.notice				{width:auto}
+
+form.block fieldset.buttonsfieldset		{text-align:right}
+form.block fieldset.buttonsfieldset ol	{margin:0}
+form.block fieldset.buttonsfieldset li	{display:inline;margin-right:1em}
+
+form.block .scrollablechecklist	ol			{border:1px solid gray;display:inline-block;max-height:16em;overflow:auto;width:20em}
+form.block .scrollablechecklist li			{background:#f3f3f3;height:1.6em;padding:0}
+form.block .scrollablechecklist li.odd		{background:#fff}
+form.block .scrollablechecklist li:hover	{background:#999;color:#fff}
+form.block .scrollablechecklist label		{display:block;margin:0;padding:.15em .1em}
+
+form.block .mceEditorContainer table	{margin:.5em auto}
+
+/* Widgets defaults */
+
+.searchpagination	{text-align:center}
