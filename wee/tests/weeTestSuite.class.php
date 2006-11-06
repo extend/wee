@@ -22,6 +22,7 @@
 class weeTestSuite
 {
 	protected $sTestsPath;
+	protected $aResults = array();
 
 	public function __construct($sTestsPath)
 	{
@@ -32,11 +33,19 @@ class weeTestSuite
 
 	public function __toString()
 	{
+		$bAllSuccess = $this->run();
+
+		if ($bAllSuccess)
+			return 'success';
+
 		//TODO
+		return 'failure';
 	}
 
 	public function run()
 	{
+		$bAllSuccess = true;
+
 		$oDirectory	= new RecursiveDirectoryIterator($this->sTestsPath);
 		foreach (new RecursiveIteratorIterator($oDirectory) as $sPath)
 		{
@@ -60,9 +69,17 @@ class weeTestSuite
 			if (empty($sClass))
 				continue; //TODO:bad file, report error
 
-			$oTest	= new $sClass;
-			$oTest->run();
+			$oTest = new $sClass;
+			$bSuccess = $oTest->run();
+
+			if ($bSuccess == null) // ignore files that return null
+				continue;
+
+			$aResults[(string)$sPath] = $bSuccess;
+			$bAllSuccess &= $bSuccess;
 		}
+
+		return $bAllSuccess;
 	}
 }
 
