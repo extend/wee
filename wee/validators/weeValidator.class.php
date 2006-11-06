@@ -23,10 +23,10 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 interface weeValidator
 {
-	public function __construct($mValue, $aArgs);
+	public function __construct($mValue, $aArgs = array());
 	public function getError();
 	public function hasError();
-	public static function test($mValue, $aArgs);
+	public static function test($mValue, $aArgs = array());
 }
 
 ?>

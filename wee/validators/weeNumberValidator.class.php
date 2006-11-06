@@ -34,7 +34,7 @@ class weeNumberValidator implements weeValidator
 		'float'	=> 'Input must be a decimal value',
 		'int'	=> 'Input must be an integer value');
 
-	public function __construct($mValue, $aArgs)
+	public function __construct($mValue, $aArgs = array())
 	{
 		$this->aArgs = $aArgs;
 
@@ -53,9 +53,9 @@ class weeNumberValidator implements weeValidator
 				$mValue = substr($mValue, 1);
 
 			if ($aArgs['format'] == 'float' && !ctype_digit(str_replace('.', '', $mValue)))
-				setError('float');
+				$this->setError('float');
 			elseif ($aArgs['format'] == 'int' && !ctype_digit($mValue))
-				setError('int');
+				$this->setError('int');
 		}
 	}
 
@@ -77,10 +77,11 @@ class weeNumberValidator implements weeValidator
 		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
 		else								$this->sError = $this->aErrorList[$sType];
 
-		$this->sError	= str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
+		if (!empty($this->aArgs[$sType]))
+			$this->sError = str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
 	}
 
-	public static function test($mValue, $aArgs)
+	public static function test($mValue, $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
 		return $o->hasError();

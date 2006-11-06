@@ -32,7 +32,7 @@ class weeStringValidator implements weeValidator
 		'max'	=> 'Input must have at most %max% characters',
 		'min'	=> 'Input must have at least %min% characters');
 
-	public function __construct($mValue, $aArgs)
+	public function __construct($mValue, $aArgs = array())
 	{
 		$this->aArgs = $aArgs;
 
@@ -65,7 +65,7 @@ class weeStringValidator implements weeValidator
 		$this->sError		= str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
 	}
 
-	public static function test($mValue, $aArgs)
+	public static function test($mValue, $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
 		return $o->hasError();

@@ -30,7 +30,7 @@ class weeEmailValidator implements weeValidator
 	protected $aErrorList	= array(
 		'invalid'	=> 'Input must be a valid email address');
 
-	public function __construct($mValue, $aArgs)
+	public function __construct($mValue, $aArgs = array())
 	{
 		$this->aArgs = $aArgs;
 
@@ -61,7 +61,7 @@ class weeEmailValidator implements weeValidator
 		$this->sError		= _($this->sError);
 	}
 
-	public static function test($mValue, $aArgs)
+	public static function test($mValue, $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
 		return $o->hasError();
