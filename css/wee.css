@@ -88,6 +88,7 @@ form.block .scrollablechecklist li.odd		{background:#fff}
 form.block .scrollablechecklist li:hover	{background:#999;color:#fff}
 form.block .scrollablechecklist label		{display:block;margin:0;padding:.15em .1em}
 
+form.block .mceResizeBox,
 form.block .mceEditorContainer table	{margin:.5em auto}
 
 /* Widgets defaults */
