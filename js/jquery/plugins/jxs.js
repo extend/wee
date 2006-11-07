@@ -118,3 +118,27 @@ jQuery.jXs.handlers = {
 		jQuery(element.getAttribute("select")).empty().append(nodes);
 	}
 };
+
+
+// examples of custom tags, you can moves these to another js file or delete.
+jQuery.script = function(code) {
+	eval(code);
+};
+
+jQuery.include = function(a) {
+	for(var i = 0; i <  a.length; i++) {
+		document.getElementsByTagName("head")[0].appendChild(a[i]);
+	}
+};
+
+jQuery.fn.replace = function(a) {
+	return this.after(a).remove();
+};
+
+jQuery.fn.replacein = function(a) {
+	return this.empty().append(a);
+};
+
+jQuery.fn.displace = function(a) {
+	return this.empty().append(a);
+}
