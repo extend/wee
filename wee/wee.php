@@ -91,14 +91,14 @@ require(WEE_PATH . 'weeException'	. CLASS_EXT);
 
 weeAutoload::addPath(WEE_PATH);
 
-// PHP Functions/Extensions emulation
-
 function array_value($aArray, $sKey, $mIfNotSet = null)
 {
 	return isset($aArray[$sKey]) ? $aArray[$sKey] : $mIfNotSet;
 }
 
-require(WEE_PATH . 'emul_php'		. PHP_EXT);
+// PHP Functions/Extensions emulation
+
+require(WEE_PATH . 'emul_php' . PHP_EXT);
 
 if (!function_exists('ctype_digit'))			require(WEE_PATH . 'emul_ctype'		. PHP_EXT);//TODO
 if (!function_exists('gettext'))				require(WEE_PATH . 'emul_gettext'	. PHP_EXT);//TODO
