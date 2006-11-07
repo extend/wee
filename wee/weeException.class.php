@@ -49,9 +49,17 @@ if (version_compare(phpversion(), '5.1.0', '<'))
 	class NotPermittedException			extends RuntimeException			{} // Exception thrown when an user try to do something he doesn't have permission to
 	class ValidatorException			extends RuntimeException			{} // Exception thrown when a validator fails
 
-function burn($s)		{ if (class_exists($s, false)) throw new $s; throw new DoubleFaultException; }
-function fire($b, $s)	{ if ($b) burn($s);	}
-function kill($b)		{ if ($b) die;		}
+function burn($s)
+{
+	if (class_exists($s, false))
+		throw new $s;
+	throw new DoubleFaultException;
+}
+
+function fire($b, $s = 'UnexpectedValueException')
+{
+	if ($b) burn($s);
+}
 
 final class weeException extends Namespace
 {
@@ -121,7 +129,7 @@ final class weeException extends Namespace
 			 'Oops! An error occurred.</h1><p>The page you tried to access is currently unavailable. This can happen for one of the following reason:</p><ul><li>' .
 			 'The Web address you entered is invalid or incomplete. Please check that you typed it correctly.</li><li>' .
 			 'The server is too busy. Please wait a moment and try to reload the page later.</li><li>' .
-			 'The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href=".">browse</a> or <a href="search' . PHP_EXT . '">search</a> for it.' .
+			 'The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href="/">browse</a> for it.' .
 			 '</li></ul><p>You can also try to <a href="javascript:history.back()">go back</a> where you came from.</p>' .
 			 $sDebug . '</div></body></html>';
 	}
