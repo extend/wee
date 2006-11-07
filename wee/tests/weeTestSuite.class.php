@@ -49,6 +49,8 @@ class weeTestSuite
 		$oDirectory	= new RecursiveDirectoryIterator($this->sTestsPath);
 		foreach (new RecursiveIteratorIterator($oDirectory) as $sPath)
 		{
+			$sClass = null;
+
 			if (substr($sPath, -strlen(CLASS_EXT)) == CLASS_EXT)
 				$sClass	= substr(strrchr($sPath, '/'), 1, -strlen(CLASS_EXT));
 			elseif (substr($sPath, -strlen(PHP_EXT)) == PHP_EXT)
@@ -72,7 +74,7 @@ class weeTestSuite
 			$oTest = new $sClass;
 			$bSuccess = $oTest->run();
 
-			if ($bSuccess == null) // ignore files that return null
+			if (is_null($bSuccess)) // ignore files that return null
 				continue;
 
 			$aResults[(string)$sPath] = $bSuccess;
