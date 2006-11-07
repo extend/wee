@@ -32,7 +32,7 @@ class weeConfirmValidator implements weeFormValidator
 	protected $aErrorList	= array(
 		'invalid'	=> 'Input confirmation failed');
 
-	public function __construct($mValue, $aArgs = array())
+	public function __construct($mValue, array $aArgs = array())
 	{
 		$this->aArgs	= $aArgs;
 		$this->mValue	= $mValue;
@@ -75,7 +75,7 @@ class weeConfirmValidator implements weeFormValidator
 	{
 	}
 
-	public static function test($mValue, $aArgs = array())
+	public static function test($mValue, array $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
 		return $o->hasError();

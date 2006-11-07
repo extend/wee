@@ -32,7 +32,7 @@ class weeDateValidator implements weeValidator
 		'min'	=> 'Input must be a date after %min%',
 		'nad'	=> 'Input must be a date');
 
-	public function __construct($mValue, $aArgs = array())
+	public function __construct($mValue, array $aArgs = array())
 	{
 		$this->aArgs = $aArgs;
 
@@ -90,7 +90,7 @@ class weeDateValidator implements weeValidator
 		$this->sError		= str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
 	}
 
-	public static function test($mValue, $aArgs = array())
+	public static function test($mValue, array $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
 		return $o->hasError();

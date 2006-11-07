@@ -166,7 +166,7 @@ class weeForm
 			{
 				fire(!class_exists($oValidatorNode['type']), 'BadXMLException');
 				$sClass						= (string)$oValidatorNode['type'];
-				$oValidator					= new $sClass($aData[(string)$oNode->name], $oValidatorNode);
+				$oValidator					= new $sClass($aData[(string)$oNode->name], (array)$oValidatorNode);
 				if ($oValidator instanceof weeFormValidator)
 				{
 					$oValidator->setData($aData);
