@@ -21,39 +21,86 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Check if variable passed to the constructor is a valid email according to the arguments.
+
+	@bug Currently use a regexp, should be more precise later according to http://en.wikipedia.org/wiki/E-mail_address
+*/
+
 class weeEmailValidator implements weeValidator
 {
+	/**
+		Arguments passed to constructor are saved here for later use.
+	*/
+
 	protected $aArgs;
+
+	/**
+		Error message is saved here by setError and can be retrieved using getError.
+	*/
+
 	protected $sError;
-	protected $bHasError	= false;
+
+	/**
+		Default error messages.
+	*/
 
 	protected $aErrorList	= array(
-		'invalid'	=> 'Input must be a valid email address');
+		'invalid'	=> 'Input must be a valid email address'
+	);
+
+	/**
+		Check if the variable $mValue is an email according to $aArgs arguments.
+
+		$mValue can be of any type compatible to string.
+		$aArgs can contain one of the following keys:
+			- invalid_error:	Error message used if the email given is not valid.
+
+		@param	$mValue	The value to be checked.
+		@param	$aArgs	Arguments to check against.
+	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
 		$this->aArgs = $aArgs;
 
-		//TODO: Match better without using regexp [ http://en.wikipedia.org/wiki/E-mail_address ]
+		if (is_object($mValue) && is_callable(array($mValue, '__toString')))
+			$mValue = $mValue->__toString();
 
-		if (preg_match('/^[A-Z0-9._%-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}$/i', $mValue) == 0)
+		if (!is_string($mValue) || preg_match('/^[A-Z0-9._%-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}$/i', $mValue) == 0)
 			$this->setError('invalid');
 	}
+
+	/**
+		Get the error message, if any.
+
+		@return	string	The error message, or null if there is no error.
+	*/
 
 	public function getError()
 	{
 		return $this->sError;
 	}
 
+	/**
+		Get the result of the check performed in the constructor.
+
+		@return	bool	True if value checked is NOT a valid email, false if it is valid.
+	*/
+
 	public function hasError()
 	{
-		return $this->bHasError;
+		return !empty($this->sError);
 	}
+
+	/**
+		Format and save the error message.
+
+		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
+	*/
 
 	protected function setError($sType)
 	{
-		$this->bHasError	= true;
-
 		$sMsg = $sType . '_error';
 		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
 		else								$this->sError = $this->aErrorList[$sType];
@@ -61,10 +108,18 @@ class weeEmailValidator implements weeValidator
 		$this->sError		= _($this->sError);
 	}
 
+	/**
+		Convenience function for inline checking of variables.
+
+		@param	$mValue	The value to be checked.
+		@param	$aArgs	Arguments to check against. See the constructor documentation for details.
+		@return	bool	True if $mValue IS a valid email, false otherwise.
+	*/
+
 	public static function test($mValue, array $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
-		return $o->hasError();
+		return !$o->hasError();
 	}
 }
 

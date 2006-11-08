@@ -93,7 +93,7 @@ class weeDateValidator implements weeValidator
 	public static function test($mValue, array $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
-		return $o->hasError();
+		return !$o->hasError();
 	}
 }
 
