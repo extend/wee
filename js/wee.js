@@ -19,12 +19,20 @@
 
 /* Web:Extend namespaces */
 
-window.wee	= {};
+window.wee	= {
+	appPath:	'',
+	fixes:		{},
+	widgets:	{
+		multiplefileinput:	{}
+	},
 
-wee.fixes	= {};
-
-wee.widgets	= {};
-wee.widgets.multiplefileinput = {};
+	include:	function(file, callback) {
+		$.get(wee.appPath + file, function(xml) {
+			window.eval(xml);
+			callback.call();
+		});
+	}
+};
 
 /* Boot: Fixes functions */
 
@@ -49,12 +57,14 @@ if (/firefox/.test(navigator.userAgent.toLowerCase())) {
 /* Boot: Widgets */
 
 wee.widgets.multiplefileinput.change = function(e) {
-	t = e.target;
+	var t = e.target;
 	$(t.parentNode).after('<li><input type="file" name="' + t.name + '" title="' + t.title + '" accept="' + t.accept + '"/></li>');
 	$(t).unbind('change');
 	$(t.parentNode.nextSibling.firstChild).bind('change', wee.widgets.multiplefileinput.change);
 }
 
+/* Boot */
+
 $(document).ready(function() {
 	$('//fieldset[@class="multiplefileinput"]//input').bind('change', wee.widgets.multiplefileinput.change);
-})
+});
