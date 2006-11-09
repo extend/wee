@@ -83,10 +83,10 @@ class weeOptionValidator implements weeFormValidator
 		$this->oWidget = $oWidget;
 	}
 
-	public static function !test($mValue, array $aArgs = array())
+	public static function test($mValue, array $aArgs = array())
 	{
 		$o = new self($mValue, $aArgs);
-		return $o->hasError();
+		return !$o->hasError();
 	}
 }
 
