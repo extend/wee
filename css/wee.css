@@ -54,10 +54,6 @@ table				{border-collapse:collapse;border-spacing:0;empty-cells:show}
 td					{margin:0;padding:0}
 hr					{margin:1em 0}
 
-/* Special classes */
-
-.invisible	{display:none}
-
 /* Forms defaults */
 
 form.block ol						{margin:0;padding:0}
@@ -82,15 +78,17 @@ form.block fieldset.buttonsfieldset		{text-align:right}
 form.block fieldset.buttonsfieldset ol	{margin:0}
 form.block fieldset.buttonsfieldset li	{display:inline;margin-right:1em}
 
-form.block .scrollablechecklist	ol			{border:1px solid gray;display:inline-block;max-height:16em;overflow:auto;width:20em}
-form.block .scrollablechecklist li			{background:#f3f3f3;height:1.6em;padding:0}
-form.block .scrollablechecklist li.odd		{background:#fff}
-form.block .scrollablechecklist li:hover	{background:#999;color:#fff}
-form.block .scrollablechecklist label		{display:block;margin:0;padding:.15em .1em}
+form.block fieldset.scrollablechecklist	ol			{border:1px solid gray;display:inline-block;max-height:16em;overflow:auto;width:20em}
+form.block fieldset.scrollablechecklist li			{background:#f3f3f3;height:1.6em;padding:0}
+form.block fieldset.scrollablechecklist li.odd		{background:#fff}
+form.block fieldset.scrollablechecklist li:hover	{background:#999;color:#fff}
+form.block fieldset.scrollablechecklist label		{display:block;margin:0}
 
 form.block .mceResizeBox,
 form.block .mceEditorContainer table	{margin:.5em auto}
 
+form.block li.invisible	{display:none}
+
 /* Widgets defaults */
 
-.searchpagination	{text-align:center}
+div.searchpagination	{text-align:center}
