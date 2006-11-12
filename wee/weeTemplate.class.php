@@ -26,12 +26,14 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 
 class weeTemplate
 {
-	protected $sTemplate;
+	protected $sFilename;
 	protected $aData;
 
 	public function __construct($sTemplate, array $aData = array())
 	{
-		$this->sTemplate	= $sTemplate;
+		$this->sFilename	= TPL_PATH . $sTemplate . TPL_EXT;
+		fire(!file_exists($this->sFilename), 'FileNotFoundException');
+
 		$this->aData		= $aData;
 	}
 
@@ -45,11 +47,8 @@ class weeTemplate
 	{
 		extract(weeOutput::encodeArray($this->aData));
 
-		$sFilename = TPL_PATH . $this->sTemplate . TPL_EXT;
-		Fire(!file_exists($sFilename), 'FileNotFoundException');
-
 		ob_start();
-		require($sFilename);
+		require($this->sFilename);
 		$s = ob_get_contents();
 		ob_end_clean();
 
