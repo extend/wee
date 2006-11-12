@@ -23,7 +23,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 abstract class weeDatabase
 {
-	abstract public function __construct($sServer = null, $sLogin = null, $sPassword = null);
+	abstract public function __construct($aParams = array());
 	abstract public function __destruct();
 
 	private function __clone()
@@ -51,11 +51,10 @@ abstract class weeDatabase
 
 	abstract public function escape($mValue);
 	abstract public function getLastError();
-	abstract public function getLastInsertId();
+	abstract public function getPKId($sName = null);
 	abstract public function numAffectedRows();
 	abstract public function numQueries();
 	abstract public function query($mQueryString);
-	abstract public function selectDb($sDatabase);
 }
 
 ?>

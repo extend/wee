@@ -26,11 +26,11 @@ class weeMySQLDatabase extends weeDatabase
 	private $rLink;
 	private $iNumQueries;
 
-	public function __construct($sServer, $sLogin = null, $sPassword = null)
+	public function __construct($aParams = array())
 	{
 		fire(!function_exists('mysql_connect'), 'ConfigurationException');
 
-		$this->rLink = mysql_connect($sServer, $sLogin, $sPassword);
+		$this->rLink = mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'));
 		fire($this->rLink === false, 'DatabaseException');
 
 		// Set encoding and collation
@@ -40,6 +40,11 @@ class weeMySQLDatabase extends weeDatabase
 		$this->query("SET collation_connection = 'utf8_bin'");
 		$this->query("SET collation_database = 'utf8_bin'");
 		$this->query("SET collation_server = 'utf8_bin'");
+
+		// Select database if needed
+
+		if (!empty($aParams['dbname']))
+			$this->selectDb($aParams['dbname']);
 
 		// Initialize additional database services
 
@@ -73,7 +78,7 @@ class weeMySQLDatabase extends weeDatabase
 		return mysql_error($this->rLink);
 	}
 
-	public function getLastInsertId()
+	public function getPKId($sName = null)
 	{
 		fire($this->rLink === false, 'IllegalStateException');
 		return mysql_insert_id($this->rLink);
