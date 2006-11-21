@@ -70,14 +70,18 @@ abstract class weeOutput implements Singleton
 
 	abstract public function encode($mValue);
 
-	public static function encodeArray(array &$a)
+	public static function encodeArray(&$a)
 	{
 		foreach ($a as $mName => $mValue)
 		{
-			if ($mValue instanceof weeDatabaseResult)	$a[$mName] = $mValue->encodeResults();
-			elseif (is_object($mValue))					continue;
-			elseif (is_array($mValue))					$a[$mName] = self::encodeArray($mValue);
-			else										$a[$mName] = self::encodeValue($mValue);
+			if ($mValue instanceof weeDatabaseResult || $mValue instanceof weeDatabaseRow)
+				$a[$mName] = $mValue->encodeResults();
+			elseif (is_object($mValue))
+				continue;
+			elseif (is_array($mValue))
+				$a[$mName] = self::encodeArray($mValue);
+			else
+				$a[$mName] = self::encodeValue($mValue);
 		}
 		return $a;
 	}
