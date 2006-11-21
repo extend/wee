@@ -85,7 +85,7 @@ abstract class weeFeed
 		fire(empty($aEntry));
 
 		foreach ($aEntry as $sElement => $m)
-			fire(!$this->isEntryElementValid($sElement), 'InvalidParameterException');
+			fire(!$this->isEntryElementValid($sElement), 'InvalidArgumentException');
 
 		$this->aEntries[] = $aEntry;
 
@@ -97,9 +97,11 @@ abstract class weeFeed
 		$aValidElements = array(
 			'author',
 			'category',
+			'id',
 			'link',
 			'logo',
 			'rights',
+			'self',
 			'subtitle',
 			'title',
 			'updated',
@@ -113,7 +115,9 @@ abstract class weeFeed
 		$aValidElements = array(
 			'author',
 			'category',
+			'id',
 			'link',
+			'published',
 			'summary',
 			'title',
 			'updated',

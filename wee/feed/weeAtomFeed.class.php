@@ -57,13 +57,20 @@ class weeAtomFeed extends weeFeed
 	protected function elementToString($sName, $mValue)
 	{
 		if ($sName == 'link')
-			return '<link href="' . $mValue . '"/>';
+			return '<link rel="alternate" href="' . $mValue . '"/>';
+		elseif ($sName == 'self')
+			return '<link rel="self" href="' . $mValue . '"/>';
+		elseif ($sName == 'category')
+			return '<category term="' . $mValue . '"/>';
 		else
 		{
-			if ($sName == 'updated' && ctype_digit($mValue))
-				$mValue = date('c', $mValue);
+			if (($sName == 'published' || $sName == 'updated') && ctype_digit($mValue))
+				$mValue = @date('c', $mValue);
 
-			$sFeed = '<' . $sName . '>';
+			$sFeed = '<' . $sName;
+			if ($sName == 'summary') //TODO:better
+				$sFeed .= ' type="xhtml"';
+			$sFeed .= '>';
 
 			if (!is_array($mValue))
 				$sFeed .= $mValue;
