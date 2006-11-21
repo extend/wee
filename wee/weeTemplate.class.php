@@ -37,12 +37,6 @@ class weeTemplate
 		$this->aData		= $aData;
 	}
 
-	public function set($mName, $mValue)
-	{
-		$this->aData[$mName] = $mValue;
-		return $this;
-	}
-
 	public function __toString()
 	{
 		extract(weeOutput::encodeArray($this->aData));
@@ -53,6 +47,18 @@ class weeTemplate
 		ob_end_clean();
 
 		return $s;
+	}
+
+	public function set($mName, $mValue)
+	{
+		$this->aData[$mName] = $mValue;
+		return $this;
+	}
+
+	protected function template($sTemplate, array $aData = array())
+	{
+		//TODO:this will re-encode the data, optimize
+		return new weeTemplate($sTemplate, $aData + $this->aData);
 	}
 }
 
