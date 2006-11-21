@@ -42,6 +42,18 @@ abstract class weeFormSelectable extends weeFormWidget
 			$this->select($sValue);
 	}
 
+	public function addOptions($aOptions)
+	{
+		foreach ($aOptions as $aOption)
+			$this->addOption(
+				array_value($aOption, 'value'),
+				array_value($aOption, 'label'),
+				array_value($aOption, 'help'),
+				array_value($aOption, 'disabled'),
+				array_value($aOption, 'selected')
+			);
+	}
+
 	public function isInOptions($sValue)
 	{
 		foreach ($this->aOptions as $aOption)
