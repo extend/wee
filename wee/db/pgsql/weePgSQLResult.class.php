@@ -42,12 +42,19 @@ class weePgSQLResult extends weeDatabaseResult
 		fire($a === false, 'DatabaseException');
 
 		if ($this->bEncodeResults)
-			return weeOutput::encodeArray($a);
+			$a = weeOutput::encodeArray($a);
+
+		if (!empty($this->sRowClass))
+			$a = new $this->sRowClass($a);
+
 		return $a;
 	}
 
 	public function fetchAll()
 	{
+		//TODO:handle the row class here too, and don't fire
+		fire(!empty($this->sRowClass), 'IllegalStateException');
+
 		return pg_fetch_all($this->rResult);
 	}
 
@@ -88,6 +95,10 @@ class weePgSQLResult extends weeDatabaseResult
 	public function valid()
 	{
 		$this->aCurrentFetch = @pg_fetch_assoc($this->rResult, $this->iCurrentIndex);
+
+		if (!empty($this->sRowClass) && $this->aCurrentFetch !== false)
+			$this->aCurrentFetch = new $this->sRowClass($this->aCurrentFetch);
+
 		return ($this->aCurrentFetch !== false);
 	}
 }
