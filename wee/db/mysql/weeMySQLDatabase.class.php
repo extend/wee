@@ -54,7 +54,7 @@ class weeMySQLDatabase extends weeDatabase
 		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
 
-		weeDatabaseQuery::$criteriaClass	= 'weeMySQLCriteria';
+		weeDatabaseQuery::$criteriaClass	= 'weeDatabaseCriteria';
 		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}
 
