@@ -24,6 +24,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDatabaseResult implements Iterator
 {
 	protected $bEncodeResults = false;
+	protected $sRowClass;
 
 	abstract public function __construct($rResult);
 	abstract public function __destruct();
@@ -37,6 +38,18 @@ abstract class weeDatabaseResult implements Iterator
 	abstract public function fetch();
 	abstract public function fetchAll();
 	abstract public function numResults();
+
+	/**
+		TODO
+	*/
+
+	public function rowClass($sClass)
+	{
+		fire(empty($sClass), 'InvalidParameterException');
+
+		$this->sRowClass = $sClass;
+		return $this;
+	}
 }
 
 ?>
