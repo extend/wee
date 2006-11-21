@@ -110,7 +110,7 @@ class weeForm
 		foreach ($aData as $sName => $mValue)
 		{
 			$a = $this->oForm->xpath('//name[text()="' . $sName . '"]/..');
-			if (empty($a) || !empty($a[0]['action']) && constant($a[0]['action']) != $this->iAction)
+			if (empty($a) || (!empty($a[0]['action']) && constant($a[0]['action']) != $this->iAction))
 				continue;
 
 			$oWidget = $a[0]->widget();
@@ -165,8 +165,9 @@ class weeForm
 			foreach ($oNode->validator as $oValidatorNode)
 			{
 				fire(!class_exists($oValidatorNode['type']), 'BadXMLException');
-				$sClass						= (string)$oValidatorNode['type'];
-				$oValidator					= new $sClass($aData[(string)$oNode->name], (array)$oValidatorNode);
+				$aValidatorNode		= (array)$oValidatorNode;
+				$sClass				= (string)$oValidatorNode['type'];
+				$oValidator			= new $sClass($aData[(string)$oNode->name], $aValidatorNode['@attributes']);
 				if ($oValidator instanceof weeFormValidator)
 				{
 					$oValidator->setData($aData);
