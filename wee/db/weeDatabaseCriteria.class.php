@@ -30,9 +30,19 @@ define('gt',	'gt');
 define('in',	'in');
 define('not',	'not');
 
-abstract class weeDatabaseCriteria
+class weeDatabaseCriteria
 {
-	protected $aCriteria = array();
+	protected $aCriteria	= array();
+	protected $aComparisons	= array(
+		lt	=> '$1 < $2',
+		le	=> '$1 <= $2',
+		eq	=> '$1 = $2',
+		ne	=> '$1 != $2',
+		ge	=> '$1 >= $2',
+		gt	=> '$1 > $2',
+		in	=> '$1 IN ($2)',
+		not	=> 'NOT $1',
+	);
 
 	public function __construct($iOperator)
 	{
@@ -48,7 +58,64 @@ abstract class weeDatabaseCriteria
 		return $this;
 	}
 
-	abstract public function build($oDatabase);
+	public function build($oDatabase)
+	{
+		$sSQL = null;
+
+		foreach ($this->aCriteria as $a)
+		{
+			if (!empty($a['op']))
+				$sSQL .= ' ' . $a['op'];
+			$sSQL .= ' (';
+
+			if ($a[0] == in)
+			{
+				$s = $this->replace($oDatabase, '$1', $a[1], $this->aComparisons[in]);
+
+				unset($a[0], $a[1], $a['op']);
+				fire(empty($a), 'InvalidArgumentException');
+
+				$sIn = null;
+				foreach ($a as $mValue)
+				{
+					if (is_array($mValue))
+						foreach ($mValue as $m)
+							$sIn .= $oDatabase->escape($m) . ',';
+					else	$sIn .= $oDatabase->escape($mValue) . ',';
+				}
+
+				$sSQL .= str_replace('$2', substr($sIn, 0, strlen($sIn) - 1), $s);
+			}
+			elseif ($a[0] == not)
+				$sSQL .= $this->replace($oDatabase, '$1', $a[1], $this->aComparisons[not]);
+			else
+			{
+				$s = $this->replace($oDatabase, '$1', $a[1], $this->aComparisons[$a[0]]);
+				$s = $this->replace($oDatabase, '$2', $a[2], $s);
+
+				$sSQL .= $s;
+			}
+
+			$sSQL .= ')';
+		}
+
+		return $sSQL;
+	}
+
+	protected function replace($oDatabase, $sSearch, $mReplace, $sSubject)
+	{
+		if (is_object($mReplace))
+			return str_replace($sSearch, $mReplace->build($oDatabase), $sSubject);
+
+//TODO:if the following line fails, this usually means that the id of the updated row wasn't provided with the form data
+
+		if ($mReplace{0} == '`')
+			$mReplace = substr($mReplace, 1, -1);
+		else
+			$mReplace = $oDatabase->escape($mReplace);
+
+		return str_replace($sSearch, $mReplace, $sSubject);
+	}
 }
 
 ?>
