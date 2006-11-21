@@ -21,18 +21,6 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-/*
-	// weeDatabaseRow
-
-	§(eq, 'id', 1)
-
-	§::load('mysql');
-	$sSQL = §()->select('test.label')->where(§(eq, 'id', 1)->and(not, §(in, 'year', '2000', '2001', '2005')))->limit(1);
-	$sSQL->where()->and(§(ne, 'label', 'oeuf'));
-
-	"SELECT label FROM test WHERE 'id'='1' AND 'year' NOT IN ('2000', '2001', '2005') LIMIT 1"
-*/
-
 class weeDatabaseQuery
 {
 	public static	$criteriaClass;
@@ -45,39 +33,61 @@ class weeDatabaseQuery
 
 	public function build($oDatabase)
 	{
-		$sSQL = $this->sAction . ' `' . $this->sTable . '` SET ';
+		$sMethod = 'build' . $this->sAction;
+		fire(!is_callable(array($this, $sMethod)), 'IllegalStateException');
+		return $this->$sMethod($oDatabase);
+	}
+
+	protected function buildInsert($oDatabase)
+	{
+		$sColumns = null;
+		$sValues = null;
 
 		foreach ($this->aValues as $sName => $sValue)
 		{
-			if (empty($sValue) || $sValue{0} != '`')
+			if (empty($sValue) || $sValue{0} != '`')//TODO:possible postgresql bug here: `
+				$sValue	= $oDatabase->escape($sValue);
+
+			$sColumns .= $sName . ',';
+			$sValues .= $sValue . ',';
+		}
+
+		return 'INSERT INTO ' . $this->sTable . ' (' . substr($sColumns, 0, -1) . ') VALUES (' . substr($sValues, 0, -1) . ')';
+	}
+
+	protected function buildUpdate($oDatabase)
+	{
+		$sSQL = 'UPDATE ' . $this->sTable . ' SET ';
+
+		foreach ($this->aValues as $sName => $sValue)
+		{
+			if (empty($sValue) || $sValue{0} != '`')//TODO:possible postgresql bug here: `
 				$sValue	= $oDatabase->escape($sValue);
 			$sSQL .= $sName . '=' . $sValue . ',';
 		}
 
-		$sSQL = substr($sSQL, 0, -1);
-
-		if ($this->sAction == 'update')
-			$sSQL .= ' WHERE ' . $this->oCriteria->build($oDatabase);
-
-		return $sSQL;
+		return substr($sSQL, 0, -1) . ' WHERE ' . $this->oCriteria->build($oDatabase);
 	}
 
 	public function insert($sTable)
 	{
-		$this->sAction	= 'insert';
+		$this->sAction	= 'Insert';
 		$this->sTable	= $sTable;
 		return $this;
 	}
 
 	public function set($sName, $sValue)
 	{
+		if ($sName{0} == '`')
+			$sName = substr($sName, 1, -1);
+
 		$this->aValues[$sName] = $sValue;
 		return $this;
 	}
 
 	public function update($sTable)
 	{
-		$this->sAction	= 'update';
+		$this->sAction	= 'Update';
 		$this->sTable	= $sTable;
 		return $this;
 	}
