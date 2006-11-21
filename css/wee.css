@@ -72,7 +72,10 @@ form.block fieldset fieldset label	{padding:0}
 form.block fieldset fieldset ol,
 form.block .checkbox,
 form.block .dateinput				{margin-left:16em;padding:0;width:auto}
-form.block label.notice				{width:auto}
+form.block label.notice				{text-align:justify;width:38em}/*Should be width:auto; fix for Fx1.5*/
+
+form.block input[type="text"],
+form.block input[type="password"]	{min-width:20em}
 
 form.block fieldset.buttonsfieldset		{text-align:right}
 form.block fieldset.buttonsfieldset ol	{margin:0}
