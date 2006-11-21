@@ -42,7 +42,11 @@ class weeMySQLResult extends weeDatabaseResult
 		fire($a === false, 'DatabaseException');
 
 		if ($this->bEncodeResults)
-			return weeOutput::encodeArray($a);
+			$a = weeOutput::encodeArray($a);
+
+		if (!empty($this->sRowClass))
+			$a = new $this->sRowClass($a);
+
 		return $a;
 	}
 
@@ -92,6 +96,10 @@ class weeMySQLResult extends weeDatabaseResult
 	public function valid()
 	{
 		$this->aCurrentFetch = mysql_fetch_assoc($this->rResult);
+
+		if (!empty($this->sRowClass) && $this->aCurrentFetch !== false)
+			$this->aCurrentFetch = new $this->sRowClass($this->aCurrentFetch);
+
 		return ($this->aCurrentFetch !== false);
 	}
 }
