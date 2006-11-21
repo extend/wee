@@ -23,12 +23,17 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 final class weeLocale extends Namespace
 {
+	public static function getCurrent()
+	{
+		return setlocale(LC_ALL, 0);
+	}
+
 	public static function set($sLang, $sEncoding, $sLocalePath = './', $sTextDomain = 'messages')
 	{
 		//TODO:check values
 
 		putenv('LANG=' . $sLang);
-		setlocale(LC_MESSAGES, $sLang . '.' . strtoupper($sEncoding));
+		setlocale(LC_ALL, $sLang . '.' . strtoupper($sEncoding));
 		bindtextdomain($sTextDomain, $sLocalePath);
 		bind_textdomain_codeset($sTextDomain, $sEncoding);
 		textdomain($sTextDomain);
