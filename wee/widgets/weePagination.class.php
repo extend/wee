@@ -97,7 +97,7 @@ abstract class weePagination
 	{
 		//TODO:check URI
 
-		$sURI .= (strpos($sURI, '?') == false) ? '?' : '&';
+		$sURI .= (strpos($sURI, '?') === false) ? '?' : '&';
 		$this->sURI = weeOutput::encodeValue($sURI);
 	}
 
