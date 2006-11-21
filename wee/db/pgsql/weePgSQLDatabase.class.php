@@ -52,7 +52,7 @@ class weePgSQLDatabase extends weeDatabase
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
 
 		//TODO:change the criteria class
-		weeDatabaseQuery::$criteriaClass	= 'weeMySQLCriteria';
+		weeDatabaseQuery::$criteriaClass	= 'weeDatabaseCriteria';
 		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}
 
@@ -109,13 +109,13 @@ class weePgSQLDatabase extends weeDatabase
 		elseif (is_object($mQueryString))
 			$mQueryString = $mQueryString->build($this);
 
-		$rResult = pg_query($this->rLink, $mQueryString);
+		$rResult = @pg_query($this->rLink, $mQueryString);
 		fire($rResult === false, 'DatabaseException');
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
 
-		if (pg_num_rows($rResult))
+		if (pg_num_fields($rResult) > 0)//TODO:check if it does not return > 0 with UPDATE/DELETE/...
 			return new weePgSQLResult($rResult);
 	}
 }
