@@ -71,6 +71,7 @@ class weeForm
 	protected $sClass;
 	protected $sEncType;
 	protected $oForm;
+	protected $bFormKey;
 	protected $sMethod;
 	protected $sURI;
 	protected $sValidationErrors;
@@ -83,13 +84,16 @@ class weeForm
 		$oXML = simplexml_load_file($sFilename, 'weeFormSimpleXMLIterator');
 		fire($oXML === false || !isset($oXML->widgets), 'BadXMLException');
 
-		if (isset($oXML->class))	$this->sClass	= $oXML->class;
+		if (isset($oXML->class))	$this->sClass	= (string)$oXML->class;
 		else						$this->sClass	= 'block';
 
-		if (isset($oXML->enctype))	$this->sEncType	= $oXML->enctype;
+		if (isset($oXML->enctype))	$this->sEncType	= (string)$oXML->enctype;
 
-		if (isset($oXML->method))	$this->sMethod	= $oXML->method;
+		if (isset($oXML->method))	$this->sMethod	= (string)$oXML->method;
 		else						$this->sMethod	= 'post';
+
+		if (isset($oXML->formkey))	$this->bFormKey	= (string)$oXML->formkey;
+		else						$this->bFormKey	= true;
 
 		$this->iAction		= $iAction;
 		$this->oForm		= new weeFormContainer($oXML->widgets, $iAction);
@@ -102,7 +106,21 @@ class weeForm
 			  '" class="' . weeOutput::encodeValue($this->sClass) . '"';
 		if (!empty($this->sEncType))
 			$s .= ' enctype="' . weeOutput::encodeValue($this->sEncType) . '"';
-		return $s . '>' . $this->oForm->__toString() . '</form>';
+		$s .= '>';
+
+		if ($this->bFormKey)
+		{
+			// Needs session to be started to use the form key
+			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException');
+
+			$sTime	= microtime();
+			$sKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
+			$_SESSION['session_formkeys'][$sKey] = $sTime;
+
+			$s .= '<input type="hidden" name="wee_formkey" value="' . $sKey . '"/>';
+		}
+
+		return $s . $this->oForm->__toString() . '</form>';
 	}
 
 	public function fill($aData)
@@ -140,6 +158,35 @@ class weeForm
 		fire(empty($aData), 'InvalidArgumentException');
 
 		$this->sValidationErrors = null;
+
+		if ($this->bFormKey)
+		{
+			// Needs session to be started to use the form key
+			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException');
+
+			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
+				$this->sValidationErrors = _('Form key not found.') . "\r\n";
+			else
+			{
+				// Recalculate form key to check validity
+				if ($aData['wee_formkey'] != md5($_SERVER['HTTP_HOST'] . $_SESSION['session_formkeys'][$aData['wee_formkey']] . MAGIC_STRING))
+					$this->sValidationErrors = _('Invalid form key.') . "\r\n";
+				else
+				{
+					// If form key was generated more than 6 hours ago, it is considered invalid
+					$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
+					if (time() > $aTime[1] + 3600 * 6)
+						$this->sValidationErrors = _('Form key out of date.') . "\r\n";
+				}
+			}
+
+			// Form has been submitted, unset the form key
+			unset($_SESSION['session_formkeys'][$aData['wee_formkey']]);
+
+			if (!empty($this->sValidationErrors))
+				return true;
+		}
+
 		//TODO:do not xpath widgets that have wrong action
 		$aWidgets = $this->oForm->xpath('//widget');
 
