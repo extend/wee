@@ -58,13 +58,13 @@ abstract class weeOutput implements Singleton
 
 	public static function deleteCookie($sName)
 	{
-		Fire(headers_sent(), 'IllegalStateException');
+		fire(headers_sent(), 'IllegalStateException');
 		setcookie($sName, '', 0, self::$sCookiePath);
 	}
 
 	public static function encodeValue($mValue)
 	{
-		Fire(empty(self::$oSingleton), 'IllegalStateException');
+		fire(empty(self::$oSingleton), 'IllegalStateException');
 		return self::$oSingleton->encode($mValue);
 	}
 
@@ -88,7 +88,8 @@ abstract class weeOutput implements Singleton
 
 	public static function header($sString, $bReplace = true)
 	{
-		Fire(headers_sent(), 'IllegalStateException');
+		fire(headers_sent(), 'IllegalStateException');
+		fire(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false, 'UnexpectedValueException');
 		header($sString, $bReplace);
 	}
 
@@ -99,7 +100,7 @@ abstract class weeOutput implements Singleton
 
 	public static function setCookie($sName, $sValue, $iExpire = null)
 	{
-		Fire(headers_sent(), 'IllegalStateException');
+		fire(headers_sent(), 'IllegalStateException');
 
 		if (is_null($iExpire))
 			$iExpire = time() + 2592000; // 30 days from now
