@@ -111,6 +111,8 @@ class weeFormDateInput extends weeFormWritable
 			$iMonth	= func_get_arg(1);
 			$iDay	= func_get_arg(2);
 
+			//TODO:validates arguments
+
 			parent::setValue(sprintf('%04u-%02u-%02u', $iYear, $iMonth, $iDay));
 		}
 	}
@@ -120,6 +122,7 @@ class weeFormDateInput extends weeFormWritable
 		if (empty($_POST[$this->oXML->name . '_year']) || empty($_POST[$this->oXML->name . '_month']) || empty($_POST[$this->oXML->name . '_day']))
 			return false;
 
+		//TODO:validates data here too
 		$_POST[(string)$this->oXML->name] = sprintf('%04u-%02u-%02u', $_POST[$this->oXML->name . '_year'], $_POST[$this->oXML->name . '_month'], $_POST[$this->oXML->name . '_day']);
 		unset($_POST[$this->oXML->name . '_year'], $_POST[$this->oXML->name . '_month'], $_POST[$this->oXML->name . '_day']);
 
