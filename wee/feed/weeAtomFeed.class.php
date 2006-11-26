@@ -57,7 +57,7 @@ class weeAtomFeed extends weeFeed
 	protected function elementToString($sName, $mValue)
 	{
 		if ($sName == 'link')
-			return '<link rel="alternate" href="' . $mValue . '"/>';
+			return '<link rel="alternate" href="' . htmlentities($mValue, ENT_COMPAT, 'utf-8') . '"/>';
 		elseif ($sName == 'self')
 			return '<link rel="self" href="' . $mValue . '"/>';
 		elseif ($sName == 'category')
