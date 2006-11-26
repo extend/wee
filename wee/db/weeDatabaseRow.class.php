@@ -45,8 +45,7 @@ class weeDatabaseRow implements ArrayAccess
 
 	public function offsetGet($offset)
 	{
-		if (!array_key_exists($offset, $this->aRow))
-			return null;
+		fire(!array_key_exists($offset, $this->aRow), 'InvalidArgumentException');
 
 		if ($this->bEncodeResults)
 			return weeOutput::encodeValue($this->aRow[$offset]);
