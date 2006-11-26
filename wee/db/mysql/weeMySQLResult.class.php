@@ -41,13 +41,10 @@ class weeMySQLResult extends weeDatabaseResult
 		$a = mysql_fetch_assoc($this->rResult);
 		fire($a === false, 'DatabaseException');
 
-		if ($this->bEncodeResults)
-			$a = weeOutput::encodeArray($a);
-
 		if (!empty($this->sRowClass))
 			$a = new $this->sRowClass($a);
 
-		return $a;
+		return $this->processRow($a);
 	}
 
 	public function fetchAll()
@@ -73,8 +70,7 @@ class weeMySQLResult extends weeDatabaseResult
 
 	public function current()
 	{
-		if ($this->bEncodeResults)	return weeOutput::encodeArray($this->aCurrentFetch);
-		else						return $this->aCurrentFetch;
+		return $this->processRow($this->aCurrentFetch);
 	}
 
 	public function key()

@@ -39,6 +39,19 @@ abstract class weeDatabaseResult implements Iterator
 	abstract public function fetchAll();
 	abstract public function numResults();
 
+	protected function processRow($aRow)
+	{
+		if ($this->bEncodeResults)
+		{
+			if ($aRow instanceof weeDatabaseRow)
+				return $aRow->encodeResults();
+
+			return weeOutput::encodeArray($aRow);
+		}
+
+		return $aRow;
+	}
+
 	/**
 		TODO
 	*/
