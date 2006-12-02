@@ -21,6 +21,18 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Returns the array value if exists, else a default value.
+	Simpler form than using the conditional operators, and returns null by default, which we usually want.
+*/
+
+function array_value($aArray, $sKey, $mIfNotSet = null)
+{
+	if (isset($aArray[$sKey]))
+		return $aArray[$sKey];
+	return $mIfNotSet;
+}
+
 //TODO:not tested yet
 
 if (!function_exists('date_default_timezone_get'))

@@ -91,11 +91,6 @@ require(WEE_PATH . 'weeException'	. CLASS_EXT);
 
 weeAutoload::addPath(WEE_PATH);
 
-function array_value($aArray, $sKey, $mIfNotSet = null)
-{
-	return isset($aArray[$sKey]) ? $aArray[$sKey] : $mIfNotSet;
-}
-
 // PHP Functions/Extensions emulation
 
 require(WEE_PATH . 'emul_php' . PHP_EXT);
