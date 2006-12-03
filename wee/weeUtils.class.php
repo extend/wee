@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Namespace containing exotics but sometimes useful functions.
 */
 
-class weeUtils extends Namespace
+final class weeUtils extends Namespace
 {
 	/**
 		Format a string to an HTML unsorted list.

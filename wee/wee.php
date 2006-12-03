@@ -83,11 +83,21 @@ if (get_magic_quotes_gpc())
 
 // Core components
 
-class Namespace		{ private function __construct() {}		}
-interface Singleton	{ public static function instance();	}
+/**
+	PHP namespace emulation.
+	Namespaces should be declared as final.
+*/
 
-require(WEE_PATH . 'weeAutoload'	. CLASS_EXT);
-require(WEE_PATH . 'weeException'	. CLASS_EXT);
+class Namespace { private function __construct() {} }
+
+/**
+	Interface for declaring singletons in wee.
+*/
+
+interface Singleton { public static function instance(); }
+
+require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
+require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
 
 weeAutoload::addPath(WEE_PATH);
 

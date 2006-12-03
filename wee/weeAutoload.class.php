@@ -21,10 +21,28 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-//TODO:Cached version
+/**
+	Namespace for class autoloading.
+
+	@todo Cached version.
+*/
+
 final class weeAutoload extends Namespace
 {
+	/**
+		Maps all the classes to their filenames.
+	*/
+
 	protected static $aPaths = array();
+
+	/**
+		Adds a path to autoload from.
+
+		You must tell weeAutoload which paths contains the files to autoload.
+		This function will stores all the filenames ending with CLASS_EXT, for later use.
+
+		@param $sPath The path to autoload from.
+	*/
 
 	public static function addPath($sPath)
 	{
@@ -38,12 +56,21 @@ final class weeAutoload extends Namespace
 		}
 	}
 
+	/**
+		Autoloads the specified class, if it's in the autoload paths. Else throws a FileNotFoundException.
+		You should never need to call this functions yourself.
+
+		@param $sClass The class to autoload.
+	*/
+
 	public static function loadClass($sClass)
 	{
-		Fire(empty(self::$aPaths[$sClass]), 'FileNotFoundException');
+		fire(empty(self::$aPaths[$sClass]), 'FileNotFoundException');
 		require(self::$aPaths[$sClass]);
 	}
 }
+
+// Register autoload functions
 
 if (function_exists('spl_autoload_register'))
 {
