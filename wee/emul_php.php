@@ -33,10 +33,15 @@ function array_value($aArray, $sKey, $mIfNotSet = null)
 	return $mIfNotSet;
 }
 
-//TODO:not tested yet
-
 if (!function_exists('date_default_timezone_get'))
 {
+	/**
+		Emulation of PHP's date_default_timezone_get.
+		TODO: Not tested yet. Need feedback.
+
+		@see http://php.net/date_default_timezone_get
+	*/
+
 	function date_default_timezone_get()
 	{
 		$sTimezone = getenv('TZ');
@@ -44,6 +49,13 @@ if (!function_exists('date_default_timezone_get'))
 			return 'UTC';
 		return $sTimezone;
 	}
+
+	/**
+		Emulation of PHP's date_default_timezone_get.
+		TODO: Not tested yet. Need feedback.
+
+		@see http://php.net/date_default_timezone_set
+	*/
 
 	function date_default_timezone_set($sTimezone)
 	{

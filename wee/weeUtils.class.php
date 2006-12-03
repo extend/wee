@@ -21,8 +21,20 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Namespace containing exotics but sometimes useful functions.
+*/
+
 class weeUtils extends Namespace
 {
+	/**
+		Format a string to an HTML unsorted list.
+		Each line of the string (with \r\n separator) becomes a line of the list.
+
+		@param	$s		The string to be formatted.
+		@return	string	The string formatted to an HTML unsorted list.
+	*/
+
 	public static function nl2uli($s)
 	{
 		if (empty($s))
@@ -35,9 +47,19 @@ class weeUtils extends Namespace
 		return '<ul><li>' . $s . '</li></ul>';
 	}
 
+	/**
+		Returns the path information with some path translation.
+		The path information is the text after the file and before the query string in an URI.
+		Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
+
+		@param	$bRemoveQueryString	You can keep the query string by setting this variable to yes.
+		@return	string				The path information.
+	*/
+
 	public static function getPathInfo($bRemoveQueryString = true)
 	{
-		//TODO:maybe not that a good idea to overwrite this variable
+		//TODO:NOT that a good idea to overwrite this variable
+		//TODO:possible bug with ./ or ../, also /. is not necessarily the best value to check against.
 		while (substr($_SERVER['REQUEST_URI'], 0, 2) == '/.')
 			$_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], 2);
 
