@@ -21,48 +21,58 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-if (version_compare(phpversion(), '5.1.0', '<'))
+/**
+	Throws an exception of the class specified in argument if exists, else throws DoubleFaultException.
+
+	@param $s The class of the exception to throw.
+*/
+
+function burn($sException)
 {
-	class LogicException				extends Exception					{} // Exception that represents error in the program logic
-	class BadFunctionCallException		extends LogicException				{} // Exception thrown when a function call was illegal
-	class BadMethodCallException		extends BadFunctionCallException	{} // Exception thrown when a method call was illegal
-	class DomainException				extends LogicException				{} // Exception that denotes a value not in the valid (mathematical) domain was used
-	class InvalidArgumentException		extends LogicException				{} // Exception that denotes invalid arguments were passed
-	class LengthException				extends LogicException				{} // Exception thrown when a parameter exceeds the allowed length (for strings, arrays, files...)
-	class OutOfRangeException			extends LogicException				{} // Exception thrown when an illegal index was requested (when it can be detected at compile time)
-
-	class RuntimeException				extends Exception					{} // Exception thrown for errors that are only detectable at runtime
-	class OutOfBoundsException			extends RuntimeException			{} // Exception thrown when an illegal index was requested (when it can't be detected at compile time)
-	class OverflowException				extends RuntimeException			{} // Exception thrown to indicate arithmetic/buffer overflow
-	class RangeException				extends RuntimeException			{} // Exception thrown to indicate range errors during program execution (runtime version of DomainException, and not over/underflow exceptions)
-	class UnderflowException			extends RuntimeException			{} // Exception thrown to indicate arithmetic/buffer underflow
-	class UnexpectedValueException		extends RuntimeException			{} // Exception thrown to indicate an unexpected value
-}
-
-	class BadXMLException				extends LogicException				{} // Exception thrown when an XML doesn't follow strictly its DTD schema
-	class DoubleFaultException			extends LogicException				{} // Exception thrown in the exception handling code
-	class FileNotFoundException			extends LogicException				{} // Exception thrown when a required file is missing
-	class IllegalStateException			extends LogicException				{} // Exception thrown when a method is called and the object isn't in the right state (example: not initialized)
-
-	class ConfigurationException		extends RuntimeException			{} // Exception thrown when a configuration requirement is not met
-	class DatabaseException				extends RuntimeException			{} // Exception thrown when there is a database error
-	class NotPermittedException			extends RuntimeException			{} // Exception thrown when an user try to do something he doesn't have permission to
-
-function burn($s)
-{
-	if (class_exists($s, false))
-		throw new $s;
+	if (class_exists($sException))
+		throw new $sException;
 	throw new DoubleFaultException;
 }
 
-function fire($b, $s = 'UnexpectedValueException')
+/**
+	Test the condition, and throws the specified exception if the condition SUCCEED. Else, do nothing.
+
+	Use this function for simpler checks in your code.
+	Usually, you don't have to continue rendering the page when there's an error in the page URL for example (because of an error or a hack attempt),
+	you should just stop the script and print an error page telling the user that the URL wasn't entered correctly.
+	This also apply for database errors, where you die with an error page if the database is down.
+	This function allows you to throw exception when this happens, and if you don't catch the exception
+	the class weeException will print the standard error page. You can define your error handler by using set_error_handler and set_exception_handler.
+
+	@param	$bCondition	The condition to check
+	@param	$sException	The condition to throw if the condition SUCCEED.
+*/
+
+function fire($bCondition, $sException = 'UnexpectedValueException')
 {
-	if ($b)
-		burn($s);
+	if ($bCondition)
+		burn($sException);
 }
+
+/**
+	Namespace for exception handling when the exception thrown is not catched.
+	You should never need to call these functions yourself.
+*/
 
 final class weeException extends Namespace
 {
+	/**
+		Function called when a PHP error is triggered.
+		Gets error details in DEBUG mode, then prints the error page and log error if possible.
+		Then stops script execution.
+
+		@param	$iNumber	Contains the level of the error raised, as an integer.
+		@param	$sMessage	Contains the error message, as a string.
+		@param	$sFile		Contains the filename that the error was raised in, as a string.
+		@param	$iLine		Contains the line number the error was raised at, as an integer.
+		@see http://php.net/set_error_handler
+	*/
+
 	public static function handleError($iNumber, $sMessage, $sFile, $iLine)
 	{
 		if (error_reporting() == 0) return;
@@ -99,24 +109,45 @@ final class weeException extends Namespace
 		exit($iNumber);
 	}
 
-	public static function handleException($o)
+	/**
+		Function called when an exception is thrown and isn't catched by the script.
+		Gets exception details in DEBUG mode, then prints the error page and log error if possible.
+		It does not stop the script execution, since PHP does it itself after calling this function.
+
+		@param $oException The exception object.
+		@see http://php.net/set_exception_handler
+	*/
+
+	public static function handleException($oException)
 	{
 		$sDebug = null;
 
 		if (defined('DEBUG'))
 		{
-			$sDebug .= '</div><div id="exception"><h2>' . get_class($o) . '</h2>';
-			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($o->getTraceAsString()) . '</p>';
+			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
+			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
 
 			//TODO:change function name
 			//TODO:error should be inside exception!
-			if ($o instanceof DatabaseException && !empty($GLOBALS['Db']) && $GLOBALS['Db'] instanceof weeDatabase && $GLOBALS['Db']->getLastError() != null)
+			if ($oException instanceof DatabaseException && !empty($GLOBALS['Db']) && $GLOBALS['Db'] instanceof weeDatabase && $GLOBALS['Db']->getLastError() != null)
 				$sDebug .= '<h3>Error:</h3><p>' . $GLOBALS['Db']->getLastError() . '</p>';
 		}
 
 		self::printErrorPage($sDebug);
-		self::logError('exception', $o->getFile(), $o->getLine(), get_class($o), $o->getTraceAsString());
+		self::logError('exception', $oException->getFile(), $oException->getLine(), get_class($o), $o->getTraceAsString());
 	}
+
+	/**
+		Logs the specified error to a file in the LOG_PATH path, if defined.
+
+		The filename is randomly created, thus the filename order isn't the same as the creation order.
+
+		@param	$sClass		Contains either 'error' or 'exception'.
+		@param	$sFile		Contains the filename that the error was raised in, as a string.
+		@param	$iLine		Contains the line number the error was raised at, as an integer.
+		@param	$sType		Contains either the level of the error raised, or the exception class name, both as strings.
+		@param	$sMessage	Contains the error message, as a string.
+	*/
 
 	public static function logError($sClass, $sFile, $iLine, $sType, $sMessage)
 	{
@@ -125,12 +156,16 @@ final class weeException extends Namespace
 		$r = @fopen(@tempnam(LOG_PATH, 'error-'), 'w');
 		if ($r)
 		{
-			@fwrite($r, time() . "\n");
+			@fwrite($r, @time() . "\n");
 			foreach (@func_get_args() as $s)
 				@fwrite($r, $s . "\n");
 			@fclose($r);
 		}
 	}
+
+	/**
+		Prints a default error page, containing some instructions for the user, and some debug information in DEBUG mode.
+	*/
 
 	public static function printErrorPage($sDebug)
 	{
@@ -149,9 +184,31 @@ final class weeException extends Namespace
 	}
 }
 
-// Using the array technique didn't work...
-function weeErrorHandler($iNumber, $sMessage, $sFile, $iLine)	{ weeException::handleError($iNumber, $sMessage, $sFile, $iLine); }
-function weeExceptionHandler($o)								{ weeException::handleException($o); }
+/**
+	Default error handler.
+	Defined because passing an array (class, method) to set_error_handler didn't work.
+
+	@see http://php.net/set_error_handler
+*/
+
+function weeErrorHandler($iNumber, $sMessage, $sFile, $iLine)
+{
+	weeException::handleError($iNumber, $sMessage, $sFile, $iLine);
+}
+
+/**
+	Default exception handler.
+	Defined because passing an array (class, method) to set_error_handler didn't work.
+
+	@see http://php.net/set_exception_handler
+*/
+
+function weeExceptionHandler($oException)
+{
+	weeException::handleException($oException);
+}
+
+// Set handlers
 
 set_error_handler('weeErrorHandler');
 set_exception_handler('weeExceptionHandler');
