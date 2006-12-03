@@ -47,7 +47,6 @@ if (version_compare(phpversion(), '5.1.0', '<'))
 	class ConfigurationException		extends RuntimeException			{} // Exception thrown when a configuration requirement is not met
 	class DatabaseException				extends RuntimeException			{} // Exception thrown when there is a database error
 	class NotPermittedException			extends RuntimeException			{} // Exception thrown when an user try to do something he doesn't have permission to
-	class ValidatorException			extends RuntimeException			{} // Exception thrown when a validator fails
 
 function burn($s)
 {
@@ -58,7 +57,8 @@ function burn($s)
 
 function fire($b, $s = 'UnexpectedValueException')
 {
-	if ($b) burn($s);
+	if ($b)
+		burn($s);
 }
 
 final class weeException extends Namespace
@@ -137,6 +137,7 @@ final class weeException extends Namespace
 		while (@ob_end_clean()) ;
 
 		//TODO:translatable messages
+		//TODO:inline css, no separate file
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title>Fatal error</title>' .
 			 '<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><link rel="stylesheet" type="text/css" media="all" href="' . BASE_PATH . ROOT_PATH . 'css/error.css"/></head><body><div id="error"><h1>' .
 			 'Oops! An error occurred.</h1><p>The page you tried to access is currently unavailable. This can happen for one of the following reason:</p><ul><li>' .
