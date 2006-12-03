@@ -63,4 +63,111 @@ if (!function_exists('date_default_timezone_get'))
 	}
 }
 
+if (version_compare(phpversion(), '5.1.0', '<'))
+{
+	/**
+		Exception thrown when a method call was illegal.
+	*/
+
+	class BadMethodCallException extends BadFunctionCallException
+	{
+	}
+
+	/**
+		Exception thrown when a function call was illegal.
+	*/
+
+	class BadFunctionCallException extends LogicException
+	{
+	}
+
+	/**
+		Exception that denotes a value not in the valid (mathematical) domain was used.
+	*/
+
+	class DomainException extends LogicException
+	{
+	}
+
+	/**
+		Exception that denotes invalid arguments were passed.
+	*/
+
+	class InvalidArgumentException extends LogicException
+	{
+	}
+
+	/**
+		Exception thrown when a parameter exceeds the allowed length (for strings, arrays, files...).
+	*/
+
+	class LengthException extends LogicException
+	{
+	}
+
+	/**
+		Exception that represents error in the program logic.
+	*/
+
+	class LogicException extends Exception
+	{
+	}
+
+	/**
+		Exception thrown when an illegal index was requested (when it can't be detected at compile time).
+	*/
+
+	class OutOfBoundsException extends RuntimeException
+	{
+	}
+
+	/**
+		Exception thrown when an illegal index was requested (when it can be detected at compile time).
+	*/
+
+	class OutOfRangeException extends LogicException
+	{
+	}
+
+	/**
+		Exception thrown to indicate arithmetic/buffer overflow.
+	*/
+
+	class OverflowException extends RuntimeException
+	{
+	}
+
+	/**
+		Exception thrown to indicate range errors during program execution (runtime version of DomainException, and not over/underflow exceptions).
+	*/
+
+	class RangeException extends RuntimeException
+	{
+	}
+
+	/**
+		Exception thrown for errors that are only detectable at runtime.
+	*/
+
+	class RuntimeException extends Exception
+	{
+	}
+
+	/**
+		Exception thrown to indicate arithmetic/buffer underflow.
+	*/
+
+	class UnderflowException extends RuntimeException
+	{
+	}
+
+	/**
+		Exception thrown to indicate an unexpected value.
+	*/
+
+	class UnexpectedValueException extends RuntimeException
+	{
+	}
+}
+
 ?>
