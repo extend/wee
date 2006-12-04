@@ -57,7 +57,7 @@ class weeAtomFeed extends weeFeed
 	protected function elementToString($sName, $mValue)
 	{
 		if ($sName == 'link')
-			return '<link rel="alternate" href="' . htmlentities($mValue, ENT_COMPAT, 'utf-8') . '"/>';
+			return '<link rel="alternate" href="' . $this->encodeIRI($mValue) . '"/>';
 		elseif ($sName == 'self')
 			return '<link rel="self" href="' . $mValue . '"/>';
 		elseif ($sName == 'category')
@@ -82,6 +82,14 @@ class weeAtomFeed extends weeFeed
 
 			return $sFeed . '</' . $sName . '>';
 		}
+	}
+
+	public function encodeIRI($sIRI)
+	{
+		$sIRI			= substr($sIRI, 7); // Remove http://
+		$sEncodedIRI	= urlencode(substr($sIRI, strpos($sIRI, '/') + 1));
+
+		return 'http://' . substr($sIRI, 0, strpos($sIRI, '/') + 1) . $sEncodedIRI;
 	}
 }
 
