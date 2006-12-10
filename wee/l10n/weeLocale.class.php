@@ -30,10 +30,12 @@ final class weeLocale extends Namespace
 
 	public static function set($sLang, $sEncoding, $sLocalePath = './', $sTextDomain = 'messages')
 	{
+		fire(!function_exists('gettext'), 'ConfigurationException');
+
 		//TODO:check values
 
 		putenv('LANG=' . $sLang);
-		setlocale(LC_ALL, $sLang . '.' . strtoupper($sEncoding));
+		setlocale(LC_MESSAGES, $sLang . '.' . strtoupper($sEncoding));
 		bindtextdomain($sTextDomain, $sLocalePath);
 		bind_textdomain_codeset($sTextDomain, $sEncoding);
 		textdomain($sTextDomain);
