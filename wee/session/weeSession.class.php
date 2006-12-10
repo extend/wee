@@ -48,7 +48,7 @@ class weeSession implements ArrayAccess
 		session_write_close();
 	}
 
-	protected function getIP()
+	public function getIP()
 	{
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
 			return $_SERVER['HTTP_X_FORWARDED_FOR'];
