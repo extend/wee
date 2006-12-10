@@ -134,7 +134,7 @@ final class weeException extends Namespace
 		}
 
 		self::printErrorPage($sDebug);
-		self::logError('exception', $oException->getFile(), $oException->getLine(), get_class($o), $o->getTraceAsString());
+		self::logError('exception', $oException->getFile(), $oException->getLine(), get_class($oException), $oException->getTraceAsString());
 	}
 
 	/**
