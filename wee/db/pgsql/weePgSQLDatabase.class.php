@@ -58,7 +58,7 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function __destruct()
 	{
-		pg_close($this->rLink);
+		@pg_close($this->rLink);
 	}
 
 	// Note:	Escape string BUT it doesn't escape %
