@@ -41,7 +41,7 @@ class weeFormTextBox extends weeFormWritable
 			//~ $sOutControl	.= ' maxlength="' . $aMaxLen[0] . '"';
 
 		$sValue		= null;
-		if (!empty($this->sValue))
+		if (strlen((string)$this->sValue) > 0)
 			$sValue	= ' value="' . weeOutput::encodeValue($this->getValue()) . '"';
 
 		$sId		= $this->getId();
