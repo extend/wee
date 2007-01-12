@@ -22,12 +22,16 @@
 if (defined('ALLOW_INCLUSION'))
 	return null;
 
-define('ALLOW_INCLUSION',	1);
-define('DEBUG',				1);
-define('ROOT_PATH',			'../');
+if ($argc != 2)
+{
+	echo 'usage: php maketests.php tests_path';
+	return -1;
+}
 
-require(ROOT_PATH . 'wee/wee.php');
+define('DEBUG', 1);
+define('ALLOW_INCLUSION', 1);
+require('wee/wee.php');
 
-echo new weeTestSuite('.');
+echo new weeTestSuite($argv[1]);
 
 ?>
