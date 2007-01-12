@@ -109,7 +109,7 @@ class weeDatabaseCriteria
 
 //TODO:if the following line fails, this usually means that the id of the updated row wasn't provided with the form data
 
-		if ($mReplace{0} == '`')
+		if ($mReplace[0] == '`')
 			$mReplace = substr($mReplace, 1, -1);
 		else
 			$mReplace = $oDatabase->escape($mReplace);

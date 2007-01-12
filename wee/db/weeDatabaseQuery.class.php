@@ -45,7 +45,7 @@ class weeDatabaseQuery
 
 		foreach ($this->aValues as $sName => $sValue)
 		{
-			if (empty($sValue) || $sValue{0} != '`')//TODO:possible postgresql bug here: `
+			if (empty($sValue) || $sValue[0] != '`')//TODO:possible postgresql bug here: `
 				$sValue	= $oDatabase->escape($sValue);
 
 			$sColumns .= $sName . ',';
@@ -61,7 +61,7 @@ class weeDatabaseQuery
 
 		foreach ($this->aValues as $sName => $sValue)
 		{
-			if (empty($sValue) || $sValue{0} != '`')//TODO:possible postgresql bug here: `
+			if (empty($sValue) || $sValue[0] != '`')//TODO:possible postgresql bug here: `
 				$sValue	= $oDatabase->escape($sValue);
 			$sSQL .= $sName . '=' . $sValue . ',';
 		}
@@ -78,7 +78,7 @@ class weeDatabaseQuery
 
 	public function set($sName, $sValue)
 	{
-		if ($sName{0} == '`')
+		if ($sName[0] == '`')
 			$sName = substr($sName, 1, -1);
 
 		$this->aValues[$sName] = $sValue;
