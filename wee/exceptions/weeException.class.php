@@ -75,6 +75,7 @@ final class weeException extends Namespace
 
 	public static function handleError($iNumber, $sMessage, $sFile, $iLine)
 	{
+		// Return directly if @ was used: this error has been masked.
 		if (error_reporting() == 0) return;
 
 		$aTypes = array(
@@ -96,7 +97,10 @@ final class weeException extends Namespace
 
 		$sDebug = null;
 
-		if (defined('DEBUG'))
+
+		if (!ini_get('html_errors'))
+			$sDebug = 'Error: ' . $aTypes[$iNumber] . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
+		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="php"><h2>' . str_replace("<a href='", "<a href='http://php.net/", $sMessage) . '</h2>';
 			$sDebug .= '<h3>Type:</h3><span>' . $aTypes[$iNumber] . ' (' . $iNumber . ')</span><br/>';
@@ -122,7 +126,9 @@ final class weeException extends Namespace
 	{
 		$sDebug = null;
 
-		if (defined('DEBUG'))
+		if (!ini_get('html_errors'))
+			$sDebug = 'Exception: ' . get_class($oException);
+		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
 			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
@@ -171,16 +177,21 @@ final class weeException extends Namespace
 	{
 		while (@ob_end_clean()) ;
 
-		//TODO:translatable messages
-		//TODO:inline css, no separate file
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title>Fatal error</title>' .
-			 '<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><link rel="stylesheet" type="text/css" media="all" href="' . BASE_PATH . ROOT_PATH . 'css/error.css"/></head><body><div id="error"><h1>' .
-			 'Oops! An error occurred.</h1><p>The page you tried to access is currently unavailable. This can happen for one of the following reason:</p><ul><li>' .
-			 'The Web address you entered is invalid or incomplete. Please check that you typed it correctly.</li><li>' .
-			 'The server is too busy. Please wait a moment and try to reload the page later.</li><li>' .
-			 'The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href="/">browse</a> for it.' .
-			 '</li></ul><p>You can also try to <a href="javascript:history.back()">go back</a> where you came from.</p>' .
-			 $sDebug . '</div></body></html>';
+		if (!ini_get('html_errors'))
+			echo $sDebug . "\r\n";
+		else
+		{
+			//TODO:translatable messages
+			//TODO:inline css, no separate file
+			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title>Fatal error</title>' .
+				 '<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><link rel="stylesheet" type="text/css" media="all" href="' . BASE_PATH . ROOT_PATH . 'css/error.css"/></head><body><div id="error"><h1>' .
+				 'Oops! An error occurred.</h1><p>The page you tried to access is currently unavailable. This can happen for one of the following reason:</p><ul><li>' .
+				 'The Web address you entered is invalid or incomplete. Please check that you typed it correctly.</li><li>' .
+				 'The server is too busy. Please wait a moment and try to reload the page later.</li><li>' .
+				 'The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href="/">browse</a> for it.' .
+				 '</li></ul><p>You can also try to <a href="javascript:history.back()">go back</a> where you came from.</p>' .
+				 $sDebug . '</div></body></html>';
+		}
 	}
 }
 
