@@ -99,8 +99,4 @@ weeAutoload::addPath(WEE_PATH);
 
 require(WEE_PATH . 'emul_php' . PHP_EXT);
 
-if (!function_exists('ctype_digit'))			require(WEE_PATH . 'emul_ctype'		. PHP_EXT);//TODO
-if (!function_exists('gettext'))				require(WEE_PATH . 'emul_gettext'	. PHP_EXT);//TODO
-if (!function_exists('simplexml_load_file'))	require(WEE_PATH . 'emul_simplexml'	. PHP_EXT);//TODO
-
 ?>
