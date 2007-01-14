@@ -53,12 +53,6 @@ else
 	ini_set('display_errors', 0);
 }
 
-// Statistics - TODO:nothing to see here, remove
-
-function weeGetTime()			{ $a = explode(' ', microtime()); return (float)$a[0] + (float)$a[1]; }
-function weeGetElapsedTime()	{ return weeGetTime() - $GLOBALS['fStartTime']; }
-$fStartTime = weeGetTime();
-
 // Don't use it
 $_REQUEST = array();
 
