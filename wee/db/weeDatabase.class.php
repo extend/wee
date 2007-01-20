@@ -71,9 +71,9 @@ abstract class weeDatabase
 		$q = null;
 		for ($i = 1; $i < sizeof($aArguments); $i++)
 		{
-			if (empty($aArguments[$i])) //TODO:maybe make a configuration option for this?
-				$q .= $aParts[$i - 1] . $aArguments[$i] = 'NULL';
-			else
+//			if (is_null($aArguments[$i]))
+//				$q .= $aParts[$i - 1] . 'NULL';
+//			else
 				$q .= $aParts[$i - 1] . $this->escape($aArguments[$i]);
 		}
 
