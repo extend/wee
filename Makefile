@@ -35,7 +35,7 @@ clean:
 	-rm -rf docs/api.xml
 
 todo:
-	for file in `find . -type f -name "*.php"`; do grep -i TODO $$file; done
+	grep -r --include=*.php -i TODO ./
 
 new:
 	mkdir form include locale skins tpl
