@@ -21,16 +21,58 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Checks if the value given match the value of the confirmation element.
+
+	Useful to check if a password entered when registering is valid, for example.
+	The user types it two times, and this validator checks if it's correctly entered.
+*/
+
 class weeConfirmValidator implements weeFormValidator
 {
+	/**
+		Arguments passed to constructor are saved here for later use.
+	*/
+
 	protected $aArgs;
+
+	/**
+		The data to check.
+	*/
+
 	protected $aData;
+
+	/**
+		Error message is saved here by setError and can be retrieved using getError.
+	*/
+
 	protected $sError;
+
+	/**
+		True if the validation failed, false otherwise.
+	*/
+
 	protected $bHasError	= false;
+
+	/**
+		The value to check.
+	*/
+
 	protected $mValue;
+
+	/**
+		Default error messages.
+	*/
 
 	protected $aErrorList	= array(
 		'invalid'	=> 'Input confirmation failed');
+
+	/**
+		Initialize the validator.
+
+		@param $mValue	The value to check.
+		@param $aArgs	Configuration arguments for the validator.
+	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
@@ -38,10 +80,23 @@ class weeConfirmValidator implements weeFormValidator
 		$this->mValue	= $mValue;
 	}
 
+	/**
+		Returns the validation error string.
+		Do not call it if the validation was positive.
+
+		@return string The error message.
+	*/
+
 	public function getError()
 	{
 		return $this->sError;
 	}
+
+	/**
+		Tests if the validator failed.
+
+		@return bool True if the validation failed, false otherwise.
+	*/
 
 	public function hasError()
 	{
@@ -55,10 +110,23 @@ class weeConfirmValidator implements weeFormValidator
 		return $this->bHasError;
 	}
 
+	/**
+		Sets data passed to the weeForm object.
+		Usually either $_POST or $_GET.
+
+		@param $aData The data to check.
+	*/
+
 	public function setData($aData)
 	{
 		$this->aData = $aData;
 	}
+
+	/**
+		Format and save the error message.
+
+		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
+	*/
 
 	protected function setError($sType)
 	{
@@ -71,9 +139,24 @@ class weeConfirmValidator implements weeFormValidator
 		$this->sError		= _($this->sError);
 	}
 
+	/**
+		Not used.
+
+		@param $oWidget The widget to validate.
+	*/
+
 	public function setWidget($oWidget)
 	{
 	}
+
+	/**
+		Convenience function for quick validation tests.
+
+		@param	$mValue	The value to check.
+		@param	$aArgs	Configuration arguments for the validator.
+		@return	bool	True if the validation SUCCEEDED, false otherwise.
+		@warning		The result of this method is the inverse of hasError.
+	*/
 
 	public static function test($mValue, array $aArgs = array())
 	{

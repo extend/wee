@@ -21,16 +21,55 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Check if variable passed is a valid option of the weeSelectable widget element.
+*/
+
 class weeOptionValidator implements weeFormValidator
 {
+	/**
+		Arguments passed to constructor are saved here for later use.
+	*/
+
 	protected $aArgs;
+
+	/**
+		Error message is saved here by setError and can be retrieved using getError.
+	*/
+
 	protected $sError;
-	protected $bHasError	= false;
+
+	/**
+		True if the validation failed, false otherwise.
+	*/
+
+	protected $bHasError 	= false;
+
+	/**
+		The value to check.
+	*/
+
 	protected $mValue;
+
+	/**
+		The widget to validate.
+	*/
+
 	protected $oWidget;
+
+	/**
+		Default error messages.
+	*/
 
 	protected $aErrorList	= array(
 		'invalid'	=> 'Input must be available in the options');
+
+	/**
+		Initialize the validator.
+
+		@param $mValue	The value to check.
+		@param $aArgs	Configuration arguments for the validator.
+	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
@@ -38,10 +77,23 @@ class weeOptionValidator implements weeFormValidator
 		$this->mValue	= $mValue;
 	}
 
+	/**
+		Returns the validation error string.
+		Do not call it if the validation was positive.
+
+		@return string The error message.
+	*/
+
 	public function getError()
 	{
 		return $this->sError;
 	}
+
+	/**
+		Tests if the validator failed.
+
+		@return bool True if the validation failed, false otherwise.
+	*/
 
 	public function hasError()
 	{
@@ -62,9 +114,21 @@ class weeOptionValidator implements weeFormValidator
 		return $this->bHasError;
 	}
 
+	/**
+		Not used.
+
+		@param $aData The data to check, if applicable.
+	*/
+
 	public function setData($aData)
 	{
 	}
+
+	/**
+		Format and save the error message.
+
+		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
+	*/
 
 	protected function setError($sType)
 	{
@@ -77,11 +141,26 @@ class weeOptionValidator implements weeFormValidator
 		$this->sError		= _($this->sError);
 	}
 
+	/**
+		Sets the widget to validate.
+
+		@param $oWidget The widget to validate.
+	*/
+
 	public function setWidget($oWidget)
 	{
 		fire(!($oWidget instanceof weeFormSelectable), 'InvalidArgumentException');
 		$this->oWidget = $oWidget;
 	}
+
+	/**
+		Convenience function for quick validation tests.
+
+		@param	$mValue	The value to check.
+		@param	$aArgs	Configuration arguments for the validator.
+		@return	bool	True if the validation SUCCEEDED, false otherwise.
+		@warning		The result of this method is the inverse of hasError.
+	*/
 
 	public static function test($mValue, array $aArgs = array())
 	{

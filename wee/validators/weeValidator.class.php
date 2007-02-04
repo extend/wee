@@ -21,11 +21,47 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base interface for validation mechanisms.
+*/
+
 interface weeValidator
 {
+	/**
+		Initialize the validator.
+
+		@param $mValue	The value to check.
+		@param $aArgs	Configuration arguments for the validator.
+	*/
+
 	public function __construct($mValue, array $aArgs = array());
+
+	/**
+		Returns the validation error string.
+		Do not call it if the validation was positive.
+
+		@return string The error message.
+	*/
+
 	public function getError();
+
+	/**
+		Tests if the validator failed.
+
+		@return bool True if the validation failed, false otherwise.
+	*/
+
 	public function hasError();
+
+	/**
+		Convenience function for quick validation tests.
+
+		@param	$mValue	The value to check.
+		@param	$aArgs	Configuration arguments for the validator.
+		@return	bool	True if the validation SUCCEEDED, false otherwise.
+		@warning		The result of this method is the inverse of hasError.
+	*/
+
 	public static function test($mValue, array $aArgs = array());
 }
 

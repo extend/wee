@@ -24,10 +24,31 @@ if (!defined('ALLOW_INCLUSION')) die;
 if (!defined('TPL_PATH'))	define('TPL_PATH',	ROOT_PATH . 'tpl/');
 if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 
+/**
+	Base class for template handling.
+	Load, configure and display templates.
+*/
+
 class weeTemplate
 {
+	/**
+		Filename of the template, including path and extension.
+	*/
+
 	protected $sFilename;
+
+	/**
+		Data to be used in the template.
+	*/
+
 	protected $aData;
+
+	/**
+		Configure the filename and the data for this template.
+
+		@param $sTemplate	The template name.
+		@param $aData		Data to be used in the template.
+	*/
 
 	public function __construct($sTemplate, array $aData = array())
 	{
@@ -36,6 +57,12 @@ class weeTemplate
 
 		$this->aData		= $aData;
 	}
+
+	/**
+		Returns the template as a string.
+
+		@return string The template.
+	*/
 
 	public function __toString()
 	{
@@ -49,11 +76,30 @@ class weeTemplate
 		return $s;
 	}
 
+	/**
+		Adds a value to the data array.
+
+		@param	$mName	Name of the variable inside the template.
+		@param	$mValue	Value of the variable.
+		@return	$this
+	*/
+
 	public function set($mName, $mValue)
 	{
 		$this->aData[$mName] = $mValue;
 		return $this;
 	}
+
+	/**
+		Creates a new template.
+		Use this to create a template inside another.
+
+		Beware: child classes should not override this function.
+
+		@param $sTemplate	The template name.
+		@param $aData		Data to be used in the template.
+		@return	weeTemplate	The weeTemplate object newly created.
+	*/
 
 	protected function template($sTemplate, array $aData = array())
 	{

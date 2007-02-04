@@ -70,12 +70,7 @@ abstract class weeDatabase
 
 		$q = null;
 		for ($i = 1; $i < sizeof($aArguments); $i++)
-		{
-//			if (is_null($aArguments[$i]))
-//				$q .= $aParts[$i - 1] . 'NULL';
-//			else
-				$q .= $aParts[$i - 1] . $this->escape($aArguments[$i]);
-		}
+			$q .= $aParts[$i - 1] . $this->escape($aArguments[$i]);
 
 		if ($iNbParts == $iNbArgs)
 			$q .= $aParts[$iNbParts - 1];

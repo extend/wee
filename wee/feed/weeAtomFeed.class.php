@@ -19,12 +19,17 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	TODO
+	Class for Atom feeds generation.
 */
 
 class weeAtomFeed extends weeFeed
 {
-	//TODO:encode?
+	/**
+		Returns the feed in XML format.
+
+		@return string The XML for this feed.
+	*/
+
 	public function __toString()
 	{
 		$sFeed = '<?xml version="1.0" encoding="utf-8"?>' . "\r\n" . '<feed xmlns="http://www.w3.org/2005/Atom">';
@@ -47,12 +52,25 @@ class weeAtomFeed extends weeFeed
 
 	/**
 		Convenience function for creating atom feeds in one line.
+
+		@return weeAtomFeed A new weeAtomFeed object.
 	*/
 
 	public static function create()
 	{
 		return new weeAtomFeed;
 	}
+
+	/**
+		Converts an element to its XML equivalent.
+		Called when generating the feed's XML.
+
+		@param	$sName	The name of the element.
+		@param	$sValue	The value of the element.
+		@return	string	The XML element created according to the given name.
+
+		TODO:there must be a better way for this
+	*/
 
 	protected function elementToString($sName, $mValue)
 	{
@@ -83,6 +101,13 @@ class weeAtomFeed extends weeFeed
 			return $sFeed . '</' . $sName . '>';
 		}
 	}
+
+	/**
+		Encode the IRI address.
+
+		@param	$sIRI	Unencoded IRI address.
+		@return	string	Encoded IRI address.
+	*/
 
 	public function encodeIRI($sIRI)
 	{

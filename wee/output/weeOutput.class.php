@@ -21,17 +21,48 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for output drivers.
+*/
+
 abstract class weeOutput implements Singleton
 {
+	/**
+		True if output will be gzipped, false otherwise.
+	*/
+
 	protected $bGzipped;
+
+	/**
+		Path used in the deleteCookie and setCookie methods.
+		Currently determined automatically in the constructor.
+	*/
+
 	protected static $sCookiePath;
+
+	/**
+		Instance of the current output driver.
+		There can only be one.
+	*/
+
 	protected static $oSingleton;
+
+	/**
+		Initialize the output driver.
+
+		Checks if gzip compression is supported, determines the cookie path, and initialize output buffering.
+	*/
 
 	protected function __construct()
 	{
-		$s					= str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING']);
-		$aAcceptEncoding	= explode(',', $s);
-		$this->bGzipped		= in_array('gzip', $aAcceptEncoding);
+		if (empty($_SERVER['HTTP_ACCEPT_ENCODING']))
+			$this->bGzipped		= false;
+		else
+		{
+			$s					= str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING']);
+			$aAcceptEncoding	= explode(',', $s);
+			$this->bGzipped		= in_array('gzip', $aAcceptEncoding);
+		}
 
 		self::$sCookiePath		= str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
 		$s						= ROOT_PATH;
@@ -52,9 +83,19 @@ abstract class weeOutput implements Singleton
 		}
 	}
 
+	/**
+		Because there can only be one output driver, we disable cloning.
+	*/
+
 	final private function __clone()
 	{
 	}
+
+	/**
+		Delete the specified cookie.
+
+		@param $sName Name of the cookie to delete.
+	*/
 
 	public static function deleteCookie($sName)
 	{
@@ -62,13 +103,41 @@ abstract class weeOutput implements Singleton
 		setcookie($sName, '', 0, self::$sCookiePath);
 	}
 
+	/**
+		Encodes data to be displayed.
+
+		This method redirects the call to the singleton encode method.
+		It is used for example inside Web:Extend itself since we can't know what drivers the program is using.
+		You should not have to use this method.
+
+		@param	$mValue	Data to encode.
+		@return	string	Data encoded.
+	*/
+
 	public static function encodeValue($mValue)
 	{
 		fire(empty(self::$oSingleton), 'IllegalStateException');
 		return self::$oSingleton->encode($mValue);
 	}
 
+	/**
+		Encodes data to be displayed.
+
+		@param	$mValue	Data to encode.
+		@return	string	Data encoded.
+	*/
+
 	abstract public function encode($mValue);
+
+	/**
+		Encodes an array of data to be displayed.
+
+		Mainly used by weeTemplate to encode the data it received.
+		You should not have to use this method.
+
+		@param	$a		Data array to encode.
+		@return	array	Data array encoded.
+	*/
 
 	public static function encodeArray(&$a)
 	{
@@ -86,6 +155,15 @@ abstract class weeOutput implements Singleton
 		return $a;
 	}
 
+	/**
+		Sends a header to the browser.
+
+		Tentatively prevent HTTP Response Splitting.
+
+		@param $sString		Header string.
+		@param $bReplace	Replace existing header if true.
+	*/
+
 	public static function header($sString, $bReplace = true)
 	{
 		fire(headers_sent(), 'IllegalStateException');
@@ -93,10 +171,25 @@ abstract class weeOutput implements Singleton
 		header($sString, $bReplace);
 	}
 
+	/**
+		Tells if output will be gzipped or not.
+
+		@return bool True if output is gzip encoded, false otherwise.
+	*/
+
 	public function isGzipped()
 	{
 		return $this->bGzipped;
 	}
+
+	/**
+		Sends a cookie to the browser.
+		The default expire delay is 30 days.
+
+		@param $sName	Name of the cookie.
+		@param $sValue	Value of the cookie.
+		@param $iExpire	Expiration time (UNIX timestamp, in seconds).
+	*/
 
 	public static function setCookie($sName, $sValue, $iExpire = null)
 	{

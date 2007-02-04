@@ -24,8 +24,18 @@ if (!defined('ALLOW_INCLUSION')) die;
 if (!defined('MAGIC_STRING'))
 	define('MAGIC_STRING', 'Our dreams are lost in the flow of time, still we are looking for the future in this wired world...');
 
+/**
+	Wrapper for easier session management.
+*/
+
 class weeSession implements ArrayAccess
 {
+	/**
+		Starts the session.
+
+		If something seems wrong (isSessionInvalid returns true, or the session name is bad), reinitialize the session.
+	*/
+
 	public function __construct()
 	{
 		fire(session_id() != '', 'IllegalStateException');
@@ -43,10 +53,21 @@ class weeSession implements ArrayAccess
 			$this->newSession();
 	}
 
+	/**
+		Closes the session.
+	*/
+
 	public function __destruct()
 	{
 		session_write_close();
 	}
+
+	/**
+		Returns the session's user IP.
+		If user is behind a proxy, returns the forwarded IP.
+
+		@return string The IP for this session.
+	*/
 
 	public function getIP()
 	{
@@ -54,6 +75,18 @@ class weeSession implements ArrayAccess
 			return $_SERVER['HTTP_X_FORWARDED_FOR'];
 		return $_SERVER['REMOTE_ADDR'];
 	}
+
+	/**
+		Checks if the session is invalid.
+
+		The session is invalid if:
+		 * the session's IP is empty
+		 * the session's IP is different from the current user IP
+		 * the session token is empty
+		 * the session token is different from the cookie's session token
+
+		@return bool True if the session is invalid, false otherwise.
+	*/
 
 	protected function isSessionInvalid()
 	{
@@ -63,16 +96,24 @@ class weeSession implements ArrayAccess
 				$_SESSION['session_token'] != $_COOKIE['session_token']);
 	}
 
+	/**
+		Deletes session and create a new, empty one.
+	*/
+
 	public function logOut()
 	{
 		$_SESSION = array();
 		session_regenerate_id();
 
-		weeOutput::setCookie(session_name(),	'');
+		weeOutput::setCookie(session_name(), '');
 		unset($_COOKIE['session_name']);
 
 		$this->newSession();
 	}
+
+	/**
+		Creates a new session.
+	*/
 
 	protected function newSession()
 	{
@@ -80,16 +121,36 @@ class weeSession implements ArrayAccess
 		$this->newToken();
 	}
 
+	/**
+		Generates and saves a new session token.
+	*/
+
 	protected function newToken()
 	{
 		$_SESSION['session_token'] = substr(md5(rand() . MAGIC_STRING), 0, 8) . substr(md5(time() . MAGIC_STRING), 0, 8);
 		weeOutput::setCookie('session_token', $_SESSION['session_token']);
 	}
 
+	/**
+		Returns whether offset exists.
+
+		@param	$offset	Offset name.
+		@return	bool	Whether the offset exists.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
 	public function offsetExists($offset)
 	{
 		return isset($_SESSION[$offset]);
 	}
+
+	/**
+		Returns value at given offset.
+
+		@param	$offset	Offset name.
+		@return	bool	value at given offset
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
 
 	public function offsetGet($offset)
 	{
@@ -98,10 +159,25 @@ class weeSession implements ArrayAccess
 		return null;
 	}
 
+	/**
+		Sets a new value for the given offset.
+
+		@param	$offset	Offset name.
+		@param	$value	New value for this offset.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
 	public function offsetSet($offset, $value)
 	{
 		$_SESSION[$offset] = $value;
 	}
+
+	/**
+		Unsets offset.
+
+		@param	$offset	Offset name.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
 
 	public function offsetUnset($offset)
 	{

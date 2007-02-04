@@ -21,14 +21,36 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Configuration data wrapper.
+*/
+
 class weeConfig implements ArrayAccess
 {
+	/**
+		Contains the configuration data.
+	*/
+
 	protected $aConfig = array();
+
+	/**
+		Check if the $offset offset does exist.
+
+		@param	$offset	The offset checked.
+		@return	bool	True if it exists.
+	*/
 
 	public function offsetExists($offset)
 	{
 		return isset($this->aConfig[$offset]);
 	}
+
+	/**
+		Returns the $offset offset value, or null if it does not exist.
+
+		@param	$offset	The offset to return.
+		@return	mixed	The value of the offset.
+	*/
 
 	public function offsetGet($offset)
 	{
@@ -37,10 +59,23 @@ class weeConfig implements ArrayAccess
 		return $this->aConfig[$offset];
 	}
 
+	/**
+		Set the value of $offset.
+
+		@param	$offset	The offset to set.
+		@param	$value	The new value of the offset.
+	*/
+
 	public function offsetSet($offset, $value)
 	{
 		$this->aConfig[$offset] = $value;
 	}
+
+	/**
+		Unset the $offset offset.
+
+		@param	$offset	The offset to unset.
+	*/
 
 	public function offsetUnset($offset)
 	{

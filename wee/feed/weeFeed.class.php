@@ -26,7 +26,17 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 abstract class weeFeed
 {
+	/**
+		Contains the feed-related data.
+	*/
+
 	protected $aFeed	= array();
+
+	/**
+		Contains the entry-related data.
+		Each element of this array is an entry.
+	*/
+
 	protected $aEntries	= array();
 
 	/**
@@ -56,7 +66,20 @@ abstract class weeFeed
 		return $this;
 	}
 
+	/**
+		Returns the feed in XML format.
+
+		@return string The XML for this feed.
+	*/
+
 	abstract public function __toString();
+
+	/**
+		Adds multiple entries.
+
+		@param	$aEntries The entries to add.
+		@return	$this
+	*/
 
 	public function entries($aEntries)
 	{
@@ -77,9 +100,13 @@ abstract class weeFeed
 			- title
 			- updated
 			TODO:id
+
+		//TODO:validates each entry elements
+
+		@param	$aEntry The entry data.
+		@return	$this
 	*/
 
-	//TODO:validates each entry elements
 	public function entry($aEntry)
 	{
 		fire(empty($aEntry));
@@ -91,6 +118,13 @@ abstract class weeFeed
 
 		return $this;
 	}
+
+	/**
+		Checks if given feed-related element is valid.
+
+		@param	$sElement	The element name.
+		@return	bool		True if the element is valid, false otherwise.
+	*/
 
 	protected function isElementValid($sElement)
 	{
@@ -109,6 +143,13 @@ abstract class weeFeed
 
 		return in_array($sElement, $aValidElements);
 	}
+
+	/**
+		Checks if given entry-related element is valid.
+
+		@param	$sElement	The element name.
+		@return	bool		True if the element is valid, false otherwise.
+	*/
 
 	protected function isEntryElementValid($sElement)
 	{

@@ -27,16 +27,46 @@ if (!defined('CACHE_PATH'))		define('CACHE_PATH',	'/tmp/cache/');
 if (!is_dir(CACHE_PATH))
 	mkdir(CACHE_PATH);
 
+/**
+	Template handling, cache aware version.
+	Load, configure and display templates.
+*/
+
 class weeCachedTemplate extends weeTemplate
 {
+	/**
+		True if this template is cached, false otherwise.
+		This is a cache of the result of isCached.
+	*/
+
 	protected $bCached = false;
+
+	/**
+		Cache filename.
+	*/
+
 	protected $sCacheFile;
+
+	/**
+		Configure the filename and the data for this template.
+		Also automatically configure the path to the cache file.
+
+		@param $sTemplate	The template name.
+		@param $aData		Data to be used in the template.
+	*/
 
 	public function __construct($sTemplate, array $aData = array())
 	{
 		parent::__construct($sTemplate, $aData);
 		$this->sCacheFile = CACHE_PATH . md5($_SERVER['REQUEST_URI'] . $sTemplate);
 	}
+
+	/**
+		Returns the template as a string.
+		If the file is cached, returns the cache of the file.
+
+		@return string The template.
+	*/
 
 	public function __toString()
 	{
@@ -48,6 +78,13 @@ class weeCachedTemplate extends weeTemplate
 			file_put_contents($this->sCacheFile, $sContents);
 		return $sContents;
 	}
+
+	/**
+		Checks if the template has a corresponding cache file,
+		and if this cache is not too old.
+
+		@return bool True if a valid cache file exists, false otherwise.
+	*/
 
 	public function isCached()
 	{
@@ -71,8 +108,6 @@ class weeCachedTemplate extends weeTemplate
 		$this->bCached = true;
 		return true;
 	}
-
-	
 }
 
 ?>

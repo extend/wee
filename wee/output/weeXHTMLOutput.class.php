@@ -21,8 +21,18 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	XHTML output driver.
+*/
+
 class weeXHTMLOutput extends weeOutput
 {
+	/**
+		Returns an instance of the weeXHTMLOutput singleton.
+
+		@return weeXHTMLOutput The weeXHTMLOutput object for this process.
+	*/
+
 	final public static function instance()
 	{
 		if (!isset(weeOutput::$oSingleton))
@@ -33,6 +43,13 @@ class weeXHTMLOutput extends weeOutput
 
 		return weeOutput::$oSingleton;
 	}
+
+	/**
+		Encodes data to be displayed.
+
+		@param	$mValue	Data to encode.
+		@return	string	Data encoded.
+	*/
 
 	public function encode($mValue)
 	{

@@ -21,26 +21,56 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Database configuration table wrapper.
+*/
+
 class weeDatabaseConfig extends weeConfig
 {
+	/**
+		The database object to be used for queries.
+	*/
+
 	protected $oDatabase;
+
+	/**
+		The table containing configuration data.
+	*/
+
 	protected $sTable;
+
+	/**
+		Loads configuration data from the database.
+	*/
 
 	public function __construct($oDatabase, $sTable)
 	{
 		$this->oDatabase	= $oDatabase;
 		$this->sTable		= $sTable;
 
-		$oQuery = $this->oDatabase->Query('SELECT * FROM ' . $this->sTable);
+		$oQuery = $this->oDatabase->query('SELECT * FROM ' . $this->sTable);
 		foreach ($oQuery as $a)
 			$this->aConfig[$a['name']] = $a['value'];
 	}
+
+	/**
+		Set the value of $offset.
+
+		@param	$offset	The offset to set.
+		@param	$value	The new value of the offset.
+	*/
 
 	public function offsetSet($offset, $value)
 	{
 		parent::offsetSet($offset, $value);
 		$this->oDatabase->Query('UPDATE ' . $this->sTable . ' SET value=? WHERE name=? LIMIT 1', $value, $offset);
 	}
+
+	/**
+		Unset the $offset offset.
+
+		@param	$offset	The offset to unset.
+	*/
 
 	public function offsetUnset($offset)
 	{

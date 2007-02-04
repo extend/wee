@@ -21,9 +21,27 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Interface adding methods for form-only validators.
+*/
+
 interface weeFormValidator extends weeValidator
 {
+	/**
+		Sets data passed to the weeForm object.
+		Usually either $_POST or $_GET.
+
+		@param $aData The data to check, if applicable.
+	*/
+
 	public function setData($aData);
+
+	/**
+		Sets the widget to validate.
+
+		@param $oWidget The widget to validate.
+	*/
+
 	public function setWidget($oWidget);
 }
 

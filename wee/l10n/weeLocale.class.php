@@ -21,12 +21,31 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Experimental namespace for locale handling.
+*/
+
 final class weeLocale extends Namespace
 {
+	/**
+		Obtains the current locale.
+
+		@return string The current locale. @see http://php.net/setlocale for more information.
+	*/
+
 	public static function getCurrent()
 	{
 		return setlocale(LC_ALL, 0);
 	}
+
+	/**
+		Changes locale.
+
+		@param $sLang		Language of the locale.
+		@param $sEncoding	Encoding of the locale file.
+		@param $sLocalePath	Path to the locale directory.
+		@param $sTextDomain	Name of the domain in which locales are stored. Usually the name of the .mo file.
+	*/
 
 	public static function set($sLang, $sEncoding, $sLocalePath = './', $sTextDomain = 'messages')
 	{
