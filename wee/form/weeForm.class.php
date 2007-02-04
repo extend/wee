@@ -24,64 +24,94 @@ if (!defined('ALLOW_INCLUSION')) die;
 if (!defined('FRM_PATH'))	define('FRM_PATH',	ROOT_PATH . 'form/');
 if (!defined('FRM_EXT'))	define('FRM_EXT',	'.form');
 
-abstract class weeFormSimpleXMLIteratorBase extends SimpleXMLIterator
-{
-	public function widget($oWidget = null)
-	{
-		static $aWidgets = null;
-
-		if (empty($this['uniqid']))
-			$this['uniqid'] = uniqid();
-
-		$sObjectName = (string)$this['uniqid'];
-
-		fire(isset($aWidgets[$sObjectName]) && !is_null($oWidget), 'IllegalStateException');
-		if (!is_null($oWidget))
-			$aWidgets[$sObjectName] = $oWidget;
-
-		fire(empty($aWidgets[$sObjectName]), 'IllegalStateException');
-		return $aWidgets[$sObjectName];
-	}
-}
-
-if (version_compare(phpversion(), '5.1.3', '<'))
-{
-	class weeFormSimpleXMLIterator extends weeFormSimpleXMLIteratorBase
-	{
-		public function getName()
-		{
-			return dom_import_simplexml($this)->nodeName;
-		}
-	}
-}
-else
-{
-	class weeFormSimpleXMLIterator extends weeFormSimpleXMLIteratorBase
-	{
-	}
-}
+/**
+	Forms handling.
+	Creates and manages forms based on an XML template.
+	Validates automatically data posted and adds security checks.
+*/
 
 class weeForm
 {
+	/**
+		Constant for 'add' action.
+	*/
+
 	const ACTION_ADD	= 1;
+
+	/**
+		Constant for 'upd' action.
+	*/
+
 	const ACTION_UPD	= 2;
+
+	/**
+		Constant for 'del' action.
+	*/
+
 	const ACTION_DEL	= 4;
 
+	/**
+		The current form action.
+	*/
+
 	protected $iAction;
+
+	/**
+		The 'class' attribute for the XHTML 'form' element.
+	*/
+
 	protected $sClass;
+
+	/**
+		The 'enctype' attribute for the XHTML 'form' element.
+	*/
+
 	protected $sEncType;
+
+	/**
+		A weeFormContainer object which serves as the root element of the form.
+	*/
+
 	protected $oForm;
+
+	/**
+		Determines if the form key must be defined for this form or not.
+	*/
+
 	protected $bFormKey;
+
+	/**
+		The 'method' attribute for the XHTML 'form' element.
+	*/
+
 	protected $sMethod;
+
+	/**
+		The URI where the data will be sent.
+	*/
+
 	protected $sURI;
+
+	/**
+		Contains the last validation errors.
+		Used by hasErrors and getErrors only.
+	*/
+
 	protected $sValidationErrors;
+
+	/**
+		Initializes the form.
+
+		@param	$sFilename	The filename of the form XML (without path and extension).
+		@param	$iAction	The action to be performed by the form (usually add, update or delete).
+	*/
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
 	{
 		$sFilename = FRM_PATH . $sFilename . FRM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException');
 
-		$oXML = simplexml_load_file($sFilename, 'weeFormSimpleXMLIterator');
+		$oXML = simplexml_load_file($sFilename, 'weeSimpleXMLHack');
 		fire($oXML === false || !isset($oXML->widgets), 'BadXMLException');
 
 		if (isset($oXML->class))	$this->sClass	= (string)$oXML->class;
@@ -97,8 +127,15 @@ class weeForm
 
 		$this->iAction		= $iAction;
 		$this->oForm		= new weeFormContainer($oXML->widgets, $iAction);
-		$this->SetURI($_SERVER['REQUEST_URI']);
+		$this->setURI($_SERVER['REQUEST_URI']);
 	}
+
+	/**
+		Prints the form.
+		Generates a form key if needed.
+
+		@return string The XHTML form.
+	*/
 
 	public function __toString()
 	{
@@ -123,6 +160,13 @@ class weeForm
 		return $s . $this->oForm->__toString() . '</form>';
 	}
 
+	/**
+		Fill widgets of the form based on the data.
+		When a data has no corresponding widget, it is skipped.
+
+		@param $aData The data used to fill the form's widgets.
+	*/
+
 	public function fill($aData)
 	{
 		foreach ($aData as $sName => $mValue)
@@ -131,7 +175,7 @@ class weeForm
 			if (empty($a) || (!empty($a[0]['action']) && constant($a[0]['action']) != $this->iAction))
 				continue;
 
-			$oWidget = $a[0]->widget();
+			$oWidget = $a[0]->property('widget');
 
 			if ($oWidget instanceof weeFormCheckable)
 				$oWidget->check($mValue);
@@ -147,11 +191,31 @@ class weeForm
 		}
 	}
 
+	/**
+		Returns errors found by hasErrors.
+		You MUST call hasErrors before calling getErrors.
+
+		@return string The errors found by the hasErrors method.
+	*/
+
 	public function getErrors()
 	{
 		fire(empty($this->sValidationErrors), 'InvalidArgumentException');
 		return $this->sValidationErrors;
 	}
+
+	/**
+		Validates the data against the form schema.
+
+		If an error is found the detailed error message can be found using getErrors.
+		However, this message is built using the form schema, and is designed to be printed on the user screen.
+
+		This method also checks if the form key is valid.
+		If it's not, it stops the validation and indicates there is an error.
+
+		@param	$aData	The data to check (usually either $_GET or $_POST).
+		@return	bool	True if there IS errors, false otherwise.
+	*/
 
 	public function hasErrors(&$aData)
 	{
@@ -193,10 +257,10 @@ class weeForm
 		foreach ($aWidgets as $oNode)
 		{
 			if ((!empty($oNode['action']) && constant($oNode['action']) != $this->iAction) ||
-				$oNode->widget() instanceof weeFormStatic || $oNode->widget() instanceof weeFormFileInput)
+				$oNode->property('widget') instanceof weeFormStatic || $oNode->property('widget') instanceof weeFormFileInput)
 				continue;
 
-			if (!$oNode->widget()->transformValue($aData))
+			if (!$oNode->property('widget')->transformValue($aData))
 			{
 				$this->sValidationErrors = _('Input is incomplete') . "\r\n";
 				break;
@@ -218,7 +282,7 @@ class weeForm
 				if ($oValidator instanceof weeFormValidator)
 				{
 					$oValidator->setData($aData);
-					$oValidator->setWidget($oNode->widget());
+					$oValidator->setWidget($oNode->property('widget'));
 				}
 				if ($oValidator->hasError())
 					$this->sValidationErrors .= $oValidator->getError() . "\r\n";
@@ -228,17 +292,38 @@ class weeForm
 		return !empty($this->sValidationErrors);
 	}
 
+	/**
+		Sets the class of the XHTML 'form' element.
+
+		@param	$sClass	The element class.
+		@return	$this
+	*/
+
 	public function setClass($sClass)
 	{
 		$this->sClass = $sClass;
 		return $this;
 	}
 
+	/**
+		Sets the method for posting the form data.
+		It is the 'method' attribute of the XHTML 'form' element.
+
+		@param $sMethod The method used. Must be either post or get.
+	*/
+
 	public function setMethod($sMethod)
 	{
-		Fire($sMethod != 'post' && $sMethod != 'get', 'InvalidArgumentException');
+		fire($sMethod != 'post' && $sMethod != 'get', 'InvalidArgumentException');
 		$this->sMethod = $sMethod;
 	}
+
+	/**
+		Sets the form destination URI.
+		The default URI is the script itself.
+
+		@return $this
+	*/
 
 	public function setURI($sURI)
 	{
@@ -247,14 +332,12 @@ class weeForm
 		return $this;
 	}
 
-	protected function sqlArrayHandler($oNode, $oQuery, $aData)
-	{
-		if (empty($oNode['sql-array-handler']))	$sFunc = 'sqlArrayToMultiple';
-		else									$sFunc = (string)$oNode['sql-array-handler'];
+	/**
+		Maps each field of the data array to one columns of the table.
 
-		fire(!method_exists($this, $sFunc), 'BadXMLException');
-		$this->$sFunc($oQuery, $aData);
-	}
+		@param	$oQuery	The query object used to build the SQL query.
+		@param	$aData	The data to map.
+	*/
 
 	protected function sqlArrayToMultiple($oQuery, $aData)
 	{
@@ -262,10 +345,26 @@ class weeForm
 			$oQuery->set('`' . $sName . '`', $sValue);
 	}
 
+	/**
+		Returns the md5 of the specified string.
+
+		@param	$sValue	The specified string.
+		@return	string	The md5 of the specified string.
+	*/
+
 	protected function applyMD5($sValue)
 	{
 		return md5($sValue);
 	}
+
+	/**
+		Automatically converts data from the form to an SQL insert or update.
+		Uses the form action to determine if it is an insert or an update.
+
+		@param	$aData				The data from the form.
+		@param	$sTable				The table where the data must be sent.
+		@return	weeDatabaseQuery	A weeDatabaseQuery (or child class) object for building the query.
+	*/
 
 	public function toSQL($aData, $sTable)
 	{
@@ -277,7 +376,7 @@ class weeForm
 
 		foreach ($aWidgets as $iKey => $oNode)
 			if ((!empty($oNode['action']) && constant($oNode['action']) != $this->iAction) ||
-				$oNode->widget() instanceof weeFormStatic || $oNode->widget() instanceof weeFormFileInput ||
+				$oNode->property('widget') instanceof weeFormStatic || $oNode->property('widget') instanceof weeFormFileInput ||
 				!empty($oNode['sql-ignore']))
 				unset($aWidgets[$iKey]);
 
@@ -302,7 +401,11 @@ class weeForm
 						$mValue[$sItemName] = $sItemValue;
 				}
 
-				$this->sqlArrayHandler($oNode, $oQuery, $mValue);
+				if (empty($oNode['sql-array-handler']))	$sFunc = 'sqlArrayToMultiple';
+				else									$sFunc = (string)$oNode['sql-array-handler'];
+
+				fire(!method_exists($this, $sFunc), 'BadXMLException');
+				$this->$sFunc($oQuery, $mValue);
 			}
 			else
 			{
@@ -319,13 +422,20 @@ class weeForm
 		return $oQuery;
 	}
 
+	/**
+		Gets the specified widgets.
+
+		@param	$sName			The name of the widget.
+		@return	weeFormWidget	The widget requested.
+	*/
+
 	public function widget($sName)
 	{
 		fire(!ctype_print($sName), 'InvalidArgumentException');
 
 		$a = $this->oForm->xpath('//name[text()="' . $sName . '"]/..');
 		fire(empty($a), 'BadXMLException');
-		return $a[0]->widget();
+		return $a[0]->property('widget');
 	}
 }
 
