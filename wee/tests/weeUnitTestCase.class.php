@@ -19,8 +19,20 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+/**
+	Base class for unit test case.
+
+	Most of the time it is not needed to use it manually, since weeTestSuite does everything for you.
+*/
+
 abstract class weeUnitTestCase
 {
+	/**
+		Runs this unit test case.
+
+		@return bool True if test succeeded, false otherwise.
+	*/
+
 	abstract public function run();
 }
 

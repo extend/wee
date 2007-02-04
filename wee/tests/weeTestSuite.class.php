@@ -19,10 +19,34 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+/**
+	Automated unit testing.
+
+	Unit test cases can return three values: true, false, or null.
+	Unit test cases that return null value will be ignored.
+	Use it if you need additional files that are not unit test case.
+*/
+
 class weeTestSuite
 {
+	/**
+		Path to the unit test cases.
+	*/
+
 	protected $sTestsPath;
+
+	/**
+		Arrays containing the results of the unit test suite, after its completion.
+	*/
+
 	protected $aResults = array();
+
+	/**
+		Initialize the test suite.
+		Sets the path to the unit test cases, and add this path to the autoload paths.
+
+		@param $sTestsPath Path to the unit test cases.
+	*/
 
 	public function __construct($sTestsPath)
 	{
@@ -31,16 +55,29 @@ class weeTestSuite
 		weeAutoload::addPath($sTestsPath);
 	}
 
+	/**
+		Returns the result of the unit test suite.
+
+		@return A simple report of the unit test suite after its completion.
+	*/
+
 	public function __toString()
 	{
 		$bAllSuccess = $this->run();
 
-		if ($bAllSuccess)
-			return 'success';
+		$s = '';
 
-		//TODO
-		return 'failure';
+		if ($bAllSuccess)
+			return 'Results of the test suite: all ' . sizeof($this->aResults) . " unit test cases succeeded.\r\n";
+
+		$aCount = array_count_values($this->aResults);
+
+		return 'Results of the test suite: ERROR: ' . $aCount[0] . ' of ' . sizeof($this->aResults) . " unit test cases failed.\r\n";
 	}
+
+	/**
+		Runs the test suite.
+	*/
 
 	public function run()
 	{
@@ -77,7 +114,10 @@ class weeTestSuite
 			if (is_null($bSuccess)) // ignore files that return null
 				continue;
 
-			$aResults[(string)$sPath] = $bSuccess;
+			//TODO:output this only if we are in CLI mode
+			echo $sPath . '... ' . ($bSuccess ? 'ok' : 'error') . "\r\n";
+
+			$this->aResults[(string)$sPath] = (int)$bSuccess;
 			$bAllSuccess &= $bSuccess;
 		}
 
