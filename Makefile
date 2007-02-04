@@ -17,10 +17,8 @@
 #	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-all: wee lint docs test
+all: lint docs test
 	@@echo "Web:Extend build complete."
-
-wee:
 
 lint:
 	for file in `find . -type f -name "*.php"`; do php -l $$file; done
@@ -35,6 +33,9 @@ test:
 
 clean:
 	-rm -rf docs/api.xml
+
+todo:
+	for file in `find . -type f -name "*.php"`; do grep -i TODO $$file; done
 
 new:
 	mkdir form include locale skins tpl
