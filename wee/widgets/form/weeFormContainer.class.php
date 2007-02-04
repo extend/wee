@@ -38,7 +38,7 @@ class weeFormContainer extends weeFormStatic
 				continue;
 
 			$sClass = (string)$oChild['type'];
-			$oChild->widget(new $sClass($oChild, $iAction));
+			$oChild->property('widget', new $sClass($oChild, $iAction));
 		}
 	}
 
@@ -51,9 +51,9 @@ class weeFormContainer extends weeFormStatic
 				continue;
 
 			$s .= '<li';
-			if ($oChild->widget() instanceof weeFormHidden)
+			if ($oChild->property('widget') instanceof weeFormHidden)
 				$s .= ' class="invisible"';
-			$s .= '>' . $oChild->widget()->__toString() . '</li>';
+			$s .= '>' . $oChild->property('widget')->__toString() . '</li>';
 		}
 		return $s . '</ol>';
 	}
