@@ -108,8 +108,15 @@ class weeTestSuite
 			if (empty($sClass))
 				continue; //TODO:bad file, report error
 
-			$oTest = new $sClass;
-			$bSuccess = $oTest->run();
+			try
+			{
+				$oTest = new $sClass;
+				$bSuccess = $oTest->run();
+			}
+			catch (Exception $o)
+			{
+				$bSuccess = false;
+			}
 
 			if (is_null($bSuccess)) // ignore files that return null
 				continue;
