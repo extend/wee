@@ -61,6 +61,7 @@ class weeWebBrowser
 		@param	$sURL	URL to fetch
 		@param	$aPost	Values to pass using POST
 		@return	string	Contents downloaded from URL
+		@todo Array of values in $aPost
 	*/
 
 	public function fetch($sURL, $aPost = array())
@@ -91,14 +92,35 @@ class weeWebBrowser
 	/**
 		Fetch the data from the specified URL and return it as a weeWebDocument object.
 
+		When querying the weeWebDocument returned using xpath, you must use the namespace "html"
+		to access elements in the default namespace. Thus if you want to get all the divs of the
+		document, you must use "//html:div".
+
 		@param	$sURL	URL to fetch
 		@param	$aPost	Values to pass using POST
 		@return	object	Contents downloaded from URL returned as weeWebDocument
+		@todo registerXPathNamespace does not exists for PHP < 5.1
 	*/
 
 	public function fetchDoc($sURL, $aPost = array())
 	{
-		return simplexml_load_string($this->fetch($sURL, $aPost), 'weeWebDocument', LIBXML_DTDLOAD);
+		$sDoc		= $this->fetch($sURL, $aPost);
+
+		$iXMLNSPos	= strpos($sDoc, 'xmlns="');
+		if ($iXMLNSPos === false)
+			$sXMLNS	= ''; //TODO:not sure if this helps
+		else
+		{
+			$iXMLNSPos += 7;
+			$sXMLNS	= substr($sDoc, $iXMLNSPos, strpos($sDoc, '"', $iXMLNSPos) - $iXMLNSPos);
+		}
+
+		$oXML = simplexml_load_string($sDoc, 'weeWebDocument', LIBXML_DTDLOAD);
+		fire($oXML === false, 'BadXMLException');
+
+		$oXML->registerXPathNamespace($oXML->getName(), $sXMLNS);
+
+		return $oXML;
 	}
 }
 

@@ -61,10 +61,6 @@ class weeWebDocument extends weeSimpleXMLHack
 	public function validate()
 	{
 	}
-
-	public function xpath($sPath)
-	{
-	}
 */
 }
 
