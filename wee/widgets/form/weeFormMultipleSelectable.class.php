@@ -35,7 +35,6 @@ abstract class weeFormMultipleSelectable extends weeFormSelectable
 		$this->aSelection[$sValue] = $bState;
 	}
 
-	//TODO:test the simplification
 	public function transformValue(&$aData)
 	{
 		if (isset($aData[(string)$this->oXML->name]))

@@ -57,7 +57,6 @@ abstract class weeFormSelectable extends weeFormWidget
 	public function isInOptions($sValue)
 	{
 		foreach ($this->aOptions as $aOption)
-			//TODO:bug when using weeOptionValidator
 			if ($sValue == $aOption['value'] && !$aOption['disabled'])
 				return true;
 		return false;

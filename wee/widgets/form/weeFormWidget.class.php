@@ -28,7 +28,7 @@ abstract class weeFormWidget
 
 	public function __construct($oXML)
 	{
-		Fire(!$this->isValidXML($oXML), 'BadXMLException');
+		fire(!$this->isValidXML($oXML), 'BadXMLException');
 		$this->oXML = $oXML;
 	}
 

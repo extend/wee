@@ -98,6 +98,10 @@ class weeOptionValidator implements weeFormValidator
 	public function hasError()
 	{
 		fire(empty($this->oWidget), 'InvalidStateException');
+		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException');
+
+		/*
+			Are arrays possible if weeFormMultipleSelectable doesn't need this validator?
 
 		if (is_array($this->mValue))
 		{
@@ -108,7 +112,10 @@ class weeOptionValidator implements weeFormValidator
 					break;
 				}
 		}
-		elseif (!$this->oWidget->isInOptions($this->mValue))
+		else
+		*/
+
+		if (!$this->oWidget->isInOptions($this->mValue))
 			$this->setError('invalid');
 
 		return $this->bHasError;

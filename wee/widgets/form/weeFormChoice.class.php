@@ -88,6 +88,22 @@ class weeFormChoice extends weeFormOneSelectable
 		return '<optgroup label="' . $sLabel . '"' . $sDisabled . $sHelp . '>' . $sOptions . '</optgroup>';
 	}
 
+	public function isInOptions($sValue)
+	{
+		foreach ($this->aOptions as $aOption)
+		{
+			if (!empty($aOption['options']))
+			{
+				foreach ($aOption['options'] as $aSubOption)
+					if ($sValue == $aSubOption['value'] && !$aSubOption['disabled'])
+						return true;
+			}
+			elseif ($sValue == $aOption['value'] && !$aOption['disabled'])
+				return true;
+		}
+		return false;
+	}
+
 	protected function loadOptionsFromXML($oXML)
 	{
 		if (isset($oXML->options))
