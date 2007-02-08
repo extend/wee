@@ -183,7 +183,7 @@ final class weeException extends Namespace
 		{
 			//TODO:translatable messages
 			//TODO:inline css, no separate file
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><title>Fatal error</title>' .
+			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Fatal error</title>' .
 				 '<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><link rel="stylesheet" type="text/css" media="all" href="' . BASE_PATH . ROOT_PATH . 'css/error.css"/></head><body><div id="error"><h1>' .
 				 'Oops! An error occurred.</h1><p>The page you tried to access is currently unavailable. This can happen for one of the following reason:</p><ul><li>' .
 				 'The Web address you entered is invalid or incomplete. Please check that you typed it correctly.</li><li>' .
