@@ -21,15 +21,67 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Generate database queries.
+
+	Used by weeForm to create INSERT or UPDATE queries based on the data received.
+*/
+
 class weeDatabaseQuery
 {
+	/**
+		Name of the weeDatabaseCriteria to use.
+		Used by § to create a new criteria.
+
+		@bug When using more than one database.
+	*/
+
 	public static	$criteriaClass;
+
+	/**
+		Name of the weeDatabaseQuery to use.
+		Used by § to create a new query.
+
+		@bug When using more than one database.
+	*/
+
 	public static	$queryClass;
 
+	/**
+		Wether Insert or Update.
+		Determine which type of query will be built.
+	*/
+
 	protected		$sAction;
+
+	/**
+		Criteria for this query.
+		Basically, a criteria is the WHERE part.
+		It is created using the weeDatabaseCriteria class.
+	*/
+
 	protected		$oCriteria;
+
+	/**
+		Table where data will be inserted or updated.
+	*/
+
 	protected		$sTable;
+
+	/**
+		Values to insert or update.
+	*/
+
 	protected		$aValues = array();
+
+	/**
+		Build the query.
+
+		You do not need to use this method, the weeDatabase object will call it for you.
+
+		@param	$oDatabase	The database object. Used to access to the escape method.
+		@return	string		The SQL query.
+	*/
 
 	public function build($oDatabase)
 	{
@@ -37,6 +89,13 @@ class weeDatabaseQuery
 		fire(!is_callable(array($this, $sMethod)), 'IllegalStateException');
 		return $this->$sMethod($oDatabase);
 	}
+
+	/**
+		Build an insert query.
+
+		@param	$oDatabase	The database object. Used to access to the escape method.
+		@return	string		The SQL query.
+	*/
 
 	protected function buildInsert($oDatabase)
 	{
@@ -55,6 +114,13 @@ class weeDatabaseQuery
 		return 'INSERT INTO ' . $this->sTable . ' (' . substr($sColumns, 0, -1) . ') VALUES (' . substr($sValues, 0, -1) . ')';
 	}
 
+	/**
+		Build an update query.
+
+		@param	$oDatabase	The database object. Used to access to the escape method.
+		@return	string		The SQL query.
+	*/
+
 	protected function buildUpdate($oDatabase)
 	{
 		$sSQL = 'UPDATE ' . $this->sTable . ' SET ';
@@ -69,12 +135,30 @@ class weeDatabaseQuery
 		return substr($sSQL, 0, -1) . ' WHERE ' . $this->oCriteria->build($oDatabase);
 	}
 
+	/**
+		Initialize an insert query.
+
+		Usually you do not need to use this method, the weeDatabase object will call it for you.
+
+		@param	$sTable	The table to insert to.
+		@return	$this
+	*/
+
 	public function insert($sTable)
 	{
 		$this->sAction	= 'Insert';
 		$this->sTable	= $sTable;
 		return $this;
 	}
+
+	/**
+		Add a value to insert or update.
+		If a value was already given for a name, replace it.
+
+		@param	$sName	Name of the column.
+		@param	$sValue	Value to write in the column.
+		@return	$this
+	*/
 
 	public function set($sName, $sValue)
 	{
@@ -85,12 +169,34 @@ class weeDatabaseQuery
 		return $this;
 	}
 
+	/**
+		Initialize an update query.
+
+		Usually you do not need to use this method, the weeDatabase object will call it for you.
+
+		@param	$sTable	The table to update to.
+		@return	$this
+	*/
+
 	public function update($sTable)
 	{
 		$this->sAction	= 'Update';
 		$this->sTable	= $sTable;
 		return $this;
 	}
+
+	/**
+		Sets or retrieve the criteria for this query.
+		Criteria are used only for UPDATE queries.
+
+		If no criteria object is specified and it wasn't set before: return a new object.
+		If no criteria object is specified but one was set before: return it.
+		Else, save the criteria object given.
+
+		@param	$oWhereCriteria		The weeDatabaseCriteria object for this query.
+		@return	weeDatabaseCriteria	Returns the current weeDatabaseCriteria if no new one is given.
+		@return	$this				If a new one is given.
+	*/
 
 	public function where($oWhereCriteria = null)
 	{
@@ -111,6 +217,17 @@ class weeDatabaseQuery
 		}
 	}
 }
+
+/**
+	Magic function to help with the database query creation.
+
+	If no argument is given, return a new weeDatabaseQuery object.
+	Else, return a new weeCriteriaObject, created with the arguments given.
+
+	@return	weeDatabaseQuery	A new query if no argument was given.
+	@return	weeDatabaseCriteria	A new criteria if at least one argument was given.
+	@see	weeDatabaseCriteria
+*/
 
 function §()
 {

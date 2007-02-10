@@ -30,9 +30,23 @@ define('gt',	'gt');
 define('in',	'in');
 define('not',	'not');
 
+/**
+	Base class for criteria handling.
+	Should work with all SQL-compliant databases.
+*/
+
 class weeDatabaseCriteria
 {
+	/**
+		Contains all the criteria given with their corresponding logical operators.
+	*/
+
 	protected $aCriteria	= array();
+
+	/**
+		PHP code for comparisons allowed by the criteria.
+	*/
+
 	protected $aComparisons	= array(
 		lt	=> '$1 < $2',
 		le	=> '$1 <= $2',
@@ -44,6 +58,10 @@ class weeDatabaseCriteria
 		not	=> 'NOT $1',
 	);
 
+	/**
+		Initialize the object with a criteria.
+	*/
+
 	public function __construct($iOperator)
 	{
 		$a					= func_get_args();
@@ -51,12 +69,30 @@ class weeDatabaseCriteria
 		$this->aCriteria[]	= $a;
 	}
 
+	/**
+		Add a criteria with its corresponding logical operator.
+		
+		@overload and($sOp, $aArgs)	Add a criteria connected to the previous with AND.
+		@overload or($sOp, $aArgs)	Add a criteria connected to the previous with OR.
+		@param	$sOp	The logical operator (AND, OR). This is not really a parameter, but the name of the function used.
+		@param	$aArgs	The criteria itself.
+		@return	$this
+	*/
+
 	public function __call($sOp, $aArgs)
 	{
 		$aArgs['op']		= $sOp;
 		$this->aCriteria[]	= $aArgs;
 		return $this;
 	}
+
+	/**
+		Build the SQL criteria.
+		You shouldn't have to call it yourself, weeDatabaseQuery will do it for you.
+
+		@param	$oDatabase	The database object for this query.
+		@return	string		The SQL criteria built.
+	*/
 
 	public function build($oDatabase)
 	{
@@ -101,6 +137,16 @@ class weeDatabaseCriteria
 
 		return $sSQL;
 	}
+
+	/**
+		Replace the tags in the PHP code by their respective values, escaping if needed.
+
+		@param	$oDatabase	The database object for this query.
+		@param	$sSearch	The tag to replace.
+		@param	$mReplace	The value to replace with.
+		@param	$sSubject	The PHP code where the replacement will be done.
+		@return	string		The PHP code after the replacement.
+	*/
 
 	protected function replace($oDatabase, $sSearch, $mReplace, $sSubject)
 	{

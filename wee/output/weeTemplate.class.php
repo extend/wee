@@ -103,7 +103,6 @@ class weeTemplate
 
 	protected function template($sTemplate, array $aData = array())
 	{
-		//TODO:this will re-encode the data, optimize
 		return new weeTemplate($sTemplate, $aData + $this->aData);
 	}
 }

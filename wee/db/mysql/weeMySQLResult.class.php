@@ -21,9 +21,37 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Class for MySQL query results handling.
+	An object of this class is created by the weeMySQLDatabase's query method for SELECT statements.
+*/
+
 class weeMySQLResult extends weeDatabaseResult
 {
+	/**
+		Resource for this query result.
+	*/
+
 	private $rResult;
+
+	/**
+		Data from the current row.
+	*/
+
+	private $aCurrentFetch;
+
+	/**
+		Index number of the row to fetch.
+		TODO:Don't seems really used...
+	*/
+
+	private $iCurrentIndex;
+
+	/**
+		Initialize the class with the result of the query.
+
+		@param $rResult The resource for the query result returned by weeDatabase's query method.
+	*/
 
 	public function __construct($rResult)
 	{
@@ -31,10 +59,37 @@ class weeMySQLResult extends weeDatabaseResult
 		$this->rResult = $rResult;
 	}
 
+	/**
+		Return the current row.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function current()
+	{
+		return $this->processRow($this->aCurrentFetch);
+	}
+
+	/**
+		Delete the resource and clean up space and memory.
+	*/
+
 	public function __destruct()
 	{
 		mysql_free_result($this->rResult);
 	}
+
+	/**
+		Fetch the next row.
+
+		Usually used to fetch the result of a query with only one result returned,
+		because if there's no result it throws an exception.
+
+		The return value type can differ depending on the row class.
+		The row class can be changed using the rowClass method.
+
+		@return array Usually an array, or a child of weeDatabaseRow.
+	*/
 
 	public function fetch()
 	{
@@ -47,6 +102,15 @@ class weeMySQLResult extends weeDatabaseResult
 		return $this->processRow($a);
 	}
 
+	/**
+		Fetch all the rows returned by the query.
+
+		The return value type can differ depending on the row class.
+		The row class can be changed using the rowClass method.
+
+		@return array Usually an array, or a child of weeDatabaseRow.
+	*/
+
 	public function fetchAll()
 	{
 		$aAll = array();
@@ -54,6 +118,34 @@ class weeMySQLResult extends weeDatabaseResult
 			$aAll[] = $a;
 		return $aAll;
 	}
+
+	/**
+		Return the key of the current row.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function key()
+	{
+		return $this->iCurrentIndex;
+	}
+
+	/**
+		Move forward to next row.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function next()
+	{
+		$this->iCurrentIndex++;
+	}
+
+	/**
+		Return the number of results returned by the query.
+
+		@return int The number of results.
+	*/
 
 	public function numResults()
 	{
@@ -63,31 +155,23 @@ class weeMySQLResult extends weeDatabaseResult
 		return $i;
 	}
 
-	// SPL: Iterator
+	/**
+		Rewind the Iterator to the first row.
 
-	private $aCurrentFetch;
-	private $iCurrentIndex;
-
-	public function current()
-	{
-		return $this->processRow($this->aCurrentFetch);
-	}
-
-	public function key()
-	{
-		return $this->iCurrentIndex;
-	}
-
-	public function next()
-	{
-		$this->iCurrentIndex++;
-	}
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
 
 	public function rewind()
 	{
 		$this->iCurrentIndex = 0;
 		@mysql_data_seek($this->rResult, 0);
 	}
+
+	/**
+		Check if there is a current row after calls to rewind() or next().
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
 
 	public function valid()
 	{

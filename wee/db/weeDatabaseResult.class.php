@@ -21,13 +21,45 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for database query results handling.
+	An object of this class is created by the weeDatabase's query method for SELECT statements.
+*/
+
 abstract class weeDatabaseResult implements Iterator
 {
+	/**
+		Wether we are in the template and must encode the results.
+	*/
+
 	protected $bEncodeResults = false;
+
+	/**
+		The class used to return row's data.
+		If empty, an array will be returned.
+	*/
+
 	protected $sRowClass;
 
+	/**
+		Initialize the class with the result of the query.
+
+		@param $rResult The resource for the query result returned by weeDatabase's query method.
+	*/
+
 	abstract public function __construct($rResult);
+
+	/**
+		Delete the resource and clean up space and memory.
+	*/
+
 	abstract public function __destruct();
+
+	/**
+		Used by weeTemplate to automatically encode row results.
+
+		@return $this
+	*/
 
 	public function encodeResults()
 	{
@@ -35,9 +67,45 @@ abstract class weeDatabaseResult implements Iterator
 		return $this;
 	}
 
+	/**
+		Fetch the next row.
+
+		Usually used to fetch the result of a query with only one result returned,
+		because if there's no result it throws an exception.
+
+		The return value type can differ depending on the row class.
+		The row class can be changed using the rowClass method.
+
+		@return array Usually an array, or a child of weeDatabaseRow.
+	*/
+
 	abstract public function fetch();
+
+	/**
+		Fetch all the rows returned by the query.
+
+		The return value type can differ depending on the row class.
+		The row class can be changed using the rowClass method.
+
+		@return array Usually an array, or a child of weeDatabaseRow.
+	*/
+
 	abstract public function fetchAll();
+
+	/**
+		Return the number of results returned by the query.
+
+		@return int The number of results.
+	*/
+
 	abstract public function numResults();
+
+	/**
+		Encodes the row if needed.
+
+		@param	$aRow	The data row.
+		@return	array	The data row encoded, if applicable.
+	*/
 
 	protected function processRow($aRow)
 	{
@@ -53,7 +121,17 @@ abstract class weeDatabaseResult implements Iterator
 	}
 
 	/**
-		TODO
+		Change the type of the return for fetch and fetchAll methods.
+
+		By default they return an array containing the row values,
+		but a child class of weeDatabaseRow can be specified that will be used
+		to create objects containing the row values.
+
+		This can be used after a query if you want to abstract your result in
+		an object and add methods for easy manipulation of this result.
+
+		@param	$sClass The class used to return row's data.
+		@return	$this
 	*/
 
 	public function rowClass($sClass)

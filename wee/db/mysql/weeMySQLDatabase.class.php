@@ -21,10 +21,31 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	MySQL database driver.
+*/
+
 class weeMySQLDatabase extends weeDatabase
 {
+	/**
+		Link resource for this database connection.
+	*/
+
 	private $rLink;
+
+	/**
+		Number of calls to the query method.
+		For informational and debugging purpose only.
+	*/
+
 	private $iNumQueries;
+
+	/**
+		Initialize the driver and connects to the database.
+		The arguments available may change between drivers.
+
+		@param $aParams Arguments for database connection, identification, and class initialization
+	*/
 
 	public function __construct($aParams = array())
 	{
@@ -58,14 +79,23 @@ class weeMySQLDatabase extends weeDatabase
 		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}
 
+	/**
+		Closes the connection to the database.
+	*/
+
 	public function __destruct()
 	{
 		@mysql_close($this->rLink);
 	}
 
-	// Note:	Escape string BUT it doesn't escape %
-	//			queries might be vulnerable if used with sprintf
-	//TODO:don't use sprintf with queries!!
+	/**
+		Escape the given value for safe concatenation in an SQL query.
+		You should not build query by concatenation if possible (see query).
+		You should NEVER use sprintf when building queries.
+
+		@param	$mValue	The value to escape
+		@return	string	The escaped value, wrapped around simple quotes
+	*/
 
 	public function escape($mValue)
 	{
@@ -73,10 +103,27 @@ class weeMySQLDatabase extends weeDatabase
 		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
 	}
 
+	/**
+		Gets the last error the database returned.
+		The drivers usually throw an exception when there's an error,
+		but you can get the error if you catch the exception and then call this method.
+
+		@return string The last error the database encountered
+	*/
+
 	public function getLastError()
 	{
 		return mysql_error($this->rLink);
 	}
+
+	/**
+		Returns the primary key index value.
+		Useful when you need to retrieve the row primary key value you just inserted.
+		This function may work a bit differently in each drivers.
+
+		@param	$sName	The primary key index name, if needed
+		@return	integer	The primary key index value
+	*/
 
 	public function getPKId($sName = null)
 	{
@@ -84,16 +131,48 @@ class weeMySQLDatabase extends weeDatabase
 		return mysql_insert_id($this->rLink);
 	}
 
+	/**
+		Returns the number of affected rows in the last INSERT, UPDATE or DELETE query.
+		You can't use this method safely to check if your UPDATE executed successfully,
+		since the UPDATE statement does not always update rows that are already up-to-date.
+
+		@return integer The number of affected rows in the last query
+	*/
+
 	public function numAffectedRows()
 	{
 		fire($this->rLink === false, 'IllegalStateException');
 		return mysql_affected_rows($this->rLink);
 	}
 
+	/**
+		Returns the number of successfull queries.
+		Only the queries executed using the query method are recorded.
+		For informational and debugging purpose only.
+
+		@return integer The number of queries since the creation of the class
+	*/
+
 	public function numQueries()
 	{
 		return $this->iNumQueries;
 	}
+
+	/**
+		Execute an SQL query.
+
+		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
+		using the buildSafeQuery method.
+
+		For example if you have:
+			$Db->query('SELECT ? FROM example_table WHERE example_id=? LIMIT 1', $sField, $iId);
+		It will select the $sField field from the row with the $iId example_id.
+
+		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple arguments
+		@param	$mQueryString		The query string
+		@param	...					The additional arguments that will be inserted into the query
+		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
+	*/
 
 	public function query($mQueryString)
 	{
@@ -112,6 +191,13 @@ class weeMySQLDatabase extends weeDatabase
 		if (is_resource($mResult))
 			return new weeMySQLResult($mResult);
 	}
+
+	/**
+		Changes database without reconnecting.
+		The new database must be on the same host of the previous.
+
+		@param $sDatabase The database to use.
+	*/
 
 	public function selectDb($sDatabase)
 	{

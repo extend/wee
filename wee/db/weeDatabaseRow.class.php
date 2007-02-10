@@ -21,10 +21,30 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-class weeDatabaseRow implements ArrayAccess
+/**
+	Base class for database result items.
+	Values can be accessed like an array.
+*/
+
+abstract class weeDatabaseRow implements ArrayAccess
 {
+	/**
+		Wether we are in the template and must encode the results.
+	*/
+
 	protected $bEncodeResults = false;
+
+	/**
+		The values returned by the database for this row.
+	*/
+
 	protected $aRow;
+
+	/**
+		Initialize the row data.
+
+		@param $aRow The row data.
+	*/
 
 	public function __construct($aRow)
 	{
@@ -32,16 +52,38 @@ class weeDatabaseRow implements ArrayAccess
 		$this->aRow = $aRow;
 	}
 
+	/**
+		Used by weeTemplate to automatically encode row results.
+
+		@return $this
+	*/
+
 	public function encodeResults()
 	{
 		$this->bEncodeResults = true;
 		return $this;
 	}
 
+	/**
+		Returns whether offset exists.
+
+		@param	$offset	Offset name.
+		@return	bool	Whether the offset exists.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
 	public function offsetExists($offset)
 	{
 		return isset($this->aRow[$offset]);
 	}
+
+	/**
+		Returns value at given offset.
+
+		@param	$offset	Offset name.
+		@return	bool	value at given offset
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
 
 	public function offsetGet($offset)
 	{
@@ -52,10 +94,25 @@ class weeDatabaseRow implements ArrayAccess
 		return $this->aRow[$offset];
 	}
 
+	/**
+		Sets a new value for the given offset.
+
+		@param	$offset	Offset name.
+		@param	$value	New value for this offset.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
 	public function offsetSet($offset, $value)
 	{
 		$this->aRow[$offset] = $value;
 	}
+
+	/**
+		Unsets offset.
+
+		@param	$offset	Offset name.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
 
 	public function offsetUnset($offset)
 	{
