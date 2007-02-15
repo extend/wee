@@ -21,8 +21,19 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Search pagination widget.
+	As its name says, it's made for search results and looks like the search engine one.
+*/
+
 class weeSearchPagination extends weePagination
 {
+	/**
+		Returns the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		$iCurrent	= intval($this->iFrom / $this->iPerPage);

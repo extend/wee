@@ -21,8 +21,18 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Simple pagination widget.
+*/
+
 class weeSimplePagination extends weePagination
 {
+	/**
+		Returns the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		$iCurrent	= intval($this->iFrom / $this->iPerPage);
