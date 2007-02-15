@@ -161,6 +161,30 @@ class weeForm
 	}
 
 	/**
+		Returns the md5 of the specified string.
+
+		@param	$sValue	The specified string.
+		@return	string	The md5 of the specified string.
+	*/
+
+	protected function applyMD5($sValue)
+	{
+		return md5($sValue);
+	}
+
+	/**
+		Returns the specified string trimmed of its spaces and tabulations.
+
+		@param	$sValue	The specified string.
+		@return	string	The specified string trimmed.
+	*/
+
+	protected function applyTrim($sValue)
+	{
+		return trim($sValue);
+	}
+
+	/**
 		Fill widgets of the form based on the data.
 		When a data has no corresponding widget, it is skipped.
 
@@ -169,6 +193,8 @@ class weeForm
 
 	public function fill($aData)
 	{
+		fire(!is_array($aData) && !($aData instanceof ArrayAccess), 'InvalidArgumentException');//TODO:unit test
+
 		foreach ($aData as $sName => $mValue)
 		{
 			$a = $this->oForm->xpath('//name[text()="' . $sName . '"]/..');
@@ -343,18 +369,6 @@ class weeForm
 	{
 		foreach ($aData as $sName => $sValue)
 			$oQuery->set('`' . $sName . '`', $sValue);
-	}
-
-	/**
-		Returns the md5 of the specified string.
-
-		@param	$sValue	The specified string.
-		@return	string	The md5 of the specified string.
-	*/
-
-	protected function applyMD5($sValue)
-	{
-		return md5($sValue);
 	}
 
 	/**
