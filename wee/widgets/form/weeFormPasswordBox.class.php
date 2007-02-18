@@ -21,18 +21,41 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Password input widget.
+*/
+
 class weeFormPasswordBox extends weeFormTextBox
 {
+	/**
+		Type of the input.
+		Can be either text or password.
+	*/
+
 	protected $sTextType = 'password';
+
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
 
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML) && !isset($oXML->value);
 	}
 
+	/**
+		Not used.
+
+		@param $sNewValue The new value.
+	*/
+
 	public function setValue($sValue)
 	{
-		Burn('BadMethodCallException');
+		burn('BadMethodCallException');
 	}
 }
 

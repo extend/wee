@@ -21,13 +21,30 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Choice widget.
+
+	It is the XHTML select element. Only one value selectable.
+	It is possible to define groups of values.
+*/
+
 class weeFormChoice extends weeFormOneSelectable
 {
+	/**
+		The current group of options, if applicable.
+	*/
+
 	protected $sCurrentGroup;
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
 
 	public function __toString()
 	{
-		Fire(empty($this->aOptions), 'IllegalStateException');
+		fire(empty($this->aOptions), 'IllegalStateException');
 
 		$sHelp		= null;
 		if (isset($this->oXML->help))
@@ -48,6 +65,18 @@ class weeFormChoice extends weeFormOneSelectable
 			$sName . '"' . $sHelp . '>' . $sOptions . '</select>';
 	}
 
+	/**
+		Add an option to the list.
+
+		Add the option to the current option group if applicable.
+
+		@param $sValue		Option's value.
+		@param $sLabel		Option's label.
+		@param $sHelp		Option's help text.
+		@param $bDisabled	Whether the option is disabled.
+		@param $bSelected	Whether the option is selected.
+	*/
+
 	public function addOption($sValue, $sLabel, $sHelp = null, $bDisabled = false, $bSelected = false)
 	{
 		if (empty($this->sCurrentGroup))
@@ -64,10 +93,21 @@ class weeFormChoice extends weeFormOneSelectable
 		}
 	}
 
+	/**
+		Close the option group.
+	*/
+
 	public function closeOptionGroup()
 	{
 		$this->sCurrentGroup = null;
 	}
+
+	/**
+		Return the option group as a XHTML string.
+
+		@param	$aGroup	The group's options.
+		@return	string	The group as XHTML.
+	*/
 
 	protected function groupToString($aGroup)
 	{
@@ -88,6 +128,13 @@ class weeFormChoice extends weeFormOneSelectable
 		return '<optgroup label="' . $sLabel . '"' . $sDisabled . $sHelp . '>' . $sOptions . '</optgroup>';
 	}
 
+	/**
+		Return whether the given value is in the option list.
+
+		@param	$sValue	The value to check.
+		@return	bool	Whether the value is in the option list.
+	*/
+
 	public function isInOptions($sValue)
 	{
 		foreach ($this->aOptions as $aOption)
@@ -103,6 +150,13 @@ class weeFormChoice extends weeFormOneSelectable
 		}
 		return false;
 	}
+
+	/**
+		Load options from the SimpleXML object.
+		Called by the constructor only.
+
+		@param $oXML The SimpleXML object.
+	*/
 
 	protected function loadOptionsFromXML($oXML)
 	{
@@ -133,9 +187,19 @@ class weeFormChoice extends weeFormOneSelectable
 			}
 	}
 
+	/**
+		Option an option group.
+
+		TODO:we may want to add an option at an existing group, too
+
+		@param	$sLabel		The option group's label.
+		@param	$sHelp		The option group's help message.
+		@param	$bDisabled	Whether this option group is disabled.
+	*/
+
 	public function openOptionGroup($sLabel, $sHelp = null, $bDisabled = false)
 	{
-		Fire(!empty($this->sCurrentGroup), 'IllegalStateException');
+		fire(!empty($this->sCurrentGroup), 'IllegalStateException');
 
 		$this->sCurrentGroup		= $sLabel;
 		$this->aOptions[$sLabel]	= array('label'		=> $sLabel,
@@ -143,6 +207,13 @@ class weeFormChoice extends weeFormOneSelectable
 											'disabled'	=> $bDisabled,
 											'options'	=> array());
 	}
+
+	/**
+		Return the option as a XHTML string.
+
+		@param	$aGroup	The option's details.
+		@return	string	The option as XHTML.
+	*/
 
 	protected function optionToString($aOption)
 	{

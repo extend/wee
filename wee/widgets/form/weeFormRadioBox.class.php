@@ -21,13 +21,28 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Radiobox form widget.
+*/
+
 class weeFormRadioBox extends weeFormOneSelectable
 {
+	/**
+		Index of the option displayed.
+		Used to create an unique id for the radio items, since XHTML elements' id must be uniques.
+	*/
+
 	protected $iOptionNumber = 0;
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
 
 	public function __toString()
 	{
-		Fire(empty($this->aOptions), 'IllegalStateException');
+		fire(empty($this->aOptions), 'IllegalStateException');
 
 		$sId		= $this->getId();
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
@@ -45,6 +60,15 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 		return '<fieldset class="radiobox" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
 	}
+
+	/**
+		Return the XHTML for a radio item of the radiobox.
+
+		@param	$sName		Name of the radio item.
+		@param	$sId		Id of the radio item.
+		@param	$aOption	Selectable option's details.
+		@return	string		XHTML for this radio item.
+	*/
 
 	protected function optionToString($sName, $sId, $aOption)
 	{

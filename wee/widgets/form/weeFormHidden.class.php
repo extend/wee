@@ -21,17 +21,38 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Hidden input widget.
+	Allow to pass values in a hidden field.
+
+	@warning The fact that it is hidden does not mean that it is not modifiable!
+*/
+
 class weeFormHidden extends weeFormWritable
 {
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
-		Fire(!isset($this->sValue), 'IllegalStateException');
+		fire(!isset($this->sValue), 'IllegalStateException');
 
 		$sName	= weeOutput::encodeValue($this->oXML->name);
 		$sValue	= weeOutput::encodeValue($this->sValue);
 
 		return '<input type="hidden" name="' . $sName . '" value="' . $sValue . '"/>';
 	}
+
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
 
 	protected function isValidXML($oXML)
 	{

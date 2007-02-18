@@ -21,8 +21,19 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Fieldset container widget.
+	Acts like a fieldset XHTML element, with a legend element for its label.
+*/
+
 class weeFormFieldset extends weeFormContainer
 {
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		$sClass = null;

@@ -21,9 +21,26 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for container widgets.
+
+	Container widgets can contains other widgets inside them.
+	They are responsible to render them properly when the form is rendered.
+*/
+
 class weeFormContainer extends weeFormStatic
 {
+	/**
+		The current form action.
+	*/
+
 	protected $iAction;
+
+	/**
+		Initialize the widget using the SimpleXML object.
+
+		@param $oXML The SimpleXML object describing the widget.
+	*/
 
 	public function __construct($oXML, $iAction)
 	{
@@ -42,6 +59,12 @@ class weeFormContainer extends weeFormStatic
 		}
 	}
 
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		$s = '<ol>';
@@ -57,6 +80,14 @@ class weeFormContainer extends weeFormStatic
 		}
 		return $s . '</ol>';
 	}
+
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
 
 	protected function isValidXML($oXML)
 	{

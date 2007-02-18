@@ -21,8 +21,18 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	File input widget.
+*/
+
 class weeFormFileInput extends weeFormWritable
 {
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		$sHelp		= null;
@@ -41,20 +51,41 @@ class weeFormFileInput extends weeFormWritable
 			   $sId . '" name="' . $sName . '"' . $sHelp . $sMIME . '/>';
 	}
 
-	//According to this, it is not a good idea to extend from writable...
+	/**
+		Return the current value.
+
+		@return string The current value.
+	*/
+
 	final public function getValue()
 	{
-		Burn('BadMethodCallException');
+		burn('BadMethodCallException');
 	}
 
-	final public function setValue($sValue)
-	{
-		Burn('BadMethodCallException');
-	}
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
 
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML) && !isset($oXML->validator, $oXML->value);
+	}
+
+	/**
+		Set a new value.
+
+		TODO:According to this, it is not a good idea to extend from writable...
+
+		@param $sNewValue The new value.
+	*/
+
+	final public function setValue($sValue)
+	{
+		burn('BadMethodCallException');
 	}
 }
 

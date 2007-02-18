@@ -21,9 +21,23 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for writable form widgets.
+*/
+
 abstract class weeFormWritable extends weeFormWidget
 {
+	/**
+		Value of this widget.
+	*/
+
 	protected $sValue;
+
+	/**
+		Initialize the widget using the SimpleXML object.
+
+		@param $oXML The SimpleXML object describing the widget.
+	*/
 
 	public function __construct($oXML)
 	{
@@ -33,20 +47,40 @@ abstract class weeFormWritable extends weeFormWidget
 			$this->setValue($oXML->value);
 	}
 
+	/**
+		Return the current value.
+
+		@return string The current value.
+	*/
+
 	public function getValue()
 	{
 		return $this->sValue;
 	}
 
-	public function setValue($sNewValue)
-	{
-		//TODO:maybe check against validators
-		$this->sValue = $sNewValue;
-	}
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
 
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML) && isset($oXML->name, $oXML->label);
+	}
+
+	/**
+		Set a new value.
+
+		@param $sNewValue The new value.
+	*/
+
+	public function setValue($sNewValue)
+	{
+		//TODO:maybe check against validators
+		$this->sValue = $sNewValue;
 	}
 }
 

@@ -21,19 +21,48 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for selectable widgets with multiple selection possible.
+*/
+
 abstract class weeFormMultipleSelectable extends weeFormSelectable
 {
+	/**
+		Array of selected options.
+	*/
+
 	protected $aSelection;
+
+	/**
+		Return whether the given value is selected.
+
+		@param	$sValue	The value to check.
+		@return	bool	Whether the value is selected.
+	*/
 
 	public function isSelected($sValue)
 	{
 		return !empty($this->aSelection[(string)$sValue]);
 	}
 
+	/**
+		Select the given value.
+
+		@param $sValue The value to select.
+	*/
+
 	public function select($sValue, $bState = true)
 	{
 		$this->aSelection[$sValue] = $bState;
 	}
+
+	/**
+		Transform the value posted if needed.
+		Return false if the value was not set.
+
+		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
+		@return	bool	Whether the value is present.
+	*/
 
 	public function transformValue(&$aData)
 	{

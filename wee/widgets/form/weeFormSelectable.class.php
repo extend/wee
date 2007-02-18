@@ -21,15 +21,39 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for selectable widgets.
+*/
+
 abstract class weeFormSelectable extends weeFormWidget
 {
+	/**
+		Options list to choose from.
+	*/
+
 	protected $aOptions = array();
+
+	/**
+		Initialize the widget using the SimpleXML object.
+
+		@param $oXML The SimpleXML object describing the widget.
+	*/
 
 	public function __construct($oXML)
 	{
 		parent::__construct($oXML);
 		$this->loadOptionsFromXML($oXML);
 	}
+
+	/**
+		Add an option to the list.
+
+		@param $sValue		Option's value.
+		@param $sLabel		Option's label.
+		@param $sHelp		Option's help text.
+		@param $bDisabled	Whether the option is disabled.
+		@param $bSelected	Whether the option is selected.
+	*/
 
 	public function addOption($sValue, $sLabel, $sHelp = null, $bDisabled = false, $bSelected = false)
 	{
@@ -41,6 +65,13 @@ abstract class weeFormSelectable extends weeFormWidget
 		if ($bSelected)
 			$this->select($sValue);
 	}
+
+	/**
+		Add all the options from the given array.
+		See addOption for the option's details.
+
+		@param $aOptions An array of options.
+	*/
 
 	public function addOptions($aOptions)
 	{
@@ -54,6 +85,13 @@ abstract class weeFormSelectable extends weeFormWidget
 			);
 	}
 
+	/**
+		Return whether the given value is in the option list.
+
+		@param	$sValue	The value to check.
+		@return	bool	Whether the value is in the option list.
+	*/
+
 	public function isInOptions($sValue)
 	{
 		foreach ($this->aOptions as $aOption)
@@ -62,10 +100,34 @@ abstract class weeFormSelectable extends weeFormWidget
 		return false;
 	}
 
+	/**
+		Return whether the given value is selected.
+
+		@param	$sValue	The value to check.
+		@return	bool	Whether the value is selected.
+	*/
+
+	abstract public function isSelected($sValue);
+
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
+
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML) && isset($oXML->name, $oXML->label);
 	}
+
+	/**
+		Load options from the SimpleXML object.
+		Called by the constructor only.
+
+		@param $oXML The SimpleXML object.
+	*/
 
 	protected function loadOptionsFromXML($oXML)
 	{
@@ -82,7 +144,12 @@ abstract class weeFormSelectable extends weeFormWidget
 			}
 	}
 
-	abstract public function isSelected($sValue);
+	/**
+		Select the given value.
+
+		@param $sValue The value to select.
+	*/
+
 	abstract public function select($sValue);
 }
 

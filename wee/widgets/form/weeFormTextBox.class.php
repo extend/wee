@@ -21,9 +21,24 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Text input form widget (input type="text").
+*/
+
 class weeFormTextBox extends weeFormWritable
 {
+	/**
+		Type of the input.
+		Can be either text or password.
+	*/
+
 	protected $sTextType = 'text';
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
 
 	public function __toString()
 	{

@@ -21,16 +21,35 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for non-modifiable widgets (like help text, containers).
+*/
+
 abstract class weeFormStatic extends weeFormWidget
 {
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
+
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML) && !isset($oXML->validator, $oXML->value);
 	}
 
+	/**
+		Not used.
+
+		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
+		@return	bool	Whether the value is present.
+	*/
+
 	public function transformValue(&$aData)
 	{
-		Burn('BadMethodCallException');
+		burn('BadMethodCallException');
 	}
 }
 

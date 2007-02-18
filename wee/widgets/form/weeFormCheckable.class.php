@@ -21,9 +21,25 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for checkable widgets.
+	Checkable widgets can be checked or not.
+	There is no other state available.
+*/
+
 abstract class weeFormCheckable extends weeFormWidget
 {
+	/**
+		Whether the widget is checked.
+	*/
+
 	protected $bChecked;
+
+	/**
+		Initialize the widget using the SimpleXML object.
+
+		@param $oXML The SimpleXML object describing the widget.
+	*/
 
 	public function __construct($oXML)
 	{
@@ -31,26 +47,54 @@ abstract class weeFormCheckable extends weeFormWidget
 		$this->bChecked = !empty($oXML->checked);
 	}
 
+	/**
+		Check or uncheck the widget.
+
+		@param $bState Whether the widget is checked.
+	*/
+
 	public function check($bState = true)
 	{
 		$this->bChecked = $bState;
 	}
+
+	/**
+		Return whether the widget is checked.
+
+		@return bool Whether the widget is checked.
+	*/
 
 	public function isChecked()
 	{
 		return $this->bChecked;
 	}
 
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
+
+	protected function isValidXML($oXML)
+	{
+		return parent::isValidXML($oXML) && !(empty($oXML->name) || empty($oXML->label));
+	}
+
+	/**
+		Transform the value posted if needed.
+		Return false if the value was not set.
+
+		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
+		@return	bool	Whether the value is present.
+	*/
+
 	public function transformValue(&$aData)
 	{
 		if (!isset($aData[(string)$this->oXML->name]))
 			$aData[(string)$this->oXML->name] = 0;
 		return true;
-	}
-
-	protected function isValidXML($oXML)
-	{
-		return parent::isValidXML($oXML) && !(empty($oXML->name) || empty($oXML->label));
 	}
 }
 

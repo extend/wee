@@ -21,8 +21,17 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Reset button widget.
+*/
+
 class weeFormResetButton extends weeFormButtonInput
 {
+	/**
+		Type of the input.
+		Can be either button, reset or submit.
+	*/
+
 	protected $sButtonType = 'reset';
 }
 

@@ -21,8 +21,18 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	File input widget allowing to upload multiple files.
+*/
+
 class weeFormMultipleFileInput extends weeFormFileInput
 {
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		$sHelp		= null;

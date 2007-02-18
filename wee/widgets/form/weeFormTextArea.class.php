@@ -21,8 +21,18 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Textarea form widget.
+*/
+
 class weeFormTextArea extends weeFormWritable
 {
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		if (isset($this->oXML->cols))	$iCols = $this->oXML->cols;

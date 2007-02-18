@@ -21,9 +21,24 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Widget representing a list of checkboxes.
+*/
+
 class weeFormCheckList extends weeFormMultipleSelectable
 {
+	/**
+		Index of the option displayed.
+		Used to create an unique id for the radio items, since XHTML elements' id must be uniques.
+	*/
+
 	protected $iOptionNumber = 0;
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
 
 	public function __toString()
 	{
@@ -46,6 +61,15 @@ class weeFormCheckList extends weeFormMultipleSelectable
 
 		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
 	}
+
+	/**
+		Return the option as a XHTML string.
+
+		@param	$sName		The widget's name attribute.
+		@param	$sId		The widget's id attribute.
+		@param	$aOption	The option's details.
+		@return	string		The option as XHTML.
+	*/
 
 	protected function optionToString($sName, $sId, $aOption)
 	{

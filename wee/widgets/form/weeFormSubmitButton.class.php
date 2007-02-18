@@ -21,8 +21,17 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Submit button widget.
+*/
+
 class weeFormSubmitButton extends weeFormButtonInput
 {
+	/**
+		Type of the input.
+		Can be either button, reset or submit.
+	*/
+
 	protected $sButtonType = 'submit';
 }
 

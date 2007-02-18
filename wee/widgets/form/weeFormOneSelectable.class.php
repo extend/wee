@@ -21,14 +21,35 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for selectable widgets with only one selection possible.
+*/
+
 abstract class weeFormOneSelectable extends weeFormSelectable
 {
+	/**
+		The option selected.
+	*/
+
 	protected $sSelection;
+
+	/**
+		Return whether the given value is selected.
+
+		@param	$sValue	The value to check.
+		@return	bool	Whether the value is selected.
+	*/
 
 	public function isSelected($sValue)
 	{
 		return $sValue == $this->sSelection;
 	}
+
+	/**
+		Select the given value.
+
+		@param $sValue The value to select.
+	*/
 
 	public function select($sValue)
 	{

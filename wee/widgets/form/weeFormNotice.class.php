@@ -21,12 +21,30 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Static widget used to display notice.
+*/
+
 class weeFormNotice extends weeFormStatic
 {
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
 	public function __toString()
 	{
 		return '<label class="notice">' . weeOutput::encodeValue(_($this->oXML->label)) . '</label>';
 	}
+
+	/**
+		Check if the SimpleXML object is valid for this widget.
+		Only used in the constructor.
+
+		@param	$oXML	The SimpleXML object.
+		@return	bool	Whether the SimpleXML object is valid.
+	*/
 
 	protected function isValidXML($oXML)
 	{

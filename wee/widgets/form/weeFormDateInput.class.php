@@ -21,8 +21,19 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Date input widget.
+	Really consist of three select elements.
+*/
+
 class weeFormDateInput extends weeFormWritable
 {
+	/**
+		Initialize the widget using the SimpleXML object.
+
+		@param $oXML The SimpleXML object describing the widget.
+	*/
+
 	public function __construct($oXML)
 	{
 		parent::__construct($oXML);
@@ -34,6 +45,12 @@ class weeFormDateInput extends weeFormWritable
 
 		fire($this->oXML->from > $this->oXML->to, 'BadXMLException');
 	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
 
 	public function __toString()
 	{
@@ -49,10 +66,24 @@ class weeFormDateInput extends weeFormWritable
 			'>' . $this->renderYear($sHelp, $aDate[0]) . ' ' . $this->renderMonth($sHelp, $aDate[1]) . ' ' . $this->renderDay($sHelp, $aDate[2]) . '</fieldset>';
 	}
 
+	/**
+		Returns the date value in the form of an array.
+
+		@return array The date in the form of an array. Offset 0 is the year, 1 is the month, and 2 is the day.
+	*/
+
 	public function getValueArray()
 	{
 		return explode('-', $this->getValue()) + array(0, 0, 0);
 	}
+
+	/**
+		Return the XHTML for the day's select element.
+
+		@param	$sHelp		The help message.
+		@param	$iSelected	The day selected.
+		@return	string		The XHTML for the day's select element.
+	*/
 
 	protected function renderDay($sHelp, $iSelected)
 	{
@@ -69,6 +100,14 @@ class weeFormDateInput extends weeFormWritable
 		return $s . '</select>';
 	}
 
+	/**
+		Return the XHTML for the month's select element.
+
+		@param	$sHelp		The help message.
+		@param	$iSelected	The month selected.
+		@return	string		The XHTML for the month's select element.
+	*/
+
 	protected function renderMonth($sHelp, $iSelected)
 	{
 		$s = '<select name="' . $this->oXML->name . '_month"' . $sHelp . '>';
@@ -84,6 +123,14 @@ class weeFormDateInput extends weeFormWritable
 		return $s . '</select>';
 	}
 
+	/**
+		Return the XHTML for the year's select element.
+
+		@param	$sHelp		The help message.
+		@param	$iSelected	The year selected.
+		@return	string		The XHTML for the year's select element.
+	*/
+
 	protected function renderYear($sHelp, $iSelected)
 	{
 		$s = '<select name="' . $this->oXML->name . '_year"' . $sHelp . '>';
@@ -98,6 +145,13 @@ class weeFormDateInput extends weeFormWritable
 
 		return $s . '</select>';
 	}
+
+	/**
+		Set a new value.
+
+		@overload setValue($iYear, $iMonth, $iDay) Can be called with the date values separated instead of the standard form.
+		@param $sNewValue The new value.
+	*/
 
 	public function setValue($sNewValue)
 	{
@@ -116,6 +170,14 @@ class weeFormDateInput extends weeFormWritable
 			parent::setValue(sprintf('%04u-%02u-%02u', $iYear, $iMonth, $iDay));
 		}
 	}
+
+	/**
+		Transform the value posted if needed.
+		Return false if the value was not set.
+
+		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
+		@return	bool	Whether the value is present.
+	*/
 
 	public function transformValue(&$aData)
 	{

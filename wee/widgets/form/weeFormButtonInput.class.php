@@ -21,9 +21,24 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+/**
+	Base class for standard input buttons.
+*/
+
 class weeFormButtonInput extends weeFormStatic
 {
+	/**
+		Type of the input.
+		Can be either button, reset or submit.
+	*/
+
 	protected $sButtonType = 'button';
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
 
 	public function __toString()
 	{
