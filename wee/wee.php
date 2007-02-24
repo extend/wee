@@ -97,6 +97,8 @@ weeAutoload::addPath(WEE_PATH);
 
 // PHP Functions/Extensions emulation
 
+if (!function_exists('ctype_alnum'))
+	require(WEE_PATH . 'emul_ctype' . PHP_EXT);
 require(WEE_PATH . 'emul_php' . PHP_EXT);
 
 ?>
