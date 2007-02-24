@@ -50,7 +50,7 @@ class weeTestSuite
 
 	public function __construct($sTestsPath)
 	{
-		$this->sTestsPath = $sTestsPath;
+		$this->sTestsPath = $_SERVER['PWD'] . '/' . $sTestsPath;
 
 		weeAutoload::addPath($sTestsPath);
 	}
@@ -86,6 +86,9 @@ class weeTestSuite
 		$oDirectory	= new RecursiveDirectoryIterator($this->sTestsPath);
 		foreach (new RecursiveIteratorIterator($oDirectory) as $sPath)
 		{
+			if (in_array($sPath, get_included_files()))
+				continue;
+
 			$sClass = null;
 
 			if (substr($sPath, -strlen(CLASS_EXT)) == CLASS_EXT)
@@ -99,7 +102,7 @@ class weeTestSuite
 					{
 						public function run()
 						{
-							return require("' . $sPath . '");
+							return require_once("' . $sPath . '");
 						}
 					}';
 				eval($sCode);
