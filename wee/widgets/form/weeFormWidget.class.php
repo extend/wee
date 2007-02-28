@@ -57,12 +57,9 @@ abstract class weeFormWidget
 		Return the widget XHTML code.
 
 		@return string XHTML for this widget.
-		//TODO:abstract?
 	*/
 
-	public function __toString()
-	{
-	}
+	abstract public function __toString();
 
 	/**
 		Construct and return the XHTML element's id for this widget.

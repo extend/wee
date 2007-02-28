@@ -42,7 +42,6 @@ class weeMySQLResult extends weeDatabaseResult
 
 	/**
 		Index number of the row to fetch.
-		TODO:Don't seems really used...
 	*/
 
 	private $iCurrentIndex;

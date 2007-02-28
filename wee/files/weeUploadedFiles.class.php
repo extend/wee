@@ -57,8 +57,6 @@ class weeUploadedFiles implements Iterator
 
 		@param	$a				An array containing the file details.
 		@return	weeUploadedfile	A new file object containing the details given.
-
-		TODO:handle case when $a['name'] is an array
 	*/
 
 	protected function createFile($a)

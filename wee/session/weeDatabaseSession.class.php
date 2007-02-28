@@ -193,13 +193,11 @@ class weeDatabaseSession extends weeSession
 	/**
 		Called when the user is logged in successfully.
 
-		//TODO:public ?!
-
 		@param	$iUserId	User's table primary key value. Unique identifier for this user.
 		@param	$bKeepAlive	Whether it must write cookies for automatic log in.
 	*/
 
-	public function processLogIn($iUserId, $bKeepAlive = false)
+	protected function processLogIn($iUserId, $bKeepAlive = false)
 	{
 		session_regenerate_id();
 		$_SESSION['session_is_logged']	= true;

@@ -78,7 +78,6 @@ class weePgSQLDatabase extends weeDatabase
 		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
 
-		//TODO:change the criteria class
 		weeDatabaseQuery::$criteriaClass	= 'weeDatabaseCriteria';
 		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}

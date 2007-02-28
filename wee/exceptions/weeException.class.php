@@ -133,8 +133,6 @@ final class weeException extends Namespace
 			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
 			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
 
-			//TODO:change function name
-			//TODO:error should be inside exception!
 			if ($oException instanceof DatabaseException && !empty($GLOBALS['Db']) && $GLOBALS['Db'] instanceof weeDatabase && $GLOBALS['Db']->getLastError() != null)
 				$sDebug .= '<h3>Error:</h3><p>' . $GLOBALS['Db']->getLastError() . '</p>';
 		}
