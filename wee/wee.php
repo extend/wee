@@ -22,6 +22,11 @@
 if (!defined('ALLOW_INCLUSION')) die;
 if (version_compare(phpversion(), '5.0.0', '<')) die;
 
+// Detect whether we are using the CLI
+
+if (!empty($_SERVER['argc']))
+	define('WEE_CLI', 1);
+
 // Paths and files extensions
 
 if (!defined('BASE_PATH'))
