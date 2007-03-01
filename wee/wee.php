@@ -66,13 +66,13 @@ $_REQUEST = array();
 set_magic_quotes_runtime(0);
 if (get_magic_quotes_gpc())
 {
-	//TODO:check if it's not needed by $_FILES
 	// Note:	stripslashes converts null to empty string -- we may need an alternative here
 
 	function mqs(&$sValue, $sKey) { $sValue = stripslashes($sValue); }
 	array_walk_recursive($_GET,		'mqs');
 	array_walk_recursive($_POST,	'mqs');
 	array_walk_recursive($_COOKIE,	'mqs');
+	array_walk_recursive($_FILES,	'mqs');
 
 	// PHP configuration should reflect the fact that magic quotes have been removed
 
