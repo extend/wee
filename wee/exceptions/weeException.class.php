@@ -97,7 +97,6 @@ final class weeException extends Namespace
 
 		$sDebug = null;
 
-
 		if (!ini_get('html_errors'))
 			$sDebug = 'Error: ' . $aTypes[$iNumber] . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
 		elseif (defined('DEBUG'))
@@ -179,16 +178,34 @@ final class weeException extends Namespace
 			echo $sDebug . "\r\n";
 		else
 		{
-			//TODO:translatable messages
-			//TODO:inline css, no separate file
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Fatal error</title>' .
-				 '<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><link rel="stylesheet" type="text/css" media="all" href="' . BASE_PATH . ROOT_PATH . 'css/error.css"/></head><body><div id="error"><h1>' .
-				 'Oops! An error occurred.</h1><p>The page you tried to access is currently unavailable. This can happen for one of the following reason:</p><ul><li>' .
-				 'The Web address you entered is invalid or incomplete. Please check that you typed it correctly.</li><li>' .
-				 'The server is too busy. Please wait a moment and try to reload the page later.</li><li>' .
-				 'The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href="/">browse</a> for it.' .
-				 '</li></ul><p>You can also try to <a href="javascript:history.back()">go back</a> where you came from.</p>' .
-				 $sDebug . '</div></body></html>';
+			echo 
+
+'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' . _('Fatal error') . '</title>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><style type="text/css">
+*{font-family:Verdana,sans-serif}
+body{background-color:#ccdbfa;font-size:0.8em}
+h1{font-size:1.5em;height:2em;width:100%;text-align:right}
+h2{font-size:1.3em}
+ul{padding-top:1em}
+li{padding-bottom:1em}
+a{color:#0000e0}
+a:hover{color:#4444e0}
+body>div{width:40em;background-color:#fff;padding:0em 2em;padding-bottom:1em;margin:2em auto;border:1px solid #7d8cb9}
+#footer{padding:1em 2em;text-align:center;background:#f3f3fd}
+#error{background:#fdf3f3;text-align:justify}
+#exception,#php{background:#f3fdf3}
+h3{width:5em;font-size:1em}
+#php h2{font-size:1em}
+#php h3,#php span{float:left;margin:0 0 1em 0}
+#php br{clear:left}
+</style></head><body><div id="error"><h1>' . _('Oops! An error occurred.') . '</h1><p>' .
+_('The page you tried to access is currently unavailable. This can happen for one of the following reason:') . '</p><ul><li>' .
+_('The Web address you entered is invalid or incomplete. Please check that you typed it correctly.') . '</li><li>' .
+_('The server is too busy. Please wait a moment and try to reload the page later.') . '</li><li>' .
+_('The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href="/">browse</a> for it.') . '</li></ul><p>' .
+_('You can also try to <a href="javascript:history.back()">go back</a> where you came from.') . '</p>' . $sDebug . '</div></body></html>';
+
 		}
 	}
 }
