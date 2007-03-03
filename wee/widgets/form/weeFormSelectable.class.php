@@ -134,8 +134,6 @@ abstract class weeFormSelectable extends weeFormWidget
 		if (isset($oXML->options))
 			foreach ($oXML->options->item as $o)
 			{
-				//TODO:fire if empty value/label-- in addOption?
-
 				$sHelp		= null;
 				if (!empty($o['help']))
 					$sHelp	= (string)$o['help'];
