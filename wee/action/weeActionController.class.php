@@ -201,7 +201,7 @@ abstract class weeActionController
 		fire(empty($sAction));
 
 		$sMethod = 'doAction' . $sAction;
-		$this->$sMethod($sPKeyId);
+		return $this->$sMethod($sPKeyId);
 	}
 
 	/**
