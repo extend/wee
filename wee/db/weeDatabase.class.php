@@ -52,6 +52,18 @@ abstract class weeDatabase
 	}
 
 	/**
+		Execute a batch of SQL queries.
+
+		@param $aQueries The array of query strings
+	*/
+
+	public function batchQueries($aQueries)
+	{
+		foreach ($aQueries as $sQuery)
+			$this->query($sQuery);
+	}
+
+	/**
 		Common function for building queries.
 		Used to replace all the ? in the query by the specified arguments, escaped as needed.
 
