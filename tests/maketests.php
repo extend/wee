@@ -24,7 +24,7 @@ if (defined('ALLOW_INCLUSION'))
 
 if ($argc != 2)
 {
-	echo 'usage: php maketests.php tests_path';
+	echo "usage: php maketests.php tests_path\n";
 	return -1;
 }
 

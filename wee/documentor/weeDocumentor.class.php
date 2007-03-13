@@ -158,16 +158,21 @@ EOF;
 
 		$a = array(
 			'name'			=> $oClass->getName(),
-			'parent'		=> $oClass->getParentClass() == '' ? null : $oClass->getParentClass()->getName(),
+			'parent'		=> $oClass->getParentClass() == null ? null : $oClass->getParentClass()->getName(),
 			'type'			=> $oClass->isInterface() ? 'interface' : ($oClass->isAbstract() ? 'abstract' : ($oClass->isFinal() ? 'final' : 'class')),
 
 			'filename'		=> $oClass->getFileName(),
 			'startline'		=> $oClass->getStartLine(),
 			'endline'		=> $oClass->getEndLine(),
 
-			'doccomment'	=> $oClass->getDocComment(),//TODO:decompose
+			'doccomment'	=> $this->trimDocComment($oClass->getDocComment()),//TODO:decompose
 			'constants'		=> $oClass->getConstants(),
 		);
+
+		// Get DocComment data
+
+		$a['doccomment'] = $this->parseDocComment($a['doccomment'], $aParsedData);
+		$a = array_merge($a, $aParsedData);
 
 		// Interfaces
 
@@ -195,8 +200,13 @@ EOF;
 				'numparams'		=> $o->getNumberOfParameters(),
 				'numrequired'	=> $o->getNumberOfRequiredParameters(),
 
-				'doccomment'	=> $o->getDocComment(),//TODO:decompose
+				'doccomment'	=> $this->trimDocComment($o->getDocComment()),//TODO:decompose
 			);
+
+			// Get DocComment data
+
+			$aMethod['doccomment'] = $this->parseDocComment($aMethod['doccomment'], $aParsedData);
+			$aMethod = array_merge($aMethod, $aParsedData);
 
 			$aMethod['params'] = array();
 			foreach ($o->getParameters() as $oParameter)
@@ -231,6 +241,11 @@ EOF;
 				'visibility'	=> $o->isPublic() ? 'public' : ($o->isPrivate() ? 'private' : 'protected'),
 				'doccomment'	=> $o->getDocComment(),//TODO:decompose
 			);
+
+			// Get DocComment data
+
+			$aProperty['doccomment'] = $this->parseDocComment($aProperty['doccomment'], $aParsedData);
+			$aProperty = array_merge($aProperty, $aParsedData);
 
 			$a['properties'][] = $aProperty;
 		}
@@ -289,6 +304,11 @@ EOF;
 			'doccomment'	=> $o->getDocComment(),//TODO:decompose
 		);
 
+		// Get DocComment data
+
+		$aFunc['doccomment'] = $this->parseDocComment($aFunc['doccomment'], $aParsedData);
+		$aFunc = array_merge($aFunc, $aParsedData);
+
 		$aFunc['params'] = array();
 		foreach ($o->getParameters() as $oParameter)
 		{
@@ -310,6 +330,68 @@ EOF;
 		$this->aFuncs[]	= $aFunc;
 
 		return $this;
+	}
+
+	protected function parseDocComment($sDocComment, &$aParsedData)
+	{
+		$aParsedData = array();
+
+		$a = explode("\n", $sDocComment);
+		$sDocComment = null;
+
+		foreach ($a as $sLine)
+		{
+			if (strlen($sLine) < 2)
+				continue;
+
+			if ($sLine[0] != '@' || ($sLine[1] == ' ' || $sLine[1] == "\t"))
+				$sDocComment .= $sLine . "\r\n";
+			else
+			{
+				$sLine	= substr($sLine, 1);
+				$sFunc	= 'parseDocComment' . strtok($sLine, " \t");
+				$sLine	= preg_replace('/^\w+[\t ]+/', '', $sLine);
+
+				$this->$sFunc($sLine, $aParsedData);
+			}
+		}
+	}
+
+	protected function parseDocCommentBug($sLine, &$aParsedData)
+	{
+		if (empty($aParsedData['bugs']))
+			$aParsedData['bugs'] = array();
+
+		$aParsedData['bugs'] = $sLine;
+	}
+
+	protected function parseDocCommentOverload($sLine, &$aParsedData)
+	{
+	}
+
+	protected function parseDocCommentParam($sLine, &$aParsedData)
+	{
+	}
+
+	protected function parseDocCommentReturn($sLine, &$aParsedData)
+	{
+	}
+
+	protected function parseDocCommentSee($sLine, &$aParsedData)
+	{
+	}
+
+	protected function parseDocCommentTodo($sLine, &$aParsedData)
+	{
+	}
+
+	protected function parseDocCommentWarning($sLine, &$aParsedData)
+	{
+	}
+
+	protected function trimDocComment($sDocComment)
+	{
+		return preg_replace('/^[\t ]*/m', '', trim(substr($sDocComment, 3, -2)));
 	}
 }
 
