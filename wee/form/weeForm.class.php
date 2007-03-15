@@ -353,7 +353,8 @@ class weeForm
 
 	public function setURI($sURI)
 	{
-		//TODO:check validity
+		fire(!weeURIValidator::test($sURI));
+
 		$this->sURI = $sURI;
 		return $this;
 	}
