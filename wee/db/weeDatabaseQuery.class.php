@@ -123,6 +123,8 @@ class weeDatabaseQuery
 
 	protected function buildUpdate($oDatabase)
 	{
+		fire(empty($this->oCriteria), 'IllegalStateException');
+
 		$sSQL = 'UPDATE ' . $this->sTable . ' SET ';
 
 		foreach ($this->aValues as $sName => $sValue)
@@ -232,12 +234,18 @@ class weeDatabaseQuery
 function §()
 {
 	if (func_num_args() == 0)
+	{
+		fire(empty(weeDatabaseQuery::$queryClass), 'DatabaseException');
+
 		return new weeDatabaseQuery::$queryClass;
+	}
 	else
 	{
+		$aArgs = func_get_args();
+
 		$s = 'return new weeDatabaseQuery::$criteriaClass(';
-		foreach (func_get_args() as $mArg)
-			$s .= "'" . $mArg . "',";
+		foreach ($aArgs as $i => $mArg)
+			$s .= '$aArgs[' . $i . '],';
 		$s = substr($s, 0, -1) . ');';
 
 		return eval($s);
