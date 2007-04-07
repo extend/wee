@@ -218,6 +218,19 @@ class weeForm
 	}
 
 	/**
+		Returns the current action constant name.
+
+		@return string The current action constant name.
+	*/
+
+	protected function getActionString()
+	{
+		$o = new ReflectionClass(__CLASS__);
+		$aConstants = array_flip($o->getConstants());
+		return $aConstants[$this->iAction];
+	}
+
+	/**
 		Returns errors found by hasErrors.
 		You MUST call hasErrors before calling getErrors.
 
@@ -385,7 +398,7 @@ class weeForm
 
 		//TODO:do not xpath widgets that have wrong action
 		//TODO:this will remove the first line of the following condition
-		$aWidgets = $this->oForm->xpath('//widget');
+		$aWidgets = $this->oForm->xpath("//widget");//[not(@action='none')]");
 
 		foreach ($aWidgets as $iKey => $oNode)
 			if ((!empty($oNode['action']) && constant($oNode['action']) != $this->iAction) ||
