@@ -44,6 +44,12 @@ class weeTemplate
 	protected $aData;
 
 	/**
+		Data in its encoded form.
+	*/
+
+	protected $aEncodedData;
+
+	/**
 		Configure the filename and the data for this template.
 
 		@param $sTemplate	The template name.
@@ -61,12 +67,15 @@ class weeTemplate
 	/**
 		Returns the template as a string.
 
+		TODO:this will encode data for each sub-templates, optimize
+
 		@return string The template.
 	*/
 
 	public function __toString()
 	{
-		extract(weeOutput::encodeArray($this->aData));
+		$this->aEncodedData = $this->aData;
+		extract(weeOutput::encodeArray($this->aEncodedData));
 
 		ob_start();
 		require($this->sFilename);
