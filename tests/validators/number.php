@@ -64,14 +64,6 @@ return
 && !weeNumberValidator::test(1.1, array('format' => 'float', 'max' => 1.0))
 &&  weeNumberValidator::test(1.1, array('format' => 'float', 'max' => 1.2))
 
-// Bugs and limitations: these should be valid but aren't yet.
-// PHP integer support seems to change based on 32/64 bits
-// What do we do about these test cases?
-
-// && !weeNumberValidator::test(20000000000000000)
-// && !weeNumberValidator::test(2E+16)
-// && !weeNumberValidator::test('2E+16')
-
 ;
 
 ?>
