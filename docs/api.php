@@ -27,7 +27,9 @@ td li table{margin:.5em 0}
 <?php
 
 define('ALLOW_INCLUSION', 1);
-require('wee/wee.php');
+define('ROOT_PATH', '../');
+
+require(ROOT_PATH . 'wee/wee.php');
 
 $aVariableTypes	= array(
 	'a'	=> 'array',
