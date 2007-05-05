@@ -101,6 +101,13 @@ abstract class weeAUDActionController extends weeActionController
 		return !$bHasErrors;
 	}
 
+	protected function checkCommitDel($oForm, $oTpl)
+	{
+		$bCancel = $oForm->hasErrors($this->aData) || empty($this->aData['confirm_delete']);
+		$oTpl->set('cancel', $bCancel);
+		return !$bCancel;
+	}
+
 	/**
 		If data isn't empty, check if it is valid and commit.
 
@@ -152,7 +159,6 @@ abstract class weeAUDActionController extends weeActionController
 				DELETE
 					FROM ' . $this->aConfig['table'] . '
 					WHERE ' . $this->aConfig['pkey'] . '=?
-					LIMIT 1
 			', $this->aData[$this->aConfig['pkey']]);
 		}
 	}
