@@ -48,6 +48,7 @@ class weeFormTable extends weeFormContainer
 
 	/**
 		Initialize the widget using the SimpleXML object.
+		XML validation is done while initializing childrens in childrensInit.
 
 		@param $oXML The SimpleXML object describing the widget.
 	*/
@@ -81,6 +82,8 @@ class weeFormTable extends weeFormContainer
 
 	/**
 		Initialize recursively the childrens of the given element.
+
+		@param $oXML The element which childrens are going to be created.
 	*/
 
 	protected function childrensInit($oXML)
@@ -101,6 +104,13 @@ class weeFormTable extends weeFormContainer
 			}
 		}
 	}
+
+	/**
+		Return the given element's childrens XHTML code.
+
+		@param	$oXML	The element which childrens are going to be converted to string.
+		@return	string	XHTML for the childrens of this element.
+	*/
 
 	protected function childrensToString($oXML)
 	{
@@ -130,19 +140,6 @@ class weeFormTable extends weeFormContainer
 		}
 
 		return $sChildrens;
-	}
-
-	/**
-		Check if the SimpleXML object is valid for this widget.
-		Only used in the constructor.
-
-		@param	$oXML	The SimpleXML object.
-		@return	bool	Whether the SimpleXML object is valid.
-	*/
-
-	protected function isValidXML($oXML)
-	{
-		return true; // TODO
 	}
 }
 
