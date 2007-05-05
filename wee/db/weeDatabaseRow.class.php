@@ -26,8 +26,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Values can be accessed like an array.
 */
 
-abstract class weeDatabaseRow implements ArrayAccess
+abstract class weeDatabaseRow implements ArrayAccess, Iterator
 {
+	/**
+		Key of the current iterated element.
+	*/
+
+	protected $aCurrentElement;
+
 	/**
 		Wether we are in the template and must encode the results.
 	*/
@@ -53,6 +59,17 @@ abstract class weeDatabaseRow implements ArrayAccess
 	}
 
 	/**
+		Return the current element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function current()
+	{
+		return $this->aCurrentElement['value'];
+	}
+
+	/**
 		Used by weeTemplate to automatically encode row results.
 
 		@return $this
@@ -62,6 +79,26 @@ abstract class weeDatabaseRow implements ArrayAccess
 	{
 		$this->bEncodeResults = true;
 		return $this;
+	}
+
+	/**
+		Return the key of the current element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function key()
+	{
+		return $this->aCurrentElement['key'];
+	}
+	/**
+		Move forward to next element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function next()
+	{
 	}
 
 	/**
@@ -117,6 +154,29 @@ abstract class weeDatabaseRow implements ArrayAccess
 	public function offsetUnset($offset)
 	{
 		unset($this->aRow[$offset]);
+	}
+
+	/**
+		Rewind the Iterator to the first element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function rewind()
+	{
+		reset($this->aRow);
+	}
+
+	/**
+		Check if there is a current element after calls to rewind() or next().
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function valid()
+	{
+		$this->aCurrentElement = each($this->aRow);
+		return $this->aCurrentElement !== false;
 	}
 }
 

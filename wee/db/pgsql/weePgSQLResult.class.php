@@ -60,6 +60,15 @@ class weePgSQLResult extends weeDatabaseResult
 	}
 
 	/**
+		Delete the resource and clean up space and memory.
+	*/
+
+	public function __destruct()
+	{
+		pg_free_result($this->rResult);
+	}
+
+	/**
 		Return the current row.
 
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
@@ -68,15 +77,6 @@ class weePgSQLResult extends weeDatabaseResult
 	public function current()
 	{
 		return $this->processRow($this->aCurrentFetch);
-	}
-
-	/**
-		Delete the resource and clean up space and memory.
-	*/
-
-	public function __destruct()
-	{
-		pg_free_result($this->rResult);
 	}
 
 	/**
