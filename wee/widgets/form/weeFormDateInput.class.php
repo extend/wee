@@ -57,6 +57,10 @@ class weeFormDateInput extends weeFormWritable
 
 	public function __toString()
 	{
+		$sClass		= 'dateinput';
+		if (!empty($this->oXML->class))
+			$sClass	= weeOutput::encodeValue($this->oXML->class);
+
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
@@ -65,7 +69,7 @@ class weeFormDateInput extends weeFormWritable
 		$sId		= $this->getId();
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
 
-		return '<label for="form_' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <fieldset class="dateinput" id="form_' . $sId . '"' . $sHelp .
+		return '<label for="form_' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <fieldset class="' . $sClass . '" id="form_' . $sId . '"' . $sHelp .
 			'>' . $this->renderYear($sHelp, $aDate[0]) . ' ' . $this->renderMonth($sHelp, $aDate[1]) . ' ' . $this->renderDay($sHelp, $aDate[2]) . '</fieldset>';
 	}
 

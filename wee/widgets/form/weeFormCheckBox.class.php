@@ -39,6 +39,10 @@ class weeFormCheckBox extends weeFormCheckable
 		if ($this->isChecked())
 			$sCheck	= ' checked="checked"';
 
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
@@ -48,7 +52,7 @@ class weeFormCheckBox extends weeFormCheckable
 		$sName		= weeOutput::encodeValue($this->oXML->name);
 
 		return	'<label class="checkbox" for="' . $sId . '"' . $sHelp . '><input type="checkbox" id="' . $sId . '" name="' . $sName .
-				'" value="1"' . $sCheck . $sHelp . '/> ' . $sLabel . '</label>';
+				'" value="1"' . $sCheck . $sClass . $sHelp . '/> ' . $sLabel . '</label>';
 	}
 }
 

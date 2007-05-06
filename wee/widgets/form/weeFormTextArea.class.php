@@ -42,8 +42,8 @@ class weeFormTextArea extends weeFormWritable
 		else							$iRows = 4;
 
 		$sClass		= null;
-		if (isset($this->oXML['class']))
-			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML['class']) . '"';
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
 
 		$sHelp		= null;
 		if (isset($this->oXML->help))

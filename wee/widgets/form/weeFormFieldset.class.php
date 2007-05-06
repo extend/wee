@@ -37,8 +37,8 @@ class weeFormFieldset extends weeFormContainer
 	public function __toString()
 	{
 		$sClass = null;
-		if (!empty($this->oXML['class']))
-			$sClass = ' class="' . weeOutput::encodeValue(_($this->oXML['class'])) . '"';
+		if (!empty($this->oXML->class))
+			$sClass = ' class="' . weeOutput::encodeValue(_($this->oXML->class)) . '"';
 
 		$sLabel = null;
 		if (!empty($this->oXML->label))

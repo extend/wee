@@ -35,6 +35,10 @@ class weeFormFileInput extends weeFormWritable
 
 	public function __toString()
 	{
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
@@ -48,7 +52,7 @@ class weeFormFileInput extends weeFormWritable
 		$sName		= weeOutput::encodeValue($this->oXML->name);
 
 		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <input type="file" id="' .
-			   $sId . '" name="' . $sName . '"' . $sHelp . $sMIME . '/>';
+			   $sId . '" name="' . $sName . '"' . $sClass . $sHelp . $sMIME . '/>';
 	}
 
 	/**

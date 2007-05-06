@@ -42,6 +42,10 @@ class weeFormTextBox extends weeFormWritable
 
 	public function __toString()
 	{
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
@@ -63,7 +67,7 @@ class weeFormTextBox extends weeFormWritable
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
 		$sName		= weeOutput::encodeValue($this->oXML->name);
 
-		$sInput		= '<input type="' . $this->sTextType . '" id="' . $sId . '" name="' . $sName . '"' . $sHelp . $sMaxLen . $sValue . '/>';
+		$sInput		= '<input type="' . $this->sTextType . '" id="' . $sId . '" name="' . $sName . '"' . $sClass . $sHelp . $sMaxLen . $sValue . '/>';
 		if (!empty($this->oXML->format))
 			$sInput	= sprintf($this->oXML->format, $sInput);
 

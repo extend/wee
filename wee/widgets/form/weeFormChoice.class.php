@@ -41,6 +41,10 @@ class weeFormChoice extends weeFormOneSelectable
 		//TODO:must not fire in __toString
 		fire(empty($this->oXML->options), 'IllegalStateException');
 
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
@@ -54,7 +58,7 @@ class weeFormChoice extends weeFormOneSelectable
 		$sName	= weeOutput::encodeValue($this->oXML->name);
 
 		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <select id="' . $sId . '" name="' .
-			$sName . '"' . $sHelp . '>' . $sOptions . '</select>';
+			$sName . '"' . $sClass . $sHelp . '>' . $sOptions . '</select>';
 	}
 
 	/**

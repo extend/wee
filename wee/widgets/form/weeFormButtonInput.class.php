@@ -42,6 +42,10 @@ class weeFormButtonInput extends weeFormStatic
 
 	public function __toString()
 	{
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
 		$sLabel	= null;
 		if (isset($this->oXML->label))
 			$sLabel = ' value="' . weeOutput::encodeValue(_($this->oXML->label)) . '"';
@@ -50,7 +54,7 @@ class weeFormButtonInput extends weeFormStatic
 		if (isset($this->oXML->name))
 			$sName	= ' name="' . weeOutput::encodeValue($this->oXML->name) . '"';
 
-		return '<input type="' . $this->sButtonType . '"' . $sName . $sLabel . '/>';
+		return '<input type="' . $this->sButtonType . '"' . $sClass . $sName . $sLabel . '/>';
 	}
 }
 
