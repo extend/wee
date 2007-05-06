@@ -38,6 +38,9 @@ class weeFormDateInput extends weeFormWritable
 	{
 		parent::__construct($oXML);
 
+		fire(empty($this->oXML->from), 'BadXMLException');
+		fire(empty($this->oXML->to), 'BadXMLException');
+
 		if ($this->oXML->from == 'current')
 			$this->oXML->from = @date('Y');
 		if ($this->oXML->to == 'current')
@@ -62,7 +65,7 @@ class weeFormDateInput extends weeFormWritable
 		$sId		= $this->getId();
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
 
-		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <fieldset class="dateinput" id="form_' . $sId . '"' . $sHelp .
+		return '<label for="form_' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <fieldset class="dateinput" id="form_' . $sId . '"' . $sHelp .
 			'>' . $this->renderYear($sHelp, $aDate[0]) . ' ' . $this->renderMonth($sHelp, $aDate[1]) . ' ' . $this->renderDay($sHelp, $aDate[2]) . '</fieldset>';
 	}
 
@@ -181,12 +184,12 @@ class weeFormDateInput extends weeFormWritable
 
 	public function transformValue(&$aData)
 	{
-		if (empty($_POST[$this->oXML->name . '_year']) || empty($_POST[$this->oXML->name . '_month']) || empty($_POST[$this->oXML->name . '_day']))
+		if (empty($aData[$this->oXML->name . '_year']) || empty($aData[$this->oXML->name . '_month']) || empty($aData[$this->oXML->name . '_day']))
 			return false;
 
 		//TODO:validates data here too
-		$_POST[(string)$this->oXML->name] = sprintf('%04u-%02u-%02u', $_POST[$this->oXML->name . '_year'], $_POST[$this->oXML->name . '_month'], $_POST[$this->oXML->name . '_day']);
-		unset($_POST[$this->oXML->name . '_year'], $_POST[$this->oXML->name . '_month'], $_POST[$this->oXML->name . '_day']);
+		$aData[(string)$this->oXML->name] = sprintf('%04u-%02u-%02u', $aData[$this->oXML->name . '_year'], $aData[$this->oXML->name . '_month'], $aData[$this->oXML->name . '_day']);
+		unset($aData[$this->oXML->name . '_year'], $aData[$this->oXML->name . '_month'], $aData[$this->oXML->name . '_day']);
 
 		return true;
 	}
