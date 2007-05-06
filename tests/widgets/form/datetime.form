@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<formkey>0</formkey>
+
+	<widgets>
+		<widget type="weeFormFieldset">
+			<widget type="weeFormDateInput">
+				<name>datetime1</name>
+				<label>weeFormDateInput :</label>
+				<from>current</from>
+				<to>2020</to>
+			</widget>
+
+			<widget type="weeFormFieldset" class="buttonsfieldset">
+				<widget type="weeFormSubmitButton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>
