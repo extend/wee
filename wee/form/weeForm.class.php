@@ -21,8 +21,8 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-if (!defined('FRM_PATH'))	define('FRM_PATH',	ROOT_PATH . 'form/');
-if (!defined('FRM_EXT'))	define('FRM_EXT',	'.form');
+if (!defined('FORM_PATH'))	define('FORM_PATH',	ROOT_PATH . 'form/');
+if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
 
 /**
 	Forms handling.
@@ -108,7 +108,7 @@ class weeForm
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
 	{
-		$sFilename = FRM_PATH . $sFilename . FRM_EXT;
+		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException');
 
 		$oXML = simplexml_load_file($sFilename, 'weeSimpleXMLHack');
