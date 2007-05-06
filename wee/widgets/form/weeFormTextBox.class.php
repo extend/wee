@@ -63,8 +63,11 @@ class weeFormTextBox extends weeFormWritable
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
 		$sName		= weeOutput::encodeValue($this->oXML->name);
 
-		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <input type="' . $this->sTextType .
-			   '" id="' . $sId . '" name="' . $sName . '"' . $sHelp . $sMaxLen . $sValue . '/>';
+		$sInput		= '<input type="' . $this->sTextType . '" id="' . $sId . '" name="' . $sName . '"' . $sHelp . $sMaxLen . $sValue . '/>';
+		if (!empty($this->oXML->format))
+			$sInput	= sprintf($this->oXML->format, $sInput);
+
+		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> ' . $sInput;
 	}
 }
 
