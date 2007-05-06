@@ -55,6 +55,7 @@ td					{margin:0;padding:0}
 hr					{margin:1em 0}
 
 /* Forms defaults */
+/*TODO:possible problem with the first li margin-right*/
 
 form.block ol						{margin:0;padding:0}
 form.block li						{list-style:none;margin:0;padding:.5em 0}
@@ -80,6 +81,9 @@ form.block input[type="password"]	{min-width:20em}
 form.block fieldset.buttonsfieldset		{text-align:right}
 form.block fieldset.buttonsfieldset ol	{margin:0}
 form.block fieldset.buttonsfieldset li	{display:inline;margin-right:1em}
+
+form.block fieldset.radiobox li.group label	{margin-left:2em}
+form.block fieldset.radiobox li.group ol	{margin:0}
 
 form.block fieldset.scrollablechecklist	ol			{border:1px solid gray;display:inline-block;max-height:16em;overflow:auto;width:20em}
 form.block fieldset.scrollablechecklist li			{background:#f3f3f3;height:1.6em;padding:0}

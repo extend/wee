@@ -42,21 +42,24 @@ class weeFormCheckList extends weeFormMultipleSelectable
 
 	public function __toString()
 	{
-		Fire(empty($this->aOptions), 'IllegalStateException');
+		fire(empty($this->oXML->options), 'IllegalStateException');
 
-		$sClass		= (!empty($this->oXML['scrollable'])) ? 'scrollablechecklist' : 'checklist';
+		$sClass		= 'checklist';
+		if (!empty($this->oXML->class))
+			$sClass	= weeOutput::encodeValue($this->oXML->class);
+
 		$sId		= $this->getId();
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
 		$sName		= weeOutput::encodeValue($this->oXML->name) . '[]';
 
 		$i			= 0;
 		$sOptions	= null;
-		foreach ($this->aOptions as $a)
+		foreach ($this->oXML->options->children() as $oItem)
 		{
 			$sOptions .= '<li';
 			if ($sClass == 'scrollablechecklist' && $i++ % 2 == 0)
 				$sOptions .= ' class="odd"';
-			$sOptions .= '>' . $this->optionToString($sName, $sId, $a) . '</li>';
+			$sOptions .= '>' . $this->optionToString($sName, $sId, $oItem) . '</li>';
 		}
 
 		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
@@ -65,31 +68,31 @@ class weeFormCheckList extends weeFormMultipleSelectable
 	/**
 		Return the option as a XHTML string.
 
-		@param	$sName		The widget's name attribute.
-		@param	$sId		The widget's id attribute.
-		@param	$aOption	The option's details.
-		@return	string		The option as XHTML.
+		@param	$sName	The widget's name attribute.
+		@param	$sId	The widget's id attribute.
+		@param	$oItem	The option's details.
+		@return	string	The option as XHTML.
 	*/
 
-	protected function optionToString($sName, $sId, $aOption)
+	protected function optionToString($sName, $sId, $oItem)
 	{
 		$this->iOptionNumber++;
 
 		$sDisabled		= null;
-		if ($aOption['disabled'])
+		if ($oItem['disabled'])
 			$sDisabled	= ' disabled="disabled"';
 
 		$sHelp			= null;
-		if (!empty($aOption['help']))
-			$sHelp		= ' title="' . weeOutput::encodeValue(_($aOption['help'])) . '"';
+		if (!empty($oItem['help']))
+			$sHelp		= ' title="' . weeOutput::encodeValue(_($oItem['help'])) . '"';
 
 		$sSelected		= null;
-		if ($this->isSelected($aOption['value']))
+		if ($this->isSelected($oItem['value']))
 			$sSelected	= ' checked="checked"';
 
 		$sId			= $sId . '_' . $this->iOptionNumber;
-		$sLabel			= weeOutput::encodeValue(_($aOption['label']));
-		$sValue			= weeOutput::encodeValue($aOption['value']);
+		$sLabel			= weeOutput::encodeValue(_($oItem['label']));
+		$sValue			= weeOutput::encodeValue($oItem['value']);
 
 		return	'<label for="' . $sId . '"' . $sHelp . '><input type="checkbox" id="' . $sId . '" name="' . $sName .
 				'" value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '/> ' . $sLabel . '</label>';

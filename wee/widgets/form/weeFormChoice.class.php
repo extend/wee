@@ -31,12 +31,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeFormChoice extends weeFormOneSelectable
 {
 	/**
-		The current group of options, if applicable.
-	*/
-
-	protected $sCurrentGroup;
-
-	/**
 		Return the widget XHTML code.
 
 		@return string XHTML for this widget.
@@ -44,18 +38,16 @@ class weeFormChoice extends weeFormOneSelectable
 
 	public function __toString()
 	{
-		fire(empty($this->aOptions), 'IllegalStateException');
+		//TODO:must not fire in __toString
+		fire(empty($this->oXML->options), 'IllegalStateException');
 
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
 
 		$sOptions	= null;
-		foreach ($this->aOptions as $a)
-		{
-			if (isset($a['options']))	$sOptions .= $this->groupToString($a);
-			else						$sOptions .= $this->optionToString($a);
-		}
+		foreach ($this->oXML->options->children() as $oItem)
+			$sOptions .= $this->optionToString($oItem);
 
 		$sId	= $this->getId();
 		$sLabel	= weeOutput::encodeValue(_($this->oXML->label));
@@ -66,171 +58,86 @@ class weeFormChoice extends weeFormOneSelectable
 	}
 
 	/**
-		Add an option to the list.
+		Add two levels of options from a SQL database.
 
-		Add the option to the current option group if applicable.
-
-		@param $sValue		Option's value.
-		@param $sLabel		Option's label.
-		@param $sHelp		Option's help text.
-		@param $bDisabled	Whether the option is disabled.
-		@param $bSelected	Whether the option is selected.
+		@param	$oDatabase	Database to query from
+		@param	$sTable		Table to query from
+		@param	$sValue		Name of the value column
+		@param	$sLabel		Name of the label column
+		@param	$sParent	Name of the parent id column
 	*/
 
-	public function addOption($sValue, $sLabel, $sHelp = null, $bDisabled = false, $bSelected = false)
+	public function addOptionGroups($oDatabase, $sTable, $sValue, $sLabel, $sParent)
 	{
-		if (empty($this->sCurrentGroup))
-			parent::addOption($sValue, $sLabel, $sHelp, $bDisabled, $bSelected);
-		else
+		//TODO:check args
+
+		$oItems = $oDatabase->query('
+			SELECT ' . $sValue . ' AS value, ' . $sLabel . ' AS label
+				FROM ' . $sTable . ' AS a
+				WHERE ' . $sParent . ' IS NULL
+				ORDER BY (SELECT COUNT(*) FROM ' . $sTable . ' AS b WHERE a.' . $sValue . '=b.' . $sParent . ' LIMIT 1)=0 DESC, label
+		');
+
+		foreach ($oItems as $aItem)
 		{
-			$this->aOptions[$this->sCurrentGroup]['options'][]	= array('value'		=> $sValue,
-																		'label'		=> $sLabel,
-																		'help'		=> $sHelp,
-																		'disabled'	=> $bDisabled);
+			$oSub = $oDatabase->query('
+				SELECT ' . $sValue . ' AS value, ' . $sLabel . ' AS label
+					FROM ' . $sTable . '
+					WHERE ' . $sParent . '=?
+					ORDER BY label
+			', $aItem['value']);
 
-			if ($bSelected)
-				$this->select($sValue);
-		}
-	}
-
-	/**
-		Close the option group.
-	*/
-
-	public function closeOptionGroup()
-	{
-		$this->sCurrentGroup = null;
-	}
-
-	/**
-		Return the option group as a XHTML string.
-
-		@param	$aGroup	The group's options.
-		@return	string	The group as XHTML.
-	*/
-
-	protected function groupToString($aGroup)
-	{
-		$sDisabled		= null;
-		if ($aGroup['disabled'])
-			$sDisabled	= ' disabled="disabled"';
-
-		$sHelp			= null;
-		if (!empty($aGroup['help']))
-			$sHelp		= ' title="' . weeOutput::encodeValue(_($aGroup['help'])) . '"';
-
-		$sLabel		= weeOutput::encodeValue(_($aGroup['label']));
-
-		$sOptions	= null;
-		foreach ($aGroup['options'] as $a)
-			$sOptions .= $this->optionToString($a);
-
-		return '<optgroup label="' . $sLabel . '"' . $sDisabled . $sHelp . '>' . $sOptions . '</optgroup>';
-	}
-
-	/**
-		Return whether the given value is in the option list.
-
-		@param	$sValue	The value to check.
-		@return	bool	Whether the value is in the option list.
-	*/
-
-	public function isInOptions($sValue)
-	{
-		foreach ($this->aOptions as $aOption)
-		{
-			if (!empty($aOption['options']))
+			if ($oSub->numResults() == 0)
+				$this->addOption($aItem);
+			else
 			{
-				foreach ($aOption['options'] as $aSubOption)
-					if ($sValue == $aSubOption['value'] && !$aSubOption['disabled'])
-						return true;
+				unset($aItem['value']);
+				$this->addOption($aItem + array('name' => 'group'));
+				$this->addOptions($oSub, ".//group[@label='" . $aItem['label'] . "']");
 			}
-			elseif ($sValue == $aOption['value'] && !$aOption['disabled'])
-				return true;
 		}
-		return false;
-	}
-
-	/**
-		Load options from the SimpleXML object.
-		Called by the constructor only.
-
-		@param $oXML The SimpleXML object.
-	*/
-
-	protected function loadOptionsFromXML($oXML)
-	{
-		if (isset($oXML->options))
-			foreach ($oXML->options->children() as $o)
-			{
-				$sHelp		= null;
-				if (!empty($o->help))
-					$sHelp	= (string)$o['help'];
-
-				if ($o->getName() == 'item')
-					$this->addOption((string)$o['value'], (string)$o['label'], $sHelp, !empty($o['disabled']), !empty($o['selected']));
-				else
-				{
-					$this->openOptionGroup((string)$o['label'], $sHelp, !empty($o['disabled']));
-
-					foreach ($o->item as $oItem)
-					{
-						$sItemHelp		= null;
-						if (!empty($oItem->help))
-							$sItemHelp	= (string)$oItem['help'];
-
-						$this->addOption((string)$oItem['value'], (string)$oItem['label'], $sItemHelp, !empty($oItem['disabled']), !empty($oItem['selected']));
-					}
-
-					$this->closeOptionGroup();
-				}
-			}
-	}
-
-	/**
-		Option an option group.
-
-		TODO:we may want to add an option at an existing group, too
-
-		@param	$sLabel		The option group's label.
-		@param	$sHelp		The option group's help message.
-		@param	$bDisabled	Whether this option group is disabled.
-	*/
-
-	public function openOptionGroup($sLabel, $sHelp = null, $bDisabled = false)
-	{
-		fire(!empty($this->sCurrentGroup), 'IllegalStateException');
-
-		$this->sCurrentGroup		= $sLabel;
-		$this->aOptions[$sLabel]	= array('label'		=> $sLabel,
-											'help'		=> $sHelp,
-											'disabled'	=> $bDisabled,
-											'options'	=> array());
 	}
 
 	/**
 		Return the option as a XHTML string.
 
-		@param	$aGroup	The option's details.
+		@param	$oItem	The option's item.
 		@return	string	The option as XHTML.
 	*/
 
-	protected function optionToString($aOption)
+	protected function optionToString($oItem)
 	{
+		//TODO:check the name in item,group
+
 		$sDisabled		= null;
-		if ($aOption['disabled'])
+		if ($oItem['disabled'])
 			$sDisabled	= ' disabled="disabled"';
 
 		$sHelp			= null;
-		if (!empty($aOption['help']))
-			$sHelp		= ' title="' . weeOutput::encodeValue(_($aOption['help'])) . '"';
+		if (!empty($oItem['help']))
+			$sHelp		= ' title="' . weeOutput::encodeValue(_($oItem['help'])) . '"';
+
+		$sLabel			= weeOutput::encodeValue(_($oItem['label']));
+
+		if ($oItem->getName() == 'group')
+		{
+			$sOptions	= null;
+			foreach ($oItem->children() as $oSubItem)
+			{
+				fire($oSubItem->getName() != 'item', 'BadXMLException'); // only two levels of items
+				$sOptions .= $this->optionToString($oSubItem);
+			}
+
+			return '<optgroup label="' . $sLabel . '"' . $sDisabled . $sHelp . '>' . $sOptions . '</optgroup>';
+		}
+
+		// else it is an item
 
 		$sSelected		= null;
-		if ($this->isSelected($aOption['value']))
+		if ($this->isSelected($oItem['value']))
 			$sSelected	= ' selected="selected"';
 
-		$sLabel			= weeOutput::encodeValue(_($aOption['label']));
-		$sValue			= weeOutput::encodeValue($aOption['value']);
+		$sValue			= weeOutput::encodeValue($oItem['value']);
 
 		return '<option value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '>' . $sLabel . '</option>';
 	}

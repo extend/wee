@@ -32,7 +32,7 @@ class weeFormRadioBox extends weeFormOneSelectable
 		Used to create an unique id for the radio items, since XHTML elements' id must be uniques.
 	*/
 
-	protected $iOptionNumber = 0;
+	static protected $iOptionNumber = 0;
 
 	/**
 		Return the widget XHTML code.
@@ -42,7 +42,12 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 	public function __toString()
 	{
-		fire(empty($this->aOptions), 'IllegalStateException');
+		//TODO:must not fire in __toString
+		fire(empty($this->oXML->options), 'IllegalStateException');
+
+		$sClass		= 'radiobox';
+		if (!empty($this->oXML->class))
+			$sClass	= $this->oXML->class;
 
 		$sId		= $this->getId();
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
@@ -50,15 +55,16 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 		if (is_null($this->sSelection))
 		{
-			$aFirst	= current($this->aOptions);
-			$this->select($aFirst['value']);
+			//TODO:improve speed, make it works
+			$aItems = $this->oXML->options->xpath('.//item');
+			$this->select($aItems[0]['value']);
 		}
 
 		$sOptions	= null;
-		foreach ($this->aOptions as $a)
-			$sOptions .= '<li>' . $this->optionToString($sName, $sId, $a) . '</li>';
+		foreach ($this->oXML->options->children() as $oItem)
+			$sOptions .= $this->optionToString($sName, $sId, $oItem);
 
-		return '<fieldset class="radiobox" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
+		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
 	}
 
 	/**
@@ -66,32 +72,46 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 		@param	$sName		Name of the radio item.
 		@param	$sId		Id of the radio item.
-		@param	$aOption	Selectable option's details.
+		@param	$oItem		Selectable option's details.
 		@return	string		XHTML for this radio item.
 	*/
 
-	protected function optionToString($sName, $sId, $aOption)
+	protected function optionToString($sName, $sId, $oItem)
 	{
-		$this->iOptionNumber++;
+		//TODO:check the name in item,group
+
+		weeFormRadioBox::$iOptionNumber++;
 
 		$sDisabled		= null;
-		if ($aOption['disabled'])
+		if ($oItem['disabled'])
 			$sDisabled	= ' disabled="disabled"';
 
 		$sHelp			= null;
-		if (!empty($aOption['help']))
-			$sHelp		= ' title="' . weeOutput::encodeValue(_($aOption['help'])) . '"';
+		if (!empty($oItem['help']))
+			$sHelp		= ' title="' . weeOutput::encodeValue(_($oItem['help'])) . '"';
+
+		$sId			= $sId . '_' . weeFormRadioBox::$iOptionNumber;
+		$sLabel			= weeOutput::encodeValue(_($oItem['label']));
+
+		if ($oItem->getName() == 'group')
+		{
+			$sOptions	= null;
+			foreach ($oItem->children() as $oSubItem)
+				$sOptions .= $this->optionToString($sName, $sId, $oSubItem);
+
+			return '<li class="group"><label>' . $sLabel . '</label><ol>' . $sOptions . '</ol></li>';
+		}
+
+		// else it is an item
 
 		$sSelected		= null;
-		if ($this->isSelected($aOption['value']))
+		if ($this->isSelected($oItem['value']))
 			$sSelected	= ' checked="checked"';
 
-		$sId			= $sId . '_' . $this->iOptionNumber;
-		$sLabel			= weeOutput::encodeValue(_($aOption['label']));
-		$sValue			= weeOutput::encodeValue($aOption['value']);
+		$sValue			= weeOutput::encodeValue($oItem['value']);
 
-		return '<label for="' . $sId . '"' . $sHelp . '><input type="radio" id="' . $sId . '" name="' . $sName .
-			   '" value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '/> ' . $sLabel . '</label>';
+		return	'<li><label for="' . $sId . '"' . $sHelp . '><input type="radio" id="' . $sId . '" name="' . $sName .
+				'" value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '/> ' . $sLabel . '</label></li>';
 	}
 }
 

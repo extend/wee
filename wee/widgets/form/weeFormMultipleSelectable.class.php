@@ -71,7 +71,8 @@ abstract class weeFormMultipleSelectable extends weeFormSelectable
 
 		$aData[(string)$this->oXML->name] = array();
 
-		foreach ($this->aOptions as $aOption)
+		$aOptions = $this->oXML->options->xpath('.//item');
+		foreach ($aOptions as $aOption)
 			$aData[(string)$this->oXML->name][(string)$aOption['value']] = (int)isset($a[(string)$aOption['value']]);
 
 		return true;

@@ -100,21 +100,6 @@ class weeOptionValidator implements weeFormValidator
 		fire(empty($this->oWidget), 'InvalidStateException');
 		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException');
 
-		/*
-			Are arrays possible if weeFormMultipleSelectable doesn't need this validator?
-
-		if (is_array($this->mValue))
-		{
-			foreach ($this->mValue as $mOption)
-				if (!$this->oWidget->isInOptions($mOption))
-				{
-					$this->setError('invalid');
-					break;
-				}
-		}
-		else
-		*/
-
 		if (!$this->oWidget->isInOptions($this->mValue))
 			$this->setError('invalid');
 
