@@ -6,9 +6,9 @@ if (isset($_SERVER['argc']))
 define('ALLOW_INCLUSION',	1);
 define('DEBUG',				1);
 
-define('FORM_PATH',	'./');
+define('FORM_PATH',	'./form/');
 define('ROOT_PATH',	'../../');
-define('TPL_PATH',	'./');
+define('TPL_PATH',	'./tpl/');
 
 require(ROOT_PATH . 'wee/wee.php');
 
