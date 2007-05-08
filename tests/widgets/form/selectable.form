@@ -108,7 +108,8 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormFieldset" class="buttonsfieldset">
+			<widget type="weeFormFieldset">
+				<class>buttonsfieldset</class>
 				<widget type="weeFormSubmitButton"/>
 			</widget>
 		</widget>
