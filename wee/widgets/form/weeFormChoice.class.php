@@ -137,13 +137,17 @@ class weeFormChoice extends weeFormOneSelectable
 
 		// else it is an item
 
+		$sClass			= null;
+		if (!empty($oItem['class']))
+			$sClass		= ' class="' . $oItem['class'] . '"';
+
 		$sSelected		= null;
 		if ($this->isSelected($oItem['value']))
 			$sSelected	= ' selected="selected"';
 
 		$sValue			= weeOutput::encodeValue($oItem['value']);
 
-		return '<option value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '>' . $sLabel . '</option>';
+		return '<option value="' . $sValue . '"' . $sClass . $sDisabled . $sHelp . $sSelected . '>' . $sLabel . '</option>';
 	}
 }
 
