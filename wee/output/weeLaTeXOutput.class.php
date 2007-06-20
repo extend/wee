@@ -47,7 +47,7 @@ class weeLaTeXOutput extends weeOutput
 	/**
 		Encodes data to be displayed.
 
-		Currently only encodes comments (%).
+		Per latex tutorial, the following need escaping: # $ % & ~ _ ^ \ { }
 
 		@param	$mValue	Data to encode.
 		@return	string	Data encoded.
@@ -55,7 +55,11 @@ class weeLaTeXOutput extends weeOutput
 
 	public function encode($mValue)
 	{
-		return str_replace('%', '\\%', $mValue);
+		return str_replace(
+			array('#', '$', '%', '&', '~', '_', '^', '\\', '{', '}'),
+			array('\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\textbackslash ', '\\{', '\\}'),
+			$mValue
+		);
 	}
 }
 
