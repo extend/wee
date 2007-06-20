@@ -108,6 +108,10 @@ class weeForm
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
 	{
+		//TODO:must fail if no output initialized?
+		//TODO:must fail if no session and form key is active
+		//TODO:must fail if there is widgets sharing the same for the same action
+
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException');
 
@@ -299,11 +303,15 @@ class weeForm
 				$oNode->property('widget') instanceof weeFormStatic || $oNode->property('widget') instanceof weeFormFileInput)
 				continue;
 
-			if (!$oNode->property('widget')->transformValue($aData))
-			{
-				$this->sValidationErrors = _('Input is incomplete') . "\r\n";
-				break;
-			}
+			//TODO:remove this comment
+			//TODO:remove the return value of transformValue
+//			if (!$oNode->property('widget')->transformValue($aData))
+//			{
+//				$this->sValidationErrors = _('Input is incomplete') . "\r\n";
+//				break;
+//			}
+
+			$oNode->property('widget')->transformValue($aData);
 
 			if (!empty($oNode['required']) && empty($aData[(string)$oNode->name]))
 			{
@@ -416,6 +424,10 @@ class weeForm
 		foreach ($aWidgets as $oNode)
 		{
 			$sName	= (string)$oNode->name;
+
+			if (!isset($aData[$sName]))
+				continue;
+
 			$mValue	= $aData[$sName];
 
 			if (is_array($mValue))
