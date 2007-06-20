@@ -94,13 +94,15 @@ abstract class weeFormSelectable extends weeFormWidget
 			$aOption['name'] = 'item';
 
 		$oItem = $oDest->addChild($aOption['name']);
+		unset($aOption['name']);
 
 		if (!empty($aOption['selected']))
 			$this->select($aOption['value']);
 		unset($aOption['selected']);
 
 		foreach ($aOption as $sName => $sValue)
-			$oItem->addAttribute($sName, $sValue);
+			if (strlen($aOption[$sName]) != 0)
+				$oItem->addAttribute($sName, $sValue);
 	}
 
 	/**
