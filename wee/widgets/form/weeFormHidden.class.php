@@ -31,22 +31,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeFormHidden extends weeFormWritable
 {
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		fire(!isset($this->sValue), 'IllegalStateException');
-
-		$sName	= weeOutput::encodeValue($this->oXML->name);
-		$sValue	= weeOutput::encodeValue($this->sValue);
-
-		return '<input type="hidden" name="' . $sName . '" value="' . $sValue . '"/>';
-	}
-
-	/**
 		Check if the SimpleXML object is valid for this widget.
 		Only used in the constructor.
 
@@ -57,6 +41,22 @@ class weeFormHidden extends weeFormWritable
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML);
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		fire(!isset($this->sValue), 'IllegalStateException');
+
+		$sName	= weeOutput::encodeValue($this->oXML->name);
+		$sValue	= weeOutput::encodeValue($this->sValue);
+
+		return '<input type="hidden" name="' . $sName . '" value="' . $sValue . '"/>';
 	}
 }
 

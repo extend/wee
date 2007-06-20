@@ -33,7 +33,7 @@ class weeSimplePagination extends weePagination
 		@return string XHTML for this widget.
 	*/
 
-	public function __toString()
+	public function toString()
 	{
 		$iCurrent	= intval($this->iFrom / $this->iPerPage);
 		$iLast		= intval($this->iTotal / $this->iPerPage);

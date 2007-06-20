@@ -31,37 +31,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeFormChoice extends weeFormOneSelectable
 {
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		//TODO:must not fire in __toString
-		fire(empty($this->oXML->options), 'IllegalStateException');
-
-		$sClass		= null;
-		if (!empty($this->oXML->class))
-			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
-
-		$sHelp		= null;
-		if (isset($this->oXML->help))
-			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
-
-		$sOptions	= null;
-		foreach ($this->oXML->options->children() as $oItem)
-			$sOptions .= $this->optionToString($oItem);
-
-		$sId	= $this->getId();
-		$sLabel	= weeOutput::encodeValue(_($this->oXML->label));
-		$sName	= weeOutput::encodeValue($this->oXML->name);
-
-		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <select id="' . $sId . '" name="' .
-			$sName . '"' . $sClass . $sHelp . '>' . $sOptions . '</select>';
-	}
-
-	/**
 		Add two levels of options from a SQL database.
 
 		@param	$oDatabase	Database to query from
@@ -148,6 +117,36 @@ class weeFormChoice extends weeFormOneSelectable
 		$sValue			= weeOutput::encodeValue($oItem['value']);
 
 		return '<option value="' . $sValue . '"' . $sClass . $sDisabled . $sHelp . $sSelected . '>' . $sLabel . '</option>';
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		fire(empty($this->oXML->options), 'IllegalStateException');
+
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
+		$sHelp		= null;
+		if (isset($this->oXML->help))
+			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
+
+		$sOptions	= null;
+		foreach ($this->oXML->options->children() as $oItem)
+			$sOptions .= $this->optionToString($oItem);
+
+		$sId	= $this->getId();
+		$sLabel	= weeOutput::encodeValue(_($this->oXML->label));
+		$sName	= weeOutput::encodeValue($this->oXML->name);
+
+		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <select id="' . $sId . '" name="' .
+			$sName . '"' . $sClass . $sHelp . '>' . $sOptions . '</select>';
 	}
 }
 

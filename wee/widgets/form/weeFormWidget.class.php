@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for form widgets.
 */
 
-abstract class weeFormWidget
+abstract class weeFormWidget implements Printable
 {
 	/**
 		Suffix to the XHTML element, in case there is more than one with the same name.
@@ -52,14 +52,6 @@ abstract class weeFormWidget
 		fire(!$this->isValidXML($oXML), 'BadXMLException');
 		$this->oXML = $oXML;
 	}
-
-	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	abstract public function __toString();
 
 	/**
 		Construct and return the XHTML element's id for this widget.

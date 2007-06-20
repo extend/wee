@@ -32,6 +32,7 @@ define('DEBUG', 1);
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 
-echo new weeTestSuite($argv[1]);
+$o = new weeTestSuite($argv[1]);
+echo $o->toString();
 
 ?>

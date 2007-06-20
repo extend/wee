@@ -17,7 +17,7 @@ file_put_contents(
 		->docFunc('fire')
 		->docFunc('burn')
 		->docFunc('array_value')
-		->__toString()
+		->toString()
 );
 
 echo $argv[1] . 'api.xml created successfully.';

@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for pagination widgets.
 */
 
-abstract class weePagination
+abstract class weePagination implements Printable
 {
 	/**
 		Display page containing this item number.
@@ -83,14 +83,6 @@ abstract class weePagination
 
 		$this->setURI($_SERVER['PHP_SELF']);
 	}
-
-	/**
-		Returns the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	abstract public function __toString();
 
 	/**
 		Return the first item that will be displayed.
@@ -206,6 +198,14 @@ abstract class weePagination
 			return $this->iTotal - 1;
 		return $i;
 	}
+
+	/**
+		Returns the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	abstract public function toString();
 }
 
 ?>

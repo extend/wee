@@ -33,7 +33,7 @@ class weeFormMultipleFileInput extends weeFormFileInput
 		@return string XHTML for this widget.
 	*/
 
-	public function __toString()
+	public function toString()
 	{
 		$sHelp		= null;
 		if (isset($this->oXML->help))

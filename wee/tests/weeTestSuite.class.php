@@ -27,7 +27,7 @@
 	Use it if you need additional files that are not unit test case.
 */
 
-class weeTestSuite
+class weeTestSuite implements Printable
 {
 	/**
 		Path to the unit test cases.
@@ -53,26 +53,6 @@ class weeTestSuite
 		$this->sTestsPath = $_SERVER['PWD'] . '/' . $sTestsPath;
 
 		weeAutoload::addPath($sTestsPath);
-	}
-
-	/**
-		Returns the result of the unit test suite.
-
-		@return A simple report of the unit test suite after its completion.
-	*/
-
-	public function __toString()
-	{
-		$bAllSuccess = $this->run();
-
-		$s = '';
-
-		if ($bAllSuccess)
-			return 'Results of the test suite: all ' . sizeof($this->aResults) . " unit test cases succeeded.\r\n";
-
-		$aCount = array_count_values($this->aResults);
-
-		return 'Results of the test suite: ERROR: ' . $aCount[0] . ' of ' . sizeof($this->aResults) . " unit test cases failed.\r\n";
 	}
 
 	/**
@@ -132,6 +112,27 @@ class weeTestSuite
 		}
 
 		return $bAllSuccess;
+	}
+
+	/**
+		Returns the result of the unit test suite.
+
+		@return A simple report of the unit test suite after its completion.
+	*/
+
+	public function toString()
+	{
+		//TODO:this doesn't feels right here...
+		$bAllSuccess = $this->run();
+
+		$s = '';
+
+		if ($bAllSuccess)
+			return 'Results of the test suite: all ' . sizeof($this->aResults) . " unit test cases succeeded.\r\n";
+
+		$aCount = array_count_values($this->aResults);
+
+		return 'Results of the test suite: ERROR: ' . $aCount[0] . ' of ' . sizeof($this->aResults) . " unit test cases failed.\r\n";
 	}
 }
 

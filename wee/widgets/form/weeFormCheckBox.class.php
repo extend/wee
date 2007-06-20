@@ -33,7 +33,7 @@ class weeFormCheckBox extends weeFormCheckable
 		@return string XHTML for this widget.
 	*/
 
-	public function __toString()
+	public function toString()
 	{
 		$sCheck		= null;
 		if ($this->isChecked())

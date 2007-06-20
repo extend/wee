@@ -30,7 +30,7 @@ if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
 	Validates automatically data posted and adds security checks.
 */
 
-class weeForm
+class weeForm implements Printable
 {
 	/**
 		Constant for 'add' action.
@@ -132,36 +132,6 @@ class weeForm
 		$this->iAction		= $iAction;
 		$this->oForm		= new weeFormContainer($oXML->widgets, $iAction);
 		$this->setURI($_SERVER['REQUEST_URI']);
-	}
-
-	/**
-		Prints the form.
-		Generates a form key if needed.
-
-		@return string The XHTML form.
-	*/
-
-	public function __toString()
-	{
-		$s	= '<form action="' . weeOutput::encodeValue($this->sURI) . '" method="' . weeOutput::encodeValue($this->sMethod) .
-			  '" class="' . weeOutput::encodeValue($this->sClass) . '"';
-		if (!empty($this->sEncType))
-			$s .= ' enctype="' . weeOutput::encodeValue($this->sEncType) . '"';
-		$s .= '>';
-
-		if ($this->bFormKey)
-		{
-			// Needs session to be started to use the form key
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException');
-
-			$sTime	= microtime();
-			$sKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
-			$_SESSION['session_formkeys'][$sKey] = $sTime;
-
-			$s .= '<input type="hidden" name="wee_formkey" value="' . $sKey . '"/>';
-		}
-
-		return $s . $this->oForm->__toString() . '</form>';
 	}
 
 	/**
@@ -458,6 +428,36 @@ class weeForm
 		}
 
 		return $oQuery;
+	}
+
+	/**
+		Prints the form.
+		Generates a form key if needed.
+
+		@return string The XHTML form.
+	*/
+
+	public function toString()
+	{
+		$s	= '<form action="' . weeOutput::encodeValue($this->sURI) . '" method="' . weeOutput::encodeValue($this->sMethod) .
+			  '" class="' . weeOutput::encodeValue($this->sClass) . '"';
+		if (!empty($this->sEncType))
+			$s .= ' enctype="' . weeOutput::encodeValue($this->sEncType) . '"';
+		$s .= '>';
+
+		if ($this->bFormKey)
+		{
+			// Needs session to be started to use the form key
+			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException');
+
+			$sTime	= microtime();
+			$sKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
+			$_SESSION['session_formkeys'][$sKey] = $sTime;
+
+			$s .= '<input type="hidden" name="wee_formkey" value="' . $sKey . '"/>';
+		}
+
+		return $s . $this->oForm->toString() . '</form>';
 	}
 
 	/**

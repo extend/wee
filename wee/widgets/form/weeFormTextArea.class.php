@@ -33,7 +33,7 @@ class weeFormTextArea extends weeFormWritable
 		@return string XHTML for this widget.
 	*/
 
-	public function __toString()
+	public function toString()
 	{
 		if (isset($this->oXML->cols))	$iCols = $this->oXML->cols;
 		else							$iCols = 35;

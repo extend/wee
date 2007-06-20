@@ -28,34 +28,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeFormFileInput extends weeFormWritable
 {
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		$sClass		= null;
-		if (!empty($this->oXML->class))
-			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
-
-		$sHelp		= null;
-		if (isset($this->oXML->help))
-			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
-
-		$sMIME		= null;
-		if (isset($this->oXML->mime))
-			$sMIME	= ' accept="' . weeOutput::encodeValue($this->oXML->mime) . '"';
-
-		$sId		= $this->getId();
-		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
-		$sName		= weeOutput::encodeValue($this->oXML->name);
-
-		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <input type="file" id="' .
-			   $sId . '" name="' . $sName . '"' . $sClass . $sHelp . $sMIME . '/>';
-	}
-
-	/**
 		Return the current value.
 
 		@return string The current value.
@@ -90,6 +62,34 @@ class weeFormFileInput extends weeFormWritable
 	final public function setValue($sValue)
 	{
 		burn('BadMethodCallException');
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		$sClass		= null;
+		if (!empty($this->oXML->class))
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
+
+		$sHelp		= null;
+		if (isset($this->oXML->help))
+			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
+
+		$sMIME		= null;
+		if (isset($this->oXML->mime))
+			$sMIME	= ' accept="' . weeOutput::encodeValue($this->oXML->mime) . '"';
+
+		$sId		= $this->getId();
+		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
+		$sName		= weeOutput::encodeValue($this->oXML->name);
+
+		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <input type="file" id="' .
+			   $sId . '" name="' . $sName . '"' . $sClass . $sHelp . $sMIME . '/>';
 	}
 }
 

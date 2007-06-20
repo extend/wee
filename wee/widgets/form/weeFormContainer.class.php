@@ -60,28 +60,6 @@ class weeFormContainer extends weeFormStatic
 	}
 
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		$s = '<ol>';
-		foreach ($this->oXML->widget as $oChild)
-		{
-			if (!empty($oChild['action']) && constant($oChild['action']) != $this->iAction)
-				continue;
-
-			$s .= '<li';
-			if ($oChild->property('widget') instanceof weeFormHidden)
-				$s .= ' class="invisible"';
-			$s .= '>' . $oChild->property('widget')->__toString() . '</li>';
-		}
-		return $s . '</ol>';
-	}
-
-	/**
 		Check if the SimpleXML object is valid for this widget.
 		Only used in the constructor.
 
@@ -92,6 +70,28 @@ class weeFormContainer extends weeFormStatic
 	protected function isValidXML($oXML)
 	{
 		return parent::isValidXML($oXML) && !empty($oXML->widget);
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		$s = '<ol>';
+		foreach ($this->oXML->widget as $oChild)
+		{
+			if (!empty($oChild['action']) && constant($oChild['action']) != $this->iAction)
+				continue;
+
+			$s .= '<li';
+			if ($oChild->property('widget') instanceof weeFormHidden)
+				$s .= ' class="invisible"';
+			$s .= '>' . $oChild->property('widget')->toString() . '</li>';
+		}
+		return $s . '</ol>';
 	}
 }
 

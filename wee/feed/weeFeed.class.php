@@ -24,7 +24,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	TODO:function to set feed/entry language? Another way to do that?
 */
 
-abstract class weeFeed
+abstract class weeFeed implements Printable
 {
 	/**
 		Contains the feed-related data.
@@ -65,14 +65,6 @@ abstract class weeFeed
 
 		return $this;
 	}
-
-	/**
-		Returns the feed in XML format.
-
-		@return string The XML for this feed.
-	*/
-
-	abstract public function __toString();
 
 	/**
 		Adds multiple entries.
@@ -166,6 +158,14 @@ abstract class weeFeed
 
 		return in_array($sElement, $aValidElements);
 	}
+
+	/**
+		Returns the feed in XML format.
+
+		@return string The XML for this feed.
+	*/
+
+	abstract public function toString();
 }
 
 ?>

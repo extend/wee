@@ -35,39 +35,6 @@ class weeFormRadioBox extends weeFormOneSelectable
 	static protected $iOptionNumber = 0;
 
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		//TODO:must not fire in __toString
-		fire(empty($this->oXML->options), 'IllegalStateException');
-
-		$sClass		= 'radiobox';
-		if (!empty($this->oXML->class))
-			$sClass	= $this->oXML->class;
-
-		$sId		= $this->getId();
-		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
-		$sName		= weeOutput::encodeValue($this->oXML->name);
-
-		if (is_null($this->sSelection))
-		{
-			//TODO:improve speed, make it works
-			$aItems = $this->oXML->options->xpath('.//item');
-			$this->select($aItems[0]['value']);
-		}
-
-		$sOptions	= null;
-		foreach ($this->oXML->options->children() as $oItem)
-			$sOptions .= $this->optionToString($sName, $sId, $oItem);
-
-		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
-	}
-
-	/**
 		Return the XHTML for a radio item of the radiobox.
 
 		@param	$sName		Name of the radio item.
@@ -112,6 +79,39 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 		return	'<li><label for="' . $sId . '"' . $sHelp . '><input type="radio" id="' . $sId . '" name="' . $sName .
 				'" value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '/> ' . $sLabel . '</label></li>';
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		fire(empty($this->oXML->options), 'IllegalStateException');
+
+		$sClass		= 'radiobox';
+		if (!empty($this->oXML->class))
+			$sClass	= $this->oXML->class;
+
+		$sId		= $this->getId();
+		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
+		$sName		= weeOutput::encodeValue($this->oXML->name);
+
+		if (is_null($this->sSelection))
+		{
+			//TODO:improve speed, make it works
+			//TODO:possibly unused...
+			$aItems = $this->oXML->options->xpath('.//item');
+			$this->select($aItems[0]['value']);
+		}
+
+		$sOptions	= null;
+		foreach ($this->oXML->options->children() as $oItem)
+			$sOptions .= $this->optionToString($sName, $sId, $oItem);
+
+		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
 	}
 }
 

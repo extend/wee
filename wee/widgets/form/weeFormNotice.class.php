@@ -28,17 +28,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeFormNotice extends weeFormStatic
 {
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		return '<label class="notice">' . weeOutput::encodeValue(_($this->oXML->label)) . '</label>';
-	}
-
-	/**
 		Check if the SimpleXML object is valid for this widget.
 		Only used in the constructor.
 
@@ -60,6 +49,17 @@ class weeFormNotice extends weeFormStatic
 	public function setLabel($sNewLabel)
 	{
 		$this->oXML->label = $sNewLabel;
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		return '<label class="notice">' . weeOutput::encodeValue(_($this->oXML->label)) . '</label>';
 	}
 }
 

@@ -76,8 +76,13 @@ class weeStringValidator implements weeValidator
 	{
 		$this->aArgs = $aArgs;
 
-		if (is_object($mValue) && is_callable(array($mValue, '__toString')))
-			$mValue = $mValue->__toString();
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (is_callable(array($mValue, '__toString')))
+				$mValue = $mValue->__toString();
+		}
 
 		if (is_array($mValue) || is_object($mValue))
 			$this->setError('nas');

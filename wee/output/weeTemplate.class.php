@@ -29,7 +29,7 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 	Load, configure and display templates.
 */
 
-class weeTemplate
+class weeTemplate implements Printable
 {
 	/**
 		Filename of the template, including path and extension.
@@ -65,27 +65,6 @@ class weeTemplate
 	}
 
 	/**
-		Returns the template as a string.
-
-		TODO:this will encode data for each sub-templates, optimize
-
-		@return string The template.
-	*/
-
-	public function __toString()
-	{
-		$this->aEncodedData = $this->aData;
-		extract(weeOutput::encodeArray($this->aEncodedData));
-
-		ob_start();
-		require($this->sFilename);
-		$s = ob_get_contents();
-		ob_end_clean();
-
-		return $s;
-	}
-
-	/**
 		Adds a value to the data array.
 
 		@param	$mName	Name of the variable inside the template.
@@ -113,6 +92,27 @@ class weeTemplate
 	protected function template($sTemplate, array $aData = array())
 	{
 		return new weeTemplate($sTemplate, $aData + $this->aData);
+	}
+
+	/**
+		Returns the template as a string.
+
+		TODO:this will encode data for each sub-templates, optimize
+
+		@return string The template.
+	*/
+
+	public function toString()
+	{
+		$this->aEncodedData = $this->aData;
+		extract(weeOutput::encodeArray($this->aEncodedData));
+
+		ob_start();
+		require($this->sFilename);
+		$s = ob_get_contents();
+		ob_end_clean();
+
+		return $s;
 	}
 }
 

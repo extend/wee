@@ -62,24 +62,6 @@ class weeCachedTemplate extends weeTemplate
 	}
 
 	/**
-		Returns the template as a string.
-		If the file is cached, returns the cache of the file.
-
-		@return string The template.
-	*/
-
-	public function __toString()
-	{
-		if ($this->isCached())
-			return file_get_contents($this->sCacheFile);
-
-		$sContents = parent::__toString();
-		if (!defined('NO_CACHE'))
-			file_put_contents($this->sCacheFile, $sContents);
-		return $sContents;
-	}
-
-	/**
 		Checks if the template has a corresponding cache file,
 		and if this cache is not too old.
 
@@ -107,6 +89,24 @@ class weeCachedTemplate extends weeTemplate
 
 		$this->bCached = true;
 		return true;
+	}
+
+	/**
+		Returns the template as a string.
+		If the file is cached, returns the cache of the file.
+
+		@return string The template.
+	*/
+
+	public function toString()
+	{
+		if ($this->isCached())
+			return file_get_contents($this->sCacheFile);
+
+		$sContents = parent::toString();
+		if (!defined('NO_CACHE'))
+			file_put_contents($this->sCacheFile, $sContents);
+		return $sContents;
 	}
 }
 

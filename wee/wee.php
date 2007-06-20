@@ -95,6 +95,12 @@ class Namespace { private function __construct() {} }
 
 interface Singleton { public static function instance(); }
 
+/**
+	Interface for printable objects.
+*/
+
+interface Printable { public function toString(); }
+
 require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
 require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
 
@@ -105,5 +111,12 @@ weeAutoload::addPath(WEE_PATH);
 if (!function_exists('ctype_alnum'))
 	require(WEE_PATH . 'emul_ctype' . PHP_EXT);
 require(WEE_PATH . 'emul_php' . PHP_EXT);
+
+// Dummy _() if it doesn't exist
+
+if (!function_exists('_'))
+{
+	function _($s) { return $s; }
+}
 
 ?>

@@ -62,25 +62,6 @@ class weeFormTable extends weeFormContainer
 	}
 
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		$sClass = null;
-		if (!empty($this->oXML->class))
-			$sClass = ' class="' . $this->oXML->class . '"';
-
-		$sLabel = null;
-		if (!empty($this->oXML->label))
-			$sLabel = '<caption>' . $this->oXML->label . '</caption>';
-
-		return '<table' . $sClass . '>' . $sLabel . $this->childrensToString($this->oXML) . '</table>';
-	}
-
-	/**
 		Initialize recursively the childrens of the given element.
 
 		@param $oXML The element which childrens are going to be created.
@@ -136,10 +117,29 @@ class weeFormTable extends weeFormContainer
 				}
 			}
 			elseif ($oChild->getName() == 'widget')
-				$sChildrens .= $oChild->property('widget')->__toString();
+				$sChildrens .= $oChild->property('widget')->toString();
 		}
 
 		return $sChildrens;
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		$sClass = null;
+		if (!empty($this->oXML->class))
+			$sClass = ' class="' . $this->oXML->class . '"';
+
+		$sLabel = null;
+		if (!empty($this->oXML->label))
+			$sLabel = '<caption>' . $this->oXML->label . '</caption>';
+
+		return '<table' . $sClass . '>' . $sLabel . $this->childrensToString($this->oXML) . '</table>';
 	}
 }
 

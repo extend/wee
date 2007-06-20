@@ -34,7 +34,7 @@ class weeFormFieldset extends weeFormContainer
 		@return string XHTML for this widget.
 	*/
 
-	public function __toString()
+	public function toString()
 	{
 		$sClass = null;
 		if (!empty($this->oXML->class))
@@ -44,7 +44,7 @@ class weeFormFieldset extends weeFormContainer
 		if (!empty($this->oXML->label))
 			$sLabel = '<legend>' . weeOutput::encodeValue(_($this->oXML->label)) . '</legend>';
 
-		return '<fieldset' . $sClass . '>' . $sLabel . parent::__toString() . '</fieldset>';
+		return '<fieldset' . $sClass . '>' . $sLabel . parent::toString() . '</fieldset>';
 	}
 }
 

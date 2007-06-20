@@ -51,7 +51,7 @@ class weeFormButtonInput extends weeFormStatic
 		@return string XHTML for this widget.
 	*/
 
-	public function __toString()
+	public function toString()
 	{
 		$sClass		= null;
 		if (!empty($this->oXML->class))

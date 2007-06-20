@@ -35,37 +35,6 @@ class weeFormCheckList extends weeFormMultipleSelectable
 	protected $iOptionNumber = 0;
 
 	/**
-		Return the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	public function __toString()
-	{
-		fire(empty($this->oXML->options), 'IllegalStateException');
-
-		$sClass		= 'checklist';
-		if (!empty($this->oXML->class))
-			$sClass	= weeOutput::encodeValue($this->oXML->class);
-
-		$sId		= $this->getId();
-		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
-		$sName		= weeOutput::encodeValue($this->oXML->name) . '[]';
-
-		$i			= 0;
-		$sOptions	= null;
-		foreach ($this->oXML->options->children() as $oItem)
-		{
-			$sOptions .= '<li';
-			if ($sClass == 'scrollablechecklist' && $i++ % 2 == 0)
-				$sOptions .= ' class="odd"';
-			$sOptions .= '>' . $this->optionToString($sName, $sId, $oItem) . '</li>';
-		}
-
-		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
-	}
-
-	/**
 		Return the option as a XHTML string.
 
 		@param	$sName	The widget's name attribute.
@@ -96,6 +65,37 @@ class weeFormCheckList extends weeFormMultipleSelectable
 
 		return	'<label for="' . $sId . '"' . $sHelp . '><input type="checkbox" id="' . $sId . '" name="' . $sName .
 				'" value="' . $sValue . '"' . $sDisabled . $sHelp . $sSelected . '/> ' . $sLabel . '</label>';
+	}
+
+	/**
+		Return the widget XHTML code.
+
+		@return string XHTML for this widget.
+	*/
+
+	public function toString()
+	{
+		fire(empty($this->oXML->options), 'IllegalStateException');
+
+		$sClass		= 'checklist';
+		if (!empty($this->oXML->class))
+			$sClass	= weeOutput::encodeValue($this->oXML->class);
+
+		$sId		= $this->getId();
+		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
+		$sName		= weeOutput::encodeValue($this->oXML->name) . '[]';
+
+		$i			= 0;
+		$sOptions	= null;
+		foreach ($this->oXML->options->children() as $oItem)
+		{
+			$sOptions .= '<li';
+			if ($sClass == 'scrollablechecklist' && $i++ % 2 == 0)
+				$sOptions .= ' class="odd"';
+			$sOptions .= '>' . $this->optionToString($sName, $sId, $oItem) . '</li>';
+		}
+
+		return '<fieldset class="' . $sClass . '" id="' . $sId . '"><legend>' . $sLabel . '</legend><ol>' . $sOptions . '</ol></fieldset>';
 	}
 }
 

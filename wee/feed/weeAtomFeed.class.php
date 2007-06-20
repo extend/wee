@@ -25,32 +25,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeAtomFeed extends weeFeed
 {
 	/**
-		Returns the feed in XML format.
-
-		@return string The XML for this feed.
-	*/
-
-	public function __toString()
-	{
-		$sFeed = '<?xml version="1.0" encoding="utf-8"?>' . "\r\n" . '<feed xmlns="http://www.w3.org/2005/Atom">';
-
-		foreach ($this->aFeed as $sName => $mValue)
-			$sFeed .= $this->elementToString($sName, $mValue);
-
-		foreach ($this->aEntries as $aEntry)
-		{
-			$sFeed .= '<entry>';
-
-			foreach ($aEntry as $sName => $mValue)
-				$sFeed .= $this->elementToString($sName, $mValue);
-
-			$sFeed .= '</entry>';
-		}
-
-		return $sFeed . '</feed>';
-	}
-
-	/**
 		Convenience function for creating atom feeds in one line.
 
 		@return weeAtomFeed A new weeAtomFeed object.
@@ -115,6 +89,32 @@ class weeAtomFeed extends weeFeed
 		$sEncodedIRI	= urlencode(substr($sIRI, strpos($sIRI, '/') + 1));
 
 		return 'http://' . substr($sIRI, 0, strpos($sIRI, '/') + 1) . $sEncodedIRI;
+	}
+
+	/**
+		Returns the feed in XML format.
+
+		@return string The XML for this feed.
+	*/
+
+	public function toString()
+	{
+		$sFeed = '<?xml version="1.0" encoding="utf-8"?>' . "\r\n" . '<feed xmlns="http://www.w3.org/2005/Atom">';
+
+		foreach ($this->aFeed as $sName => $mValue)
+			$sFeed .= $this->elementToString($sName, $mValue);
+
+		foreach ($this->aEntries as $aEntry)
+		{
+			$sFeed .= '<entry>';
+
+			foreach ($aEntry as $sName => $mValue)
+				$sFeed .= $this->elementToString($sName, $mValue);
+
+			$sFeed .= '</entry>';
+		}
+
+		return $sFeed . '</feed>';
 	}
 }
 

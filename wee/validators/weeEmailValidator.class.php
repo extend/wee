@@ -64,8 +64,13 @@ class weeEmailValidator implements weeValidator
 	{
 		$this->aArgs = $aArgs;
 
-		if (is_object($mValue) && is_callable(array($mValue, '__toString')))
-			$mValue = $mValue->__toString();
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (is_callable(array($mValue, '__toString')))
+				$mValue = $mValue->__toString();
+		}
 
 		if (!is_string($mValue) || preg_match('/^[A-Z0-9._%-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}$/i', $mValue) == 0)
 			$this->setError('invalid');
