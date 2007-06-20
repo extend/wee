@@ -45,6 +45,10 @@ class weeFormTextArea extends weeFormWritable
 		if (!empty($this->oXML->class))
 			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
 
+		$sDisabled		= null;
+		if (isset($this->oXML['disabled']))
+			$sDisabled	= ' disabled="disabled"';
+
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
@@ -55,7 +59,7 @@ class weeFormTextArea extends weeFormWritable
 		$sValue		= weeOutput::encodeValue($this->getValue());
 
 		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <textarea id="' . $sId . '" name="' .
-			   $sName . '" cols="' . $iCols . '" rows="' . $iRows . '"' . $sClass . $sHelp . '>' . $sValue . '</textarea>';
+			   $sName . '" cols="' . $iCols . '" rows="' . $iRows . '"' . $sClass . $sDisabled . $sHelp . '>' . $sValue . '</textarea>';
 	}
 }
 
