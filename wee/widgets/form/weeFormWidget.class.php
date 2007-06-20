@@ -112,8 +112,7 @@ abstract class weeFormWidget
 
 	public function xpath($sPath)
 	{
-		//TODO:find a way to remove @
-		return @$this->oXML->xpath($sPath);
+		return $this->oXML->xpath($sPath);
 	}
 }
 
