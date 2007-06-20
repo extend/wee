@@ -151,6 +151,17 @@ abstract class weeFormSelectable extends weeFormWidget
 	abstract public function select($sValue);
 
 	/**
+		Replace the label.
+
+		@param $sNewLabel The new label.
+	*/
+
+	public function setLabel($sNewLabel)
+	{
+		$this->oXML->label = $sNewLabel;
+	}
+
+	/**
 		Return the XML node at the specified XPath.
 		There must be only ONE result returned.
 

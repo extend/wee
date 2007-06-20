@@ -35,6 +35,17 @@ class weeFormButtonInput extends weeFormStatic
 	protected $sButtonType = 'button';
 
 	/**
+		Replace the label.
+
+		@param $sNewLabel The new label.
+	*/
+
+	public function setLabel($sNewLabel)
+	{
+		$this->oXML->label = $sNewLabel;
+	}
+
+	/**
 		Return the widget XHTML code.
 
 		@return string XHTML for this widget.

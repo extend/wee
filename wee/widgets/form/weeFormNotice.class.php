@@ -50,6 +50,17 @@ class weeFormNotice extends weeFormStatic
 	{
 		return parent::isValidXML($oXML) && isset($oXML->label);
 	}
+
+	/**
+		Replace the label.
+
+		@param $sNewLabel The new label.
+	*/
+
+	public function setLabel($sNewLabel)
+	{
+		$this->oXML->label = $sNewLabel;
+	}
 }
 
 ?>

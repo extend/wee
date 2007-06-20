@@ -72,6 +72,17 @@ abstract class weeFormWritable extends weeFormWidget
 	}
 
 	/**
+		Replace the label.
+
+		@param $sNewLabel The new label.
+	*/
+
+	public function setLabel($sNewLabel)
+	{
+		$this->oXML->label = $sNewLabel;
+	}
+
+	/**
 		Set a new value.
 
 		@param $sNewValue The new value.

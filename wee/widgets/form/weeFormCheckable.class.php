@@ -83,6 +83,17 @@ abstract class weeFormCheckable extends weeFormWidget
 	}
 
 	/**
+		Replace the label.
+
+		@param $sNewLabel The new label.
+	*/
+
+	public function setLabel($sNewLabel)
+	{
+		$this->oXML->label = $sNewLabel;
+	}
+
+	/**
 		Transform the value posted if needed.
 		Return false if the value was not set.
 
