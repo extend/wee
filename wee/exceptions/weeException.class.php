@@ -126,7 +126,11 @@ final class weeException extends Namespace
 		$sDebug = null;
 
 		if (!ini_get('html_errors'))
+		{
 			$sDebug = 'Exception: ' . get_class($oException);
+			if ($oException instanceof DatabaseException && !empty($GLOBALS['Db']) && $GLOBALS['Db'] instanceof weeDatabase && $GLOBALS['Db']->getLastError() != null)
+				$sDebug .= $GLOBALS['Db']->getLastError() . "\r\n";
+		}
 		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
