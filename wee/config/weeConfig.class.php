@@ -60,7 +60,8 @@ class weeConfig implements ArrayAccess
 	}
 
 	/**
-		Set the value of $offset.
+		Throw an exception.
+		Do NOT use it.
 
 		@param	$offset	The offset to set.
 		@param	$value	The new value of the offset.
@@ -68,18 +69,19 @@ class weeConfig implements ArrayAccess
 
 	public function offsetSet($offset, $value)
 	{
-		$this->aConfig[$offset] = $value;
+		fire(true);//TODO:details
 	}
 
 	/**
-		Unset the $offset offset.
+		Throw an exception.
+		Do NOT use it.
 
 		@param	$offset	The offset to unset.
 	*/
 
 	public function offsetUnset($offset)
 	{
-		unset($this->aConfig[$offset]);
+		fire(true);//TODO:details
 	}
 }
 

@@ -1,0 +1,35 @@
+# Sample configuration file for Web:Extend applications
+# You can use, modify or redistribute it freely
+
+# Global settings
+
+autoload.path	=
+aliases.file	=
+timezone		= UTC
+
+# Startup settings
+# List of modules to load automatically at startup
+
+start.db		= 0
+start.output	= 1
+start.session	= 0
+
+# Database settings
+
+db.driver	= weePgSQLDatabase
+db.host		= localhost
+db.user		= username
+db.password	= password
+db.name		= dbname
+
+# Output settings
+
+output.driver	= weeXHTMLOutput
+
+# Session settings
+
+session.driver				= weeSession
+session.db.table			=
+session.db.field.key		=
+session.db.field.username	=
+session.db.field.password	=
