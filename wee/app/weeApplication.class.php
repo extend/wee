@@ -105,6 +105,7 @@ class weeApplication implements Singleton
 		{
 			$s = $this->oConfig['session.driver'];
 			$GLOBALS['Session'] = new $s(//TODO:not globals
+				$GLOBALS['Db'],//TODO:not globals
 				$this->oConfig['session.db.table'],
 				$this->oConfig['session.db.field.key'],
 				$this->oConfig['session.db.field.username'],
@@ -155,10 +156,11 @@ class weeApplication implements Singleton
 	public function dispatchEvent($aEvent)
 	{
 		$oFrame = $this->loadFrame($aEvent['frame']);
-		$oFrame->dispatchEvent($aEvent);
 
 		if (empty($aEvent['noframechange']))
 			$this->oFrame = $oFrame;
+
+		$oFrame->dispatchEvent($aEvent);
 	}
 
 	/**
@@ -212,14 +214,10 @@ class weeApplication implements Singleton
 	{
 		//TODO:better error when class not found... like a 404 error
 
-		if (empty($this->oAliases[$sFrame]))
-			$oFrame = new $sFrame;
-		else
-		{
-			$s = $this->oAliases[$sFrame];
-			$oFrame = new $s;
-		}
+		if (!empty($this->oAliases[$sFrame]))
+			$sFrame = $this->oAliases[$sFrame];
 
+		$oFrame = new $sFrame;
 		fire(!($oFrame instanceof weeFrame));
 
 		$oFrame->setController($this);
@@ -259,7 +257,7 @@ class weeApplication implements Singleton
 		$sPathInfo	= self::getPathInfo();
 
 		if (empty($sPathInfo))
-			return $aEvent + array('frame' => 'index');
+			return $aEvent + array('frame' => (!empty($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage');
 
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
