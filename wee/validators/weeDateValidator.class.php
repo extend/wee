@@ -52,7 +52,8 @@ class weeDateValidator implements weeValidator
 	protected $aErrorList	= array(
 		'max'	=> 'Input must be a date before %max%',
 		'min'	=> 'Input must be a date after %min%',
-		'nad'	=> 'Input must be a date');
+		'nad'	=> 'Input must be a date',
+	);
 
 	/**
 		Check if the variable $mValue is an email according to $aArgs arguments.
@@ -138,7 +139,8 @@ class weeDateValidator implements weeValidator
 		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
 		else								$this->sError = $this->aErrorList[$sType];
 
-		$this->sError		= str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
+		if ($sType != 'nad')
+			$this->sError	= str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
 	}
 
 	/**
