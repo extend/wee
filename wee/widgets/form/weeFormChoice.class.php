@@ -83,7 +83,7 @@ class weeFormChoice extends weeFormOneSelectable
 		//TODO:check the name in item,group
 
 		$sDisabled		= null;
-		if ($oItem['disabled'])
+		if ((string)$oItem['disabled'])
 			$sDisabled	= ' disabled="disabled"';
 
 		$sHelp			= null;
