@@ -65,7 +65,7 @@ abstract class weeOutput implements Singleton
 		}
 
 		self::$sCookiePath		= str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
-		$s						= ROOT_PATH;
+		$s						= APP_PATH;
 		while (substr($s, 0, 3) == '../')
 		{
 			self::$sCookiePath	= dirname(self::$sCookiePath);
