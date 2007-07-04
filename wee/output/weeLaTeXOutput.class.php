@@ -56,8 +56,8 @@ class weeLaTeXOutput extends weeOutput
 	public function encode($mValue)
 	{
 		return str_replace(
-			array('#', '$', '%', '&', '~', '_', '^', '\\', '{', '}'),
-			array('\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\textbackslash ', '\\{', '\\}'),
+			array('\\', '#', '$', '%', '&', '~', '_', '^', '{', '}'),
+			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
 			$mValue
 		);
 	}
