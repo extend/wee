@@ -95,12 +95,16 @@ abstract class weeFrame implements Printable
 	/**
 		Wrapper for weeTemplate::set method.
 
+		If first parameter is an array, the array values will be
+		set with their corresponding keys. If values already exist,
+		they will be replaced by these from this array.
+
 		@param	$mName	Name of the variable inside the template
 		@param	$mValue	Value of the variable
 		@see weeTemplate::set for details
 	*/
 
-	public function set($mName, $mValue)
+	public function set($mName, $mValue = null)
 	{
 		$this->oTpl->set($mName, $mValue);
 	}

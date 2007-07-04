@@ -67,14 +67,22 @@ class weeTemplate implements Printable
 	/**
 		Adds a value to the data array.
 
+		If first parameter is an array, the array values will be
+		set with their corresponding keys. If values already exist,
+		they will be replaced by these from this array.
+
 		@param	$mName	Name of the variable inside the template.
 		@param	$mValue	Value of the variable.
 		@return	$this
 	*/
 
-	public function set($mName, $mValue)
+	public function set($mName, $mValue = null)
 	{
-		$this->aData[$mName] = $mValue;
+		if (is_array($mName))
+			$this->aData = $mName + $this->aData;
+		else
+			$this->aData[$mName] = $mValue;
+
 		return $this;
 	}
 
@@ -86,12 +94,13 @@ class weeTemplate implements Printable
 
 		@param $sTemplate	The template name.
 		@param $aData		Data to be used in the template.
-		@return	weeTemplate	The weeTemplate object newly created.
+		@return	string		The output of the template.
 	*/
 
 	protected function template($sTemplate, array $aData = array())
 	{
-		return new weeTemplate($sTemplate, $aData + $this->aData);
+		$o = new weeTemplate($sTemplate, $aData + $this->aData);
+		return $o->toString();
 	}
 
 	/**
