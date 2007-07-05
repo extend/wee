@@ -118,10 +118,7 @@ class weeTemplate implements Printable
 
 		ob_start();
 		require($this->sFilename);
-		$s = ob_get_contents();
-		ob_end_clean();
-
-		return $s;
+		return ob_get_clean();
 	}
 }
 
