@@ -36,10 +36,7 @@ class weeLaTeXOutput extends weeOutput
 	final public static function instance()
 	{
 		if (!isset(weeOutput::$oSingleton))
-		{
-			$s = __CLASS__;
-			weeOutput::$oSingleton = new $s;
-		}
+			weeOutput::$oSingleton = new self;
 
 		return weeOutput::$oSingleton;
 	}

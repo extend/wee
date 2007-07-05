@@ -195,10 +195,7 @@ class weeApplication implements Singleton
 	public static function instance()
 	{
 		if (!isset(self::$oSingleton))
-		{
-			$s = __CLASS__;
-			self::$oSingleton = new $s;
-		}
+			self::$oSingleton = new self;
 
 		return self::$oSingleton;
 	}
