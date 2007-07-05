@@ -69,7 +69,7 @@ abstract class weeFrame implements Printable
 		else
 			$sFunc = 'event' . $aEvent['event'];
 
-		fire(!method_exists($this, $sFunc));//TODO:404 error?
+		fire(!is_callable(array($this, $sFunc)));//TODO:404 error?
 		$this->$sFunc($aEvent);
 	}
 
