@@ -267,11 +267,15 @@ class weeApplication implements Singleton
 		//TODO:try to see if using strpos directly in substr is fine
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
-			$aEvent['event'] = $sPathInfo;
+		{
+			$aEvent['event']	= $sPathInfo;
+			$aEvent['pathinfo']	= '';
+		}
 		else
-			$aEvent['event'] = substr($sPathInfo, 0, $i);
-
-		$aEvent['pathinfo'] = substr($sPathInfo, $i + 1);
+		{
+			$aEvent['event']	= substr($sPathInfo, 0, $i);
+			$aEvent['pathinfo']	= substr($sPathInfo, $i + 1);
+		}
 
 		return $aEvent;
 	}
