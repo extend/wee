@@ -234,7 +234,7 @@ class weeDatabaseSession extends weeSession
 
 	protected function validateLogInQuery($oResults)
 	{
-		if ($oResults->numResults() == 0)
+		if (count($oResults) == 0)
 			return null;
 
 		$a = $oResults->fetch();

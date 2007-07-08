@@ -26,7 +26,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	An object of this class is created by the weeDatabase's query method for SELECT statements.
 */
 
-abstract class weeDatabaseResult implements Iterator
+abstract class weeDatabaseResult implements Countable, Iterator
 {
 	/**
 		Wether we are in the template and must encode the results.
@@ -91,14 +91,6 @@ abstract class weeDatabaseResult implements Iterator
 	*/
 
 	abstract public function fetchAll();
-
-	/**
-		Return the number of results returned by the query.
-
-		@return int The number of results.
-	*/
-
-	abstract public function numResults();
 
 	/**
 		Encodes the row if needed.

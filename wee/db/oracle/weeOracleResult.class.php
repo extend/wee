@@ -60,6 +60,20 @@ class weeOracleResult extends weeDatabaseResult
 	}
 
 	/**
+		Return the number of results returned by the query.
+
+		@return int The number of results.
+	*/
+
+	public function count()
+	{
+		$i = oci_num_rows($this->rResult);
+		fire($i === false, 'DatabaseException');
+
+		return $i;
+	}
+
+	/**
 		Return the current row.
 
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
@@ -140,20 +154,6 @@ class weeOracleResult extends weeDatabaseResult
 	public function next()
 	{
 		$this->iCurrentIndex++;
-	}
-
-	/**
-		Return the number of results returned by the query.
-
-		@return int The number of results.
-	*/
-
-	public function numResults()
-	{
-		$i = oci_num_rows($this->rResult);
-		fire($i === false, 'DatabaseException');
-
-		return $i;
 	}
 
 	/**

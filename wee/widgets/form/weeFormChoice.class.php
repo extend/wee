@@ -60,7 +60,7 @@ class weeFormChoice extends weeFormOneSelectable
 					ORDER BY label
 			', $aItem['value']);
 
-			if ($oSub->numResults() == 0)
+			if (count($oSub) == 0)
 				$this->addOption($aItem);
 			else
 			{

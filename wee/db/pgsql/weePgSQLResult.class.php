@@ -69,6 +69,20 @@ class weePgSQLResult extends weeDatabaseResult
 	}
 
 	/**
+		Return the number of results returned by the query.
+
+		@return int The number of results.
+	*/
+
+	public function count()
+	{
+		$i = pg_num_rows($this->rResult);
+		fire($i == -1, 'DatabaseException');
+
+		return $i;
+	}
+
+	/**
 		Return the current row.
 
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
@@ -139,20 +153,6 @@ class weePgSQLResult extends weeDatabaseResult
 	public function next()
 	{
 		$this->iCurrentIndex++;
-	}
-
-	/**
-		Return the number of results returned by the query.
-
-		@return int The number of results.
-	*/
-
-	public function numResults()
-	{
-		$i = pg_num_rows($this->rResult);
-		fire($i == -1, 'DatabaseException');
-
-		return $i;
 	}
 
 	/**
