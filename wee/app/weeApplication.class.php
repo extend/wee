@@ -38,6 +38,12 @@ class weeApplication implements Singleton
 	protected $oFrame;
 
 	/**
+		Modules loaded by the application.
+	*/
+
+	protected $aModules = array();
+
+	/**
 		Instance of the current singleton.
 		There can only be one.
 	*/
@@ -91,7 +97,7 @@ class weeApplication implements Singleton
 		if (!empty($this->oConfig['start.db']))
 		{
 			$s = $this->oConfig['db.driver'];
-			$GLOBALS['Db'] = new $s(array(//TODO:not globals
+			$this->aModules['db'] = new $s(array(
 				'host'		=> $this->oConfig['db.host'],
 				'user'		=> $this->oConfig['db.user'],
 				'password'	=> $this->oConfig['db.password'],
@@ -104,8 +110,8 @@ class weeApplication implements Singleton
 		if (!empty($this->oConfig['start.session']))
 		{
 			$s = $this->oConfig['session.driver'];
-			$GLOBALS['Session'] = new $s(//TODO:not globals
-				$GLOBALS['Db'],//TODO:not globals
+			$this->aModules['session'] = new $s(
+				(empty($this->aModules['db'])) ? null : $this->aModules['db'],
 				$this->oConfig['session.db.table'],
 				$this->oConfig['session.db.field.key'],
 				$this->oConfig['session.db.field.username'],
@@ -120,6 +126,31 @@ class weeApplication implements Singleton
 
 	final private function __clone()
 	{
+	}
+
+	/**
+		Return the module given in parameter.
+
+		@param	$name	Name of the module
+		@return	object	The module object
+	*/
+
+	public function __get($name)
+	{
+		fire(empty($this->aModules[$name]));
+		return $this->aModules[$name];
+	}
+
+	/**
+		Return whether the given module is loaded.
+
+		@param	$name	Name of the module
+		@return	bool	Whether the module is loaded
+	*/
+
+	public function __isset($name)
+	{
+		return !empty($this->aModules[$name]);
 	}
 
 	/**
