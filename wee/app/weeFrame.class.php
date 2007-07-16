@@ -131,18 +131,22 @@ abstract class weeFrame implements Printable
 
 	public function toString()
 	{
-/*		if ($this->sContext == 'xmlhttprequest')
+		if ($this->sContext == 'xmlhttprequest')
 		{
 			header('Content-Type: text/xml');
 
 			if (empty($this->oTaconite))
 				return '<root></root>';
-			return $this->oTaconite->toString();
+
+			$sHeader  = '<?xml version="1.0" encoding="utf-8"?>';
+			$sHeader .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+
+			return $sHeader . $this->oTaconite->toString();
 		}
 
 		if (!empty($this->oTaconite))
 			return $this->oTaconite->applyTo($this->oTpl);
-*/
+
 		return $this->oTpl->toString();
 	}
 
@@ -152,13 +156,13 @@ abstract class weeFrame implements Printable
 		@warning Not tested yet.
 	*/
 
-/*	public function update($sMethod, $sWhere, $sWith)
+	public function update($sMethod, $sWhere, $sWith)
 	{
 		if (empty($this->oTaconite))
 			$this->oTaconite = weeTaconite::create();
 
 		$this->oTaconite->addTag($sMethod, $sWhere, $sWith);
-	}*/
+	}
 }
 
 ?>

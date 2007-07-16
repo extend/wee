@@ -278,11 +278,15 @@ class weeApplication implements Singleton
 	{
 		$aEvent = array();
 
-		$aEvent['context']	= 'http'; //TODO:xmlhttprequest detection
-		$aEvent['get']		= $_GET;
-		$aEvent['post']		= $_POST;
+		//TODO:sometimes we may want to only accept xmlhttprequest when the
+		//request comes from a user who we know is using this application,
+		//and not some random other webserver using it for its own purpose...
+		$aEvent['context'] = (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http';
 
-		$sPathInfo	= self::getPathInfo();
+		$aEvent['get']	= $_GET;
+		$aEvent['post']	= $_POST;
+
+		$sPathInfo = self::getPathInfo();
 
 		if (empty($sPathInfo))
 			return $aEvent + array('frame' => (!empty($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage');
