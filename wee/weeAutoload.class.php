@@ -65,8 +65,8 @@ final class weeAutoload extends Namespace
 
 	public static function loadClass($sClass)
 	{
-		fire(empty(self::$aPaths[$sClass]), 'FileNotFoundException');
-		require(self::$aPaths[$sClass]);
+		if (!empty(self::$aPaths[$sClass]))
+			require(self::$aPaths[$sClass]);
 	}
 }
 
