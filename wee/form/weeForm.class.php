@@ -406,7 +406,7 @@ class weeForm implements Printable
 				{
 					$sFunc	= (string)$oNode['sql-apply'];
 					foreach ($mValue as $sItemName => $sItemValue)
-						$mValue[$sItemName] = $sItemValue;
+						$mValue[$sItemName] = $this->$sFunc($sItemValue);
 				}
 
 				if (empty($oNode['sql-array-handler']))	$sFunc = 'sqlArrayToMultiple';
