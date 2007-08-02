@@ -50,12 +50,6 @@ abstract class weeDatabaseResult implements Countable, Iterator
 	abstract public function __construct($rResult);
 
 	/**
-		Delete the resource and clean up space and memory.
-	*/
-
-	abstract public function __destruct();
-
-	/**
 		Used by weeTemplate to automatically encode row results.
 
 		@return $this

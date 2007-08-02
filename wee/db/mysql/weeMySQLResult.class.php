@@ -59,15 +59,6 @@ class weeMySQLResult extends weeDatabaseResult
 	}
 
 	/**
-		Delete the resource and clean up space and memory.
-	*/
-
-	public function __destruct()
-	{
-		mysql_free_result($this->rResult);
-	}
-
-	/**
 		Return the number of results returned by the query.
 
 		@return int The number of results.
