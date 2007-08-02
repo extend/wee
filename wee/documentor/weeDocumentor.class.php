@@ -41,12 +41,17 @@ class weeDocumentor implements Printable
 	*/
 
 	protected $aSpecialChilds = array(
+		'bugs'			=> 'bug',
 		'classes'		=> 'class',
 		'funcs'			=> 'func',
 		'implements'	=> 'implement',
 		'methods'		=> 'method',
+		'overloads'		=> 'overload',
 		'params'		=> 'param',
 		'properties'	=> 'property',
+		'sees'			=> 'see',
+		'todos'			=> 'todo',
+		'warnings'		=> 'warning'
 	);
 
 	/**
@@ -93,7 +98,7 @@ class weeDocumentor implements Printable
 				if (!empty($this->aSpecialChilds[$sName]))
 					$sKey = $this->aSpecialChilds[$sName];
 
-				$s .= '<' . $sKey . '>' . $mValue . '</' . $sKey . '>';
+				$s .= '<' . $sKey . '>' . htmlspecialchars($mValue) . '</' . $sKey . '>';
 			}
 		}
 
