@@ -30,7 +30,8 @@ final class weeLocale extends Namespace
 	/**
 		Obtains the current locale.
 
-		@return string The current locale. @see http://php.net/setlocale for more information.
+		@return string The current locale.
+		@see http://php.net/setlocale for more information.
 	*/
 
 	public static function getCurrent()
