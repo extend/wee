@@ -76,15 +76,6 @@ class weeOracleDatabase extends weeDatabase
 	}
 
 	/**
-		Close the connection to the database.
-	*/
-
-	public function __destruct()
-	{
-		@oci_close($this->rLink);
-	}
-
-	/**
 		Escape the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
@@ -126,7 +117,6 @@ class weeOracleDatabase extends weeDatabase
 	public function getPKId($sName = null)
 	{
 		fire(empty($sName), 'InvalidParameterException');
-		fire($this->rLink === false, 'IllegalStateException');
 
 		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escape($sName) . '.currval FROM DUAL');
 		fire($rStatement === false, 'DatabaseException');
@@ -150,7 +140,6 @@ class weeOracleDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return $this->iNumAffectedRows;
 	}
 
@@ -185,8 +174,6 @@ class weeOracleDatabase extends weeDatabase
 
 	public function query($mQueryString)
 	{
-		fire($this->rLink === false, 'IllegalStateException');
-
 		$this->iNumQueries++;
 
 		if (func_num_args() > 1)

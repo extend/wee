@@ -38,12 +38,6 @@ abstract class weeDatabase
 	abstract public function __construct($aParams = array());
 
 	/**
-		Closes the connection to the database.
-	*/
-
-	abstract public function __destruct();
-
-	/**
 		The database driver objects can't be cloned.
 	*/
 

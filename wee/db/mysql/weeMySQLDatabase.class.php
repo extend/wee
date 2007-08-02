@@ -80,15 +80,6 @@ class weeMySQLDatabase extends weeDatabase
 	}
 
 	/**
-		Closes the connection to the database.
-	*/
-
-	public function __destruct()
-	{
-		@mysql_close($this->rLink);
-	}
-
-	/**
 		Escape the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
@@ -99,7 +90,6 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function escape($mValue)
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
 	}
 
@@ -127,7 +117,6 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return mysql_insert_id($this->rLink);
 	}
 
@@ -141,7 +130,6 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return mysql_affected_rows($this->rLink);
 	}
 
@@ -176,8 +164,6 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function query($mQueryString)
 	{
-		fire($this->rLink === false, 'IllegalStateException');
-
 		$this->iNumQueries++;
 
 		if (func_num_args() > 1)

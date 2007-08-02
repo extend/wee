@@ -83,15 +83,6 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
-		Closes the connection to the database.
-	*/
-
-	public function __destruct()
-	{
-		@pg_close($this->rLink);
-	}
-
-	/**
 		Escape the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
