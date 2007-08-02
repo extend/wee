@@ -121,7 +121,7 @@ class weeDocumentor implements Printable
 			'startline'		=> $oClass->getStartLine(),
 			'endline'		=> $oClass->getEndLine(),
 
-			'doccomment'	=> $this->trimDocComment($oClass->getDocComment()),//TODO:decompose
+			'doccomment'	=> $this->trimDocComment($oClass->getDocComment()),
 			'constants'		=> $oClass->getConstants(),
 		);
 
@@ -156,7 +156,7 @@ class weeDocumentor implements Printable
 				'numparams'		=> $o->getNumberOfParameters(),
 				'numrequired'	=> $o->getNumberOfRequiredParameters(),
 
-				'doccomment'	=> $this->trimDocComment($o->getDocComment()),//TODO:decompose
+				'doccomment'	=> $this->trimDocComment($o->getDocComment()),
 			);
 
 			// Get DocComment data
@@ -179,9 +179,13 @@ class weeDocumentor implements Printable
 				if ($aParameter['default'] == 'NULL')
 					$aParameter['default'] = 'null';
 
+				if (isset($aMethod['paramscomment'][$aParameter['name']]))
+					$aParameter['comment'] = $aMethod['paramscomment'][$aParameter['name']];
+
 				$aMethod['params'][] = $aParameter;
 			}
 
+			unset($aMethod['paramscomment']);
 			$a['methods'][] = $aMethod;
 		}
 
@@ -195,7 +199,7 @@ class weeDocumentor implements Printable
 				'name'			=> $o->getName(),
 				'static'		=> $o->isStatic(),
 				'visibility'	=> $o->isPublic() ? 'public' : ($o->isPrivate() ? 'private' : 'protected'),
-				'doccomment'	=> $o->getDocComment(),//TODO:decompose
+				'doccomment'	=> $this->trimDocComment($o->getDocComment()),
 			);
 
 			// Get DocComment data
@@ -257,7 +261,7 @@ class weeDocumentor implements Printable
 			'numparams'		=> $o->getNumberOfParameters(),
 			'numrequired'	=> $o->getNumberOfRequiredParameters(),
 
-			'doccomment'	=> $o->getDocComment(),//TODO:decompose
+			'doccomment'	=> $this->trimDocComment($o->getDocComment()),
 		);
 
 		// Get DocComment data
@@ -280,9 +284,13 @@ class weeDocumentor implements Printable
 			if ($aParameter['default'] == 'NULL')
 				$aParameter['default'] = 'null';
 
+			if (isset($aFunc['paramscomment'][$aParameter['name']]))
+				$aParameter['comment'] = $aFunc['paramscomment'][$aParameter['name']];
+
 			$aFunc['params'][] = $aParameter;
 		}
 
+		unset($aFunc['paramscomment']);
 		$this->aFuncs[]	= $aFunc;
 
 		return $this;
@@ -305,12 +313,14 @@ class weeDocumentor implements Printable
 			else
 			{
 				$sLine	= substr($sLine, 1);
-				$sFunc	= 'parseDocComment' . strtok($sLine, " \t");
-				$sLine	= preg_replace('/^\w+[\t ]+/', '', $sLine);
+				$a		= preg_split('/\s+/', $sLine, 2);
+				$sFunc	= 'parseDocComment' . ucwords($a[0]);
+				$sLine	= isset($a[1]) ? $a[1] : '';
 
 				$this->$sFunc($sLine, $aParsedData);
 			}
 		}
+		$aParsedData['doccomment'] = trim($sDocComment);
 	}
 
 	protected function parseDocCommentBug($sLine, &$aParsedData)
@@ -318,31 +328,67 @@ class weeDocumentor implements Printable
 		if (empty($aParsedData['bugs']))
 			$aParsedData['bugs'] = array();
 
-		$aParsedData['bugs'] = $sLine;
+		$aParsedData['bugs'][] = $sLine;
 	}
 
 	protected function parseDocCommentOverload($sLine, &$aParsedData)
 	{
+		if (empty($aParsedData['overloads']))
+			$aParsedData['overload'] = array();
+
+		$iPos = strpos($sLine, ')');
+		fire($iPos === false);
+
+		$sFunc		= substr($sLine, 0, $iPos);
+		$sComment	= trim(substr($sLine, $iPos + 1));
+
+		$aParsedData['overloads'][] = array('function' => $sFunc, 'comment' => $sComment);
 	}
 
 	protected function parseDocCommentParam($sLine, &$aParsedData)
 	{
+		if (empty($aParsedData['paramscomment']))
+			$aParsedData['paramscomment'] = array();
+
+		$sLine		= substr($sLine, 1);
+		$a			= preg_split('/\s+/', $sLine, 2);
+
+		if (isset($a[1]))
+			$aParsedData['paramscomment'][$a[0]] = $a[1];
 	}
 
 	protected function parseDocCommentReturn($sLine, &$aParsedData)
 	{
+		$aParsedData['return']	= array();
+		$a						= preg_split('/\s+/', $sLine, 2);
+
+		$aParsedData['return']['what'] = $a[0];
+		if (isset($a[1]))
+			$aParsedData['return']['comment'] = $a[1];
 	}
 
 	protected function parseDocCommentSee($sLine, &$aParsedData)
 	{
+		if (empty($aParsedData['sees']))
+			$aParsedData['sees'] = array();
+
+		$aParsedData['sees'][] = $sLine;
 	}
 
 	protected function parseDocCommentTodo($sLine, &$aParsedData)
 	{
+		if (empty($aParsedData['todos']))
+			$aParsedData['todos'] = array();
+
+		$aParsedData['todos'][] = $sLine;
 	}
 
 	protected function parseDocCommentWarning($sLine, &$aParsedData)
 	{
+		if (empty($aParsedData['warnings']))
+			$aParsedData['warnings'] = array();
+
+		$aParsedData['warnings'][] = $sLine;
 	}
 
 	/**
