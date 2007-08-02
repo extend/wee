@@ -83,6 +83,25 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
+		Execute an SQL query.
+
+		@param	$sQueryString		The query string
+		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
+	*/
+
+	protected function doQuery($sQueryString)
+	{
+		$rResult = @pg_query($this->rLink, $sQueryString);
+		fire($rResult === false, 'DatabaseException');
+
+		// Get it now since it can be wrong if numAffectedRows is called after getPKId
+		$this->iNumAffectedRows = pg_affected_rows($rResult);
+
+		if (pg_num_fields($rResult) > 0)//TODO:check if it does not return > 0 with UPDATE/DELETE/...
+			return new weePgSQLResult($rResult);
+	}
+
+	/**
 		Escape the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
@@ -154,43 +173,6 @@ class weePgSQLDatabase extends weeDatabase
 	public function numQueries()
 	{
 		return $this->iNumQueries;
-	}
-
-	/**
-		Execute an SQL query.
-
-		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
-		using the buildSafeQuery method.
-
-		For example if you have:
-			$Db->query('SELECT ? FROM example_table WHERE example_id=? LIMIT 1', $sField, $iId);
-		It will select the $sField field from the row with the $iId example_id.
-
-		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple arguments
-		@param	$mQueryString		The query string
-		@param	...					The additional arguments that will be inserted into the query
-		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
-	*/
-
-	public function query($mQueryString)
-	{
-		fire($this->rLink === false, 'IllegalStateException');
-
-		$this->iNumQueries++;
-
-		if (func_num_args() > 1)
-			$mQueryString = $this->buildSafeQuery(func_get_args());
-		elseif (is_object($mQueryString))
-			$mQueryString = $mQueryString->build($this);
-
-		$rResult = @pg_query($this->rLink, $mQueryString);
-		fire($rResult === false, 'DatabaseException');
-
-		// Get it now since it can be wrong if numAffectedRows is called after getPKId
-		$this->iNumAffectedRows = pg_affected_rows($rResult);
-
-		if (pg_num_fields($rResult) > 0)//TODO:check if it does not return > 0 with UPDATE/DELETE/...
-			return new weePgSQLResult($rResult);
 	}
 }
 

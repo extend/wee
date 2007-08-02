@@ -80,6 +80,22 @@ class weeMySQLDatabase extends weeDatabase
 	}
 
 	/**
+		Execute an SQL query.
+
+		@param	$sQueryString		The query string
+		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
+	*/
+
+	protected function doQuery($sQueryString)
+	{
+		$mResult = mysql_query($sQueryString, $this->rLink);
+		fire($mResult === false, 'DatabaseException');
+
+		if (is_resource($mResult))
+			return new weeMySQLResult($mResult);
+	}
+
+	/**
 		Escape the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
@@ -144,38 +160,6 @@ class weeMySQLDatabase extends weeDatabase
 	public function numQueries()
 	{
 		return $this->iNumQueries;
-	}
-
-	/**
-		Execute an SQL query.
-
-		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
-		using the buildSafeQuery method.
-
-		For example if you have:
-			$Db->query('SELECT ? FROM example_table WHERE example_id=? LIMIT 1', $sField, $iId);
-		It will select the $sField field from the row with the $iId example_id.
-
-		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple arguments
-		@param	$mQueryString		The query string
-		@param	...					The additional arguments that will be inserted into the query
-		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
-	*/
-
-	public function query($mQueryString)
-	{
-		$this->iNumQueries++;
-
-		if (func_num_args() > 1)
-			$mQueryString = $this->buildSafeQuery(func_get_args());
-		elseif (is_object($mQueryString))
-			$mQueryString = $mQueryString->build($this);
-
-		$mResult = mysql_query($mQueryString, $this->rLink);
-		fire($mResult === false, 'DatabaseException');
-
-		if (is_resource($mResult))
-			return new weeMySQLResult($mResult);
 	}
 
 	/**
