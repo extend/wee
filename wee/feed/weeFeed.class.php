@@ -158,14 +158,6 @@ abstract class weeFeed implements Printable
 
 		return in_array($sElement, $aValidElements);
 	}
-
-	/**
-		Returns the feed in XML format.
-
-		@return string The XML for this feed.
-	*/
-
-	abstract public function toString();
 }
 
 ?>

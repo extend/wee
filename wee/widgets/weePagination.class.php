@@ -198,14 +198,6 @@ abstract class weePagination implements Printable
 			return $this->iTotal - 1;
 		return $i;
 	}
-
-	/**
-		Returns the widget XHTML code.
-
-		@return string XHTML for this widget.
-	*/
-
-	abstract public function toString();
 }
 
 ?>
