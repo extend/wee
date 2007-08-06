@@ -29,6 +29,13 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDatabase
 {
 	/**
+		Number of calls to the query method.
+		For informational and debugging purpose only.
+	*/
+
+	private $iNumQueries = 0;
+
+	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -136,14 +143,17 @@ abstract class weeDatabase
 	abstract public function numAffectedRows();
 
 	/**
-		Returns the number of successfull queries.
+		Return the number of successfull queries.
 		Only the queries executed using the query method are recorded.
 		For informational and debugging purpose only.
 
 		@return integer The number of queries since the creation of the class
 	*/
 
-	abstract public function numQueries();
+	public function numQueries()
+	{
+		return $this->iNumQueries;
+	}
 
 	/**
 		Build and execute an SQL query.

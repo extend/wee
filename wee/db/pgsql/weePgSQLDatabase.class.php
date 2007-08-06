@@ -41,13 +41,6 @@ class weePgSQLDatabase extends weeDatabase
 	private $iNumAffectedRows;
 
 	/**
-		Number of calls to the query method.
-		For informational and debugging purpose only.
-	*/
-
-	private $iNumQueries;
-
-	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -72,8 +65,6 @@ class weePgSQLDatabase extends weeDatabase
 
 		// Initialize additional database services
 
-		$this->iNumQueries = 0;
-
 		$sPath = dirname(__FILE__);
 		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
@@ -85,8 +76,8 @@ class weePgSQLDatabase extends weeDatabase
 	/**
 		Execute an SQL query.
 
-		@param	$sQueryString		The query string
-		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
+		@param	$sQueryString	The query string
+		@return	weePgSQLResult	Only with SELECT queries: an object for results handling
 	*/
 
 	protected function doQuery($sQueryString)
@@ -140,7 +131,6 @@ class weePgSQLDatabase extends weeDatabase
 	public function getPKId($sName = null)
 	{
 		fire(empty($sName), 'InvalidParameterException');
-		fire($this->rLink === false, 'IllegalStateException');
 
 		$r = pg_query($this->rLink, 'SELECT currval(' . $this->escape($sName) . ')');
 		fire($r === false, 'DatabaseException');
@@ -158,21 +148,7 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return $this->iNumAffectedRows;
-	}
-
-	/**
-		Returns the number of successfull queries.
-		Only the queries executed using the query method are recorded.
-		For informational and debugging purpose only.
-
-		@return integer The number of queries since the creation of the class
-	*/
-
-	public function numQueries()
-	{
-		return $this->iNumQueries;
 	}
 }
 

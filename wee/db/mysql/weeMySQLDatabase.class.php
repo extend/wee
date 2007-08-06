@@ -34,13 +34,6 @@ class weeMySQLDatabase extends weeDatabase
 	private $rLink;
 
 	/**
-		Number of calls to the query method.
-		For informational and debugging purpose only.
-	*/
-
-	private $iNumQueries;
-
-	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -69,8 +62,6 @@ class weeMySQLDatabase extends weeDatabase
 
 		// Initialize additional database services
 
-		$this->iNumQueries = 0;
-
 		$sPath = dirname(__FILE__);
 		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
@@ -82,8 +73,8 @@ class weeMySQLDatabase extends weeDatabase
 	/**
 		Execute an SQL query.
 
-		@param	$sQueryString		The query string
-		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
+		@param	$sQueryString	The query string
+		@return	weeMySQLResult	Only with SELECT queries: an object for results handling
 	*/
 
 	protected function doQuery($sQueryString)
@@ -147,19 +138,6 @@ class weeMySQLDatabase extends weeDatabase
 	public function numAffectedRows()
 	{
 		return mysql_affected_rows($this->rLink);
-	}
-
-	/**
-		Returns the number of successfull queries.
-		Only the queries executed using the query method are recorded.
-		For informational and debugging purpose only.
-
-		@return integer The number of queries since the creation of the class
-	*/
-
-	public function numQueries()
-	{
-		return $this->iNumQueries;
 	}
 
 	/**
