@@ -173,34 +173,30 @@ if (version_compare(phpversion(), '5.1.0', '<'))
 		Format line as CSV and write to file pointer.
 
 		@see		http://php.net/fputcsv
-		@warning	Not tested yet.
 	*/
 
-	function fputcsv($rHandle, array $aFields, $sDelimiter = null, $sEnclosure = null)
+	function fputcsv($rHandle, array $aFields, $sDelimiter = ',', $sEnclosure = '"')
 	{
-		if ($sDelimiter === null)
-			$sDelimiter = ',';
-		if ($sEnclosure === null)
-			$sEnclosure = '"';
-
 		$sLine = '';
 		foreach ($aFields as $mField)
 		{
-			if (strpos($mField, $sEnclosure) !== null)
+			if (strpos($mField, $sEnclosure) !== false)
+			{
 				$mField = str_replace(
 					array('\\',		$sEnclosure),
 					array('\\\\',	'\\' . $sEnclosure),
 					$mField
 				);
 
-			if (strpos($mField, $sDelimiter) !== null)
+				$mField = $sEnclosure . $mField . $sEnclosure;
+			}
+			elseif (preg_match('/\s/', $mField) || strpos($mField, $sDelimiter) !== false)
 				$mField = $sEnclosure . $mField . $sEnclosure;
 
 			$sLine .= $mField . $sDelimiter;
 		}
-		$sLine = substr($sLine, 0, - 1);
 
-		return fwrite($rHandle, $sLine);
+		return fwrite($rHandle, substr($sLine, 0, - 1) . "\n");
 	}
 }
 
