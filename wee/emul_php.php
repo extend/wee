@@ -168,6 +168,40 @@ if (version_compare(phpversion(), '5.1.0', '<'))
 	class UnexpectedValueException extends RuntimeException
 	{
 	}
+
+	/**
+		Format line as CSV and write to file pointer.
+
+		@see		http://php.net/fputcsv
+		@warning	Not tested yet.
+	*/
+
+	function fputcsv($rHandle, array $aFields, $sDelimiter = null, $sEnclosure = null)
+	{
+		if ($sDelimiter === null)
+			$sDelimiter = ',';
+		if ($sEnclosure === null)
+			$sEnclosure = '"';
+
+		$sLine = '';
+		foreach ($aFields as $mField)
+		{
+			if (strpos($mField, $sEnclosure) !== null)
+				$mField = str_replace(
+					array('\\',		$sEnclosure),
+					array('\\\\',	'\\' . $sEnclosure),
+					$mField
+				);
+
+			if (strpos($mField, $sDelimiter) !== null)
+				$mField = $sEnclosure . $mField . $sEnclosure;
+
+			$sLine .= $mField . $sDelimiter;
+		}
+		$sLine = substr($sLine, 0, - 1);
+
+		return fwrite($rHandle, $sLine);
+	}
 }
 
 ?>
