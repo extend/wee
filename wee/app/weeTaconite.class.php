@@ -45,7 +45,7 @@ class weeTaconite implements Printable
 
 	/**
 		Perform an "after" operation.
-		
+
 		@param	$oAction	The taconite action.
 		@param	$oElement	The document element.
 	*/
@@ -72,7 +72,7 @@ class weeTaconite implements Printable
 
 	/**
 		Perform an "append" operation.
-		
+
 		@param	$oAction	The taconite action.
 		@param	$oElement	The document element.
 	*/
@@ -88,7 +88,7 @@ class weeTaconite implements Printable
 
 	/**
 		Perform a "before" operation.
-		
+
 		@param	$oAction	The taconite action.
 		@param	$oElement	The document element.
 	*/
@@ -104,7 +104,7 @@ class weeTaconite implements Printable
 
 	/**
 		Perform a "prepend" operation.
-		
+
 		@param	$oAction	The taconite action.
 		@param	$oElement	The document element.
 	*/
@@ -131,7 +131,7 @@ class weeTaconite implements Printable
 
 	/**
 		Perform a "remove" operation.
-		
+
 		@param	$oAction	The taconite action.
 		@param	$oElement	The document element.
 	*/
@@ -143,7 +143,7 @@ class weeTaconite implements Printable
 
 	/**
 		Perform a "replace" operation.
-		
+
 		@param	$oAction	The taconite action.
 		@param	$oElement	The document element.
 	*/
@@ -175,7 +175,10 @@ class weeTaconite implements Printable
 			$sXMLDocument = $sXMLDocument->toString();
 
 		$oDocument = new DOMDocument();
-		$oDocument->validateOnParse = true;
+		if (!defined(DEBUG))
+			$oDocument->preserveWhiteSpace	= false;
+		$oDocument->validateOnParse			= true;
+
 		$b = $oDocument->loadXML($sXMLDocument);
 		fire(!$b, 'BadXMLException');
 
@@ -201,10 +204,9 @@ class weeTaconite implements Printable
 	}
 
 	/**
-		Return a new weeTaconite object
-		Is this really useful?
+		Convenience function for creating taconite objects in one line.
 
-		@return weeTaconite a new Taconite object.
+		@return weeTaconite A new weeTaconite object.
 	*/
 
 	public static function create()
