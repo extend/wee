@@ -42,21 +42,6 @@ class weeSimpleXMLHack extends SimpleXMLIterator
 	}
 
 	/**
-		Gets all properties of the SimpleXMLIterator object.
-
-		@return array Array containing all the object properties.
-	*/
-
-	public function properties()
-	{
-		static $aProperties = null;
-
-		if (empty($aProperties[$this->hack()]))
-			return array();
-		return $aProperties[$this->hack()];
-	}
-
-	/**
 		Sets or get a property of a SimpleXMLIterator object.
 
 		@param	$sName	The name of the property.
