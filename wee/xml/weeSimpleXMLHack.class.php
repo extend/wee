@@ -29,20 +29,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeSimpleXMLHack extends SimpleXMLIterator
 {
 	/**
-		Gets the name of the XML element.
-
-		@return string The name of the XML tag referenced by this object.
-	*/
-
-	public function getName()
-	{
-		if (method_exists(get_parent_class($this), 'getName'))
-			return parent::getName();
-
-		return dom_import_simplexml($this)->nodeName;
-	}
-
-	/**
 		Returns the uniqid string for this object.
 
 		@return The uniqid string.

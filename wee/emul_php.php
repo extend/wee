@@ -24,6 +24,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Returns the array value if exists, else a default value.
 	Simpler form than using the conditional operators, and returns null by default, which we usually want.
+
+	@param	$aArray		The array.
+	@param	$sKey		The key to look for in the array.
+	@param	$mIfNotSet	The default value.
+	@return	mixed
+	@todo	Find a better place for this function.
 */
 
 function array_value($aArray, $sKey, $mIfNotSet = null)
@@ -31,173 +37,6 @@ function array_value($aArray, $sKey, $mIfNotSet = null)
 	if (isset($aArray[$sKey]))
 		return $aArray[$sKey];
 	return $mIfNotSet;
-}
-
-if (!function_exists('date_default_timezone_get'))
-{
-	/**
-		Emulation of PHP's date_default_timezone_get.
-		TODO: Not tested yet. Need feedback.
-
-		@see http://php.net/date_default_timezone_get
-	*/
-
-	function date_default_timezone_get()
-	{
-		$sTimezone = getenv('TZ');
-		if (empty($sTimezone))
-			return 'UTC';
-		return $sTimezone;
-	}
-
-	/**
-		Emulation of PHP's date_default_timezone_get.
-		TODO: Not tested yet. Need feedback.
-
-		@see http://php.net/date_default_timezone_set
-	*/
-
-	function date_default_timezone_set($sTimezone)
-	{
-		putenv('TZ=' . $sTimezone);
-	}
-}
-
-if (version_compare(phpversion(), '5.1.0', '<'))
-{
-	/**
-		Exception thrown when a method call was illegal.
-	*/
-
-	class BadMethodCallException extends BadFunctionCallException
-	{
-	}
-
-	/**
-		Exception thrown when a function call was illegal.
-	*/
-
-	class BadFunctionCallException extends LogicException
-	{
-	}
-
-	/**
-		Exception that denotes a value not in the valid (mathematical) domain was used.
-	*/
-
-	class DomainException extends LogicException
-	{
-	}
-
-	/**
-		Exception that denotes invalid arguments were passed.
-	*/
-
-	class InvalidArgumentException extends LogicException
-	{
-	}
-
-	/**
-		Exception thrown when a parameter exceeds the allowed length (for strings, arrays, files...).
-	*/
-
-	class LengthException extends LogicException
-	{
-	}
-
-	/**
-		Exception that represents error in the program logic.
-	*/
-
-	class LogicException extends Exception
-	{
-	}
-
-	/**
-		Exception thrown when an illegal index was requested (when it can't be detected at compile time).
-	*/
-
-	class OutOfBoundsException extends RuntimeException
-	{
-	}
-
-	/**
-		Exception thrown when an illegal index was requested (when it can be detected at compile time).
-	*/
-
-	class OutOfRangeException extends LogicException
-	{
-	}
-
-	/**
-		Exception thrown to indicate arithmetic/buffer overflow.
-	*/
-
-	class OverflowException extends RuntimeException
-	{
-	}
-
-	/**
-		Exception thrown to indicate range errors during program execution (runtime version of DomainException, and not over/underflow exceptions).
-	*/
-
-	class RangeException extends RuntimeException
-	{
-	}
-
-	/**
-		Exception thrown for errors that are only detectable at runtime.
-	*/
-
-	class RuntimeException extends Exception
-	{
-	}
-
-	/**
-		Exception thrown to indicate arithmetic/buffer underflow.
-	*/
-
-	class UnderflowException extends RuntimeException
-	{
-	}
-
-	/**
-		Exception thrown to indicate an unexpected value.
-	*/
-
-	class UnexpectedValueException extends RuntimeException
-	{
-	}
-
-	/**
-		Format line as CSV and write to file pointer.
-
-		@see		http://php.net/fputcsv
-	*/
-
-	function fputcsv($rHandle, array $aFields, $sDelimiter = ',', $sEnclosure = '"')
-	{
-		$sLine = '';
-		foreach ($aFields as $mField)
-		{
-			if (strpos($mField, $sEnclosure) !== false)
-			{
-				$mField = str_replace(
-					array('\\',		$sEnclosure),
-					array('\\\\',	'\\' . $sEnclosure),
-					$mField
-				);
-
-				$mField = $sEnclosure . $mField . $sEnclosure;
-			}
-			elseif (preg_match('/\s/', $mField) || strpos($mField, $sDelimiter) !== false)
-				$mField = $sEnclosure . $mField . $sEnclosure;
-
-			$sLine .= $mField . $sDelimiter;
-		}
-
-		return fwrite($rHandle, substr($sLine, 0, - 1) . "\n");
-	}
 }
 
 ?>
