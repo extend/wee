@@ -245,6 +245,7 @@ class weeApplication implements Singleton
 		if (!empty($this->oAliases[$sFrame]))
 			$sFrame = $this->oAliases[$sFrame];
 
+		fire(!class_exists($sFrame));
 		$oFrame = new $sFrame;
 		fire(!($oFrame instanceof weeFrame));
 
