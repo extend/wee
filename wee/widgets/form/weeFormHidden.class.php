@@ -51,8 +51,6 @@ class weeFormHidden extends weeFormWritable
 
 	public function toString()
 	{
-		fire(!isset($this->sValue), 'IllegalStateException');
-
 		$sName	= weeOutput::encodeValue($this->oXML->name);
 		$sValue	= weeOutput::encodeValue($this->sValue);
 
