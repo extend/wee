@@ -89,12 +89,19 @@ class weeFileConfig extends weeConfig
 		$sEval = $aFunc[$aWords[0]];
 		fire(sizeof($aWords) != 2 + (strpos($sEval, ':') !== false));
 
-		for ($i = 1; $i < sizeof($aWords) - 1; $i++)
+		$iNbArgs = substr_count($sEval, ':');
+		$sWanted = '';
+
+		for ($i = 1 + $iNbArgs; $i < sizeof($aWords); $i++)
+			$sWanted .= $aWords[$i] . ' ';
+		$sWanted = substr($sWanted, 0, -1);
+
+		for ($i = 1; $i <= 1 + $iNbArgs; $i++)
 			$sEval = str_replace(':' . $i, addslashes($aWords[$i]), $sEval);
 
 		$sResult = eval('return ' . $sEval . ';');
 
-		return ($sResult == $aWords[sizeof($aWords) - 1]);
+		return ($sResult == $sWanted);
 	}
 }
 
