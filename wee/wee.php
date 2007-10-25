@@ -107,6 +107,7 @@ interface Singleton { public static function instance(); }
 interface Printable { public function toString(); }
 
 require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
+require(WEE_PATH . 'weeLog' . PHP_EXT);
 require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
 
 weeAutoload::addPath(WEE_PATH);
