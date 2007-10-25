@@ -198,6 +198,17 @@ class weeApplication implements Singleton
 	}
 
 	/**
+		Returns the frame currently being processed.
+
+		@return weeFrame The frame being processed
+	*/
+
+	public function getFrame()
+	{
+		return $this->oFrame;
+	}
+
+	/**
 		Returns the path information with some path translation.
 		The path information is the text after the file and before the query string in an URI.
 		Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
