@@ -37,6 +37,20 @@ class weeSendMail extends PHPMailer
 	{
 		$this->PluginDir = WEE_PATH . 'vendor/phpmailer/';
 	}
+
+	/**
+		Send the mail.
+
+		Returns without sending if in DEBUG mode.
+	*/
+
+	public function send()
+	{
+		if (defined('DEBUG'))
+			return true;
+
+		return parent::send();
+	}
 }
 
 ?>
