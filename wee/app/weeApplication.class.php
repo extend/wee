@@ -212,12 +212,12 @@ class weeApplication implements Singleton
 		if (substr($sRequestURI, 0, 2) == './')
 			$sRequestURI = substr($sRequestURI, 2);
 
-		$sPathInfo = urldecode(substr($sRequestURI, 1 + strlen($_SERVER['SCRIPT_NAME'])));
+		$sPathInfo = substr($sRequestURI, 1 + strlen($_SERVER['SCRIPT_NAME']));
 
 		if ($bRemoveQueryString && !empty($_SERVER['QUERY_STRING']) && substr($sPathInfo, -strlen($_SERVER['QUERY_STRING'])) == $_SERVER['QUERY_STRING'])
 			$sPathInfo = substr($sPathInfo, 0, -1 - strlen($_SERVER['QUERY_STRING']));
 
-		return $sPathInfo;
+		return urldecode($sPathInfo);
 	}
 
 	/**
