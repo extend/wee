@@ -12,10 +12,18 @@ abstract class weeFrame implements Printable
 {
 	/**
 		Name of the template for the frame.
-		You must give a value to this variable in child classes.
+		If not defined its value will be the name of the frame's class.
 	*/
 
 	protected $sBaseTemplate;
+
+	/**
+		Prefix to the template for the frame.
+		Define the template file path prefix, as in:
+			$sTemplate = $sBaseTemplatePrefix . $sBaseTemplate;
+	*/
+
+	protected $sBaseTemplatePrefix;
 
 	/**
 		Context of the event.
@@ -35,7 +43,7 @@ abstract class weeFrame implements Printable
 		Taconite object for applying transformations to the document.
 	*/
 
-//	protected $oTaconite;
+	protected $oTaconite;
 
 	/**
 		Template for the frame.
@@ -49,8 +57,14 @@ abstract class weeFrame implements Printable
 
 	public function __construct()
 	{
-		fire(empty($this->sBaseTemplate));
-		$this->oTpl = new weeTemplate($this->sBaseTemplate);
+		$sTemplate = $this->sBaseTemplatePrefix;
+
+		if (empty($this->sBaseTemplate))
+			$sTemplate .= get_class($this);
+		else
+			$sTemplate .= $this->sBaseTemplate;
+
+		$this->oTpl = new weeTemplate($sTemplate);
 	}
 
 	/**
