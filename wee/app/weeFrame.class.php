@@ -84,7 +84,26 @@ abstract class weeFrame implements Printable
 			$sFunc = 'event' . $aEvent['event'];
 
 		fire(!is_callable(array($this, $sFunc)));//TODO:404 error?
+
+		if (!$this->isAuthorized($aEvent))
+		{
+			$this->unauthorizedAccess($aEvent);
+			exit;
+		}
+
 		$this->$sFunc($aEvent);
+	}
+
+	/**
+		Check and return whether the user can access the frame.
+
+		@param	$aEvent	Event information
+		@return	bool	Whether the user can access the frame
+	*/
+
+	public function isAuthorized($aEvent)
+	{
+		return true;
 	}
 
 	/**
@@ -162,6 +181,18 @@ abstract class weeFrame implements Printable
 			return $this->oTaconite->applyTo($this->oTpl);
 
 		return $this->oTpl->toString();
+	}
+
+	/**
+		Method called when the user doesn't have access to the specified frame/event.
+		The process will stop after this method returns.
+
+		@param	$aEvent	Event information
+	*/
+
+	public function unauthorizedAccess($aEvent)
+	{
+		burn('NotPermittedException');
 	}
 
 	/**
