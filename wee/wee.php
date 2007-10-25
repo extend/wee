@@ -22,6 +22,11 @@
 if (!defined('ALLOW_INCLUSION')) die;
 if (version_compare(phpversion(), '5.0.0', '<')) die;
 
+// Detect whether we are on Windows
+
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+	define('WEE_ON_WINDOWS', 1);
+
 // Detect whether we are using the CLI
 
 if (!empty($_SERVER['argc']))
