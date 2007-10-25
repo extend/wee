@@ -32,12 +32,6 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 class weeTemplate implements Printable
 {
 	/**
-		Filename of the template, including path and extension.
-	*/
-
-	protected $sFilename;
-
-	/**
 		Data to be used in the template.
 	*/
 
@@ -48,6 +42,18 @@ class weeTemplate implements Printable
 	*/
 
 	protected $aEncodedData;
+
+	/**
+		Filename of the template, including path and extension.
+	*/
+
+	protected $sFilename;
+
+	/**
+		Array containing predefined values to be added to the link parameters.
+	*/
+
+	protected $aLinkArgs = array();
 
 	/**
 		Configure the filename and the data for this template.
@@ -62,6 +68,41 @@ class weeTemplate implements Printable
 		fire(!file_exists($this->sFilename), 'FileNotFoundException');
 
 		$this->aData		= $aData;
+	}
+
+	/**
+		Add new values to the parameters to be added to links created
+		using the method mkLink.
+
+		@param $aArgs Parameters to be added.
+	*/
+
+	public function addLinkArgs($aArgs)
+	{
+		$this->aLinkArgs = $aArgs + $this->aLinkArgs;
+	}
+
+	/**
+		Create a link using a base url (which may or may not contain parameters)
+		and the values predefined previously and/or given by the $aArgs arguments.
+
+		@param	$sLink Base url.
+		@param	$aArgs Parameters to be added.
+		@return string Link newly created with the given parameters added at the end.
+	*/
+
+	protected function mkLink($sLink, $aArgs = array())
+	{
+		$sSeparator = (strpos($sLink, '?') === false) ? '?' : '&amp;';
+
+		$aArgs = $aArgs + $this->aLinkArgs;
+		foreach ($aArgs as $sName => $sValue)
+		{
+			$sLink .= $sSeparator . $sName . '=' . $sValue;
+			$sSeparator = '&amp;';
+		}
+
+		return $sLink;
 	}
 
 	/**
@@ -100,6 +141,8 @@ class weeTemplate implements Printable
 	protected function template($sTemplate, array $aData = array())
 	{
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
+		$o->addLinkArgs($this->aLinkArgs);
+
 		return $o->toString();
 	}
 
