@@ -69,7 +69,7 @@ class weeFormContainer extends weeFormStatic
 
 	protected function isValidXML($oXML)
 	{
-		return parent::isValidXML($oXML) && !empty($oXML->widget);
+		return parent::isValidXML($oXML) && count($oXML->widget) != 0;
 	}
 
 	/**
