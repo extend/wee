@@ -32,7 +32,7 @@ class weeAtomFeed extends weeFeed
 
 	public static function create()
 	{
-		return new weeAtomFeed;
+		return new self;
 	}
 
 	/**
@@ -46,34 +46,53 @@ class weeAtomFeed extends weeFeed
 		TODO:there must be a better way for this
 	*/
 
-	protected function elementToString($sName, $mValue)
+	protected function writeElement(XMLWriter $oXMLWriter, $sName, $mValue)
 	{
-		if ($sName == 'link')
-			return '<link rel="alternate" href="' . $this->encodeIRI($mValue) . '"/>';
-		elseif ($sName == 'self')
-			return '<link rel="self" href="' . $mValue . '"/>';
-		elseif ($sName == 'category')
-			return '<category term="' . $mValue . '"/>';
-		else
+		switch ($sName)
 		{
-			if (($sName == 'published' || $sName == 'updated') && ctype_digit($mValue))
-				$mValue = @date('c', $mValue);
+			case 'link':
+				$sName	= 'alternate';
+				$mValue	= $this->encodeIRI($mValue);
 
-			$sFeed = '<' . $sName;
-			if ($sName == 'summary') //TODO:better
-				$sFeed .= ' type="xhtml"';
-			$sFeed .= '>';
+			case 'self':
+				$oXMLWriter->startElement('link');
+				$oXMLWriter->writeAttribute('rel', $sName);
+				$oXMLWriter->writeAttribute('href', $mValue);
+				break;
 
-			if (!is_array($mValue))
-				$sFeed .= $mValue;
-			else
-			{
-				foreach ($mValue as $sSubName => $sSubValue)
-					$sFeed .= '<' . $sSubName . '>' . $sSubValue . '</' . $sSubName . '>';
-			}
+			case 'category':
+				$oXMLWriter->startElement('category');
+				$oXMLWriter->writeAttribute('term', $mValue);
+				break;
 
-			return $sFeed . '</' . $sName . '>';
+			case 'published':
+			case 'updated':
+				if (ctype_digit($mValue))
+					$mValue = @date('c', $mValue);
+
+				$oXMLWriter->startElement($sName);
+				$oXMLWriter->text($mValue);
+				break;
+
+			case 'summary':
+				$oXMLWriter->startElement($sName);
+				$oXMLWriter->writeAttribute('type', 'xhtml');	// TODO: better
+				$oXMLWriter->writeRaw($mValue);
+				break;
+
+			default:
+				$oXMLWriter->startElement($sName);
+
+				if (is_array($mValue))
+				{
+					foreach ($mValue as $sSubName => $sSubValue)
+						$oXMLWriter->writeElement($sSubName, $sSubValue);
+				}
+				else
+					$oXMLWriter->text($mValue);
 		}
+
+		$oXMLWriter->endElement();
 	}
 
 	/**
@@ -99,22 +118,27 @@ class weeAtomFeed extends weeFeed
 
 	public function toString()
 	{
-		$sFeed = '<?xml version="1.0" encoding="utf-8"?>' . "\r\n" . '<feed xmlns="http://www.w3.org/2005/Atom">';
+		$oXMLWriter = new XMLWriter;
+		$oXMLWriter->openMemory();
+		$oXMLWriter->startDocument('1.0', 'utf-8');
+		$oXMLWriter->startElement('feed');
+		$oXMLWriter->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');
 
 		foreach ($this->aFeed as $sName => $mValue)
-			$sFeed .= $this->elementToString($sName, $mValue);
+			$this->writeElement($oXMLWriter, $sName, $mValue);
 
 		foreach ($this->aEntries as $aEntry)
 		{
-			$sFeed .= '<entry>';
+			$oXMLWriter->startElement('entry');
 
 			foreach ($aEntry as $sName => $mValue)
-				$sFeed .= $this->elementToString($sName, $mValue);
+				$this->writeElement($oXMLWriter, $sName, $mValue);
 
-			$sFeed .= '</entry>';
+			$oXMLWriter->endElement();
 		}
 
-		return $sFeed . '</feed>';
+		$oXMLWriter->endElement();
+		return $oXMLWriter->flush();
 	}
 }
 

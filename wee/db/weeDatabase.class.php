@@ -29,6 +29,13 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDatabase
 {
 	/**
+		Number of calls to the query method.
+		For informational and debugging purpose only.
+	*/
+
+	private $iNumQueries = 0;
+
+	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -36,12 +43,6 @@ abstract class weeDatabase
 	*/
 
 	abstract public function __construct($aParams = array());
-
-	/**
-		Closes the connection to the database.
-	*/
-
-	abstract public function __destruct();
 
 	/**
 		The database driver objects can't be cloned.
@@ -91,6 +92,15 @@ abstract class weeDatabase
 	}
 
 	/**
+		Execute an SQL query.
+
+		@param	$sQueryString		The query string
+		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
+	*/
+
+	abstract protected function doQuery($sQueryString);
+
+	/**
 		Escape the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
@@ -133,17 +143,20 @@ abstract class weeDatabase
 	abstract public function numAffectedRows();
 
 	/**
-		Returns the number of successfull queries.
+		Return the number of successfull queries.
 		Only the queries executed using the query method are recorded.
 		For informational and debugging purpose only.
 
 		@return integer The number of queries since the creation of the class
 	*/
 
-	abstract public function numQueries();
+	public function numQueries()
+	{
+		return $this->iNumQueries;
+	}
 
 	/**
-		Execute an SQL query.
+		Build and execute an SQL query.
 
 		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
 		using the buildSafeQuery method.
@@ -158,7 +171,17 @@ abstract class weeDatabase
 		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
 	*/
 
-	abstract public function query($mQueryString);
+	public function query($mQueryString)
+	{
+		$this->iNumQueries++;
+
+		if (func_num_args() > 1)
+			$mQueryString = $this->buildSafeQuery(func_get_args());
+		elseif (is_object($mQueryString))
+			$mQueryString = $mQueryString->build($this);
+
+		return $this->doQuery($mQueryString);
+	}
 }
 
 ?>

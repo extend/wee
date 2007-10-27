@@ -45,7 +45,7 @@ function burn($sException)
 	the class weeException will print the standard error page. You can define your error handler by using set_error_handler and set_exception_handler.
 
 	@param	$bCondition	The condition to check
-	@param	$sException	The condition to throw if the condition SUCCEED.
+	@param	$sException	The exception class to throw if the condition SUCCEED.
 */
 
 function fire($bCondition, $sException = 'UnexpectedValueException')

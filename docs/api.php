@@ -27,6 +27,7 @@ td li table{margin:.5em 0}
 <?php
 
 define('ALLOW_INCLUSION', 1);
+define('DEBUG', 1);
 define('ROOT_PATH', '../');
 
 require(ROOT_PATH . 'wee/wee.php');
@@ -44,6 +45,7 @@ $aClassTypes = array(
 	'abstract'	=> 'abstract class',
 	'class'		=> 'class',
 	'final'		=> 'final class',
+	'interface'	=> 'interface'
 );
 
 $oAPI		= simplexml_load_file('api.xml');

@@ -41,13 +41,6 @@ class weeOracleDatabase extends weeDatabase
 	private $iNumAffectedRows;
 
 	/**
-		Number of calls to the query method.
-		For informational and debugging purpose only.
-	*/
-
-	private $iNumQueries;
-
-	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -64,8 +57,6 @@ class weeOracleDatabase extends weeDatabase
 
 		// Initialize additional database services
 
-		$this->iNumQueries = 0;
-
 		$sPath = dirname(__FILE__);
 		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
@@ -76,12 +67,23 @@ class weeOracleDatabase extends weeDatabase
 	}
 
 	/**
-		Close the connection to the database.
+		Execute an SQL query.
+
+		@param	$sQueryString	The query string
+		@return	weeOracleResult	Only with SELECT queries: an object for results handling
 	*/
 
-	public function __destruct()
+	protected function doQuery($sQueryString)
 	{
-		@oci_close($this->rLink);
+		$rStatement = oci_parse($this->rLink, $sQueryString);
+		fire($rStatement === false, 'DatabaseException');
+
+		$b = oci_execute($rStatement, OCI_DEFAULT);
+		fire(!$b, 'DatabaseException');
+
+		//TODO:probably don't work like this
+		if (oci_num_rows($rStatement) > 0)
+			return new weeOracleResult($rStatement);
 	}
 
 	/**
@@ -126,7 +128,6 @@ class weeOracleDatabase extends weeDatabase
 	public function getPKId($sName = null)
 	{
 		fire(empty($sName), 'InvalidParameterException');
-		fire($this->rLink === false, 'IllegalStateException');
 
 		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escape($sName) . '.currval FROM DUAL');
 		fire($rStatement === false, 'DatabaseException');
@@ -150,59 +151,7 @@ class weeOracleDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return $this->iNumAffectedRows;
-	}
-
-	/**
-		Return the number of successfull queries.
-		Only the queries executed using the query method are recorded.
-		For informational and debugging purpose only.
-
-		@return integer The number of queries since the creation of the class
-	*/
-
-	public function numQueries()
-	{
-		return $this->iNumQueries;
-	}
-
-	/**
-		Execute an SQL query.
-
-		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
-		using the buildSafeQuery method.
-
-		For example if you have:
-			$Db->query('SELECT ? FROM example_table WHERE example_id=? LIMIT 1', $sField, $iId);
-		It will select the $sField field from the row with the $iId example_id.
-
-		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple arguments
-		@param	$mQueryString		The query string
-		@param	...					The additional arguments that will be inserted into the query
-		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
-	*/
-
-	public function query($mQueryString)
-	{
-		fire($this->rLink === false, 'IllegalStateException');
-
-		$this->iNumQueries++;
-
-		if (func_num_args() > 1)
-			$mQueryString = $this->buildSafeQuery(func_get_args());
-		elseif (is_object($mQueryString))
-			$mQueryString = $mQueryString->build($this);
-
-		$rStatement = oci_parse($this->rLink, $mQueryString);
-		fire($rStatement === false, 'DatabaseException');
-
-		$b = oci_execute($rStatement, OCI_DEFAULT);
-		fire(!$b, 'DatabaseException');
-
-		//TODO:probably don't work like this
-		if (oci_num_rows($rStatement) > 0)
-			return new weeOracleResult($rStatement);
 	}
 }
 

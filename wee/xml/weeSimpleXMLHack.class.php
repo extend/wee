@@ -29,20 +29,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeSimpleXMLHack extends SimpleXMLIterator
 {
 	/**
-		Gets the name of the XML element.
-
-		@return string The name of the XML tag referenced by this object.
-	*/
-
-	public function getName()
-	{
-		if (method_exists(get_parent_class($this), 'getName'))
-			return parent::getName();
-
-		return dom_import_simplexml($this)->nodeName;
-	}
-
-	/**
 		Returns the uniqid string for this object.
 
 		@return The uniqid string.
@@ -53,21 +39,6 @@ class weeSimpleXMLHack extends SimpleXMLIterator
 		if (empty($this['weeuniqidhack']))
 			$this['weeuniqidhack'] = uniqid();
 		return (string)$this['weeuniqidhack'];
-	}
-
-	/**
-		Gets all properties of the SimpleXMLIterator object.
-
-		@return array Array containing all the object properties.
-	*/
-
-	public function properties()
-	{
-		static $aProperties = null;
-
-		if (empty($aProperties[$this->hack()]))
-			return array();
-		return $aProperties[$this->hack()];
 	}
 
 	/**

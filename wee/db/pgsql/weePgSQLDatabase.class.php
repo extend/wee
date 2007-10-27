@@ -41,13 +41,6 @@ class weePgSQLDatabase extends weeDatabase
 	private $iNumAffectedRows;
 
 	/**
-		Number of calls to the query method.
-		For informational and debugging purpose only.
-	*/
-
-	private $iNumQueries;
-
-	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -72,8 +65,6 @@ class weePgSQLDatabase extends weeDatabase
 
 		// Initialize additional database services
 
-		$this->iNumQueries = 0;
-
 		$sPath = dirname(__FILE__);
 		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
 		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
@@ -83,12 +74,22 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
-		Closes the connection to the database.
+		Execute an SQL query.
+
+		@param	$sQueryString	The query string
+		@return	weePgSQLResult	Only with SELECT queries: an object for results handling
 	*/
 
-	public function __destruct()
+	protected function doQuery($sQueryString)
 	{
-		@pg_close($this->rLink);
+		$rResult = @pg_query($this->rLink, $sQueryString);
+		fire($rResult === false, 'DatabaseException');
+
+		// Get it now since it can be wrong if numAffectedRows is called after getPKId
+		$this->iNumAffectedRows = pg_affected_rows($rResult);
+
+		if (pg_num_fields($rResult) > 0)//TODO:check if it does not return > 0 with UPDATE/DELETE/...
+			return new weePgSQLResult($rResult);
 	}
 
 	/**
@@ -130,7 +131,6 @@ class weePgSQLDatabase extends weeDatabase
 	public function getPKId($sName = null)
 	{
 		fire(empty($sName), 'InvalidParameterException');
-		fire($this->rLink === false, 'IllegalStateException');
 
 		$r = pg_query($this->rLink, 'SELECT currval(' . $this->escape($sName) . ')');
 		fire($r === false, 'DatabaseException');
@@ -148,58 +148,7 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		fire($this->rLink === false, 'IllegalStateException');
 		return $this->iNumAffectedRows;
-	}
-
-	/**
-		Returns the number of successfull queries.
-		Only the queries executed using the query method are recorded.
-		For informational and debugging purpose only.
-
-		@return integer The number of queries since the creation of the class
-	*/
-
-	public function numQueries()
-	{
-		return $this->iNumQueries;
-	}
-
-	/**
-		Execute an SQL query.
-
-		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
-		using the buildSafeQuery method.
-
-		For example if you have:
-			$Db->query('SELECT ? FROM example_table WHERE example_id=? LIMIT 1', $sField, $iId);
-		It will select the $sField field from the row with the $iId example_id.
-
-		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple arguments
-		@param	$mQueryString		The query string
-		@param	...					The additional arguments that will be inserted into the query
-		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
-	*/
-
-	public function query($mQueryString)
-	{
-		fire($this->rLink === false, 'IllegalStateException');
-
-		$this->iNumQueries++;
-
-		if (func_num_args() > 1)
-			$mQueryString = $this->buildSafeQuery(func_get_args());
-		elseif (is_object($mQueryString))
-			$mQueryString = $mQueryString->build($this);
-
-		$rResult = @pg_query($this->rLink, $mQueryString);
-		fire($rResult === false, 'DatabaseException');
-
-		// Get it now since it can be wrong if numAffectedRows is called after getPKId
-		$this->iNumAffectedRows = pg_affected_rows($rResult);
-
-		if (pg_num_fields($rResult) > 0)//TODO:check if it does not return > 0 with UPDATE/DELETE/...
-			return new weePgSQLResult($rResult);
 	}
 }
 

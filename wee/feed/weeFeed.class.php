@@ -58,7 +58,7 @@ abstract class weeFeed implements Printable
 	public function __call($sName, $aArgs)
 	{
 		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidParameterException');
-		fire(!$this->isElementValid($sName), 'InvalidParameterException');
+		fire(!$this->isElementValid($sName), 'IllegalMethodCallException');
 		fire(sizeof($aArgs) != 1, 'InvalidParameterException');
 
 		$this->aFeed[$sName] = $aArgs[0];
@@ -158,14 +158,6 @@ abstract class weeFeed implements Printable
 
 		return in_array($sElement, $aValidElements);
 	}
-
-	/**
-		Returns the feed in XML format.
-
-		@return string The XML for this feed.
-	*/
-
-	abstract public function toString();
 }
 
 ?>

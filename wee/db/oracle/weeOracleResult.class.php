@@ -85,15 +85,6 @@ class weeOracleResult extends weeDatabaseResult
 	}
 
 	/**
-		Delete the resource and clean up space and memory.
-	*/
-
-	public function __destruct()
-	{
-		oci_free_statement($this->rResult);
-	}
-
-	/**
 		Fetch the next row.
 
 		Usually used to fetch the result of a query with only one result returned,
