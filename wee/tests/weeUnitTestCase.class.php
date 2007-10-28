@@ -19,6 +19,8 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+if (!defined('ALLOW_INCLUSION')) die;
+
 /**
 	Base class for unit test case.
 

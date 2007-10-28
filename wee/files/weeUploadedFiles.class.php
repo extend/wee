@@ -1,19 +1,22 @@
 <?php
 
-/*
-	Dev:Extend Web Library
+/**
+	Web:Extend
 	Copyright (c) 2006 Dev:Extend
 
-	This software is licensed under the Dev:Extend Public License. You can use,
-	copy, modify and/or distribute the software under the terms of this License.
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
 
-	This software is distributed WITHOUT ANY WARRANTIES, including, but not
-	limited to, the implied warranties of MERCHANTABILITY and FITNESS FOR A
-	PARTICULAR PURPOSE. See the Dev:Extend Public License for more details.
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
 
-	You should have received a copy of the Dev:Extend Public License along with
-	this software; if not, you can download it at the following url:
-	http://dev-extend.eu/license/.
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 if (!defined('ALLOW_INCLUSION')) die;
