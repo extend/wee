@@ -31,7 +31,7 @@ class weeDatabaseQuery
 {
 	/**
 		Name of the weeDatabaseCriteria to use.
-		Used by § to create a new criteria.
+		Used by the weeCriteria function to create a new criteria.
 
 		@bug When using more than one database.
 	*/
@@ -40,7 +40,7 @@ class weeDatabaseQuery
 
 	/**
 		Name of the weeDatabaseQuery to use.
-		Used by § to create a new query.
+		Can be used to create new query.
 
 		@bug When using more than one database.
 	*/
@@ -223,33 +223,21 @@ class weeDatabaseQuery
 /**
 	Magic function to help with the database query creation.
 
-	If no argument is given, return a new weeDatabaseQuery object.
-	Else, return a new weeCriteriaObject, created with the arguments given.
-
-	@return	weeDatabaseQuery	A new query if no argument was given.
-	@return	weeDatabaseCriteria	A new criteria if at least one argument was given.
+	@return	weeDatabaseCriteria A new weeCriteriaObject, created with the arguments given.
 	@see	weeDatabaseCriteria
 */
 
-function §()
+function weeCriteria()
 {
-	if (func_num_args() == 0)
-	{
-		fire(empty(weeDatabaseQuery::$queryClass), 'DatabaseException');
+	fire(func_num_args() == 0, 'InvalidParameterException');
+	$aArgs = func_get_args();
 
-		return new weeDatabaseQuery::$queryClass;
-	}
-	else
-	{
-		$aArgs = func_get_args();
+	$s = 'return new weeDatabaseQuery::$criteriaClass(';
+	foreach ($aArgs as $i => $mArg)
+		$s .= '$aArgs[' . $i . '],';
+	$s = substr($s, 0, -1) . ');';
 
-		$s = 'return new weeDatabaseQuery::$criteriaClass(';
-		foreach ($aArgs as $i => $mArg)
-			$s .= '$aArgs[' . $i . '],';
-		$s = substr($s, 0, -1) . ');';
-
-		return eval($s);
-	}
+	return eval($s);
 }
 
 ?>

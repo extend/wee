@@ -389,7 +389,8 @@ class weeForm implements Printable
 		if ($this->iAction == weeForm::ACTION_ADD)	$sAction = 'insert';
 		else										$sAction = 'update';
 
-		$oQuery = §()->$sAction($sTable);
+		$oQuery = new weeDatabaseQuery::$queryClass;
+		$oQuery->$sAction($sTable);
 
 		foreach ($aWidgets as $oNode)
 		{
