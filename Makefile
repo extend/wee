@@ -17,26 +17,25 @@
 #	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-all: lint docs test
+all: lint api test
 	@@echo "Web:Extend build complete."
 
 lint:
 	for file in `find . -type f -name "*.php"`; do php -l $$file; done
 
-docs: docs/api.xml
-	php docs/makeapi.php docs/
+api: tools/api/api.xml
+	php tools/api/makeapi.php tools/api/
 
-docs/api.xml:
+tools/api/api.xml:
 
 test:
-	php tests/maketests.php tests/
+	php tools/tests/maketests.php tools/tests/
 
 clean:
-	-rm -rf docs/api.xml
+	-rm -rf tools/api/api.xml
 
 todo:
 	grep -r --include=*.php -i TODO ./
 
 new:
 	mkdir form include locale skins tpl
-
