@@ -66,5 +66,5 @@ wee.widgets.multiplefileinput.change = function(e) {
 /* Boot */
 
 $(document).ready(function() {
-	$('//fieldset[@class="multiplefileinput"]//input').bind('change', wee.widgets.multiplefileinput.change);
+	$('fieldset[class="multiplefileinput"] input').bind('change', wee.widgets.multiplefileinput.change);
 });
