@@ -3,9 +3,9 @@
 <head>
 	<title>Widgets</title>
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
-	<link rel="stylesheet" type="text/css" media="all" href="<?=APP_PATH?>css/wee.css"/>
-	<script type="text/javascript" src="<?=APP_PATH?>js/jquery/jquery.js"></script>
-	<script type="text/javascript" src="<?=APP_PATH?>js/wee.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="<?=APP_PATH?>res/wee/wee.css"/>
+	<script type="text/javascript" src="<?=APP_PATH?>res/jquery/jquery.js"></script>
+	<script type="text/javascript" src="<?=APP_PATH?>res/wee/wee.js"></script>
 </head>
 
 <body>
@@ -21,7 +21,7 @@
 		<div class="post"><?php print_r($_POST)?></div>
 	<?php endif?>
 
-	<?php echo $form?>
+	<?php echo $form->toString()?>
 </div>
 </body>
 </html>

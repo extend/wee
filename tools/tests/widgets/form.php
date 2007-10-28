@@ -6,6 +6,6 @@ if (isset($_SERVER['argc']))
 require('init.php');
 
 fire(empty($_GET['type']) || !ctype_alnum($_GET['type']));
-echo weeFormTest($_GET['type']);
+echo weeFormTest($_GET['type'])->toString();
 
 ?>
