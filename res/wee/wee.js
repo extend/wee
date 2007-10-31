@@ -36,22 +36,12 @@ window.wee	= {
 
 /* Boot: Fixes functions */
 
-wee.fixes.inlineblock = function(jquery) {
-	jquery.each(function(i) {
+wee.fixes.inlineblock = function() {
+	$('form.block').find('li>label').each(function(i) {
 		var w = document.defaultView.getComputedStyle(this,'').getPropertyValue('width');
 		$(this).html('<span style="display:block;width:' + w + '">' + this.innerHTML + '</span>');
 		$(this).css('display', '-moz-inline-box');
-	})
-}
-
-/* Boot: Firefox specific fixes */
-
-if (/firefox/.test(navigator.userAgent.toLowerCase())) {
-	$(document).ready(function() {
-		$('form.block').hide();
-		wee.fixes.inlineblock($('form.block').find('li/label'));
-		$('form.block').show();
-	})
+	});
 }
 
 /* Boot: Widgets */
