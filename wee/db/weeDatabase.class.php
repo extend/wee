@@ -65,14 +65,39 @@ abstract class weeDatabase
 	}
 
 	/**
-		Common function for building queries.
+		Common function for building queries that use named parameters placeholders.
+		Used to replace all the named parameters in the query by the specified arguments, escaped as needed.
+
+		@param	$aArguments	The query and the array of arguments passed to the query method
+		@return	string		The query safely build
+	*/
+
+	protected function bindNamedParameters($aArguments)
+	{
+		$sQueryString = $aArguments[0];
+
+		$aMatches = array();
+		preg_match_all('/:([\w_]+)/', $sQueryString, $aMatches);
+		arsort($aMatches[1]);
+
+		foreach ($aMatches[1] as $sName)
+		{
+			fire(!isset($aArguments[1][$sName]), 'DatabaseException');
+			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
+		}
+
+		return $sQueryString;
+	}
+
+	/**
+		Common function for building queries that use question marks placeholders.
 		Used to replace all the ? in the query by the specified arguments, escaped as needed.
 
 		@param	$aArguments	The query and the arguments passed to the query method
 		@return	string		The query safely build
 	*/
 
-	protected function buildSafeQuery($aArguments)
+	protected function bindQuestionMarks($aArguments)
 	{
 		$aParts		= explode('?', $aArguments[0]);
 
@@ -81,14 +106,14 @@ abstract class weeDatabase
 
 		fire($iNbParts != $iNbArgs && $iNbParts - 1 != $iNbArgs, 'UnexpectedValueException');
 
-		$q = null;
+		$s = null;
 		for ($i = 1; $i < sizeof($aArguments); $i++)
-			$q .= $aParts[$i - 1] . $this->escape($aArguments[$i]);
+			$s .= $aParts[$i - 1] . $this->escape($aArguments[$i]);
 
 		if ($iNbParts == $iNbArgs)
-			$q .= $aParts[$iNbParts - 1];
+			$s .= $aParts[$iNbParts - 1];
 
-		return $q;
+		return $s;
 	}
 
 	/**
@@ -158,14 +183,37 @@ abstract class weeDatabase
 	/**
 		Build and execute an SQL query.
 
-		If you pass other arguments to it, the arguments will be escaped and inserted into the query,
-		using the buildSafeQuery method.
+		If you pass other arguments to it, the arguments will be escaped and inserted into the query.
 
 		For example if you have:
-			$Db->query('SELECT ? FROM example_table WHERE example_id=? LIMIT 1', $sField, $iId);
-		It will select the $sField field from the row with the $iId example_id.
+			weeApp()->db->query('SELECT * FROM example_table WHERE example_name=? AND example_id=? LIMIT 1', $sField, $iId);
+		It will select the row with the $sField example_name and $iId example_id.
 
-		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple arguments
+		You can also use named parameters. This can make for more readable queries,
+		but more importantly you won't have to repeat variables when you pass them
+		after the query string, since they will have a name assigned.
+
+		There's two ways to use named parameters. You can assign explicit names, or use the implicit ones.
+		If you specify names the above query will become like this:
+			weeApp()->db->query('SELECT * FROM example_table WHERE example_name=:name AND example_id=:id LIMIT 1', array(
+				'name'	=> $sField,
+				'id'	=> $iId,
+			));
+
+		If you don't specify names, the array indexes will be used by default. Array indexes starts at 0.
+		The example then becomes this:
+			weeApp()->db->query(
+				'SELECT * FROM example_table WHERE example_name=:0 AND example_id=:1 LIMIT 1',
+				array($sField, $iId)
+			);
+
+		All data passed to it not required by the query will be ignored. You can thus pass a bigger array
+		that contains what you need (like a POST array) and everything will be binded automatically and
+		escaped as needed. Thus, you can choose the simplest method for writing your queries depending on
+		what form your data is.
+
+		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple unnamed parameters
+		@overload query($mQueryString, $aNamedParameters) Example of query call with named parameters
 		@param	$mQueryString		The query string
 		@param	...					The additional arguments that will be inserted into the query
 		@return	weeDatabaseResult	Only with SELECT queries: an object for results handling
@@ -176,7 +224,12 @@ abstract class weeDatabase
 		$this->iNumQueries++;
 
 		if (func_num_args() > 1)
-			$mQueryString = $this->buildSafeQuery(func_get_args());
+		{
+			if (strpos($mQueryString, '?') !== false)
+				$mQueryString = $this->bindQuestionMarks(func_get_args());
+			else
+				$mQueryString = $this->bindNamedParameters(func_get_args());
+		}
 		elseif (is_object($mQueryString))
 			$mQueryString = $mQueryString->build($this);
 
