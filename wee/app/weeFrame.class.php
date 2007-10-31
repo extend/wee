@@ -188,7 +188,7 @@ abstract class weeFrame implements Printable
 			header('Content-Type: text/xml');
 
 			if (empty($this->oTaconite))
-				return '<root></root>';
+				return '<taconite></taconite>';
 
 			$sHeader  = '<?xml version="1.0" encoding="utf-8"?>';
 			$sHeader .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
@@ -220,7 +220,7 @@ abstract class weeFrame implements Printable
 		@warning Not tested yet.
 	*/
 
-	public function update($sMethod, $sWhere, $sWith)
+	public function update($sMethod, $sWhere, $sWith = null)
 	{
 		if (empty($this->oTaconite))
 			$this->oTaconite = weeTaconite::create();
