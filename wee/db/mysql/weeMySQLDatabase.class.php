@@ -31,7 +31,7 @@ class weeMySQLDatabase extends weeDatabase
 		Link resource for this database connection.
 	*/
 
-	private $rLink;
+	protected $rLink;
 
 	/**
 		Initialize the driver and connects to the database.

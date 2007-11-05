@@ -31,14 +31,14 @@ class weePgSQLDatabase extends weeDatabase
 		Link resource for this database connection.
 	*/
 
-	private $rLink;
+	protected $rLink;
 
 	/**
 		Number of affected rows for the previous query.
 		Stocked here to prevent errors if getPKId is called.
 	*/
 
-	private $iNumAffectedRows;
+	protected $iNumAffectedRows;
 
 	/**
 		Initialize the driver and connects to the database.

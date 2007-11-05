@@ -33,7 +33,7 @@ abstract class weeDatabase
 		For informational and debugging purpose only.
 	*/
 
-	private $iNumQueries = 0;
+	protected $iNumQueries = 0;
 
 	/**
 		Initialize the driver and connects to the database.

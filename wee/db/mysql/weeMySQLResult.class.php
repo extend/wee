@@ -32,19 +32,19 @@ class weeMySQLResult extends weeDatabaseResult
 		Resource for this query result.
 	*/
 
-	private $rResult;
+	protected $rResult;
 
 	/**
 		Data from the current row.
 	*/
 
-	private $aCurrentFetch;
+	protected $aCurrentFetch;
 
 	/**
 		Index number of the row to fetch.
 	*/
 
-	private $iCurrentIndex;
+	protected $iCurrentIndex;
 
 	/**
 		Initialize the class with the result of the query.

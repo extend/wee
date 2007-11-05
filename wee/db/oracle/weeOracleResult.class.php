@@ -32,20 +32,20 @@ class weeOracleResult extends weeDatabaseResult
 		Resource for this query result.
 	*/
 
-	private $rResult;
+	protected $rResult;
 
 	/**
 		Data from the current row.
 	*/
 
-	private $aCurrentFetch;
+	protected $aCurrentFetch;
 
 	/**
 		Index number of the row to fetch.
 		Second parameter of pg_fetch_assoc.
 	*/
 
-	private $iCurrentIndex;
+	protected $iCurrentIndex;
 
 	/**
 		Initialize the class with the result of the query.
