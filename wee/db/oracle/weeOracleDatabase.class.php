@@ -47,7 +47,7 @@ class weeOracleDatabase extends weeDatabase
 		@param $aParams Arguments for database connection, identification, and class initialization
 	*/
 
-	public function __construct($aParams, $sLogin = null, $sPassword = null)
+	public function __construct($aParams = array())
 	{
 		fire(!function_exists('oci_new_connect'), 'ConfigurationException');
 

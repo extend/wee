@@ -47,7 +47,7 @@ class weePgSQLDatabase extends weeDatabase
 		@param $aParams Arguments for database connection, identification, and class initialization
 	*/
 
-	public function __construct($aParams, $sLogin = null, $sPassword = null)
+	public function __construct($aParams = array())
 	{
 		fire(!function_exists('pg_connect'), 'ConfigurationException');
 
