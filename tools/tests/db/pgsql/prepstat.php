@@ -1,11 +1,15 @@
 <?php
 
+// Connect
+
 $oDb = new weePgSQLDatabase(array(
 	'host'		=> 'localhost',
 	'user'		=> 'wee_tests',
 	'password'	=> 'wee_tests',
 	'dbname'	=> 'wee_tests',
 ));
+
+// Create the test table
 
 $oDb->query('
 	CREATE TABLE prepstat (
@@ -16,6 +20,8 @@ $oDb->query('
 		ps_boolean BOOLEAN
 	);
 ');
+
+// Insert values into the test table
 
 $aInsertValues = array(
 	array(
@@ -46,26 +52,30 @@ $aInsertValues = array(
 
 $oInsertStat = $oDb->prepare('
 	INSERT INTO prepstat (ps_integer, ps_varchar, ps_timestamp, ps_boolean)
-	VALUES (:ps_integer, :ps_varchar, :ps_timestamp, :ps_boolean)'
-);
+	VALUES (:ps_integer, :ps_varchar, :ps_timestamp, :ps_boolean)
+');
 
 foreach ($aInsertValues as $aRow)
 	$oInsertStat->bind($aRow)->execute();
 
-$oSelectStat = $oDb->prepare('
-	SELECT * FROM prepstat
-');
+// Get the number of rows
 
-$oResults = $oSelectStat->execute();
-$iNumResults = count($oResults);
+$iNumResults = count($oDb->prepare('
+	SELECT * FROM prepstat
+')->execute());
+
+// Get a specific row
 
 $aImplicitTest = $oDb->prepare('
 	SELECT ps_integer FROM prepstat WHERE ps_boolean=:0
 ')->bind(array('TRUE'))->execute()->fetch();
 
-$oDb->query('DROP TABLE prepstat');
+// Clean up
 
+$oDb->query('DROP TABLE prepstat');
 unset($oDb);
+
+// Check our results
 
 return $iNumResults == 4 && $aImplicitTest['ps_integer'] == 4242;
 
