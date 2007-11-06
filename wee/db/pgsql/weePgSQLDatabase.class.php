@@ -150,6 +150,19 @@ class weePgSQLDatabase extends weeDatabase
 	{
 		return $this->iNumAffectedRows;
 	}
+
+	/**
+		Prepare an SQL query statement.
+
+		@param	$sQueryString			The query string.
+		@return	weeDatabaseStatement	The prepared statement.
+		@see weeDatabaseStatement
+	*/
+
+	public function prepare($sQueryString)
+	{
+		return new weePgSQLStatement($this->rLink, $sQueryString);
+	}
 }
 
 ?>

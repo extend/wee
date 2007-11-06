@@ -153,6 +153,19 @@ class weeOracleDatabase extends weeDatabase
 	{
 		return $this->iNumAffectedRows;
 	}
+
+	/**
+		TODO
+
+		@param	$sQueryString			The query string.
+		@return	weeDatabaseStatement	The prepared statement.
+		@see weeDatabaseStatement
+	*/
+
+	public function prepare($sQueryString)
+	{
+		burn('BadMethodCallException');
+	}
 }
 
 ?>

@@ -141,6 +141,19 @@ class weeMySQLDatabase extends weeDatabase
 	}
 
 	/**
+		TODO
+
+		@param	$sQueryString			The query string.
+		@return	weeDatabaseStatement	The prepared statement.
+		@see weeDatabaseStatement
+	*/
+
+	public function prepare($sQueryString)
+	{
+		burn('BadMethodCallException');
+	}
+
+	/**
 		Changes database without reconnecting.
 		The new database must be on the same host of the previous.
 

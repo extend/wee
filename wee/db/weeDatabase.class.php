@@ -181,6 +181,16 @@ abstract class weeDatabase
 	}
 
 	/**
+		Prepare an SQL query statement.
+
+		@param	$sQueryString			The query string.
+		@return	weeDatabaseStatement	The prepared statement.
+		@see weeDatabaseStatement
+	*/
+
+	abstract public function prepare($sQueryString);
+
+	/**
 		Build and execute an SQL query.
 
 		If you pass other arguments to it, the arguments will be escaped and inserted into the query.
