@@ -106,6 +106,14 @@ class weeApplication implements Singleton
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
+		// Load mail settings
+
+		if (!empty($this->oConfig['mail.debug.to']))
+			define('WEE_MAIL_DEBUG_TO', $this->oConfig['mail.debug.to']);
+
+		if (!empty($this->oConfig['mail.debug.reply-to']))
+			define('WEE_MAIL_DEBUG_REPLY_TO', $this->oConfig['mail.debug.reply-to']);
+
 		// Load output driver
 
 		if (!empty($this->oConfig['start.output']))
