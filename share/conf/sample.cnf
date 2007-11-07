@@ -22,6 +22,11 @@ db.user		= username
 db.password	= password
 db.name		= dbname
 
+# Mail settings
+
+mail.debug.to =
+mail.debug.reply-to =
+
 # Output settings
 
 output.driver	= weeXHTMLOutput
