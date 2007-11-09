@@ -94,12 +94,14 @@ class weeFileConfig extends weeConfig
 
 		$sInstruction = substr($sInstruction, 0, strpos($sInstruction, ')'));
 
+		//TODO:maybe makes this array inheritable in a way or another
 		static $aFunc = array(
 			'os'		=> 'php_uname("s")',
 			'host'		=> 'php_uname("n")',
 			'phpver'	=> 'phpversion()',
 			'extver'	=> 'phpversion(":1")',
 			'sapi'		=> 'php_sapi_name()',
+			'path'		=> 'dirname(dirname(dirname(__FILE__)))',
 		);
 
 		$aWords = explode(' ', $sInstruction);
