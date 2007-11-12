@@ -9,8 +9,6 @@
 			<widget type="weeFormDateInput">
 				<name>datetime1</name>
 				<label>weeFormDateInput :</label>
-				<from>current</from>
-				<to>2020</to>
 			</widget>
 
 			<widget type="weeFormFieldset">

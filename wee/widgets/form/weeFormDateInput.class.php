@@ -23,11 +23,27 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Date input widget.
-	Really consist of three select elements.
+
+	A simple textbox that takes date as input.
+	You can use jQuery UI's Calendar widget to make it more user-friendly.
 */
 
-class weeFormDateInput extends weeFormWritable
+class weeFormDateInput extends weeFormTextBox
 {
+	/**
+		Date format with the first three character being the year/month/day position
+		and the last being the separator.
+
+		If used with the jQuery calendar plugin, this value must be the same as the
+		dateFormat option.
+
+		TODO:instead of setting it inside each XML, maybe add it to a localization
+		module that would handle all these kind of stuff automatically (at least for
+		the default value).
+	*/
+
+	protected $sDateFormat = 'MDY/';
+
 	/**
 		Initialize the widget using the SimpleXML object.
 
@@ -38,15 +54,25 @@ class weeFormDateInput extends weeFormWritable
 	{
 		parent::__construct($oXML);
 
-		fire(empty($this->oXML->from), 'BadXMLException');
-		fire(empty($this->oXML->to), 'BadXMLException');
+		if (!empty($oXML->{'date-format'}))
+			$this->sDateFormat = (string)$oXML->{'date-format'};
+	}
 
-		if ($this->oXML->from == 'current')
-			$this->oXML->from = @date('Y');
-		if ($this->oXML->to == 'current')
-			$this->oXML->to = @date('Y');
+	/**
+		Returns the value as it will be displayed in the XHTML,
+		after all the localization needed.
 
-		fire($this->oXML->from > $this->oXML->to, 'BadXMLException');
+		@return string Value as displayed in the XHTML
+	*/
+
+	public function getLocalizedValue()
+	{
+		static $aMap = array('Y' => 0, 'M' => 1, 'D' => 2);
+
+		$aItems = explode('-', $this->sValue);
+		return $aItems[$aMap[$this->sDateFormat[0]]]
+			. $this->sDateFormat[3] . $aItems[$aMap[$this->sDateFormat[1]]]
+			. $this->sDateFormat[3] . $aItems[$aMap[$this->sDateFormat[2]]];
 	}
 
 	/**
@@ -58,75 +84,6 @@ class weeFormDateInput extends weeFormWritable
 	public function getValueArray()
 	{
 		return explode('-', $this->getValue()) + array(0, 0, 0);
-	}
-
-	/**
-		Return the XHTML for the day's select element.
-
-		@param	$sHelp		The help message.
-		@param	$iSelected	The day selected.
-		@return	string		The XHTML for the day's select element.
-	*/
-
-	protected function renderDay($sHelp, $iSelected)
-	{
-		$s = '<select name="' . $this->oXML->name . '_day"' . $sHelp . '>';
-
-		for ($i = 1; $i <= 31; $i++)
-		{
-			$s .= '<option value="' . $i . '"';
-			if ($i == $iSelected)
-				$s .= ' selected="selected"';
-			$s .= '>' . sprintf('%02u', $i) . '</option>';
-		}
-
-		return $s . '</select>';
-	}
-
-	/**
-		Return the XHTML for the month's select element.
-
-		@param	$sHelp		The help message.
-		@param	$iSelected	The month selected.
-		@return	string		The XHTML for the month's select element.
-	*/
-
-	protected function renderMonth($sHelp, $iSelected)
-	{
-		$s = '<select name="' . $this->oXML->name . '_month"' . $sHelp . '>';
-
-		for ($i = 1; $i <= 12; $i++)
-		{
-			$s .= '<option value="' . $i . '"';
-			if ($i == $iSelected)
-				$s .= ' selected="selected"';
-			$s .= '>' . _(@date('F', @mktime(0, 0, 0, $i, 10))) . '</option>';
-		}
-
-		return $s . '</select>';
-	}
-
-	/**
-		Return the XHTML for the year's select element.
-
-		@param	$sHelp		The help message.
-		@param	$iSelected	The year selected.
-		@return	string		The XHTML for the year's select element.
-	*/
-
-	protected function renderYear($sHelp, $iSelected)
-	{
-		$s = '<select name="' . $this->oXML->name . '_year"' . $sHelp . '>';
-
-		for ($i = (int)$this->oXML->from; $i <= (int)$this->oXML->to; $i++)
-		{
-			$s .= '<option value="' . $i . '"';
-			if ($i == $iSelected)
-				$s .= ' selected="selected"';
-			$s .= '>' . $i . '</option>';
-		}
-
-		return $s . '</select>';
 	}
 
 	/**
@@ -162,20 +119,24 @@ class weeFormDateInput extends weeFormWritable
 
 	public function toString()
 	{
-		$sClass		= 'dateinput';
+		$sClass		= ' class="dateinput"';
 		if (!empty($this->oXML->class))
-			$sClass	= weeOutput::encodeValue($this->oXML->class);
+			$sClass	= ' class="' . weeOutput::encodeValue($this->oXML->class) . '"';
 
 		$sHelp		= null;
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
 
-		$aDate		= $this->getValueArray();
+		$sValue		= null;
+		if (strlen((string)$this->sValue) > 0)
+			$sValue	= ' value="' . weeOutput::encodeValue($this->getLocalizedValue()) . '"';
+
 		$sId		= $this->getId();
 		$sLabel		= weeOutput::encodeValue(_($this->oXML->label));
+		$sName		= weeOutput::encodeValue($this->oXML->name);
 
-		return '<label for="form_' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <fieldset class="' . $sClass . '" id="form_' . $sId . '"' . $sHelp .
-			'>' . $this->renderYear($sHelp, $aDate[0]) . ' ' . $this->renderMonth($sHelp, $aDate[1]) . ' ' . $this->renderDay($sHelp, $aDate[2]) . '</fieldset>';
+		return '<label for="' . $sId . '"' . $sHelp . '>' . $sLabel . '</label> <input type="' . $this->sTextType .
+			'" id="' . $sId . '" name="' . $sName . '" maxlength="10"' . $sClass . $sHelp . $sValue . '/>';
 	}
 
 	/**
@@ -188,14 +149,12 @@ class weeFormDateInput extends weeFormWritable
 
 	public function transformValue(&$aData)
 	{
-		if (empty($aData[$this->oXML->name . '_year']) || empty($aData[$this->oXML->name . '_month']) || empty($aData[$this->oXML->name . '_day']))
-			return false;
+		$aItems = explode($this->sDateFormat[3], $aData[(string)$this->oXML->name]);
+		$aData[(string)$this->oXML->name] = $aItems[strpos($this->sDateFormat, 'Y')]
+			. '-' . $aItems[strpos($this->sDateFormat, 'M')]
+			. '-' . $aItems[strpos($this->sDateFormat, 'D')];
 
-		//TODO:validates data here too
-		$aData[(string)$this->oXML->name] = sprintf('%04u-%02u-%02u', $aData[$this->oXML->name . '_year'], $aData[$this->oXML->name . '_month'], $aData[$this->oXML->name . '_day']);
-		unset($aData[$this->oXML->name . '_year'], $aData[$this->oXML->name . '_month'], $aData[$this->oXML->name . '_day']);
-
-		return true;
+		return parent::transformValue(&$aData);
 	}
 }
 
