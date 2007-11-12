@@ -31,7 +31,7 @@ function weeLog($sMessage, $sType = 'notice', $sFile = null, $sLine = null)
 		if (defined('WEE_LOG_FILE'))
 			$sLogFile = WEE_LOG_FILE;
 		else
-			$sLogFile = sys_get_temp_dir() . 'wee.log';
+			$sLogFile = sys_get_temp_dir() . '/wee.log';
 
 		$rFile = fopen($sLogFile, 'a');
 	}
