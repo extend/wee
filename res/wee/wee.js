@@ -20,17 +20,9 @@
 /* Web:Extend namespaces */
 
 window.wee	= {
-	appPath:	'',
 	fixes:		{},
 	widgets:	{
 		multiplefileinput:	{}
-	},
-
-	include:	function(file, callback) {
-		$.get(wee.appPath + file, function(xml) {
-			window.eval(xml);
-			callback.call();
-		});
 	}
 };
 
