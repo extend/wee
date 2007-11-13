@@ -21,7 +21,7 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-if (!defined('TPL_PATH'))	define('TPL_PATH',	ROOT_PATH . 'tpl/');
+if (!defined('TPL_PATH'))	define('TPL_PATH',	ROOT_PATH . 'app/tpl/');
 if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 
 /**

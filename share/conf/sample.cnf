@@ -3,7 +3,7 @@
 
 # Global settings
 
-autoload.path	=
+autoload.path	= //app/php
 aliases.file	=
 timezone		= UTC
 

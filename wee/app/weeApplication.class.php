@@ -26,7 +26,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 */
 
 if (!defined('WEE_CONF_FILE'))
-	define('WEE_CONF_FILE', 'conf/wee.cnf');
+	define('WEE_CONF_FILE', ROOT_PATH . 'app/conf/wee.cnf');
 
 /**
 	Main class of a wee application.

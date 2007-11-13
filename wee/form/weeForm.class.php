@@ -21,7 +21,7 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-if (!defined('FORM_PATH'))	define('FORM_PATH',	ROOT_PATH . 'form/');
+if (!defined('FORM_PATH'))	define('FORM_PATH',	ROOT_PATH . 'app/form/');
 if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
 
 /**
