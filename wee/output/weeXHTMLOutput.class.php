@@ -28,20 +28,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeXHTMLOutput extends weeOutput
 {
 	/**
-		Returns an instance of the weeXHTMLOutput singleton.
-
-		@return weeXHTMLOutput The weeXHTMLOutput object for this process.
-	*/
-
-	final public static function instance()
-	{
-		if (!isset(weeOutput::$oSingleton))
-			weeOutput::$oSingleton = new self;
-
-		return weeOutput::$oSingleton;
-	}
-
-	/**
 		Encodes data to be displayed.
 
 		@param	$mValue	Data to encode.
@@ -51,6 +37,18 @@ class weeXHTMLOutput extends weeOutput
 	public function encode($mValue)
 	{
 		return htmlentities($mValue, ENT_COMPAT, 'utf-8');
+	}
+
+	/**
+		Select weeXHTMLOutput as default output and return the object.
+
+		@return weeXHTMLOutput The weeXHTMLOutput object selected.
+	*/
+
+	public static function select()
+	{
+		weeOutput::$oInstance = new self;
+		return weeOutput::$oInstance;
 	}
 }
 

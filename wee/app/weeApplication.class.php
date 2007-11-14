@@ -117,7 +117,7 @@ class weeApplication implements Singleton
 		// Load output driver
 
 		if (!empty($this->oConfig['start.output']))
-			call_user_func(array($this->oConfig['output.driver'], 'instance'));
+			call_user_func(array($this->oConfig['output.driver'], 'select'));
 
 		// Load database driver
 
@@ -306,6 +306,8 @@ class weeApplication implements Singleton
 	public function main()
 	{
 		$this->dispatchEvent($this->translateEvent());
+
+		weeOutput::instance()->start();
 		echo $this->oFrame->toString();
 	}
 

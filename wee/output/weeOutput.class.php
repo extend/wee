@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for output drivers.
 */
 
-abstract class weeOutput implements Singleton
+abstract class weeOutput
 {
 	/**
 		True if output will be gzipped, false otherwise.
@@ -45,43 +45,7 @@ abstract class weeOutput implements Singleton
 		There can only be one.
 	*/
 
-	protected static $oSingleton;
-
-	/**
-		Initialize the output driver.
-
-		Checks if gzip compression is supported, determines the cookie path, and initialize output buffering.
-	*/
-
-	protected function __construct()
-	{
-		if (empty($_SERVER['HTTP_ACCEPT_ENCODING']))
-			$this->bGzipped		= false;
-		else
-		{
-			$s					= str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING']);
-			$aAcceptEncoding	= explode(',', $s);
-			$this->bGzipped		= in_array('gzip', $aAcceptEncoding);
-		}
-
-		self::$sCookiePath		= str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
-		$s						= APP_PATH;
-		while (substr($s, 0, 3) == '../')
-		{
-			self::$sCookiePath	= dirname(self::$sCookiePath);
-			$s					= substr($s, 3);
-		}
-		if (substr(self::$sCookiePath, strlen(self::$sCookiePath) - 1) != '/')
-			self::$sCookiePath .= '/';
-
-		if (ini_get('output_buffering') || !$this->bGzipped || ini_get('zlib.output_compression'))
-			ob_start();
-		else
-		{
-			$this->header('Content-Encoding: gzip');
-			ob_start('ob_gzhandler');
-		}
-	}
+	protected static $oInstance;
 
 	/**
 		Because there can only be one output driver, we disable cloning.
@@ -100,13 +64,17 @@ abstract class weeOutput implements Singleton
 	public static function deleteCookie($sName)
 	{
 		fire(headers_sent(), 'IllegalStateException');
+
+		if (empty(self::$sCookiePath))
+			self::initCookiePath();
+
 		setcookie($sName, '', 0, self::$sCookiePath);
 	}
 
 	/**
 		Encodes data to be displayed.
 
-		This method redirects the call to the singleton encode method.
+		This method redirects the call to the output encode method.
 		It is used for example inside Web:Extend itself since we can't know what drivers the program is using.
 		You should not have to use this method.
 
@@ -116,8 +84,8 @@ abstract class weeOutput implements Singleton
 
 	public static function encodeValue($mValue)
 	{
-		fire(empty(self::$oSingleton), 'IllegalStateException');
-		return self::$oSingleton->encode($mValue);
+		fire(empty(self::$oInstance), 'IllegalStateException');
+		return self::$oInstance->encode($mValue);
 	}
 
 	/**
@@ -172,6 +140,36 @@ abstract class weeOutput implements Singleton
 	}
 
 	/**
+		Determine the cookie path.
+		Called only once the first time setCookie or deleteCookie is called.
+	*/
+
+	protected static function initCookiePath()
+	{
+		self::$sCookiePath		= str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
+		$s						= APP_PATH;
+		while (substr($s, 0, 3) == '../')
+		{
+			self::$sCookiePath	= dirname(self::$sCookiePath);
+			$s					= substr($s, 3);
+		}
+		if (substr(self::$sCookiePath, strlen(self::$sCookiePath) - 1) != '/')
+			self::$sCookiePath .= '/';
+	}
+
+	/**
+		Return the currently selected instance.
+		Throw an exception if no instances are selected.
+
+		@return weeOutput The selected output instance.
+	*/
+
+	public static function instance()
+	{
+		return self::$oInstance;
+	}
+
+	/**
 		Tells if output will be gzipped or not.
 
 		@return bool True if output is gzip encoded, false otherwise.
@@ -195,9 +193,37 @@ abstract class weeOutput implements Singleton
 	{
 		fire(headers_sent(), 'IllegalStateException');
 
+		if (empty(self::$sCookiePath))
+			self::initCookiePath();
+
 		if (is_null($iExpire))
 			$iExpire = time() + 2592000; // 30 days from now
 		setcookie($sName, $sValue, $iExpire, self::$sCookiePath);
+	}
+
+	/**
+		Start the output.
+		Checks if gzip compression is supported and initialize output buffering.
+	*/
+
+	public function start()
+	{
+		if (empty($_SERVER['HTTP_ACCEPT_ENCODING']))
+			$this->bGzipped		= false;
+		else
+		{
+			$s					= str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING']);
+			$aAcceptEncoding	= explode(',', $s);
+			$this->bGzipped		= in_array('gzip', $aAcceptEncoding);
+		}
+
+		if (ini_get('output_buffering') || !$this->bGzipped || ini_get('zlib.output_compression'))
+			ob_start();
+		else
+		{
+			$this->header('Content-Encoding: gzip');
+			ob_start('ob_gzhandler');
+		}
 	}
 }
 

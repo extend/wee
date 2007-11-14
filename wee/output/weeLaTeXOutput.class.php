@@ -22,25 +22,11 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	XHTML output driver.
+	LaTeX output driver.
 */
 
 class weeLaTeXOutput extends weeOutput
 {
-	/**
-		Returns an instance of the weeLaTeXOutput singleton.
-
-		@return weeLaTeXOutput The weeLaTeXOutput object for this process.
-	*/
-
-	final public static function instance()
-	{
-		if (!isset(weeOutput::$oSingleton))
-			weeOutput::$oSingleton = new self;
-
-		return weeOutput::$oSingleton;
-	}
-
 	/**
 		Encodes data to be displayed.
 
@@ -57,6 +43,18 @@ class weeLaTeXOutput extends weeOutput
 			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
 			$mValue
 		);
+	}
+
+	/**
+		Select weeLaTeXOutput as default output and return the object.
+
+		@return weeLaTeXOutput The weeLaTeXOutput object selected.
+	*/
+
+	public static function select()
+	{
+		weeOutput::$oInstance = new self;
+		return weeOutput::$oInstance;
 	}
 }
 
