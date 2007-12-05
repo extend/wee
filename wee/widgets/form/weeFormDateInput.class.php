@@ -154,7 +154,7 @@ class weeFormDateInput extends weeFormTextBox
 			. '-' . $aItems[strpos($this->sDateFormat, 'M')]
 			. '-' . $aItems[strpos($this->sDateFormat, 'D')];
 
-		return parent::transformValue(&$aData);
+		return parent::transformValue($aData);
 	}
 }
 
