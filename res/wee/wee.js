@@ -29,11 +29,13 @@ window.wee	= {
 /* Boot: Fixes functions */
 
 wee.fixes.inlineblock = function() {
-	$('form.block').find('li>label').each(function(i) {
-		var w = document.defaultView.getComputedStyle(this,'').getPropertyValue('width');
-		$(this).html('<span style="display:block;width:' + w + '">' + this.innerHTML + '</span>');
-		$(this).css('display', '-moz-inline-box');
-	});
+	if ($.browser.mozilla) {
+		$('form.block').find('li>label').each(function(i) {
+			var w = document.defaultView.getComputedStyle(this,'').getPropertyValue('width');
+			$(this).html('<span style="display:block;width:' + w + '">' + this.innerHTML + '</span>');
+			$(this).css('display', '-moz-inline-box');
+		});
+	}
 }
 
 /* Boot: Widgets */
