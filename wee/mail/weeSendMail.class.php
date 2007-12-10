@@ -39,6 +39,24 @@ class weeSendMail extends PHPMailer
 	}
 
 	/**
+		Load body and headers from the specified template file.
+		Unknown headers are skipped.
+
+		@param $sTemplate	The template name.
+		@param $aData		Data to be used in the template.
+	*/
+
+	public function loadTemplate($sTemplate, array $aData = array())
+	{
+		$oTpl = new weeEmailTemplate($sTemplate, $aData);
+		$this->Body = $oTpl->toString();
+
+		foreach ($oTpl->aHeaders as $sName => $sValue)
+			if (isset($this->$sName) && !is_array($this->$sName))
+				$this->$sName = $sValue;
+	}
+
+	/**
 		Send the mail.
 
 		You can configure various settings for debugging purposes,
