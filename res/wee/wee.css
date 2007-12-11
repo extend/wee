@@ -70,8 +70,8 @@ form.block fieldset fieldset legend	{font-weight:normal;padding:0 0 0 1em}
 form.block fieldset fieldset li		{display:block;padding:.2em 0}
 form.block>ol>li>fieldset>ol>li		{border-bottom:1px solid #bbb}
 form.block fieldset fieldset label	{padding:0}
-form.block fieldset fieldset ol,
-form.block .checkbox,
+form.block label.checkbox,
+form.block fieldset.timeinput		{margin-left:15.3em;padding:0;width:auto}
 form.block label.notice				{text-align:justify;width:38em}/*Should be width:auto; fix for Fx1.5*/
 
 form.block input[type="text"],
