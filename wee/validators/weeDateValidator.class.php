@@ -56,11 +56,11 @@ class weeDateValidator implements weeValidator
 	);
 
 	/**
-		Check if the variable $mValue is an email according to $aArgs arguments.
+		Check if the variable $mValue is a date according to $aArgs arguments.
 
 		$mValue can be of any type compatible to string.
 		$aArgs can contain one of the following keys:
-			- invalid_error:	Error message used if the email given is not valid.
+			- invalid_error:	Error message used if the date given is not valid.
 
 		@param	$mValue	The value to be checked.
 		@param	$aArgs	Arguments to check against.
@@ -148,7 +148,7 @@ class weeDateValidator implements weeValidator
 
 		@param	$mValue	The value to be checked.
 		@param	$aArgs	Arguments to check against. See the constructor documentation for details.
-		@return	bool	True if $mValue IS a valid email, false otherwise.
+		@return	bool	True if $mValue IS a valid date, false otherwise.
 	*/
 
 	public static function test($mValue, array $aArgs = array())
