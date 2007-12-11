@@ -29,7 +29,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
 
 // Detect whether we are using the CLI
 
-if (!empty($_SERVER['argc']))
+if (PHP_SAPI == 'cli')
 	define('WEE_CLI', 1);
 
 // Paths and files extensions
