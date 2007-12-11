@@ -149,6 +149,9 @@ class weeFormDateInput extends weeFormTextBox
 
 	public function transformValue(&$aData)
 	{
+		if (empty($aData[(string)$this->oXML->name]))
+			return '';
+
 		$aItems = explode($this->sDateFormat[3], $aData[(string)$this->oXML->name]);
 		$aData[(string)$this->oXML->name] = $aItems[strpos($this->sDateFormat, 'Y')]
 			. '-' . $aItems[strpos($this->sDateFormat, 'M')]
