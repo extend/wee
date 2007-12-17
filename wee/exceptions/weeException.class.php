@@ -24,14 +24,15 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Throws an exception of the class specified in argument if exists, else throws DoubleFaultException.
 
-	@param $s The class of the exception to throw.
+	@param $sException The class of the exception to throw.
+	@param $sMessage Message describing the error and how to resolve it.
 */
 
-function burn($sException)
+function burn($sException, $sMessage = null)
 {
 	if (class_exists($sException))
-		throw new $sException;
-	throw new DoubleFaultException;
+		throw new $sException($sMessage);
+	throw new DoubleFaultException('Class not found: ' . $sException);
 }
 
 /**
@@ -44,14 +45,15 @@ function burn($sException)
 	This function allows you to throw exception when this happens, and if you don't catch the exception
 	the class weeException will print the standard error page. You can define your error handler by using set_error_handler and set_exception_handler.
 
-	@param	$bCondition	The condition to check
-	@param	$sException	The exception class to throw if the condition SUCCEED.
+	@param $bCondition The condition to check
+	@param $sException The exception class to throw if the condition SUCCEED.
+	@param $sMessage Description of the error and, when applicable, how to resolve it.
 */
 
-function fire($bCondition, $sException = 'UnexpectedValueException')
+function fire($bCondition, $sException = 'UnexpectedValueException', $sMessage = null)
 {
 	if ($bCondition)
-		burn($sException);
+		burn($sException, $sMessage);
 }
 
 /**
@@ -127,17 +129,14 @@ final class weeException extends Namespace
 
 		if (!ini_get('html_errors'))
 		{
-			$sDebug = 'Exception: ' . get_class($oException);
-			if ($oException instanceof DatabaseException && !empty($GLOBALS['Db']) && $GLOBALS['Db'] instanceof weeDatabase && $GLOBALS['Db']->getLastError() != null)
-				$sDebug .= $GLOBALS['Db']->getLastError() . "\r\n";
+			$sDebug .= 'Exception: ' . get_class($oException) . "\r\n";
+			$sDebug .= 'Message: ' . $oException->getMessage() . "\r\n";
 		}
 		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
 			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
-
-			if ($oException instanceof DatabaseException && !empty($GLOBALS['Db']) && $GLOBALS['Db'] instanceof weeDatabase && $GLOBALS['Db']->getLastError() != null)
-				$sDebug .= '<h3>Error:</h3><p>' . $GLOBALS['Db']->getLastError() . '</p>';
+			$sDebug .= '<h3>Message:</h3><p>' . nl2br($oException->getMessage()) . '</p>';
 		}
 
 		self::printErrorPage($sDebug);
