@@ -23,6 +23,9 @@ all: lint api test
 lint:
 	for file in `find . -type f -name "*.php"`; do php -l $$file; done
 
+svnlint:
+	svn stat | grep 'php' | awk '{print "php -l " $$2}' | sh
+
 api: tools/api/api.xml
 	php tools/api/makeapi.php tools/api/
 
