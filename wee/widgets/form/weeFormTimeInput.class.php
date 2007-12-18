@@ -96,30 +96,6 @@ class weeFormTimeInput extends weeFormWritable
 	}
 
 	/**
-		Set a new value.
-
-		@overload setValue($iYear, $iMonth, $iDay) Can be called with the date values separated instead of the standard form.
-		@param $sNewValue The new value.
-	*/
-
-	public function setValue($sNewValue)
-	{
-		if (func_num_args() == 1)
-			parent::setValue($sNewValue);
-		else
-		{
-			fire(func_num_args() != 2, 'InvalidArgumentException');
-
-			$iHour	= func_get_arg(0);
-			$iMinute	= func_get_arg(1);
-
-			//TODO:validates arguments
-
-			parent::setValue(sprintf('%02u:%02u', $iHour, $iMinute));
-		}
-	}
-
-	/**
 		Return the widget XHTML code.
 
 		@return string XHTML for this widget.
