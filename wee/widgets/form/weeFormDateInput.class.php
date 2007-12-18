@@ -87,31 +87,6 @@ class weeFormDateInput extends weeFormTextBox
 	}
 
 	/**
-		Set a new value.
-
-		@overload setValue($iYear, $iMonth, $iDay) Can be called with the date values separated instead of the standard form.
-		@param $sNewValue The new value.
-	*/
-
-	public function setValue($sNewValue)
-	{
-		if (func_num_args() == 1)
-			parent::setValue($sNewValue);
-		else
-		{
-			fire(func_num_args() != 3, 'InvalidArgumentException');
-
-			$iYear	= func_get_arg(0);
-			$iMonth	= func_get_arg(1);
-			$iDay	= func_get_arg(2);
-
-			//TODO:validates arguments
-
-			parent::setValue(sprintf('%04u-%02u-%02u', $iYear, $iMonth, $iDay));
-		}
-	}
-
-	/**
 		Return the widget XHTML code.
 
 		@return string XHTML for this widget.
