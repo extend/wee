@@ -49,7 +49,8 @@ class weeFormContainer extends weeFormStatic
 
 		foreach ($this->oXML->widget as $oChild)
 		{
-			fire(empty($oChild['type']) || !class_exists($oChild['type']), 'BadXMLException');
+			fire(empty($oChild['type']) || !class_exists($oChild['type']), 'BadXMLException',
+				'Form widget ' . $oChild['type'] . ' do not exist.');
 
 			if (!empty($oChild['action']) && constant($oChild['action']) != $this->iAction)
 				continue;

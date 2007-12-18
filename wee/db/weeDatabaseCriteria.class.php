@@ -109,7 +109,7 @@ class weeDatabaseCriteria
 				$s = $this->replace($oDatabase, '$1', $a[1], $this->aComparisons[in]);
 
 				unset($a[0], $a[1], $a['op']);
-				fire(empty($a), 'InvalidArgumentException');
+				fire(empty($a), 'InvalidArgumentException', "Missing parameter for 'in' criteria.");
 
 				$sIn = null;
 				foreach ($a as $mValue)

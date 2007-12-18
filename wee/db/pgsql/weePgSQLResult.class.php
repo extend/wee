@@ -55,7 +55,7 @@ class weePgSQLResult extends weeDatabaseResult
 
 	public function __construct($rResult)
 	{
-		fire(!is_resource($rResult), 'InvalidArgumentException');
+		fire(!is_resource($rResult), 'InvalidArgumentException', '$rResult must be a resource.');
 		$this->rResult = $rResult;
 	}
 
@@ -68,7 +68,8 @@ class weePgSQLResult extends weeDatabaseResult
 	public function count()
 	{
 		$i = pg_num_rows($this->rResult);
-		fire($i == -1, 'DatabaseException');
+		fire($i == -1, 'DatabaseException',
+			'An error occurred while trying to count the number of rows returned by the query.');
 
 		return $i;
 	}
@@ -99,7 +100,9 @@ class weePgSQLResult extends weeDatabaseResult
 	public function fetch()
 	{
 		$a = pg_fetch_assoc($this->rResult);
-		fire($a === false, 'DatabaseException');
+		fire($a === false, 'DatabaseException',
+			'Failed to retrieve the row. Might be because no row were returned by the query,' .
+			' or because you are incorrectly trying to loop through all the rows using this method.');
 
 		if (!empty($this->sRowClass))
 			$a = new $this->sRowClass($a);
@@ -119,7 +122,8 @@ class weePgSQLResult extends weeDatabaseResult
 	public function fetchAll()
 	{
 		//TODO:handle the row class here too, and don't fire
-		fire(!empty($this->sRowClass), 'IllegalStateException');
+		fire(!empty($this->sRowClass), 'IllegalStateException',
+			'You cannot use a row class with weePgSQLResult::fetchAll yet.');
 
 		return pg_fetch_all($this->rResult);
 	}

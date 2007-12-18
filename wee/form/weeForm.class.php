@@ -113,10 +113,12 @@ class weeForm implements Printable
 		//TODO:must fail if there is widgets sharing the same for the same action
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
-		fire(!file_exists($sFilename), 'FileNotFoundException');
+		fire(!file_exists($sFilename), 'FileNotFoundException',
+			'The file ' . $sFilename . " doesn't exist.");
 
 		$oXML = simplexml_load_file($sFilename, 'weeSimpleXMLHack');
-		fire($oXML === false || !isset($oXML->widgets), 'BadXMLException');
+		fire($oXML === false || !isset($oXML->widgets), 'BadXMLException',
+			'The file ' . $sFilename . ' is not a valid XML document.');
 
 		if (isset($oXML->class))	$this->sClass	= (string)$oXML->class;
 		else						$this->sClass	= 'block';
@@ -167,7 +169,8 @@ class weeForm implements Printable
 
 	public function fill($aData)
 	{
-		fire(!is_array($aData) && !($aData instanceof ArrayAccess), 'InvalidArgumentException');//TODO:unit test
+		fire(!is_array($aData) && !($aData instanceof ArrayAccess), 'InvalidArgumentException',
+			'$aData must be an associative array of names and values.');
 
 		foreach ($aData as $sName => $mValue)
 		{
@@ -213,7 +216,8 @@ class weeForm implements Printable
 
 	public function getErrors()
 	{
-		fire(empty($this->sValidationErrors), 'InvalidArgumentException');
+		fire(empty($this->sValidationErrors), 'InvalidArgumentException',
+			'There was no error while validating the data. Please call weeForm::getErrors only if weeForm::hasErrors returns true.');
 		return $this->sValidationErrors;
 	}
 
@@ -232,14 +236,15 @@ class weeForm implements Printable
 
 	public function hasErrors(&$aData)
 	{
-		fire(empty($aData), 'InvalidArgumentException');
+		fire(empty($aData), 'InvalidArgumentException', '$aData must not be empty.');
 
 		$this->sValidationErrors = null;
 
 		if ($this->bFormKey)
 		{
-			// Needs session to be started to use the form key
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException');
+			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+				'You cannot use the formkey protection without an active session.' .
+				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
 				$this->sValidationErrors = _('Form key not found.') . "\r\n";
@@ -292,7 +297,9 @@ class weeForm implements Printable
 
 			foreach ($oNode->validator as $oValidatorNode)
 			{
-				fire(!class_exists($oValidatorNode['type']), 'BadXMLException');
+				fire(!class_exists($oValidatorNode['type']), 'BadXMLException',
+					'Validator ' . $oValidatorNode['type'] . ' do not exist.');
+
 				$aValidatorNode		= (array)$oValidatorNode;
 				$sClass				= (string)$oValidatorNode['type'];
 				$oValidator			= new $sClass($aData[(string)$oNode->name], $aValidatorNode['@attributes']);
@@ -331,7 +338,8 @@ class weeForm implements Printable
 
 	public function setMethod($sMethod)
 	{
-		fire($sMethod != 'post' && $sMethod != 'get', 'InvalidArgumentException');
+		fire($sMethod != 'post' && $sMethod != 'get', 'InvalidArgumentException',
+			'Method ' . $sMethod . " is not allowed. Please use either 'post' or 'get'.");
 		$this->sMethod = $sMethod;
 	}
 
@@ -372,7 +380,8 @@ class weeForm implements Printable
 
 	public function toSQL($aData, $sTable)
 	{
-		fire($this->iAction != weeForm::ACTION_ADD && $this->iAction != weeForm::ACTION_UPD, 'IllegalStateException');
+		fire($this->iAction != weeForm::ACTION_ADD && $this->iAction != weeForm::ACTION_UPD, 'IllegalStateException',
+			'weeForm::toSQL must not be called if action is neither weeForm::ACTION_ADD nor weeForm::ACTION_UPD.');
 
 		//TODO:do not xpath widgets that have wrong action
 		//TODO:this will remove the first line of the following condition
@@ -413,7 +422,8 @@ class weeForm implements Printable
 				if (empty($oNode['sql-array-handler']))	$sFunc = 'sqlArrayToMultiple';
 				else									$sFunc = (string)$oNode['sql-array-handler'];
 
-				fire(!method_exists($this, $sFunc), 'BadXMLException');
+				fire(!method_exists($this, $sFunc), 'BadXMLException',
+					'The specified sql-array-handler, ' . $sFunc . ', do not exist.');
 				$this->$sFunc($oQuery, $mValue);
 			}
 			else
@@ -448,8 +458,9 @@ class weeForm implements Printable
 
 		if ($this->bFormKey)
 		{
-			// Needs session to be started to use the form key
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException');
+			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+				'You cannot use the formkey protection without an active session.' .
+				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
 			$sTime	= microtime();
 			$sKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
@@ -470,10 +481,10 @@ class weeForm implements Printable
 
 	public function widget($sName)
 	{
-		fire(!ctype_print($sName), 'InvalidArgumentException');
+		fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
 
 		$a = $this->oForm->xpath('//name[text()="' . $sName . '"]/..');
-		fire(empty($a), 'BadXMLException');
+		fire(empty($a), 'BadXMLException', 'Widget ' . $sName . ' not found.');
 		return $a[0]->property('widget');
 	}
 }

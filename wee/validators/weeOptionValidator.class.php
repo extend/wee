@@ -97,8 +97,9 @@ class weeOptionValidator implements weeFormValidator
 
 	public function hasError()
 	{
-		fire(empty($this->oWidget), 'InvalidStateException');
-		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException');
+		fire(empty($this->oWidget), 'InvalidStateException',
+			'You must set the widget using weeOptionValidator::setWidget before calling this method.');
+		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException'); //TODO:error message?
 
 		if (!$this->oWidget->isInOptions($this->mValue))
 			$this->setError('invalid');
@@ -141,7 +142,8 @@ class weeOptionValidator implements weeFormValidator
 
 	public function setWidget($oWidget)
 	{
-		fire(!($oWidget instanceof weeFormSelectable), 'InvalidArgumentException');
+		fire(!($oWidget instanceof weeFormSelectable), 'InvalidArgumentException',
+			'$oWidget must be an instance of weeFormSelectable.');
 		$this->oWidget = $oWidget;
 	}
 

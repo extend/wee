@@ -52,16 +52,11 @@ class weeWebDocument extends weeSimpleXMLHack
 
 	public function regex($sPattern, array &$aMatches = null, $iFlags = 0, $iOffset = 0)
 	{
-		fire(isset($iFlags) && !ctype_digit($iFlags), 'InvalidArgumentException');
-		fire(isset($iOffset) && !ctype_digit($iOffset), 'InvalidArgumentException');
+		fire(isset($iFlags) && !ctype_digit($iFlags), 'InvalidArgumentException', '$iFlags must be an integer.');
+		fire(isset($iOffset) && !ctype_digit($iOffset), 'InvalidArgumentException', '$iOffset must be an integer');
 
 		return (1 == preg_match($sPattern, $this->asXML(), $aMatches, $iFlags, $iOffset));
 	}
-/*
-	public function validate()
-	{
-	}
-*/
 }
 
 ?>

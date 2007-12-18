@@ -42,10 +42,11 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function __construct($aParams = array())
 	{
-		fire(!function_exists('mysql_connect'), 'ConfigurationException');
+		fire(!function_exists('mysql_connect'), 'ConfigurationException',
+			'The MySQL PHP extension is required by the MySQL database driver.');
 
 		$this->rLink = mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'));
-		fire($this->rLink === false, 'DatabaseException');
+		fire($this->rLink === false, 'DatabaseException', 'Failed to connect to database.');
 
 		// Set encoding and collation
 
@@ -80,7 +81,7 @@ class weeMySQLDatabase extends weeDatabase
 	protected function doQuery($sQueryString)
 	{
 		$mResult = mysql_query($sQueryString, $this->rLink);
-		fire($mResult === false, 'DatabaseException');
+		fire($mResult === false, 'DatabaseException', 'Failed to execute the given query: ' . $this->getLastError());
 
 		if (is_resource($mResult))
 			return new weeMySQLResult($mResult);
@@ -150,7 +151,7 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function prepare($sQueryString)
 	{
-		burn('BadMethodCallException');
+		burn('BadMethodCallException', 'This method is not implemented yet.');
 	}
 
 	/**
@@ -163,7 +164,7 @@ class weeMySQLDatabase extends weeDatabase
 	public function selectDb($sDatabase)
 	{
 		$b = mysql_select_db($sDatabase, $this->rLink);
-		fire(!$b, 'DatabaseException');
+		fire(!$b, 'DatabaseException', 'Failed to select the database ' . $sDatabase . ': ' . $this->getLastError());
 	}
 }
 

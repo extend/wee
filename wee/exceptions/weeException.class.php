@@ -135,8 +135,8 @@ final class weeException extends Namespace
 		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
-			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
 			$sDebug .= '<h3>Message:</h3><p>' . nl2br($oException->getMessage()) . '</p>';
+			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
 		}
 
 		self::printErrorPage($sDebug);

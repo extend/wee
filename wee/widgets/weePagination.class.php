@@ -66,9 +66,12 @@ abstract class weePagination implements Printable
 
 	public function __construct($iTotalItems, $iItemsPerPage, $iPageWithItem = 0)
 	{
-		fire(!ctype_digit((string)$iTotalItems) || $iTotalItems <= 0, 'InvalidArgumentException');
-		fire(!ctype_digit((string)$iItemsPerPage) || $iItemsPerPage <= 0, 'InvalidArgumentException');
-		fire(!ctype_digit((string)$iPageWithItem), 'InvalidArgumentException');
+		fire(!ctype_digit((string)$iTotalItems) || $iTotalItems <= 0, 'InvalidArgumentException',
+			'$iTotalItems must be an integer > 0.');
+		fire(!ctype_digit((string)$iItemsPerPage) || $iItemsPerPage <= 0, 'InvalidArgumentException',
+			'$iItemsPerPage must be an integer > 0.');
+		fire(!ctype_digit((string)$iPageWithItem), 'InvalidArgumentException',
+			'$iPageWithItem must be an integer.');
 
 		if ($iPageWithItem < 0)
 			$iPageWithItem = 0;

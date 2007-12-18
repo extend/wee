@@ -78,7 +78,8 @@ class weeFormTable extends weeFormContainer
 				$this->childrensInit($oChild);
 			elseif ($oChild->getName() == 'widget')
 			{
-				fire(empty($oChild['type']) || !class_exists($oChild['type']), 'BadXMLException');
+				fire(empty($oChild['type']) || !class_exists($oChild['type']), 'BadXMLException',
+					'Form widget ' . $oChild['type'] . ' do not exist.');
 
 				$sClass = (string)$oChild['type'];
 				$oChild->property('widget', new $sClass($oChild, $this->iAction));

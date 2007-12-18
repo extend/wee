@@ -56,7 +56,8 @@ class weeSimpleXMLHack extends SimpleXMLIterator
 		if (!is_null($mParam))
 			$aProperties[$this->hack()][$sName] = $mParam;
 
-		fire(!array_key_exists($sName, $aProperties[$this->hack()]), 'IllegalStateException');
+		fire(!array_key_exists($sName, $aProperties[$this->hack()]), 'IllegalStateException',
+			"The property doesn't exist. Please set the property before trying to retrieve it.");
 		return $aProperties[$this->hack()][$sName];
 	}
 }

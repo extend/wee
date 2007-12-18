@@ -48,7 +48,7 @@ abstract class weeFeed implements Printable
 
 		@overload author($aAuthor)		Sets the feed author informations. The array can(TODO) have the following keys: name, email and TODO:uri.
 		@overload category($sCategory)	Sets the category for all entries.
-		@overload link(TODO:verif url$sURL)			Sets the link to the corresponding entry.
+		@overload link($sURL)			Sets the link to the corresponding entry. TODO:check url
 		@overload logo($sIRI TODO:IRI)	Sets the logo location.
 		@overload rights($sCopyright)	Sets the feed copyright.
 		@overload subtitle($sSubTitle)	Sets a small descriptive subtitle.
@@ -60,9 +60,10 @@ abstract class weeFeed implements Printable
 
 	public function __call($sName, $aArgs)
 	{
-		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidParameterException');
-		fire(!$this->isElementValid($sName), 'IllegalMethodCallException');
-		fire(sizeof($aArgs) != 1, 'InvalidParameterException');
+		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidParameterException',
+			'$sName must be defined and contain only alpha characters or a colon.');
+		fire(!$this->isElementValid($sName), 'IllegalMethodCallException', $sName . ' is not a valid feed element name.');
+		fire(sizeof($aArgs) != 1, 'InvalidParameterException', 'Only one value is accepted in $aArgs.');
 
 		$this->aFeed[$sName] = $aArgs[0];
 
@@ -104,10 +105,11 @@ abstract class weeFeed implements Printable
 
 	public function entry($aEntry)
 	{
-		fire(empty($aEntry));
+		fire(empty($aEntry), 'UnexpectedValueException', '$aEntry must not be empty.');
 
 		foreach ($aEntry as $sElement => $m)
-			fire(!$this->isEntryElementValid($sElement), 'InvalidArgumentException');
+			fire(!$this->isEntryElementValid($sElement), 'InvalidArgumentException',
+				$sElement . ' is not a valid feed entry element name.');
 
 		$this->aEntries[] = $aEntry;
 

@@ -75,6 +75,17 @@ class weeDatabaseQuery
 	protected		$aValues = array();
 
 	/**
+		Create a new weeDatabaseQuery object.
+		Before creating one you have to create a database driver object, such as weePgSQLDatabase.
+	*/
+
+	public function __construct()
+	{
+		fire(empty(self::$criteriaClass), 'IllegalStateException',
+			'You must first create a database driver (such as weePgSQLDatabase) before using weeDatabaseQuery.');
+	}
+
+	/**
 		Build the query.
 
 		You do not need to use this method, the weeDatabase object will call it for you.
@@ -86,7 +97,9 @@ class weeDatabaseQuery
 	public function build($oDatabase)
 	{
 		$sMethod = 'build' . $this->sAction;
-		fire(!is_callable(array($this, $sMethod)), 'IllegalStateException');
+		fire(!is_callable(array($this, $sMethod)), 'IllegalStateException',
+			'Action ' . $this->sAction . ' does not exist. Only INSERT and UPDATE are accepted.');
+
 		return $this->$sMethod($oDatabase);
 	}
 
@@ -123,7 +136,8 @@ class weeDatabaseQuery
 
 	protected function buildUpdate($oDatabase)
 	{
-		fire(empty($this->oCriteria), 'IllegalStateException');
+		fire(empty($this->oCriteria), 'IllegalStateException',
+			'An UPDATE query requires a weeCriteria object to be defined using the weeDatabaseQuery::where method.');
 
 		$sSQL = 'UPDATE ' . $this->sTable . ' SET ';
 
@@ -202,9 +216,6 @@ class weeDatabaseQuery
 
 	public function where($oWhereCriteria = null)
 	{
-		fire(empty(self::$criteriaClass), 'IllegalStateException');
-		fire(!is_object($oWhereCriteria), 'UnexpectedValueException');
-
 		if (is_null($oWhereCriteria))
 		{
 			if (empty($this->oCriteria))
@@ -213,7 +224,8 @@ class weeDatabaseQuery
 		}
 		else
 		{
-			fire(!empty($this->oCriteria), 'IllegalStateException');
+			fire(!empty($this->oCriteria), 'IllegalStateException',
+				'You cannot give two weeDatabaseCriteria to the same weeDatabaseQuery.');
 			$this->oCriteria = $oWhereCriteria;
 			return $this;
 		}
@@ -229,7 +241,7 @@ class weeDatabaseQuery
 
 function weeCriteria()
 {
-	fire(func_num_args() == 0, 'InvalidParameterException');
+	fire(func_num_args() < 2, 'InvalidParameterException', 'This function requires at least 2 parameters.');
 	$aArgs = func_get_args();
 
 	$s = 'return new weeDatabaseQuery::$criteriaClass(';

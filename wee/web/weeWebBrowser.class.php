@@ -44,7 +44,9 @@ class weeWebBrowser
 
 	public function __construct($sCookieFile)
 	{
-		fire(file_exists($sCookieFile) && !(is_readable($sCookieFile) && is_writable($sCookieFile)), 'NotPermittedException');
+		fire(file_exists($sCookieFile) && !(is_readable($sCookieFile) && is_writable($sCookieFile)), 'NotPermittedException',
+			"Permission refused while trying to access the file '" . $sCookieFile . "'.");
+
 		$this->sCookieFile = $sCookieFile;
 	}
 
@@ -116,7 +118,7 @@ class weeWebBrowser
 		}
 
 		$oXML = simplexml_load_string($sDoc, 'weeWebDocument', LIBXML_DTDLOAD);
-		fire($oXML === false, 'BadXMLException');
+		fire($oXML === false, 'BadXMLException', 'File returned by ' . $sURL . ' is not a valid XML document.');
 
 		$oXML->registerXPathNamespace($oXML->getName(), $sXMLNS);
 

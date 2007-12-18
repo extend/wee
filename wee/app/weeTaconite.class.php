@@ -199,11 +199,11 @@ class weeTaconite implements Printable
 		$oDocument->validateOnParse			= true;
 
 		$b = $oDocument->loadXML($sXMLDocument);
-		fire(!$b, 'BadXMLException');
+		fire(!$b, 'BadXMLException', 'Document $sXMLDocument is not valid XML.');
 
 		$oXML = new DOMDocument();
 		$b = $oXML->loadXML($this->toString());
-		fire(!$b, 'BadXMLException');
+		fire(!$b, 'BadXMLException', 'Document created by weeTaconite::toString is not valid XML.');
 
 		foreach ($oXML->documentElement->childNodes as $oAction)
 		{

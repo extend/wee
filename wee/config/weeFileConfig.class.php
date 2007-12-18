@@ -38,7 +38,7 @@ class weeFileConfig extends weeConfig
 	public function __construct($sFilename)
 	{
 		$rFile = fopen($sFilename, 'r');
-		fire($rFile === false);
+		fire($rFile === false, 'FileNotFoundException', "Cannot open file '" . $sFilename . "'.");
 
 		while (!feof($rFile))
 		{
@@ -90,7 +90,8 @@ class weeFileConfig extends weeConfig
 	protected function isTargetedSystem($sInstruction)
 	{
 		$sInstruction = substr($sInstruction, 2);
-		fire(strpos($sInstruction, ')') === false);
+		fire(strpos($sInstruction, ')') === false, 'UnexpectedValueException',
+			'The targeted system instruction is missing the closing parenthese.');
 
 		$sInstruction = substr($sInstruction, 0, strpos($sInstruction, ')'));
 
@@ -105,10 +106,13 @@ class weeFileConfig extends weeConfig
 		);
 
 		$aWords = explode(' ', $sInstruction);
-		fire(empty($aFunc[$aWords[0]]));
+		fire(empty($aFunc[$aWords[0]]), 'UnexpectedValueException',
+			'The targeted system instruction ' . $aWords[0] . ' do not exist.');
 
 		$sEval = $aFunc[$aWords[0]];
-		fire(sizeof($aWords) != 2 + (strpos($sEval, ':') !== false));
+		fire(sizeof($aWords) != 2 + (strpos($sEval, ':') !== false), 'UnexpectedValueException',
+			'The targeted system instruction should have ' . (2 + (strpos($sEval, ':') !== false)) .
+			' parameters, ' . sizeof($aWords) . ' were given.');
 
 		$iNbArgs = substr_count($sEval, ':');
 		$sWanted = '';

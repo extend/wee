@@ -24,6 +24,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Class for Oracle query results handling.
 	An object of this class is created by the weeOracleDatabase's query method for SELECT statements.
+
+	TODO:finish, test, and add error messages to the exceptions
 */
 
 class weeOracleResult extends weeDatabaseResult

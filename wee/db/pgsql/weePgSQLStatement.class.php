@@ -88,7 +88,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 		$this->sStatementName = 'st_' . md5($sQueryString);
 
 		$rResult = pg_prepare($this->rLink, $this->sStatementName, $sQueryString);
-		fire($rResult === false, 'DatabaseException');
+		fire($rResult === false, 'DatabaseException', 'Failed to prepare the statement: ' . pg_last_error($this->rLink));
 	}
 
 	/**
@@ -121,11 +121,14 @@ class weePgSQLStatement extends weeDatabaseStatement
 
 	public function execute()
 	{
-		fire(sizeof($this->aParameters) != sizeof($this->aParametersMap), 'IllegalStateException');
+		fire(sizeof($this->aParameters) != sizeof($this->aParametersMap), 'IllegalStateException',
+			'The prepared statement requires ' . sizeof($this->aParametersMap) . ' parameters, but ' .
+			sizeof($this->aParameters) . ' were given.');
 
 		ksort($this->aParameters);
 		$rResult = @pg_execute($this->rLink, $this->sStatementName, $this->aParameters);
-		fire($rResult === false, 'DatabaseException');
+		fire($rResult === false, 'DatabaseException',
+			'Failed to execute the prepared statement: ' . pg_last_error($this->rLink));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);

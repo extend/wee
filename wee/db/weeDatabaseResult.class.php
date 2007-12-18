@@ -122,7 +122,7 @@ abstract class weeDatabaseResult implements Countable, Iterator
 
 	public function rowClass($sClass)
 	{
-		fire(empty($sClass), 'InvalidParameterException');
+		fire(empty($sClass), 'InvalidParameterException', '$sClass must not be empty.');
 
 		$this->sRowClass = $sClass;
 		return $this;

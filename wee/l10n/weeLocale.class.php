@@ -50,7 +50,8 @@ final class weeLocale extends Namespace
 
 	public static function set($sLang, $sEncoding, $sLocalePath = './', $sTextDomain = 'messages')
 	{
-		fire(!function_exists('gettext'), 'ConfigurationException');
+		fire(!function_exists('gettext'), 'ConfigurationException',
+			'The gettext PHP extension is required by the localization module.');
 
 		//TODO:check values
 

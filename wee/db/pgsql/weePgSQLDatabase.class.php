@@ -49,7 +49,8 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function __construct($aParams = array())
 	{
-		fire(!function_exists('pg_connect'), 'ConfigurationException');
+		fire(!function_exists('pg_connect'), 'ConfigurationException',
+			'The PostgreSQL PHP extension is required by the PostgreSQL database driver.');
 
 		//TODO:maybe quote & escape values...
 		$sConnection = null;
@@ -57,7 +58,7 @@ class weePgSQLDatabase extends weeDatabase
 			$sConnection .= $sKey . '=' . $sValue . ' ';
 
 		$this->rLink = pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
-		fire($this->rLink === false, 'DatabaseException');
+		fire($this->rLink === false, 'DatabaseException', 'Failed to connect to database.');
 
 		// Set encoding
 
@@ -83,7 +84,7 @@ class weePgSQLDatabase extends weeDatabase
 	protected function doQuery($sQueryString)
 	{
 		$rResult = @pg_query($this->rLink, $sQueryString);
-		fire($rResult === false, 'DatabaseException');
+		fire($rResult === false, 'DatabaseException', 'Failed to execute the given query: ' . $this->getLastError());
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
@@ -130,10 +131,10 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		fire(empty($sName), 'InvalidParameterException');
+		fire(empty($sName), 'InvalidParameterException', 'Sequence name $sName must not be empty.');
 
 		$r = pg_query($this->rLink, 'SELECT currval(' . $this->escape($sName) . ')');
-		fire($r === false, 'DatabaseException');
+		fire($r === false, 'DatabaseException', 'Failed to retrieve the value of the sequence: ' . $this->getLastError());
 
 		return (int)pg_fetch_result($r, 0, 0);
 	}

@@ -43,7 +43,7 @@ class weeCSVDataFile
 	public function loadFromFile($sFilename, $bAppend = false)
 	{
 		$rFile = @fopen($sFilename, 'r');
-		fire($rFile === false);
+		fire($rFile === false, 'FileNotFoundException', "Can't open file '" . $sFilename . "'.");
 
 		if (!$bAppend)
 			$this->aData = array();
@@ -65,8 +65,9 @@ class weeCSVDataFile
 
 	public function toSQL($oDatabase, $sTable, array $aMap = null)
 	{
-		fire(!($oDatabase instanceof weeDatabase));
-		fire(empty($sTable));
+		fire(!($oDatabase instanceof weeDatabase), 'UnexpectedValueException',
+			'$oDatabase must be an instance of weeDatabase.');
+		fire(empty($sTable), 'UnexpectedValueException', '$sTable must not be empty.');
 
 		$sSQLBegin = 'INSERT INTO ' . $sTable;
 

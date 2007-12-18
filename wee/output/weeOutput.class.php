@@ -63,7 +63,7 @@ abstract class weeOutput
 
 	public static function deleteCookie($sName)
 	{
-		fire(headers_sent(), 'IllegalStateException');
+		fire(headers_sent(), 'IllegalStateException', 'You cannot delete a cookie if headers are already sent.');
 
 		if (empty(self::$sCookiePath))
 			self::initCookiePath();
@@ -84,7 +84,10 @@ abstract class weeOutput
 
 	public static function encodeValue($mValue)
 	{
-		fire(empty(self::$oInstance), 'IllegalStateException');
+		fire(empty(self::$oInstance), 'IllegalStateException',
+			'An instance of weeOutput must be selected before calling weeOutput::encodeValue.' .
+			' You should select it before doing any code relating to output, be forms or templates.');
+
 		return self::$oInstance->encode($mValue);
 	}
 
@@ -127,6 +130,7 @@ abstract class weeOutput
 		Sends a header to the browser.
 
 		Tentatively prevent HTTP Response Splitting.
+		TODO:filter NUL too
 
 		@param $sString		Header string.
 		@param $bReplace	Replace existing header if true.
@@ -134,8 +138,11 @@ abstract class weeOutput
 
 	public static function header($sString, $bReplace = true)
 	{
-		fire(headers_sent(), 'IllegalStateException');
-		fire(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false, 'UnexpectedValueException');
+		fire(headers_sent(), 'IllegalStateException',
+			'You cannot add another header to be sent to browser if they are already sent.');
+		fire(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false, 'UnexpectedValueException',
+			'Line breaks are not allowed in headers to prevent HTTP Response Splitting.');
+
 		header($sString, $bReplace);
 	}
 
@@ -191,7 +198,7 @@ abstract class weeOutput
 
 	public static function setCookie($sName, $sValue, $iExpire = null)
 	{
-		fire(headers_sent(), 'IllegalStateException');
+		fire(headers_sent(), 'IllegalStateException', 'You cannot set a cookie if headers are already sent.');
 
 		if (empty(self::$sCookiePath))
 			self::initCookiePath();

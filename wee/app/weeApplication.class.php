@@ -164,7 +164,7 @@ class weeApplication implements Singleton
 
 	public function __get($name)
 	{
-		fire(empty($this->aModules[$name]));
+		fire(empty($this->aModules[$name]), 'UnexpectedValueException', 'The module ' .$name . ' do not exist.');
 		return $this->aModules[$name];
 	}
 
@@ -281,14 +281,12 @@ class weeApplication implements Singleton
 
 	protected function loadFrame($sFrame)
 	{
-		//TODO:better error when class not found... like a 404 error
-
 		if (!empty($this->oAliases[$sFrame]))
 			$sFrame = $this->oAliases[$sFrame];
 
-		fire(!class_exists($sFrame));
+		fire(!class_exists($sFrame), 'UnexpectedValueException', 'The frame ' . $sFrame . ' do not exist.');
 		$oFrame = new $sFrame;
-		fire(!($oFrame instanceof weeFrame));
+		fire(!($oFrame instanceof weeFrame), 'UnexpectedValueException', 'The frame ' . $sFrame . ' must be an instance of weeFrame.');
 
 		$oFrame->setController($this);
 

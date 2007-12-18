@@ -89,7 +89,8 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 	public function toString()
 	{
-		fire(empty($this->oXML->options), 'IllegalStateException');
+		fire(empty($this->oXML->options), 'IllegalStateException',
+			'You must define options before trying to output a weeFormRadioBox.');
 
 		$sClass		= 'radiobox';
 		if (!empty($this->oXML->class))

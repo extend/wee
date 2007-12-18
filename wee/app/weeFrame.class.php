@@ -102,7 +102,8 @@ abstract class weeFrame implements Printable
 		else
 			$sFunc = 'event' . $aEvent['event'];
 
-		fire(!is_callable(array($this, $sFunc)));//TODO:404 error?
+		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
+			'The event ' . $aEvent['event'] . ' do not exist.');
 
 		if (!$this->isAuthorized($aEvent))
 		{
@@ -170,7 +171,7 @@ abstract class weeFrame implements Printable
 
 	public function setController($oController)
 	{
-		fire(!empty($this->oController));
+		fire(!empty($this->oController), 'UnexpectedValueException', '$oController must not be empty.');
 		$this->oController = $oController;
 	}
 
@@ -211,7 +212,7 @@ abstract class weeFrame implements Printable
 
 	public function unauthorizedAccess($aEvent)
 	{
-		burn('NotPermittedException');
+		burn('NotPermittedException', 'You are not allowed to access this page.');
 	}
 
 	/**

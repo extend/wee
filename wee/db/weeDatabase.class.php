@@ -82,7 +82,8 @@ abstract class weeDatabase
 
 		foreach ($aMatches[1] as $sName)
 		{
-			fire(!isset($aArguments[1][$sName]), 'DatabaseException');
+			fire(!isset($aArguments[1][$sName]), 'DatabaseException',
+				'Could not bind the named parameter for ' . $sName . ' because the value was not given in the arguments.');
 			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
 		}
 
@@ -92,6 +93,9 @@ abstract class weeDatabase
 	/**
 		Common function for building queries that use question marks placeholders.
 		Used to replace all the ? in the query by the specified arguments, escaped as needed.
+
+		TODO:after reading this again i'm not sure it's needed to check for $iNbParts - 1 != $iNbArgs.
+			 This potentially remove the last if block too.
 
 		@param	$aArguments	The query and the arguments passed to the query method
 		@return	string		The query safely build
@@ -104,7 +108,7 @@ abstract class weeDatabase
 		$iNbParts	= sizeof($aParts);
 		$iNbArgs	= sizeof($aArguments);
 
-		fire($iNbParts != $iNbArgs && $iNbParts - 1 != $iNbArgs, 'UnexpectedValueException');
+		fire($iNbParts != $iNbArgs && $iNbParts - 1 != $iNbArgs, 'UnexpectedValueException'); //TODO:see above in docComment
 
 		$s = null;
 		for ($i = 1; $i < sizeof($aArguments); $i++)

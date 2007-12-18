@@ -100,7 +100,8 @@ class weeConfirmValidator implements weeFormValidator
 
 	public function hasError()
 	{
-		fire(empty($this->aData), 'InvalidStateException');
+		fire(empty($this->aData), 'InvalidStateException',
+			'You must set the form data using weeConfirmValidator::setData before calling this method.');
 
 		if (is_array($this->mValue))
 			;//TODO:compare arrays

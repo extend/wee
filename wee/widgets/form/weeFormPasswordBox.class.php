@@ -55,7 +55,7 @@ class weeFormPasswordBox extends weeFormTextBox
 
 	public function setValue($sValue)
 	{
-		burn('BadMethodCallException');
+		burn('BadMethodCallException', 'It is not possible to set the value of a weeFormPasswordBox widget.');
 	}
 }
 

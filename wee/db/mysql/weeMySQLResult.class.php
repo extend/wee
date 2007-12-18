@@ -54,7 +54,7 @@ class weeMySQLResult extends weeDatabaseResult
 
 	public function __construct($rResult)
 	{
-		fire(!is_resource($rResult), 'InvalidArgumentException');
+		fire(!is_resource($rResult), 'InvalidArgumentException', '$rResult must be a resource.');
 		$this->rResult = $rResult;
 	}
 
@@ -67,7 +67,8 @@ class weeMySQLResult extends weeDatabaseResult
 	public function count()
 	{
 		$i = mysql_num_rows($this->rResult);
-		fire($i === false, 'DatabaseException');
+		fire($i === false, 'DatabaseException',
+			'An error occurred while trying to count the number of rows returned by the query.');
 
 		return $i;
 	}
@@ -98,7 +99,9 @@ class weeMySQLResult extends weeDatabaseResult
 	public function fetch()
 	{
 		$a = mysql_fetch_assoc($this->rResult);
-		fire($a === false, 'DatabaseException');
+		fire($a === false, 'DatabaseException',
+			'Failed to retrieve the row. Might be because no row were returned by the query,' .
+			' or because you are incorrectly trying to loop through all the rows using this method.');
 
 		if (!empty($this->sRowClass))
 			$a = new $this->sRowClass($a);

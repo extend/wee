@@ -342,7 +342,7 @@ class weeDocumentor implements Printable
 			$aParsedData['overload'] = array();
 
 		$iPos = strpos($sLine, ')');
-		fire($iPos === false);
+		fire($iPos === false); // TODO:nox will have to set an error message for this
 
 		$sFunc		= substr($sLine, 0, $iPos);
 		$sComment	= trim(substr($sLine, $iPos + 1));

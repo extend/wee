@@ -75,7 +75,8 @@ class weeFormCheckList extends weeFormMultipleSelectable
 
 	public function toString()
 	{
-		fire(empty($this->oXML->options), 'IllegalStateException');
+		fire(empty($this->oXML->options), 'IllegalStateException',
+			'You must define options before trying to output a weeFormCheckList.');
 
 		$sClass		= 'checklist';
 		if (!empty($this->oXML->class))

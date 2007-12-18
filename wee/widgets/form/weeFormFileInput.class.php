@@ -35,7 +35,7 @@ class weeFormFileInput extends weeFormWritable
 
 	final public function getValue()
 	{
-		burn('BadMethodCallException');
+		burn('BadMethodCallException', 'It is not possible to get the value of a weeFormFileInput widget.');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class weeFormFileInput extends weeFormWritable
 
 	final public function setValue($sValue)
 	{
-		burn('BadMethodCallException');
+		burn('BadMethodCallException', 'It is not possible to set the value of a weeFormFileInput widget.');
 	}
 
 	/**

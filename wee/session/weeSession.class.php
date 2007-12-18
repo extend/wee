@@ -38,7 +38,8 @@ class weeSession implements ArrayAccess
 
 	public function __construct()
 	{
-		fire(session_id() != '', 'IllegalStateException');
+		fire(session_id() != '', 'IllegalStateException',
+			'A session already exist. You cannot create a new weeSession if a PHP session is active.');
 
 		// Sanitize session id, then start session
 

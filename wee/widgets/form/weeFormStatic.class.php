@@ -49,7 +49,7 @@ abstract class weeFormStatic extends weeFormWidget
 
 	public function transformValue(&$aData)
 	{
-		burn('BadMethodCallException');
+		burn('BadMethodCallException', 'Static widgets do not have value.');
 	}
 }
 

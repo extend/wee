@@ -23,6 +23,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Oracle database driver.
+
+	TODO:finish, test, and add error messages to the exceptions
 */
 
 class weeOracleDatabase extends weeDatabase
@@ -164,7 +166,7 @@ class weeOracleDatabase extends weeDatabase
 
 	public function prepare($sQueryString)
 	{
-		burn('BadMethodCallException');
+		burn('BadMethodCallException', 'This method is not implemented yet.');
 	}
 }
 

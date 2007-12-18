@@ -177,7 +177,9 @@ abstract class weeFormSelectable extends weeFormWidget
 			return $this->oXML->options;
 
 		$aDest = $this->oXML->options->xpath($sDestXPath);
-		fire(sizeof($aDest) != 1, 'BadXMLException');
+		fire(sizeof($aDest) != 1, 'BadXMLException',
+			'The XPath statement ' . $sDestXPath . ' must return exactly 1 result, ' . sizeof($aDest) . ' were returned.');
+
 		return $aDest[0];
 	}
 }

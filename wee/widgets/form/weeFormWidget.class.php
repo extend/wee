@@ -49,7 +49,9 @@ abstract class weeFormWidget implements Printable
 
 	public function __construct($oXML)
 	{
-		fire(!$this->isValidXML($oXML), 'BadXMLException');
+		fire(!$this->isValidXML($oXML), 'BadXMLException',
+			'$oXML is not a valid ' . get_class($this) . ' SimpleXML object.');
+
 		$this->oXML = $oXML;
 	}
 

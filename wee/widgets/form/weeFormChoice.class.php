@@ -97,7 +97,8 @@ class weeFormChoice extends weeFormOneSelectable
 			$sOptions	= null;
 			foreach ($oItem->children() as $oSubItem)
 			{
-				fire($oSubItem->getName() != 'item', 'BadXMLException'); // only two levels of items
+				fire($oSubItem->getName() != 'item', 'BadXMLException',
+					"There can only be two level of items. All childrens of a 'group' node must be an 'item'.");
 				$sOptions .= $this->optionToString($oSubItem);
 			}
 
@@ -127,7 +128,8 @@ class weeFormChoice extends weeFormOneSelectable
 
 	public function toString()
 	{
-		fire(empty($this->oXML->options), 'IllegalStateException');
+		fire(empty($this->oXML->options), 'IllegalStateException',
+			'You must define options before trying to output a weeFormCheckList.');
 
 		$sClass		= null;
 		if (!empty($this->oXML->class))
