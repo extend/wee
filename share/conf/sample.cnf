@@ -14,6 +14,10 @@ start.db		= 0
 start.output	= 1
 start.session	= 0
 
+# Application settings
+
+app.toppage = toppage
+
 # Database settings
 
 db.driver	= weePgSQLDatabase
