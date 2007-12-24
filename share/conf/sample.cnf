@@ -5,6 +5,7 @@
 
 autoload.path	= //app/php
 aliases.file	=
+debug.mode		= 0
 timezone		= UTC
 
 # Startup settings
