@@ -60,10 +60,10 @@ abstract class weeFeed implements Printable
 
 	public function __call($sName, $aArgs)
 	{
-		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidParameterException',
+		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidArgumentException',
 			'$sName must be defined and contain only alpha characters or a colon.');
 		fire(!$this->isElementValid($sName), 'IllegalMethodCallException', $sName . ' is not a valid feed element name.');
-		fire(sizeof($aArgs) != 1, 'InvalidParameterException', 'Only one value is accepted in $aArgs.');
+		fire(sizeof($aArgs) != 1, 'InvalidArgumentException', 'Only one value is accepted in $aArgs.');
 
 		$this->aFeed[$sName] = $aArgs[0];
 

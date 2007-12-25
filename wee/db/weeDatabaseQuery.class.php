@@ -241,7 +241,7 @@ class weeDatabaseQuery
 
 function weeCriteria()
 {
-	fire(func_num_args() < 2, 'InvalidParameterException', 'This function requires at least 2 parameters.');
+	fire(func_num_args() < 2, 'InvalidArgumentException', 'This function requires at least 2 parameters.');
 	$aArgs = func_get_args();
 
 	$s = 'return new weeDatabaseQuery::$criteriaClass(';

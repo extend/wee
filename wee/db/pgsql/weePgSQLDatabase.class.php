@@ -131,7 +131,7 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		fire(empty($sName), 'InvalidParameterException', 'Sequence name $sName must not be empty.');
+		fire(empty($sName), 'InvalidArgumentException', 'Sequence name $sName must not be empty.');
 
 		$r = pg_query($this->rLink, 'SELECT currval(' . $this->escape($sName) . ')');
 		fire($r === false, 'DatabaseException', 'Failed to retrieve the value of the sequence: ' . $this->getLastError());

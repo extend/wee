@@ -129,7 +129,7 @@ class weeOracleDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		fire(empty($sName), 'InvalidParameterException');
+		fire(empty($sName), 'InvalidArgumentException');
 
 		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escape($sName) . '.currval FROM DUAL');
 		fire($rStatement === false, 'DatabaseException');
