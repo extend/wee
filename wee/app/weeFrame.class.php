@@ -103,7 +103,7 @@ abstract class weeFrame implements Printable
 			$sFunc = 'event' . $aEvent['event'];
 
 		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
-			'The event ' . $aEvent['event'] . ' do not exist.');
+			'The ' . (empty($aEvent['event']) ? 'default event' : 'event ' . $aEvent['event']) . ' do not exist.');
 
 		if (!$this->isAuthorized($aEvent))
 		{
