@@ -6,6 +6,13 @@
 	<link rel="stylesheet" type="text/css" media="all" href="<?=APP_PATH?>res/wee/wee.css"/>
 	<script type="text/javascript" src="<?=APP_PATH?>res/jquery/jquery.js"></script>
 	<script type="text/javascript" src="<?=APP_PATH?>res/wee/wee.js"></script>
+
+	<script type="text/javascript">
+$(document).ready(function() {
+	// fix firefox inline-block
+	wee.fixes.inlineblock();
+});
+	</script>
 </head>
 
 <body>
