@@ -86,15 +86,12 @@ abstract class weeFormWidget implements Printable
 
 	/**
 		Transform the value posted if needed.
-		Return false if the value was not set.
 
 		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
-		@return	bool	Whether the value is present.
 	*/
 
 	public function transformValue(&$aData)
 	{
-		return isset($aData[(string)$this->oXML->name]);
 	}
 
 	/**

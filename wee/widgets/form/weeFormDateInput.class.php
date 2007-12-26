@@ -116,23 +116,19 @@ class weeFormDateInput extends weeFormTextBox
 
 	/**
 		Transform the value posted if needed.
-		Return false if the value was not set.
 
 		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
-		@return	bool	Whether the value is present.
 	*/
 
 	public function transformValue(&$aData)
 	{
 		if (empty($aData[(string)$this->oXML->name]))
-			return '';
+			return;
 
 		$aItems = explode($this->sDateFormat[3], $aData[(string)$this->oXML->name]);
 		$aData[(string)$this->oXML->name] = $aItems[strpos($this->sDateFormat, 'Y')]
 			. '-' . $aItems[strpos($this->sDateFormat, 'M')]
 			. '-' . $aItems[strpos($this->sDateFormat, 'D')];
-
-		return parent::transformValue($aData);
 	}
 }
 

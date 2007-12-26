@@ -121,10 +121,8 @@ class weeFormTimeInput extends weeFormWritable
 
 	/**
 		Transform the value posted if needed.
-		Return false if the value was not set.
 
 		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
-		@return	bool	Whether the value is present.
 	*/
 
 	public function transformValue(&$aData)
@@ -132,7 +130,6 @@ class weeFormTimeInput extends weeFormWritable
 		//TODO:validates data here too?
 		$aData[(string)$this->oXML->name] = sprintf('%02u:%02u', $aData[$this->oXML->name . '_hour'], $aData[$this->oXML->name . '_minute']);
 		unset($aData[$this->oXML->name . '_hour'], $aData[$this->oXML->name . '_minute']);
-		return true;
 	}
 }
 

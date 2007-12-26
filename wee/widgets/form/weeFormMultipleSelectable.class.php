@@ -58,10 +58,8 @@ abstract class weeFormMultipleSelectable extends weeFormSelectable
 
 	/**
 		Transform the value posted if needed.
-		Return false if the value was not set.
 
 		@param	$aData	[IN,OUT] The data sent using the form. Usually $_POST or $_GET.
-		@return	bool	Whether the value is present.
 	*/
 
 	public function transformValue(&$aData)
@@ -74,8 +72,6 @@ abstract class weeFormMultipleSelectable extends weeFormSelectable
 		$aOptions = $this->oXML->options->xpath('.//item');
 		foreach ($aOptions as $aOption)
 			$aData[(string)$this->oXML->name][(string)$aOption['value']] = (int)isset($a[(string)$aOption['value']]);
-
-		return true;
 	}
 }
 
