@@ -21,103 +21,106 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-/**
-	@see http://php.net/ctype_alnum
-*/
-
-function ctype_alnum($s)
+if (!function_exists('ctype_alnum'))
 {
-	return (bool)preg_match('/^[[:alnum:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_alnum
+	*/
 
-/**
-	@see http://php.net/ctype_alpha
-*/
+	function ctype_alnum($s)
+	{
+		return (bool)preg_match('/^[[:alnum:]]+$/', $s);
+	}
 
-function ctype_alpha($s)
-{
-	return (bool)preg_match('/^[[:alpha:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_alpha
+	*/
 
-/**
-	@see http://php.net/ctype_cntrl
-*/
+	function ctype_alpha($s)
+	{
+		return (bool)preg_match('/^[[:alpha:]]+$/', $s);
+	}
 
-function ctype_cntrl($s)
-{
-	return (bool)preg_match('/^[[:cntrl:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_cntrl
+	*/
 
-/**
-	@see http://php.net/ctype_digit
-*/
+	function ctype_cntrl($s)
+	{
+		return (bool)preg_match('/^[[:cntrl:]]+$/', $s);
+	}
 
-function ctype_digit($s)
-{
-	return (bool)preg_match('/^[[:digit:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_digit
+	*/
 
-/**
-	@see http://php.net/ctype_graph
-*/
+	function ctype_digit($s)
+	{
+		return (bool)preg_match('/^[[:digit:]]+$/', $s);
+	}
 
-function ctype_graph($s)
-{
-	return (bool)preg_match('/^[[:graph:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_graph
+	*/
 
-/**
-	@see http://php.net/ctype_lower
-*/
+	function ctype_graph($s)
+	{
+		return (bool)preg_match('/^[[:graph:]]+$/', $s);
+	}
 
-function ctype_lower($s)
-{
-	return (bool)preg_match('/^[[:lower:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_lower
+	*/
 
-/**
-	@see http://php.net/ctype_print
-*/
+	function ctype_lower($s)
+	{
+		return (bool)preg_match('/^[[:lower:]]+$/', $s);
+	}
 
-function ctype_print($s)
-{
-	return (bool)preg_match('/^[[:print:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_print
+	*/
 
-/**
-	@see http://php.net/ctype_punct
-*/
+	function ctype_print($s)
+	{
+		return (bool)preg_match('/^[[:print:]]+$/', $s);
+	}
 
-function ctype_punct($s)
-{
-	return (bool)preg_match('/^[[:punct:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_punct
+	*/
 
-/**
-	@see http://php.net/ctype_space
-*/
+	function ctype_punct($s)
+	{
+		return (bool)preg_match('/^[[:punct:]]+$/', $s);
+	}
 
-function ctype_space($s)
-{
-	return (bool)preg_match('/^[[:space:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_space
+	*/
 
-/**
-	@see http://php.net/ctype_upper
-*/
+	function ctype_space($s)
+	{
+		return (bool)preg_match('/^[[:space:]]+$/', $s);
+	}
 
-function ctype_upper($s)
-{
-	return (bool)preg_match('/^[[:upper:]]+$/', $s);
-}
+	/**
+		@see http://php.net/ctype_upper
+	*/
 
-/**
-	@see http://php.net/ctype_xdigit
-*/
+	function ctype_upper($s)
+	{
+		return (bool)preg_match('/^[[:upper:]]+$/', $s);
+	}
 
-function ctype_xdigit($s)
-{
-	return (bool)preg_match('/^[[:xdigit:]]+$/', $s);
+	/**
+		@see http://php.net/ctype_xdigit
+	*/
+
+	function ctype_xdigit($s)
+	{
+		return (bool)preg_match('/^[[:xdigit:]]+$/', $s);
+	}
 }
 
 ?>
