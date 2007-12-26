@@ -103,9 +103,7 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 		if (is_null($this->sSelection))
 		{
-			//TODO:improve speed, make it works
-			//TODO:possibly unused...
-			$aItems = $this->oXML->options->xpath('.//item');
+			$aItems = $this->oXML->options->xpath('.//item[1]');
 			$this->select($aItems[0]['value']);
 		}
 
