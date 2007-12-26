@@ -50,14 +50,8 @@ class weeFormTextBox extends weeFormWritable
 		if (isset($this->oXML->help))
 			$sHelp	= ' title="' . weeOutput::encodeValue(_($this->oXML->help)) . '"';
 
-		$sMaxLen	= null;//TODO
-//Maybe something like that?
-//		$aMaxLen	= $this->XPath('/validator[@type="String"]/max');
-
-		//TODO:maxlen
-		//~ $aMaxLen = $this->oNode->xpath('check[@type="maxlen"]');
-		//~ if (!empty($aMaxLen))
-			//~ $sOutControl	.= ' maxlength="' . $aMaxLen[0] . '"';
+		$a			= $this->xpath('./validator[@type="weeStringValidator"]');
+		$sMaxLen	= (empty($a)) ? null : ' maxlength="' . weeOutput::encodeValue($a[0]['max']) . '"';
 
 		$sValue		= null;
 		if (strlen((string)$this->sValue) > 0)
