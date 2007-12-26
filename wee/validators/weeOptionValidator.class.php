@@ -99,7 +99,8 @@ class weeOptionValidator implements weeFormValidator
 	{
 		fire(empty($this->oWidget), 'InvalidStateException',
 			'You must set the widget using weeOptionValidator::setWidget before calling this method.');
-		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException'); //TODO:error message?
+		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException',
+			'weeOptionValidator must be used only on weeFormMultipleSelectable widgets.');
 
 		if (!$this->oWidget->isInOptions($this->mValue))
 			$this->setError('invalid');
