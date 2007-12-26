@@ -1,8 +1,5 @@
 <?php
 
-if (isset($_SERVER['argc']))
-	return null;
-
 // Initialization
 
 define('ALLOW_INCLUSION',	1);
@@ -14,7 +11,10 @@ define('TPL_PATH',	'./tpl/');
 
 require(ROOT_PATH . 'wee/wee.php');
 
-$Output = weeXHTMLOutput::instance();
+if (defined('WEE_CLI'))
+	return null;
+
+weeXHTMLOutput::select();
 
 // Convenience functions
 
