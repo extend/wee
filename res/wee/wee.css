@@ -80,6 +80,9 @@ form.block input[type="password"]	{min-width:20em}
 form.block fieldset.buttonsfieldset ol	{margin:0;text-align:right}
 form.block fieldset.buttonsfieldset li	{display:inline;margin-right:1em}
 
+form.block fieldset.checklist ol,
+form.block fieldset.scrollablechecklist ol,
+form.block fieldset.radiobox ol {margin-left:16.3em}
 form.block fieldset.radiobox li.group label	{margin-left:2em}
 form.block fieldset.radiobox li.group ol	{margin:0}
 
