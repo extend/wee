@@ -45,7 +45,8 @@ class weeFormRadioBox extends weeFormOneSelectable
 
 	protected function optionToString($sName, $sId, $oItem)
 	{
-		//TODO:check the name in item,group
+		fire(!in_array($oItem->getName(), array('item', 'group')), 'InvalidArgumentException',
+			'The item type "' . $oItem->getName() . '" is invalid.');
 
 		weeFormRadioBox::$iOptionNumber++;
 

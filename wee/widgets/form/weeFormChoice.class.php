@@ -80,7 +80,8 @@ class weeFormChoice extends weeFormOneSelectable
 
 	protected function optionToString($oItem)
 	{
-		//TODO:check the name in item,group
+		fire(!in_array($oItem->getName(), array('item', 'group')), 'InvalidArgumentException',
+			'The item type "' . $oItem->getName() . '" is invalid.');
 
 		$sDisabled		= null;
 		if ((string)$oItem['disabled'])
