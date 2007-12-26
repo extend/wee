@@ -60,7 +60,7 @@ class weeForm implements Printable
 		The 'class' attribute for the XHTML 'form' element.
 	*/
 
-	protected $sClass;
+	protected $sClass = 'block';
 
 	/**
 		The 'enctype' attribute for the XHTML 'form' element.
@@ -78,13 +78,13 @@ class weeForm implements Printable
 		Determines if the form key must be defined for this form or not.
 	*/
 
-	protected $bFormKey;
+	protected $bFormKey = true;
 
 	/**
 		The 'method' attribute for the XHTML 'form' element.
 	*/
 
-	protected $sMethod;
+	protected $sMethod = 'post';
 
 	/**
 		The URI where the data will be sent.
@@ -108,9 +108,10 @@ class weeForm implements Printable
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
 	{
-		//TODO:must fail if no output initialized?
-		//TODO:must fail if no session and form key is active
-		//TODO:must fail if there is widgets sharing the same for the same action
+		fire(is_null(weeOutput::instance()), 'IllegalStateException',
+			'You must select an output before creating a weeForm object.');
+
+		//TODO:must fail if there is widgets sharing the same name for the same action
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException',
@@ -121,18 +122,12 @@ class weeForm implements Printable
 			'The file ' . $sFilename . ' is not a valid XML document.');
 
 		if (isset($oXML->class))	$this->sClass	= (string)$oXML->class;
-		else						$this->sClass	= 'block';
-
 		if (isset($oXML->enctype))	$this->sEncType	= (string)$oXML->enctype;
-
-		if (isset($oXML->method))	$this->sMethod	= (string)$oXML->method;
-		else						$this->sMethod	= 'post';
-
 		if (isset($oXML->formkey))	$this->bFormKey	= (string)$oXML->formkey;
-		else						$this->bFormKey	= true;
+		if (isset($oXML->method))	$this->sMethod	= (string)$oXML->method;
 
-		$this->iAction		= $iAction;
-		$this->oForm		= new weeFormContainer($oXML->widgets, $iAction);
+		$this->iAction	= $iAction;
+		$this->oForm	= new weeFormContainer($oXML->widgets, $iAction);
 		$this->setURI($_SERVER['REQUEST_URI']);
 	}
 
@@ -277,14 +272,6 @@ class weeForm implements Printable
 			if ((!empty($oNode['action']) && constant($oNode['action']) != $this->iAction) ||
 				$oNode->property('widget') instanceof weeFormStatic || $oNode->property('widget') instanceof weeFormFileInput)
 				continue;
-
-			//TODO:remove this comment
-			//TODO:remove the return value of transformValue
-//			if (!$oNode->property('widget')->transformValue($aData))
-//			{
-//				$this->sValidationErrors = _('Input is incomplete') . "\r\n";
-//				break;
-//			}
 
 			$oNode->property('widget')->transformValue($aData);
 
