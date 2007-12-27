@@ -21,26 +21,23 @@ all: lint api test
 	@@echo "Web:Extend build complete."
 
 lint:
-	for file in `find . -type f -name "*.php"`; do php -l $$file; done
+	@@for file in `find . -type f -name "*.php"`; do php -l $$file; done
 
 svnlint:
-	svn stat | grep 'php' | awk '{print "php -l " $$2}' | sh
+	@@svn stat | grep 'php' | awk '{print "php -l " $$2}' | sh
 
 api: tools/api/api.xml
-	php tools/api/makeapi.php tools/api/
+	@@php tools/api/makeapi.php tools/api/
 
 tools/api/api.xml:
 
 test:
-	php tools/tests/maketests.php tools/tests/
+	@@php tools/tests/maketests.php tools/tests/
 
 clean:
-	-rm -rf tools/api/api.xml
+	@@-rm -rf tools/api/api.xml
 
 todo:
-	for file in `find . -name "*.php" -o -name "*.tpl" -o -name "*.form" -type f`; \
+	@@for file in `find . -name "*.php" -o -name "*.tpl" -o -name "*.form" -type f`; \
 		do grep -H -i TODO $$file; \
 	done
-
-new:
-	mkdir form include locale skins tpl
