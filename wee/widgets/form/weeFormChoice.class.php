@@ -42,7 +42,15 @@ class weeFormChoice extends weeFormOneSelectable
 
 	public function addOptionGroups($oDatabase, $sTable, $sValue, $sLabel, $sParent)
 	{
-		//TODO:check args
+		fire(!($oDatabase instanceof weeDatabase), 'InvalidArgumentException',
+			'$oDatabase must be an instance of weeDatabase.');
+		fire(empty($sTable), 'InvalidArgumentException', '$sTable must not be empty.');
+		fire(empty($sValue) || !ctype_alnum(str_replace('_', '', $sValue)), 'InvalidArgumentException',
+			'$sValue must contain only alphanumeric characters or "_".');
+		fire(empty($sLabel) || !ctype_alnum(str_replace('_', '', $sLabel)), 'InvalidArgumentException',
+			'$sLabel must contain only alphanumeric characters or "_".');
+		fire(empty($sParent) || !ctype_alnum(str_replace('_', '', $sParent)), 'InvalidArgumentException',
+			'$sParent must contain only alphanumeric characters or "_".');
 
 		$oItems = $oDatabase->query('
 			SELECT ' . $sValue . ' AS value, ' . $sLabel . ' AS label
