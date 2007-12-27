@@ -90,7 +90,6 @@ abstract class weeFormWritable extends weeFormWidget
 
 	public function setValue($sNewValue)
 	{
-		//TODO:maybe check against validators
 		$this->sValue = $sNewValue;
 	}
 }
