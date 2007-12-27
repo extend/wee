@@ -1,0 +1,45 @@
+# Sample configuration file for Web:Extend applications
+# You can use, modify or redistribute it freely
+
+# Global settings
+
+autoload.path	= //app/php
+aliases.file	=
+debug.mode		= 1
+timezone		= UTC
+
+# Startup settings
+# List of modules to load automatically at startup
+
+start.db		= 1
+start.output	= 1
+start.session	= 0
+
+# Application settings
+
+app.toppage = toppage
+
+# Database settings
+
+db.driver	= weePgSQLDatabase
+db.host		= localhost
+db.user		= wee
+db.password	= wee
+db.name		= wee_examples
+
+# Mail settings
+
+mail.debug.to =
+mail.debug.reply-to =
+
+# Output settings
+
+output.driver	= weeXHTMLOutput
+
+# Session settings
+
+session.driver				= weeSession
+session.db.table			=
+session.db.field.key		=
+session.db.field.username	=
+session.db.field.password	=

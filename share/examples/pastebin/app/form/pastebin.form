@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<formkey>0</formkey>
+	<method>post</method>
+
+	<widgets>
+		<widget type="weeFormFieldset">
+			<widget type="weeFormTextArea">
+				<name>data_text</name>
+				<label>Pasted text :</label>
+			</widget>
+
+			<widget type="weeFormFieldset">
+				<class>buttonsfieldset</class>
+				<widget type="weeFormSubmitButton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>
