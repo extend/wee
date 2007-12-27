@@ -127,7 +127,9 @@ class weeFormTimeInput extends weeFormWritable
 
 	public function transformValue(&$aData)
 	{
-		//TODO:validates data here too?
+		fire(!isset($aData[$this->oXML->name . '_hour'], $aData[$this->oXML->name . '_minute']), 'UnexpectedValueException',
+			'The widget ' . $this->oXML->name . ' values are missing.');
+
 		$aData[(string)$this->oXML->name] = sprintf('%02u:%02u', $aData[$this->oXML->name . '_hour'], $aData[$this->oXML->name . '_minute']);
 		unset($aData[$this->oXML->name . '_hour'], $aData[$this->oXML->name . '_minute']);
 	}
