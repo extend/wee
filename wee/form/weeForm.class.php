@@ -121,8 +121,6 @@ class weeForm implements Printable
 		fire(is_null(weeOutput::instance()), 'IllegalStateException',
 			'You must select an output before creating a weeForm object.');
 
-		//TODO:must fail if there is widgets sharing the same name for the same action
-
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException',
 			'The file ' . $sFilename . " doesn't exist.");
