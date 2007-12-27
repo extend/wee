@@ -6,7 +6,7 @@
 
 	<widgets>
 		<widget type="weeFormFieldset">
-			<widget type="weeFormTextArea">
+			<widget type="weeFormTextArea" required="required">
 				<name>data_text</name>
 				<label>Pasted text :</label>
 			</widget>
