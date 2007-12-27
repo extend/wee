@@ -71,7 +71,7 @@ $_REQUEST = array();
 set_magic_quotes_runtime(0);
 if (get_magic_quotes_gpc())
 {
-	// Note:	stripslashes converts null to empty string -- we may need an alternative here
+	// Note: stripslashes converts null to empty string -- we may need an alternative here
 
 	function mqs(&$sValue, $sKey) { $sValue = stripslashes($sValue); }
 	array_walk_recursive($_GET,		'mqs');
@@ -87,25 +87,7 @@ if (get_magic_quotes_gpc())
 
 // Core components
 
-/**
-	PHP namespace emulation.
-	Namespaces should be declared as final.
-*/
-
-class Namespace { private function __construct() {} }
-
-/**
-	Interface for declaring singletons in wee.
-*/
-
-interface Singleton { public static function instance(); }
-
-/**
-	Interface for printable objects.
-*/
-
-interface Printable { public function toString(); }
-
+require(WEE_PATH . 'wee_base' . PHP_EXT);
 require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
 require(WEE_PATH . 'weeLog' . PHP_EXT);
 require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
@@ -116,7 +98,6 @@ weeAutoload::addPath(WEE_PATH);
 
 if (!function_exists('ctype_alnum'))
 	require(WEE_PATH . 'emul_ctype' . PHP_EXT);
-require(WEE_PATH . 'emul_php' . PHP_EXT);
 
 // Dummy _() if it doesn't exist
 
