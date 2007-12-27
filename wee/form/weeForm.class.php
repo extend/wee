@@ -57,6 +57,16 @@ class weeForm implements Printable
 	protected $iAction;
 
 	/**
+		Arrays mapping actions to their string names.
+	*/
+
+	protected $iActionMap = array(
+		1 => 'ACTION_ADD',
+		2 => 'ACTION_UPD',
+		4 => 'ACTION_DEL',
+	);
+
+	/**
 		The 'class' attribute for the XHTML 'form' element.
 	*/
 
@@ -264,13 +274,10 @@ class weeForm implements Printable
 				return true;
 		}
 
-		//TODO:do not xpath widgets that have wrong action
-		$aWidgets = $this->oForm->xpath('//widget');
-
-		foreach ($aWidgets as $oNode)
+		foreach ($this->xpathSelectWidgets() as $oNode)
 		{
-			if ((!empty($oNode['action']) && constant($oNode['action']) != $this->iAction) ||
-				$oNode->property('widget') instanceof weeFormStatic || $oNode->property('widget') instanceof weeFormFileInput)
+			if ($oNode->property('widget') instanceof weeFormStatic ||
+				$oNode->property('widget') instanceof weeFormFileInput)
 				continue;
 
 			$oNode->property('widget')->transformValue($aData);
@@ -370,13 +377,11 @@ class weeForm implements Printable
 		fire($this->iAction != weeForm::ACTION_ADD && $this->iAction != weeForm::ACTION_UPD, 'IllegalStateException',
 			'weeForm::toSQL must not be called if action is neither weeForm::ACTION_ADD nor weeForm::ACTION_UPD.');
 
-		//TODO:do not xpath widgets that have wrong action
-		//TODO:this will remove the first line of the following condition
-		$aWidgets = $this->oForm->xpath("//widget");//[not(@action='none')]");
+		$aWidgets = $this->xpathSelectWidgets();
 
 		foreach ($aWidgets as $iKey => $oNode)
-			if ((!empty($oNode['action']) && constant($oNode['action']) != $this->iAction) ||
-				$oNode->property('widget') instanceof weeFormStatic || $oNode->property('widget') instanceof weeFormFileInput ||
+			if ($oNode->property('widget') instanceof weeFormStatic ||
+				$oNode->property('widget') instanceof weeFormFileInput ||
 				!empty($oNode['sql-ignore']))
 				unset($aWidgets[$iKey]);
 
@@ -473,6 +478,22 @@ class weeForm implements Printable
 		$a = $this->oForm->xpath('//name[text()="' . $sName . '"]/..');
 		fire(empty($a), 'BadXMLException', 'Widget ' . $sName . ' not found.');
 		return $a[0]->property('widget');
+	}
+
+	/**
+		Execute an XPath query returning the widgets corresponding to the current action.
+
+		@return array All the widgets corresponding to the current action.
+	*/
+
+	protected function xpathSelectWidgets()
+	{
+		$sXPath = '//widget[not(@action) or @action=' . $this->iAction;
+		if (!empty($this->iActionMap[$this->iAction]))
+			$sXPath .= ' or @action="weeForm::' . $this->iActionMap[$this->iAction] . '"';
+		$sXPath .= ']';
+
+		return $this->oForm->xpath($sXPath);
 	}
 }
 
