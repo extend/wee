@@ -4,17 +4,17 @@
 	<title>Pastebin Demo</title>
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
 
-	<link rel="stylesheet" type="text/css" media="all" href="<?=APP_PATH?>res/wee/wee.css"/>
-	<link rel="stylesheet" type="text/css" media="all" href="<?=APP_PATH?>pub/pastebin.css"/>
-	<script type="text/javascript" src="<?=APP_PATH?>res/wee/wee.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/wee.css"/>
+	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>pub/pastebin.css"/>
+	<script type="text/javascript" src="<?php echo APP_PATH?>res/wee/wee.js"></script>
 
 	<!-- compliance patch for microsoft browsers -->
 	<!--[if lt IE 8]>
 		<script type="text/javascript">
 			document.write('<style>body{visibility:hidden}html>body{visibility:visible}</style>');
 		</script>
-		<script src="<?=APP_PATH?>res/ie7/ie7-core.js" type="text/javascript"></script>
-		<script src="<?=APP_PATH?>res/ie7/ie7-css2-selectors.js" type="text/javascript"></script>
+		<script src="<?php echo APP_PATH?>res/ie7/ie7-core.js" type="text/javascript"></script>
+		<script src="<?php echo APP_PATH?>res/ie7/ie7-css2-selectors.js" type="text/javascript"></script>
 	<![endif]-->
 </head>
 <body>
@@ -25,12 +25,12 @@
 			<?if (!empty($errors)):?> 
 				<h2>Pastebin Error!</h2>
 
-				<div class="errors"><p><?=nl2br($errors)?></p></div>
+				<div class="errors"><p><?php echo nl2br($errors)?></p></div>
 			<?else:?> 
 				<h2>Pastebin Posted!</h2>
 
 				<div class="posted"><p>
-					The <a href="<?=APP_PATH?>index<?=PHP_EXT?>/view?id=<?=$posted_id?>">Pastebin #<?=$posted_id?></a> has been created.
+					The <a href="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/view?id=<?php echo $posted_id?>">Pastebin #<?php echo $posted_id?></a> has been created.
 				</p></div>
 			<?endif?> 
 		<?else:?> 
@@ -48,15 +48,15 @@
 
 		<h2>Find a Pastebin</h2>
 
-		<form action="<?=APP_PATH?>index<?=PHP_EXT?>/view" class="finder" method="get">
+		<form action="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/view" class="finder" method="get">
 			<label for="id">Number: <input class="number" id="id" name="id" type="text"/></label>
 			<input type="submit"/>
 		</form>
 
-		<p><a href="<?=APP_PATH?>index<?=PHP_EXT?>/last">View Last 5 Pastebins</a></p>
+		<p><a href="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/last">View Last 5 Pastebins</a></p>
 
 		<h2>Post a new Pastebin!</h2>
-		<?=$form->toString()?> 
+		<?php echo $form->toString()?> 
 	</div>
 </body>
 </html>
