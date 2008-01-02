@@ -42,8 +42,8 @@
 			or other developers to see. You are free to use this tool for your own use, but you must be aware that
 			anyone can see what you post.</p>
 			<p>Please be aware that code posted here is subject to various licenses. Do not use it if you don't
-			know where it comes from or if the license don't permit its reuse. If you post code, please add the
-			license in a comment to the code you post at the begin of the code pasted.</p>
+			know where it comes from or if the license doesn't permit its reuse. If you post code, please add the
+			license in a comment to the code you post at the beginning of the code pasted.</p>
 		<?endif?> 
 
 		<h2>Find a Pastebin</h2>
