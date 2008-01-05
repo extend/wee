@@ -1,0 +1,28 @@
+Web:Extend, aka 'wee', is a PHP5 framework designed to allow developers
+to write less, but better code easily. It is not a huge, bloated framework,
+it does not generate code, it just lets you write understandable code
+in a few lines.
+
+Web:Extend is currently alpha software. It is used by a few people in
+production environments but you should be aware that it has not been
+tested enough to be considered stable or even beta. Please help us by
+testing it and developing with it.
+
+You can find documentation on http://wee.extend.ws on the Trac wiki,
+along with the SVN web interface and the bug reporting system. If you
+find a bug please report it there and NOT on sourceforge.
+
+If the documentation you're looking for has not yet been written, or
+if you wish to discuss about Web:Extend, please post to our mailing
+list at http://groups.google.com/group/wee-users
+
+Finally, please be aware that the current testing tools included will
+be rewritten shortly. They are currently not adequate and you should
+avoid using them. If you need a good testing tool you can look at
+PHPUnit for example.
+
+Thank you for trying this software.
+
+	CHANGELOG:
+
+0.1.0: First alpha version
