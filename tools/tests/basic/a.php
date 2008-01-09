@@ -1,5 +1,3 @@
 <?php
 
-return 1==1;
-
-?>
+$this->isEqual(1, 1, '1 != 1');

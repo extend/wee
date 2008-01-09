@@ -1,5 +1,3 @@
 <?php
 
-return is_string('test');
-
-?>
+$this->isTrue(is_string('test'), "'test' is not a string?");

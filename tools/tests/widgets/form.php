@@ -1,9 +1,9 @@
 <?php
 
-require('init.php');
+if (defined('ALLOW_INCLUSION'))
+	return false;
 
-if (defined('WEE_CLI'))
-	return null;
+require('init.php.inc');
 
 fire(empty($_GET['type']) || !ctype_alnum($_GET['type']));
 echo weeFormTest($_GET['type'])->toString();

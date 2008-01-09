@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,12 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if ($argc != 2)
+if (!defined('ALLOW_INCLUSION')) die;
+
+/**
+	Exception thrown when an unit test fails.
+*/
+
+class UnitTestException extends Exception
 {
-	echo "usage: php maketests.php tests_path\n";
-	return -1;
 }
-
-define('DEBUG', 1);
-define('ALLOW_INCLUSION', 1);
-require('wee/wee.php');
-
-$o = new weeCLITestSuite($argv[1]);
-$o->run();
-echo $o->toString();

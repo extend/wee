@@ -30,12 +30,154 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeUnitTestCase
 {
 	/**
+		Check whether $mVarLeft == $mVarRight.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isEqual($mVarLeft, $mVarRight, $sMessage)
+	{
+		if ($mVarLeft != $mVarRight)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVar is false.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isFalse($mVar, $sMessage)
+	{
+		if ((bool)$mVar)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVarLeft === $mVarRight.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isIdentical($mVarLeft, $mVarRight, $sMessage)
+	{
+		if ($mVarLeft !== $mVarRight)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $oObject is an instance of $sClass.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isInstanceOf($oObject, $sClass, $sMessage)
+	{
+		if (!($oObject instanceof $sClass))
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether pattern $sPattern is found in $sSubject.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isMatching($sSubject, $sPattern, $sMessage)
+	{
+		if (0 === preg_match($sSubject, $sPattern))
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVarLeft != $mVarRight.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isNotEqual($mVarLeft, $mVarRight, $sMessage)
+	{
+		if ($mVarLeft == $mVarRight)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVarLeft !== $mVarRight.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isNotIdentical($mVarLeft, $mVarRight, $sMessage)
+	{
+		if ($mVarLeft === $mVarRight)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $oObject is NOT an instance of $sClass.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isNotInstanceOf($oObject, $sClass, $sMessage)
+	{
+		if ($oObject instanceof $sClass)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether pattern $sPattern is NOT found in $sSubject.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isNotMatching($sSubject, $sPattern, $sMessage)
+	{
+		if (1 === preg_match($sSubject, $sPattern))
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVar is NOT null.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isNotNull($mVar, $sMessage)
+	{
+		if (is_null($mVar))
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVar is null.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isNull($mVar, $sMessage)
+	{
+		if (!is_null($mVar))
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
+		Check whether $mVar is true.
+
+		@param $sMessage Error message if test returns false.
+	*/
+
+	protected function isTrue($mVar, $sMessage)
+	{
+		if (!(bool)$mVar)
+			throw new UnitTestException($sMessage);
+	}
+
+	/**
 		Runs this unit test case.
 
-		@return bool True if test succeeded, false otherwise.
+		@return bool True if test completed, false it must be skipped.
 	*/
 
 	abstract public function run();
 }
-
-?>

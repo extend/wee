@@ -8,44 +8,50 @@ class validators_email
 	}
 }
 
-$invalid = new stdClass;
-$valid = new validators_email;
-
-return
-
 // Valid
 
-    weeEmailValidator::test('test@example.com')
-&&  weeEmailValidator::test('test.test@example.com')
-&&  weeEmailValidator::test($valid)
+$this->isTrue(weeEmailValidator::test('test@example.com'),
+	'weeEmailValidator fails to validate "test@example.com".');
+$this->isTrue(weeEmailValidator::test('test.test@example.com'),
+	'weeEmailValidator fails to validate "test.test@example.com".');
+$this->isTrue(weeEmailValidator::test(new validators_email),
+	'weeEmailValidator fails to validate an object that returns "valid@email.com" as a string.');
 
 // Invalid
 
-&& !weeEmailValidator::test(null)
-&& !weeEmailValidator::test('')
-&& !weeEmailValidator::test('example')
-&& !weeEmailValidator::test('example.com')
-&& !weeEmailValidator::test('@example.com')
-&& !weeEmailValidator::test('test@example')
-&& !weeEmailValidator::test('test@com.example')
-&& !weeEmailValidator::test('test@@example.com')
-&& !weeEmailValidator::test('test@test@example.com')
-&& !weeEmailValidator::test($invalid)
+$this->isFalse(weeEmailValidator::test(null),
+	'weeEmailValidator returns true for a null value.');
+$this->isFalse(weeEmailValidator::test(''),
+	'weeEmailValidator returns true for the empty string.');
+$this->isFalse(weeEmailValidator::test('example'),
+	'weeEmailValidator returns true for "example".');
+$this->isFalse(weeEmailValidator::test('example.com'),
+	'weeEmailValidator returns true for "example.com".');
+$this->isFalse(weeEmailValidator::test('@example.com'),
+	'weeEmailValidator returns true for "@example.com".');
+$this->isFalse(weeEmailValidator::test('test@example'),
+	'weeEmailValidator returns true for "test@example".');
+$this->isFalse(weeEmailValidator::test('test@com.example'),
+	'weeEmailValidator returns true for "test@com.example".');
+$this->isFalse(weeEmailValidator::test('test@@example.com'),
+	'weeEmailValidator returns true for "test@@example.com".');
+$this->isFalse(weeEmailValidator::test('test@test@example.com'),
+	'weeEmailValidator returns true for "test@test@example.com".');
+$this->isFalse(weeEmailValidator::test(new stdClass),
+	'weeEmailValidator returns true for an empty object.');
 
 // Other types
 
-&& !weeEmailValidator::test(0)
-&& !weeEmailValidator::test(1)
-&& !weeEmailValidator::test(-1)
-&& !weeEmailValidator::test(111)
-&& !weeEmailValidator::test(-111)
-&& !weeEmailValidator::test(20000000)
-&& !weeEmailValidator::test(1.0)
-&& !weeEmailValidator::test(1.1)
-&& !weeEmailValidator::test(true)
-&& !weeEmailValidator::test(false)
-&& !weeStringValidator::test(array(1, 2, 3, 'test', false))
+$sInvalidTypeError = 'weeEmailValidator returns true for an invalid type.';
 
-;
-
-?>
+$this->isFalse(weeEmailValidator::test(0), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(1), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(-1), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(111), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(-111), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(20000000), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(1.0), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(1.1), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(true), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(false), $sInvalidTypeError);
+$this->isFalse(weeEmailValidator::test(array(1, 2, 3, 'test', false)), $sInvalidTypeError);

@@ -1,5 +1,8 @@
 <?php
 
+if (defined('ALLOW_INCLUSION'))
+	return false;
+
 // Initialization
 
 define('ALLOW_INCLUSION',	1);
@@ -10,9 +13,6 @@ define('ROOT_PATH',	'../../../');
 define('TPL_PATH',	'./tpl/');
 
 require(ROOT_PATH . 'wee/wee.php');
-
-if (defined('WEE_CLI'))
-	return null;
 
 weeXHTMLOutput::select();
 
@@ -34,7 +34,5 @@ function weeFormTest($sForm)
 
 	return $oTpl;
 }
-
-return null;
 
 ?>

@@ -64,19 +64,19 @@ $iNumResults = count($oDb->prepare('
 	SELECT * FROM prepstat
 ')->execute());
 
+$this->isEqual($iNumResults, 4,
+	'"SELECT * FROM prepstat" should return 4 rows.');
+
 // Get a specific row
 
 $aImplicitTest = $oDb->prepare('
 	SELECT ps_integer FROM prepstat WHERE ps_boolean=:0
 ')->bind(array('TRUE'))->execute()->fetch();
 
+$this->isEqual($aImplicitTest['ps_integer'], 4242,
+	'"SELECT ps_integer FROM prepstat WHERE ps_boolean=TRUE" should return 4242.');
+
 // Clean up
 
 $oDb->query('DROP TABLE prepstat');
 unset($oDb);
-
-// Check our results
-
-return $iNumResults == 4 && $aImplicitTest['ps_integer'] == 4242;
-
-?>

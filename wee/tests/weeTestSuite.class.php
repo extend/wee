@@ -24,12 +24,11 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Automated unit testing.
 
-	Unit test cases can return three values: true, false, or null.
-	Unit test cases that return null value will be ignored.
-	Use it if you need additional files that are not unit test case.
+	Unit test cases that return false value will be ignored.
+	Use it if you need additional files that are not unit test cases.
 */
 
-class weeTestSuite implements Printable
+abstract class weeTestSuite implements Printable
 {
 	/**
 		Path to the unit test cases.
@@ -44,8 +43,7 @@ class weeTestSuite implements Printable
 	protected $aResults = array();
 
 	/**
-		Initialize the test suite.
-		Sets the path to the unit test cases, and add this path to the autoload paths.
+		Initialize the test suite by setting the path to the unit test cases.
 
 		@param $sTestsPath Path to the unit test cases.
 	*/
@@ -53,8 +51,19 @@ class weeTestSuite implements Printable
 	public function __construct($sTestsPath)
 	{
 		$this->sTestsPath = $_SERVER['PWD'] . '/' . $sTestsPath;
+	}
 
-		weeAutoload::addPath($sTestsPath);
+	/**
+		Add a result to the result array.
+		Results can be true or an array containing exception class name and message.
+
+		@param $sFile Filename of the unit test case.
+		@param $mResult Result of the unit test case.
+	*/
+
+	protected function addResult($sFile, $mResult)
+	{
+		$this->aResults[$sFile] = $mResult;
 	}
 
 	/**
@@ -63,79 +72,47 @@ class weeTestSuite implements Printable
 
 	public function run()
 	{
-		$bAllSuccess = true;
-
 		$oDirectory	= new RecursiveDirectoryIterator($this->sTestsPath);
 		foreach (new RecursiveIteratorIterator($oDirectory) as $sPath)
 		{
+			// Skip files already included
 			if (in_array($sPath, get_included_files()))
 				continue;
 
-			$sClass = null;
+			// Skip files not ending with .php
+			if (substr($sPath, -strlen(PHP_EXT)) != PHP_EXT)
+				continue;
 
-			if (substr($sPath, -strlen(CLASS_EXT)) == CLASS_EXT)
-				$sClass	= substr(strrchr($sPath, '/'), 1, -strlen(CLASS_EXT));
-			elseif (substr($sPath, -strlen(PHP_EXT)) == PHP_EXT)
-			{
-				$sClass	= uniqid('weeTest_');
+			$sClass	= uniqid('weeTest_');
 
-				$sCode	= '
-					class ' . $sClass . ' extends weeUnitTestCase
+			$sCode	= '
+				class ' . $sClass . ' extends weeUnitTestCase
+				{
+					public function run()
 					{
-						public function run()
-						{
-							return require_once("' . $sPath . '");
-						}
-					}';
-				eval($sCode);
-			}
-
-			if (empty($sClass))
-				continue; //TODO:bad file, report error
+						$b = require_once("' . $sPath . '");
+						return $b !== false;
+					}
+				}';
+			eval($sCode);
 
 			try
 			{
 				$oTest = new $sClass;
-				$bSuccess = $oTest->run();
+				$bRes = $oTest->run();
+
+				if (!$bRes)
+					continue;
+
+				$this->addResult((string)$sPath, 'success');
 			}
 			catch (Exception $o)
 			{
-				$bSuccess = false;
+				$this->addResult((string)$sPath, array(
+					'exception' => get_class($o),
+					'message' => $o->getMessage(),
+				));
 			}
-
-			if (is_null($bSuccess)) // ignore files that return null
-				continue;
-
-			//TODO:output this only if we are in CLI mode
-			echo $sPath . '... ' . ($bSuccess ? 'ok' : 'error') . "\r\n";
-
-			$this->aResults[(string)$sPath] = (int)$bSuccess;
-			$bAllSuccess &= $bSuccess;
 		}
-
-		return $bAllSuccess;
-	}
-
-	/**
-		Returns the result of the unit test suite.
-
-		@return A simple report of the unit test suite after its completion.
-	*/
-
-	public function toString()
-	{
-		//TODO:this doesn't feels right here...
-		$bAllSuccess = $this->run();
-
-		$s = '';
-
-		if ($bAllSuccess)
-			return 'Results of the test suite: all ' . sizeof($this->aResults) . " unit test cases succeeded.\r\n";
-
-		$aCount = array_count_values($this->aResults);
-
-		return 'Results of the test suite: ERROR: ' . $aCount[0] . ' of ' . sizeof($this->aResults) . " unit test cases failed.\r\n";
 	}
 }
-
-?>
