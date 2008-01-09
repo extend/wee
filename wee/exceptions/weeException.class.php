@@ -178,7 +178,7 @@ final class weeException extends Namespace
 		while (@ob_end_clean()) ;
 
 		if (!ini_get('html_errors'))
-			echo $sDebug . "\r\n";
+			echo $sDebug;
 		else
 		{
 			echo 
