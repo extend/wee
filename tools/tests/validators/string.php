@@ -79,7 +79,7 @@ $this->isTrue(weeStringValidator::test('oeuf', array('max' => 10)),
 // TODO: Bugs and limitations: these should NOT be valid but are.
 
 $this->isTrue(weeStringValidator::test("string \0 possible hack if this string is used to open file, for example"),
-	'weeStringValidator bug fixed: string containing a NUL character fail to validate.');
+	'weeStringValidator returns true for a string containing null characters.');
 $this->isFalse(weeStringValidator::test('oeuf', array('len' => -1)),
 	'weeStringValidator bug fixed: len of -1 is not allowed anymore.');
 $this->isTrue(weeStringValidator::test('oeuf', array('min' => -1)),

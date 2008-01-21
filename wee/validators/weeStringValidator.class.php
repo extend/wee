@@ -53,6 +53,7 @@ class weeStringValidator implements weeValidator
 		'max'	=> 'Input must have at most %max% characters',
 		'min'	=> 'Input must have at least %min% characters',
 		'nas'	=> 'Input must be a string',
+		'nul'	=> 'Input must not contain null characters'
 	);
 
 	/**
@@ -92,6 +93,8 @@ class weeStringValidator implements weeValidator
 			$this->setError('max');
 		elseif (isset($aArgs['min']) && strlen($mValue) < $aArgs['min'])
 			$this->setError('min');
+		elseif (strpos($mValue, "\0") !== false)
+			$this->setError('nul');
 	}
 
 	/**
