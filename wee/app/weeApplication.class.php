@@ -348,7 +348,7 @@ class weeApplication implements Singleton
 		$aEvent['get']	= $_GET;
 		$aEvent['post']	= $_POST;
 
-		$sPathInfo = self::getPathInfo();
+		$sPathInfo = substr(self::getPathInfo(), 1);
 
 		if (empty($sPathInfo))
 			return $aEvent + array('frame' => (!empty($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage');
