@@ -240,20 +240,40 @@ class weeApplication implements Singleton
 		The path information is the text after the file and before the query string in an URI.
 		Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
 
-		@param	$bRemoveQueryString	You can keep the query string by setting this variable to false
 		@return	string				The path information
 	*/
 
-	public static function getPathInfo($bRemoveQueryString = true)
+	public static function getPathInfo()
 	{
-		$sRequestURI = str_replace('/./', '/', $_SERVER['REQUEST_URI']);
-		if (substr($sRequestURI, 0, 2) == './')
-			$sRequestURI = substr($sRequestURI, 2);
+		$sPathInfo = null;
 
-		$sPathInfo = substr($sRequestURI, 1 + strlen($_SERVER['SCRIPT_NAME']));
+		if (isset($_SERVER['PATH_INFO']))
+			$sPathInfo = $_SERVER['PATH_INFO'];
+		elseif (isset($_SERVER['REDIRECT_URL']))
+			$sPathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
 
-		if ($bRemoveQueryString && !empty($_SERVER['QUERY_STRING']) && substr($sPathInfo, -strlen($_SERVER['QUERY_STRING'])) == $_SERVER['QUERY_STRING'])
-			$sPathInfo = substr($sPathInfo, 0, -1 - strlen($_SERVER['QUERY_STRING']));
+		if ($sPathInfo !== null)
+		{
+			// We found the path info from either PATH_INFO or PHP_SELF server variables.
+
+			if (empty($_SERVER['REQUEST_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
+				// If the request string is empty, but that an interrogation mark has been
+				// explicitely included in the request URI, we keep it.
+				$sPathInfo .= '?';
+
+			return $sPathInfo;
+		}
+
+		// The path info begins after the script name part of the request URI.
+		$sPathInfo = substr($_SERVER['REQUEST_URI'], strlen($_SERVER['SCRIPT_NAME']));
+
+		if (!empty($_SERVER['REQUEST_STRING']))
+		{
+			// We need to remove the query string from the path info.
+			$i = strlen($_SERVER['REQUEST_STRING']);
+			if (substr($sPathInfo, -$i) == $_SERVER['REQUEST_STRING'])
+				$sPathInfo = substr($sPathInfo, 0, -$i);
+		}
 
 		return urldecode($sPathInfo);
 	}
