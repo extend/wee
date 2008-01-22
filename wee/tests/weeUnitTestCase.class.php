@@ -174,6 +174,17 @@ abstract class weeUnitTestCase
 	}
 
 	/**
+		Fails a test.
+
+		@param $sMessage Error message.
+	 */
+
+	protected function fail($sMessage)
+	{
+		throw new UnitTestException($sMessage);
+	}
+
+	/**
 		Runs this unit test case.
 
 		@return bool True if test completed, false it must be skipped.
