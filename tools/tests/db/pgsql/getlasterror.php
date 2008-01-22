@@ -17,7 +17,7 @@ try
 	// If the exception is not triggered by the error, abort
 
 	$oDb->query('SELECT * FROM getlasterror');
-	$this->isFalse(true, 'The table "getlasterror" should not exist.');
+	$this->fail('The table "getlasterror" should not exist.');
 }
 catch (DatabaseException $e)
 {
