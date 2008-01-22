@@ -84,6 +84,7 @@ $this->isTrue(empty($aEvent['pathinfo']),
 // ...with extra parts in PATH_INFO
 $_SERVER['REQUEST_URI'] =	'/test.php/foo/bar/action/new?test=get';
 $_SERVER['PATH_INFO'] =		'/foo/bar/action/new';
+$aEvent = $o->translateEvent();
 
 $this->isEqual('foo', $aEvent['frame'],
 	'The frame is not the one requested.');
