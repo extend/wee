@@ -75,6 +75,18 @@ class weeStringValidator implements weeValidator
 
 	public function __construct($mValue, array $aArgs = array())
 	{
+		if (isset($aArgs['len']) && $aArgs['len'] < 0)
+			throw new InvalidArgumentException($aArgs['len'] . ' is not a valid length');
+
+		if (isset($aArgs['max']) && $aArgs['max'] < 0)
+			throw new InvalidArgumentException($aArgs['max'] . ' is not a valid maximal length');
+
+		if (isset($aArgs['min']) && $aArgs['min'] < 0)
+			throw new InvalidArgumentException($aArgs['min'] . ' is not a valid minimal length');
+
+		if (isset($aArgs['max'], $aArgs['min']) && $aArgs['min'] > $aArgs['max'])
+			throw new InvalidArgumentException('The minimal length must not be greater than the maximal one');
+
 		$this->aArgs = $aArgs;
 
 		if (is_object($mValue))

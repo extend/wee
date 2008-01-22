@@ -76,15 +76,54 @@ $this->isFalse(weeStringValidator::test('oeuf', array('max' => 1)),
 $this->isTrue(weeStringValidator::test('oeuf', array('max' => 10)),
 	'weeStringValidator fails to validate a string of 4 characters when max = 10.');
 
-// TODO: Bugs and limitations: these should NOT be valid but are.
+// NUL character
 
 $this->isFalse(weeStringValidator::test("string \0 possible hack if this string is used to open file, for example"),
 	'weeStringValidator returns true for a string containing null characters.');
-$this->isFalse(weeStringValidator::test('oeuf', array('len' => -1)),
-	'weeStringValidator bug fixed: len of -1 is not allowed anymore.');
-$this->isTrue(weeStringValidator::test('oeuf', array('min' => -1)),
-	'weeStringValidator bug fixed: min of -1 is not allowed anymore.');
-$this->isFalse(weeStringValidator::test('oeuf', array('max' => -1)),
-	'weeStringValidator bug fixed: max of -1 is not allowed anymore.');
-$this->isFalse(weeStringValidator::test('oeuf', array('min' => 6, 'max' => 2)),
-	'weeStringValidator bug fixed: min > max is not allowed anymore.');
+
+// Invalid parameters
+
+try
+{
+	weeStringValidator::test('oeuf', array('len' => -1));
+	$this->fail('weeStringValidator does not throw an exception with an invalid length.');
+}
+catch (InvalidArgumentException $e) {}
+catch (Exception $e)
+{
+	$this->fail('weeStringValidator does not throw an InvalidArgumentException with an invalid length.');
+}
+
+try
+{
+	weeStringValidator::test('oeuf', array('min' => -1));
+	$this->fail('weeStringValidator does not throw an exception with an invalid minimal length.');
+}
+catch (InvalidArgumentException $e) {}
+catch (Exception $e)
+{
+	$this->fail('weeStringValidator does not throw an InvalidArgumentException with an invalid minimal length.');
+}
+
+try
+{
+	weeStringValidator::test('oeuf', array('max' => -1));
+	$this->fail('weeStringValidator does not throw an exception with an invalid maximal length.');
+}
+catch (InvalidArgumentException $e) {}
+catch (Exception $e)
+{
+	$this->fail('weeStringValidator does not throw an InvalidArgumentException with an invalid maximal length.');
+}
+
+try
+{
+	weeStringValidator::test('oeuf', array('min' => 5, 'max' => 2));
+	$this->fail('weeStringValidator does not throw an exception when the minimal length is greater than the maximal.');
+}
+catch (InvalidArgumentException $e) {}
+catch (Exception $e)
+{
+	$this->fail('weeStringValidator does not throw an InvalidArgumentException when the minimal length is greater than the maximal.');
+}
+
