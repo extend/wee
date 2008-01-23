@@ -1,8 +1,5 @@
 <?php
 
-if (defined('ALLOW_INCLUSION'))
-	return false;
-
 // Initialization
 
 define('ALLOW_INCLUSION',	1);
