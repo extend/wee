@@ -69,7 +69,7 @@ class weeConfig implements ArrayAccess
 
 	public function offsetSet($offset, $value)
 	{
-		fire(true);//TODO:details
+		burn('BadMethodCallException', 'Configuration is not modifiable');
 	}
 
 	/**
@@ -81,7 +81,7 @@ class weeConfig implements ArrayAccess
 
 	public function offsetUnset($offset)
 	{
-		fire(true);//TODO:details
+		burn('BadMethodCallException', 'Configuration is not modifiable');
 	}
 }
 
