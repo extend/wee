@@ -89,7 +89,7 @@ class weePgSQLDatabase extends weeDatabase
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
 
-		if (pg_num_fields($rResult) > 0)//TODO:check if it does not return > 0 with UPDATE/DELETE/...
+		if (pg_num_fields($rResult) > 0)
 			return new weePgSQLResult($rResult);
 	}
 
