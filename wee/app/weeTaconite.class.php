@@ -219,7 +219,6 @@ class weeTaconite implements Printable
 		}
 
 		return $oDocument->saveXML();
-		return null;//TODO
 	}
 
 	/**
