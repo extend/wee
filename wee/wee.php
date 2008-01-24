@@ -36,7 +36,9 @@ if (PHP_SAPI == 'cli')
 
 if (!defined('BASE_PATH'))
 {
-	$i = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/');
+	$i = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
+		- (int)(isset($_SERVER['REDIRECT_URL']));
+
 	for ($s = null; $i > 0; $i--)
 		$s .= '../';
 
