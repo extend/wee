@@ -94,11 +94,8 @@ abstract class weeDatabase
 		Common function for building queries that use question marks placeholders.
 		Used to replace all the ? in the query by the specified arguments, escaped as needed.
 
-		TODO:after reading this again i'm not sure it's needed to check for $iNbParts - 1 != $iNbArgs.
-			 This potentially remove the last if block too.
-
 		@param	$aArguments	The query and the arguments passed to the query method
-		@return	string		The query safely build
+		@return	string		The query safely built
 	*/
 
 	protected function bindQuestionMarks($aArguments)
@@ -108,14 +105,12 @@ abstract class weeDatabase
 		$iNbParts	= sizeof($aParts);
 		$iNbArgs	= sizeof($aArguments);
 
-		fire($iNbParts != $iNbArgs && $iNbParts - 1 != $iNbArgs, 'UnexpectedValueException'); //TODO:see above in docComment
+		fire($iNbParts != $iNbArgs, 'UnexpectedValueException',
+			'The number of placeholders in the query does not match the number of arguments.');
 
-		$s = null;
+		$s = $aParts[0];
 		for ($i = 1; $i < sizeof($aArguments); $i++)
-			$s .= $aParts[$i - 1] . $this->escape($aArguments[$i]);
-
-		if ($iNbParts == $iNbArgs)
-			$s .= $aParts[$iNbParts - 1];
+			$s .= $this->escape($aArguments[$i]) . $aParts[$i];
 
 		return $s;
 	}
