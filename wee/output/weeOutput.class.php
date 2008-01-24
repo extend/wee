@@ -130,7 +130,6 @@ abstract class weeOutput
 		Sends a header to the browser.
 
 		Tentatively prevent HTTP Response Splitting.
-		TODO:filter NUL too
 
 		@param $sString		Header string.
 		@param $bReplace	Replace existing header if true.
@@ -142,6 +141,8 @@ abstract class weeOutput
 			'You cannot add another header to be sent to browser if they are already sent.');
 		fire(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false, 'UnexpectedValueException',
 			'Line breaks are not allowed in headers to prevent HTTP Response Splitting.');
+		fire(strpos($sString, "\0") !== false, 'UnexpectedValueException',
+			'Null characters are not allowed in headers.');
 
 		header($sString, $bReplace);
 	}
