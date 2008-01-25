@@ -155,12 +155,24 @@ class weeFileConfig extends weeConfig
 		// Inclusions
 		if (substr($sLine, 0, 7) == 'include')
 		{
-			$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 7))));
-			return;
+			$sParam = ltrim(substr($sLine, 7));
+
+			fire(empty($sParam), 'UnexpectedValueException',
+				'The parameter of the include instruction is missing.');
+
+			if ($sParam[0] != '=')
+			{
+				$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 7))));
+				return;
+			}
 		}
 
-		$sLeft	= rtrim(substr($sLine, 0, strpos($sLine, '=')));
-		$sRight	= ltrim(substr($sLine, strpos($sLine, '=') + 1));
+		$i = strpos($sLine, '=');
+		fire($i === false, 'UnexpectedValueException',
+			'The assignement instruction does not have an equal sign.');
+
+		$sLeft	= rtrim(substr($sLine, 0, $i));
+		$sRight	= ltrim(substr($sLine, $i + 1));
 
 		$this->aConfig[$sLeft] = $sRight;
 	}
@@ -212,4 +224,3 @@ class weeFileConfig extends weeConfig
 		return $aFunc;
 	}
 }
-
