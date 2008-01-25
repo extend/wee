@@ -88,7 +88,8 @@ class weeApplication implements Singleton
 		// Load aliases file
 
 		if (!empty($this->oConfig['aliases.file']))
-			$this->oAliases = new weeFileConfig($this->oConfig['aliases.file']);
+			$this->oAliases = new weeFileConfig(
+				str_replace('//', ROOT_PATH, $this->oConfig['aliases.file']));
 
 		// Load default timezone
 
