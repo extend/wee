@@ -30,6 +30,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeFileConfig extends weeConfig
 {
 	/**
+		The stack of the files being currently parsed.
+
+		Used to .include other configuration files inside themselves.
+	*/
+
+	protected $aFilesStack = array();
+
+	/**
 		Load the specified configuration file.
 
 		@param $sFilename Path and filename to the configuration file
@@ -37,32 +45,7 @@ class weeFileConfig extends weeConfig
 
 	public function __construct($sFilename)
 	{
-		$rFile = fopen($sFilename, 'r');
-		fire($rFile === false, 'FileNotFoundException', "Cannot open file '" . $sFilename . "'.");
-
-		while (!feof($rFile))
-		{
-			$sLine = trim(fgets($rFile, 1024));
-
-			if (empty($sLine) || $sLine[0] == '#')
-				continue;
-
-			$sLeft	= rtrim(substr($sLine, 0, strpos($sLine, '=')));
-			$sRight	= ltrim(substr($sLine, strpos($sLine, '=') + 1));
-
-			if (substr($sLeft, 0, 2) == '$(')
-			{
-				if ($this->isTargetedSystem($sLeft))
-					$sLeft = substr($sLeft, strpos($sLeft, ').') + 2);
-				else
-					continue;
-			}
-			//TODO: .include file
-
-			$this->aConfig[$sLeft] = $sRight;
-		}
-
-		fclose($rFile);
+		$this->parseFile($sFilename);
 	}
 
 	/**
@@ -95,16 +78,8 @@ class weeFileConfig extends weeConfig
 
 		$sInstruction = substr($sInstruction, 0, strpos($sInstruction, ')'));
 
-		//TODO:maybe makes this array inheritable in a way or another
-		static $aFunc = array(
-			'os'		=> 'php_uname("s")',
-			'host'		=> 'php_uname("n")',
-			'phpver'	=> 'phpversion()',
-			'extver'	=> 'phpversion(":1")',
-			'sapi'		=> 'php_sapi_name()',
-			'path'		=> 'dirname(dirname(dirname(__FILE__)))',
-		);
-
+		$aFunc = $this->getTargetFunctions();
+		
 		$aWords = explode(' ', $sInstruction);
 		fire(empty($aFunc[$aWords[0]]), 'UnexpectedValueException',
 			'The targeted system instruction ' . $aWords[0] . ' do not exist.');
@@ -128,6 +103,101 @@ class weeFileConfig extends weeConfig
 
 		return ($sResult == $sWanted);
 	}
+
+	/**
+		Parse the specified configuration file.
+
+		@param $sFilename Path and filename to the configuration file
+	*/
+
+	protected function parseFile($sFilename)
+	{
+		fire(!file_exists($sFilename), 'FileNotFoundException',
+			"File '$sFilename' does not exist.");
+		
+		$sRealpath = realpath($sFilename);
+		fire(in_array($sRealpath, $this->aFilesStack), 'UnexpectedValueException',
+			"'$sRealpath' configuration file is already in the parsing stack.");
+
+		$rFile					= fopen($sFilename, 'r');
+		$this->aFilesStack[]	= $sRealpath;
+
+		while (!feof($rFile))
+		{
+			$sLine = trim(fgets($rFile));
+
+			if (empty($sLine) || $sLine[0] == '#')
+				continue;
+
+			if (substr($sLine, 0, 2) == '$(')
+			{
+				if (!$this->isTargetedSystem($sLine))
+					continue;
+
+				$sLine = ltrim(substr($sLine, strpos($sLine, ').') + 2));
+			}
+
+			if (substr($sLine, 0, 8) == '.include')
+			{
+				$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 8))));
+				continue;
+			}
+
+			$sLeft	= rtrim(substr($sLine, 0, strpos($sLine, '=')));
+			$sRight	= ltrim(substr($sLine, strpos($sLine, '=') + 1));
+
+			$this->aConfig[$sLeft] = $sRight;
+		}
+
+		fclose($rFile);
+		array_pop($this->aFilesStack);
+	}
+
+	/**
+		Return the filename of the configuration file which is to be included.
+
+		If the path of the configuration file begins with "//" the path is relative to ROOT_PATH,
+		if it begins with "./", then it is relative to the current file being parsed,
+		otherwise the standard behaviour is adopted, working directory being the one of the process.
+
+		@param	$sPath	The path of the configuration file.
+		@return	string	The filename of the configuration file.
+	*/
+
+	public function getIncludeFilename($sPath)
+	{
+		switch (substr($sPath, 0, 2))
+		{
+			case '//':
+				return ROOT_PATH . substr($sPath, 2);
+				break;
+
+			case './':
+				return dirname($this->aFilesStack[sizeof($this->aFilesStack) - 1]) . '/' . substr($sPath, 2);
+				break;
+		}
+
+		return $sPath;
+	}
+
+	/**
+		Return the table of target functions.
+
+		@return array The table of the functions supported by the class in targets.
+	*/
+
+	protected function getTargetFunctions()
+	{
+		static $aFunc = array(
+			'os'		=> 'php_uname("s")',
+			'host'		=> 'php_uname("n")',
+			'phpver'	=> 'phpversion()',
+			'extver'	=> 'phpversion(":1")',
+			'sapi'		=> 'php_sapi_name()',
+			'path'		=> 'dirname(dirname(dirname(__FILE__)))',
+		);
+
+		return $aFunc;
+	}
 }
 
-?>

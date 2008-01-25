@@ -1,0 +1,3 @@
+# @see include.php
+.include ./file_which_does_not_exist.cnf
+
