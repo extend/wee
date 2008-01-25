@@ -137,9 +137,9 @@ class weeFileConfig extends weeConfig
 				$sLine = ltrim(substr($sLine, strpos($sLine, ').') + 2));
 			}
 
-			if (substr($sLine, 0, 8) == '.include')
+			if (substr($sLine, 0, 7) == 'include')
 			{
-				$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 8))));
+				$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 7))));
 				continue;
 			}
 

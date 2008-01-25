@@ -28,6 +28,16 @@ class weeFileConfig_include extends weeFileConfig
 
 		return $s;
 	}
+
+	// Overlooaded to check whether onditional inclusion works.
+	protected function getTargetFunctions()
+	{
+		static $aFunc = array(
+			'is_foo' => '"foo"'
+		);
+
+		return $aFunc;
+	}
 }
 
 $o = new weeFileConfig_include;
@@ -56,7 +66,16 @@ try
 	$o->parseFile(dirname(__FILE__) . '/recursive.cnf');
 	// TODO if the exception is not thrown, the next line will not be executed 
 	// anyway as the execution stack will explode.
-	$this->fail('weeFileConfig when there is a loop in the inclusions.');
+	$this->fail('weeFileConfig fails to throw an UnexpectedValueException when there is a loop in the inclusions.');
+}
+catch (UnexpectedValueException $e) {}
+
+try
+{
+	$o->parseFile(dirname(__FILE__) . '/recursive1.cnf');
+	// TODO if the exception is not thrown, the next line will not be executed 
+	// anyway as the execution stack will explode.
+	$this->fail('weeFileConfig fails to throw an UnexpectedValueException when there is a circuit in the inclusions.');
 }
 catch (UnexpectedValueException $e) {}
 
@@ -65,9 +84,13 @@ try
 	$o->parseFile(dirname(__FILE__) . '/include.cnf');
 	$this->isEqual('1', $o['test'],
 		'weeFileConfig fails to find entries defined in included configuration files.');
+
+	$o = new weeFileConfig_include();
+	$o->parseFile(dirname(__FILE__) . '/condinclude.cnf');
+	$this->isEqual('1', $o['test'],
+		'weeFileConfig fails to include files conditionally.');
 }
 catch(FileNotFoundException $e)
 {
 	$this->fail('weeFileConfig throws an UnexpectedValueException when the chain of includes is correct.');
 }
-
