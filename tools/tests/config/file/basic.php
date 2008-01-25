@@ -7,7 +7,7 @@ try
 }
 catch (FileNotFoundException $e) {}
 
-$o = new weeFileConfig(dirname(__FILE__) . '/simple.cnf');
+$o = new weeFileConfig(dirname(__FILE__) . '/basic.cnf');
 
 $this->isTrue(isset($o['test']),
 	'The configuration object does not have a "test" entry even though it has been defined in the sample configuration.');
