@@ -164,7 +164,7 @@ class weeFileConfig extends weeConfig
 		@return	string	The filename of the configuration file.
 	*/
 
-	public function getIncludeFilename($sPath)
+	protected function getIncludeFilename($sPath)
 	{
 		switch (substr($sPath, 0, 2))
 		{
