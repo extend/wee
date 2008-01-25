@@ -24,7 +24,3 @@ catch (DatabaseException $e)
 	$this->isNotNull($oDb->getLastError(),
 		'An error has happened while trying to query, but getLastError returns nothing.');
 }
-
-// Clean up
-
-unset($oDb);

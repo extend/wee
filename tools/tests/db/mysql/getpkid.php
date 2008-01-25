@@ -12,7 +12,7 @@ $oDb = new weeMySQLDatabase(array(
 // Create the test table
 
 $oDb->query('
-	CREATE TABLE getpkid (
+	CREATE TEMPORARY TABLE getpkid (
 		pk_id SERIAL NOT NULL,
 		pk_value INTEGER
 	);
@@ -35,8 +35,3 @@ for ($i = 0; $i < 100; $i++)
 
 	$iPrevious = $iCurrent;
 }
-
-// Clean up
-
-$oDb->query('DROP TABLE getpkid');
-unset($oDb);

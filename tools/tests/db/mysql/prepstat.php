@@ -22,5 +22,3 @@ catch (Exception $e)
 	$this->isInstanceOf($e, 'BadMethodCallException',
 		'The exception thrown by weeMySQLDatabase::prepare should be BadMethodCallException.');
 }
-
-unset($oDb);

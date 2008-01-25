@@ -22,7 +22,3 @@ $this->isEqual("'7.5'", $oDb->escape(7.50),
 
 $this->isEqual("'that''s all folks!'", $oDb->escape("that's all folks!"),
 	'Escaping of the string "that\'s all folks" is wrong.');
-
-// Clean up
-
-unset($oDb);

@@ -12,7 +12,7 @@ $oDb = new weePgSQLDatabase(array(
 // Create the test table
 
 $oDb->query('
-	CREATE TABLE query (
+	CREATE TEMPORARY TABLE query (
 		q_id SERIAL NOT NULL,
 		q_name CHARACTER VARYING(50),
 		q_quantity INTEGER,
@@ -104,8 +104,3 @@ $this->isEqual($aRow['c'], 4,
 $aRow = $oDb->query('SELECT q_name, q_quantity, q_price FROM query WHERE q_name=? LIMIT 1', 'Eggs')->fetch();
 $this->isEqual($aRow, $aInsertValues[1],
 	'The data of the row "Eggs" is wrong.');
-
-// Clean up
-
-$oDb->query('DROP TABLE query');
-unset($oDb);

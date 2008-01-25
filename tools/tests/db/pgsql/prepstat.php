@@ -12,7 +12,7 @@ $oDb = new weePgSQLDatabase(array(
 // Create the test table
 
 $oDb->query('
-	CREATE TABLE prepstat (
+	CREATE TEMPORARY TABLE prepstat (
 		ps_serial SERIAL NOT NULL,
 		ps_integer INTEGER,
 		ps_varchar CHARACTER VARYING(50),
@@ -75,8 +75,3 @@ $aImplicitTest = $oDb->prepare('
 
 $this->isEqual($aImplicitTest['ps_integer'], 4242,
 	'"SELECT ps_integer FROM prepstat WHERE ps_boolean=TRUE" should return 4242.');
-
-// Clean up
-
-$oDb->query('DROP TABLE prepstat');
-unset($oDb);

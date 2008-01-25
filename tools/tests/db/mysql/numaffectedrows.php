@@ -12,7 +12,7 @@ $oDb = new weeMySQLDatabase(array(
 // Create the test table
 
 $oDb->query('
-	CREATE TABLE numaffectedrows (
+	CREATE TEMPORARY TABLE numaffectedrows (
 		nar_id SERIAL NOT NULL,
 		nar_value INTEGER
 	);
@@ -41,8 +41,3 @@ $this->isEqual($oDb->numAffectedRows(), 20,
 $oDb->query('DELETE FROM numaffectedrows WHERE nar_value!=?', -1);
 $this->isEqual($oDb->numAffectedRows(), 80,
 	'The number of rows affected by our DELETE of the rows with nar_value!=-1 is wrong.');
-
-// Clean up
-
-$oDb->query('DROP TABLE numaffectedrows');
-unset($oDb);
