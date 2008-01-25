@@ -342,7 +342,8 @@ class weeDocumentor implements Printable
 			$aParsedData['overload'] = array();
 
 		$iPos = strpos($sLine, ')');
-		fire($iPos === false); // TODO:nox will have to set an error message for this
+		fire($iPos === false, 'UnexpectedValueException',
+			'The overloaded method prototype does not have a closing parenthese');
 
 		$sFunc		= substr($sLine, 0, $iPos);
 		$sComment	= trim(substr($sLine, $iPos + 1));
