@@ -107,7 +107,7 @@ class weeFileConfig extends weeConfig
 	/**
 		Parse the specified configuration file.
 
-		@param $sFilename Path and filename to the configuration file
+		@param $sFilename Path and filename to the configuration file.
 	*/
 
 	protected function parseFile($sFilename)
@@ -123,34 +123,46 @@ class weeFileConfig extends weeConfig
 		$this->aFilesStack[]	= $sRealpath;
 
 		while (!feof($rFile))
-		{
-			$sLine = trim(fgets($rFile));
-
-			if (empty($sLine) || $sLine[0] == '#')
-				continue;
-
-			if (substr($sLine, 0, 2) == '$(')
-			{
-				if (!$this->isTargetedSystem($sLine))
-					continue;
-
-				$sLine = ltrim(substr($sLine, strpos($sLine, ').') + 2));
-			}
-
-			if (substr($sLine, 0, 7) == 'include')
-			{
-				$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 7))));
-				continue;
-			}
-
-			$sLeft	= rtrim(substr($sLine, 0, strpos($sLine, '=')));
-			$sRight	= ltrim(substr($sLine, strpos($sLine, '=') + 1));
-
-			$this->aConfig[$sLeft] = $sRight;
-		}
+			$this->parseLine(fgets($rFile));
 
 		fclose($rFile);
 		array_pop($this->aFilesStack);
+	}
+
+	/**
+		Parse a configuration line.
+
+		@param $sLine The configuration line.
+	*/
+
+	protected function parseLine($sLine)
+	{
+		$sLine = trim($sLine);
+
+		// Empty lines and comments
+		if (empty($sLine) || $sLine[0] == '#')
+			return;
+
+		// Target instructions
+		if (substr($sLine, 0, 2) == '$(')
+		{
+			if (!$this->isTargetedSystem($sLine))
+				return;
+
+			$sLine = ltrim(substr($sLine, strpos($sLine, ').') + 2));
+		}
+
+		// Inclusions
+		if (substr($sLine, 0, 7) == 'include')
+		{
+			$this->parseFile($this->getIncludeFilename(ltrim(substr($sLine, 7))));
+			return;
+		}
+
+		$sLeft	= rtrim(substr($sLine, 0, strpos($sLine, '=')));
+		$sRight	= ltrim(substr($sLine, strpos($sLine, '=') + 1));
+
+		$this->aConfig[$sLeft] = $sRight;
 	}
 
 	/**
