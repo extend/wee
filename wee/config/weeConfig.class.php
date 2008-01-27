@@ -25,13 +25,52 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Configuration data wrapper.
 */
 
-class weeConfig implements ArrayAccess
+abstract class weeConfig implements ArrayAccess, Iterator
 {
 	/**
 		Contains the configuration data.
 	*/
 
 	protected $aConfig = array();
+
+	/**
+		Returns the current setting.
+
+		@return	mixed	The current setting.
+		@throws	OutOfBoundsException if the iterator pointer is not valid.
+		@see	http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function current()
+	{
+		fire(!$this->valid(), 'OutOfBoundsException',
+			'The iterator pointer is not valid.');
+
+		return current($this->aConfig);
+	}
+
+	/**
+		Returns the name of the current setting.
+
+		@return	string	The name of the current setting or null if there is none.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function key()
+	{
+		return key($this->aConfig);
+	}
+
+	/**
+		Move forward to the next setting.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function next()
+	{
+		next($this->aConfig);
+	}
 
 	/**
 		Check if the $offset offset does exist.
@@ -83,6 +122,26 @@ class weeConfig implements ArrayAccess
 	{
 		burn('BadMethodCallException', 'Configuration is not modifiable');
 	}
-}
 
-?>
+	/**
+		Return the iterator pointer to the first configuration setting.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function rewind()
+	{
+		rewind($this->aConfig);
+	}
+
+	/**
+		Check if there is a current setting after calls to rewind() or next()
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function valid()
+	{
+		return key($this) !== null;
+	}
+}
