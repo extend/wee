@@ -48,7 +48,7 @@ $this->isEqual('pikachu', $aEvent['frame'],
 	'The event frame is not the configuration toppage frame.');
 
 $this->isFalse(isset($aEvent['name']),
-	'The toppage request has an name.');
+	'The toppage event should not have a name.');
 
 // Request a frame
 $_SERVER['REQUEST_URI'] =	'/test.php/foo?test=get';
