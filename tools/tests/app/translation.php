@@ -47,8 +47,8 @@ $aEvent = $o->translateEvent();
 $this->isEqual('pikachu', $aEvent['frame'],
 	'The event frame is not the configuration toppage frame.');
 
-$this->isFalse(isset($aEvent['event']),
-	'The toppage request has an event.');
+$this->isFalse(isset($aEvent['name']),
+	'The toppage request has an name.');
 
 // Request a frame
 $_SERVER['REQUEST_URI'] =	'/test.php/foo?test=get';
@@ -58,8 +58,8 @@ $aEvent = $o->translateEvent();
 $this->isEqual('foo', $aEvent['frame'],
 	'The frame is not the one requested.');
 
-$this->isFalse(isset($aEvent['event']),
-	'No specific event of the frame has been requested.');
+$this->isFalse(isset($aEvent['name']),
+	'The event have a name.');
 
 $this->isTrue(empty($aEvent['pathinfo']),
 	'The pathinfo is not empty.');
@@ -72,11 +72,11 @@ $aEvent = $o->translateEvent();
 $this->isEqual('foo', $aEvent['frame'],
 	'The frame is not the one requested.');
 
-$this->isTrue(isset($aEvent['event']),
-	'The application has not returned any event.');
+$this->isTrue(isset($aEvent['name']),
+	'The application has not returned any name for the event.');
 
-$this->isEqual('bar', $aEvent['event'],
-	'The frame event is not the one requested.');
+$this->isEqual('bar', $aEvent['name'],
+	'The event name is not correct.');
 
 $this->isTrue(empty($aEvent['pathinfo']),
 	'The pathinfo is not empty.');
@@ -89,11 +89,11 @@ $aEvent = $o->translateEvent();
 $this->isEqual('foo', $aEvent['frame'],
 	'The frame is not the one requested.');
 
-$this->isTrue(isset($aEvent['event']),
-	'The application has not returned any event.');
+$this->isTrue(isset($aEvent['name']),
+	'The application does not return the name of the event when there is some extra parts in the path info.');
 
-$this->isEqual('bar', $aEvent['event'],
-	'The frame event is not the one requested.');
+$this->isEqual('bar', $aEvent['name'],
+	'The event name returned by the application is not correct when there is some extra parts in the path info.');
 
 $this->isTrue(isset($aEvent['pathinfo']),
 	'The event has no pathinfo.');
@@ -127,4 +127,3 @@ $this->isTrue(isset($aEvent['get']['test']),
 
 $this->isEqual('get', $aEvent['get']['test'],
     'The event does not have the correct value of the GET request parameter given to the application.');
-

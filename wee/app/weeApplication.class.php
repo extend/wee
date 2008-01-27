@@ -203,7 +203,7 @@ class weeApplication implements Singleton
 		Event information can contain the following parameters:
 			- context: either http or xmlhttprequest
 			- frame: name of the destination frame
-			- event: name of the event
+			- name: name of the event
 			- get: $_GET array for this event
 			- post: $_POST array for this event
 			- pathinfo: the PATH_INFO if any
@@ -366,12 +366,12 @@ class weeApplication implements Singleton
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
 		{
-			$aEvent['event']	= $sPathInfo;
+			$aEvent['name']		= $sPathInfo;
 			$aEvent['pathinfo']	= '';
 		}
 		else
 		{
-			$aEvent['event']	= substr($sPathInfo, 0, $i);
+			$aEvent['name']		= substr($sPathInfo, 0, $i);
 			$aEvent['pathinfo']	= substr($sPathInfo, $i + 1);
 		}
 
@@ -387,5 +387,3 @@ function weeApp()
 {
 	return weeApplication::instance();
 }
-
-?>

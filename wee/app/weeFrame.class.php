@@ -97,13 +97,13 @@ abstract class weeFrame implements Printable
 	{
 		$this->sContext = $aEvent['context'];
 
-		if (empty($aEvent['event']))
+		if (empty($aEvent['name']))
 			$sFunc = 'defaultEvent';
 		else
-			$sFunc = 'event' . $aEvent['event'];
+			$sFunc = 'event' . $aEvent['name'];
 
 		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
-			'The ' . (empty($aEvent['event']) ? 'default event' : 'event ' . $aEvent['event']) . ' do not exist.');
+			'The ' . (empty($aEvent['name']) ? 'default event' : 'event ' . $aEvent['name']) . ' do not exist.');
 
 		if (!$this->isAuthorized($aEvent))
 		{
@@ -229,5 +229,3 @@ abstract class weeFrame implements Printable
 		$this->oTaconite->addTag($sMethod, $sWhere, $sWith);
 	}
 }
-
-?>
