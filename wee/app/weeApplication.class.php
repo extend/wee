@@ -42,7 +42,7 @@ class weeApplication implements Singleton
 		Aliases for weeFrame objects.
 	*/
 
-	protected $oAliases = array();
+	protected $oAliases;
 
 	/**
 		Configuration for this application.
@@ -86,10 +86,15 @@ class weeApplication implements Singleton
 			define('DEBUG', 1);
 
 		// Load aliases file
-
+		
 		if (!empty($this->oConfig['aliases.file']))
-			$this->oAliases = new weeFileConfig(
-				str_replace('//', ROOT_PATH, $this->oConfig['aliases.file']));
+		{
+			$sFile = $this->oConfig['aliases.file'];
+			if (substr($sFile, 0, 2) == '//')
+				$sFile = ROOT_PATH . substr($sFile, 2);
+
+			$this->oAliases = new weeAliasesFile($sFile);
+		}
 
 		// Load default timezone
 
@@ -302,9 +307,6 @@ class weeApplication implements Singleton
 
 	protected function loadFrame($sFrame)
 	{
-		if (!empty($this->oAliases[$sFrame]))
-			$sFrame = $this->oAliases[$sFrame];
-
 		fire(!class_exists($sFrame), 'UnexpectedValueException', 'The frame ' . $sFrame . ' do not exist.');
 		$oFrame = new $sFrame;
 		fire(!($oFrame instanceof weeFrame), 'UnexpectedValueException', 'The frame ' . $sFrame . ' must be an instance of weeFrame.');
@@ -352,28 +354,24 @@ class weeApplication implements Singleton
 		$sPathInfo = substr(self::getPathInfo(), 1);
 
 		if (empty($sPathInfo))
-			return $aEvent + array('frame' => (!empty($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage');
+			return $aEvent + array('frame' => (isset($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage');
+
+		if (isset($this->oAliases))
+			$sPathInfo = $this->oAliases->resolveAlias($sPathInfo);
 
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
 			return $aEvent + array('frame' => $sPathInfo);
-		else
-			$aEvent['frame'] = substr($sPathInfo, 0, $i);
+		
+		$aEvent['frame']	= substr($sPathInfo, 0, $i);
+		$sPathInfo			= substr($sPathInfo, $i + 1);
 
-		$sPathInfo	= substr($sPathInfo, $i + 1);
-
-		//TODO:try to see if using strpos directly in substr is fine
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
-		{
-			$aEvent['name']		= $sPathInfo;
-			$aEvent['pathinfo']	= '';
-		}
-		else
-		{
-			$aEvent['name']		= substr($sPathInfo, 0, $i);
-			$aEvent['pathinfo']	= substr($sPathInfo, $i + 1);
-		}
+			return $aEvent + array('name' => $sPathInfo);
+
+		$aEvent['name']		= substr($sPathInfo, 0, $i);
+		$aEvent['pathinfo']	= substr($sPathInfo, $i + 1);
 
 		return $aEvent;
 	}
