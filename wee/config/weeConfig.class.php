@@ -93,9 +93,7 @@ abstract class weeConfig implements ArrayAccess, Iterator
 
 	public function offsetGet($offset)
 	{
-		if (!array_key_exists($offset, $this->aConfig))
-			return null;
-		return $this->aConfig[$offset];
+		return array_value($this->aConfig, $offset);
 	}
 
 	/**
@@ -131,7 +129,7 @@ abstract class weeConfig implements ArrayAccess, Iterator
 
 	public function rewind()
 	{
-		rewind($this->aConfig);
+		reset($this->aConfig);
 	}
 
 	/**
@@ -142,6 +140,6 @@ abstract class weeConfig implements ArrayAccess, Iterator
 
 	public function valid()
 	{
-		return key($this) !== null;
+		return $this->key() !== null;
 	}
 }
