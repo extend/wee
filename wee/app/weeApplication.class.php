@@ -83,7 +83,12 @@ class weeApplication implements Singleton
 		// Activate debug mode if needed
 
 		if (!defined('DEBUG') && !empty($this->oConfig['debug.mode']))
+		{
 			define('DEBUG', 1);
+
+			error_reporting(E_ALL | E_STRICT);
+			ini_set('display_errors', 1);
+		}
 
 		// Load aliases file
 		
