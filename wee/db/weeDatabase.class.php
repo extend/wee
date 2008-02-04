@@ -29,6 +29,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDatabase
 {
 	/**
+		The meta object associated with the database
+	*/
+
+	protected $oMeta;
+
+	/**
 		Number of calls to the query method.
 		For informational and debugging purpose only.
 	*/
@@ -157,6 +163,22 @@ abstract class weeDatabase
 	abstract public function getPKId($sName = null);
 
 	/**
+		Returns the meta object associated with this database.
+		The object is created only once.
+
+		@return weeDbMeta	The meta object.
+		@todo				weeDbMeta class name shouldn't be hardcoded.
+	*/
+
+	public function meta()
+	{
+		if (!isset($this->oMeta))
+			$this->oMeta = new weeDbMeta($this);
+
+		return $this->oMeta;
+	}
+
+	/**
 		Returns the number of affected rows in the last INSERT, UPDATE or DELETE query.
 		You can't use this method safely to check if your UPDATE executed successfully,
 		since the UPDATE statement does not always update rows that are already up-to-date.
@@ -245,5 +267,3 @@ abstract class weeDatabase
 		return $this->doQuery($mQueryString);
 	}
 }
-
-?>
