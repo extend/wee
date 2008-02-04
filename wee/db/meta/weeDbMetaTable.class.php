@@ -28,6 +28,24 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeDbMetaTable
 {
 	/**
+		Base table type
+	*/
+
+	const BASE_TABLE = 1;
+
+	/**
+		View type
+	*/
+
+	const VIEW = 2;
+
+	/**
+		Temporary table type
+	*/
+
+	const TEMPORARY = 3;
+
+	/**
 		The database to query.
 	*/
 
@@ -110,13 +128,23 @@ class weeDbMetaTable
 	/**
 		Returns the type of the table.
 
-		@return string	The type of the table.
-		@todo			Return a consistent type across the various database drivers.
+		The type is either one of the three BASE_TABLE, VIEW and TEMPORARY
+		class constants.
+
+		@return int	The table type.
 	*/
 
 	public function type()
 	{
-		return $this->aInfos['table_type'];
+		switch ($aInfos['table_type'])
+		{
+			case 'BASE TABLE':	return self::BASE_TABLE;
+			case 'VIEW':		return self::VIEW;
+			case 'TEMPORARY':	return self::TEMPORARY;
+		}
+
+		burn('IllegalStateException',
+			"'$aInfos['table_type']' is not a known table type.");
 	}
 
 	/**
