@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class used to query meta informations about tables and their objects.
 */
 
-class weeDbMetaTable
+class weeDbMetaTable extends weeDbMetaObject
 {
 	/**
 		Base table type
@@ -40,67 +40,70 @@ class weeDbMetaTable
 	const VIEW = 2;
 
 	/**
-		Temporary table type
+		Returns a column of the table.
+
+		@param	$sName				The column name.
+		@throw	DatabaseException	The column does not exist in the table.
+		@return	weeDbMetaColumn		The column.
 	*/
 
-	const TEMPORARY = 3;
-
-	/**
-		The database to query.
-	*/
-
-	protected $oDb;
-
-	/**
-		The table informations.
-	*/
-
-	protected $aInfos;
-
-	/**
-		Initializes a new table schema.
-
-		This class should NEVER be instantiated manually.
-		An instance of this class should be returned by weeDbMeta
-		or by its own static method create.
-
-		@param	$oDb	The database to query.
-		@param	$aInfos The table informations.
-		@todo			Some sanity checks on $aInfos?
-	*/
-
-	public function __construct(weeDatabase $oDb, array $aInfos)
+	public function column($sName)
 	{
-		fire($oDb == null, 'UnexpectedValueException',
-			'$oDb is null.');
-
-		$this->odB		= $oDb;
-		$this->aInfos	= $aInfos;
+		return $this->oDb->meta()->column($this->toString() . '.' . $sName);
 	}
 
 	/**
-		Creates a new instance of the class from a database and a table name.
+		Returns all the columns of the table.
 
-		@param	weeDatabase The database.
-		@param	string		The table name.
-		@return self		The table meta.
-		@todo				Is this static method really *that* useful?
+		@param	array				The array of tables.
 	*/
 
-	public static function create(weeDatabase $oDb, $sName)
+	public function columns()
 	{
-		return $oDb->meta()->table($sName);
+		return $this->oDb->meta()->columns($this->toString());
 	}
 
 	/**
-		Returns the SQL query used to fetch meta infos about tables.
+		Returns the array of custom offsets reachable through ArrayAccess interface.
+		This class defines two new offsets:
+			- schema:		Returns a weeDbMetaSchema object for the schema of the table.
+			- type:			Returns the type of the table.
 
-		@return string	The SQL query.
+		@return	array	The array of custom offsets.
 	*/
 
-	public static function getQuery()
+	protected static function getCustomOffsets()
 	{
-		return 'SELECT table_schema, table_name, table_type FROM information_schema.tables';
+		return parent::getCustomOffsets() + array('schema', 'type');
+	}
+
+	/**
+		Returns the value of a custom offset.
+
+		@param	$sOffset	The custom offset.
+		@return mixed		The value associated with the custom offset.
+	*/
+
+	protected function getCustomOffset($sOffset)
+	{
+		switch ($sOffset)
+		{
+			case 'schema':	return $this->schema();
+			case 'type':	return $this->type();
+		}
+
+		return parent::getCustomOffset($sOffset);
+	}
+
+	/**
+		Returns the array of fields which need to be passed to the constructor of the class.
+
+		@return	array	The array of fields.
+	*/
+
+	public static function getFields()
+	{
+		return array('table_schema', 'table_name', 'table_type');
 	}
 
 	/**
@@ -120,7 +123,7 @@ class weeDbMetaTable
 		@return weeDbMetaSchema The schema.
 	*/
 
-	public function schema()
+	protected function schema()
 	{
 		return $this->oDb->meta()->schema($this->aInfos['table_schema']);
 	}
@@ -128,7 +131,7 @@ class weeDbMetaTable
 	/**
 		Returns the type of the table.
 
-		The type is either one of the three BASE_TABLE, VIEW and TEMPORARY
+		The type is either one of the two BASE_TABLE, VIEW
 		class constants.
 
 		@return int	The table type.
@@ -136,25 +139,13 @@ class weeDbMetaTable
 
 	public function type()
 	{
-		switch ($aInfos['table_type'])
+		switch ($this->aInfos['table_type'])
 		{
 			case 'BASE TABLE':	return self::BASE_TABLE;
 			case 'VIEW':		return self::VIEW;
-			case 'TEMPORARY':	return self::TEMPORARY;
 		}
 
 		burn('IllegalStateException',
-			"'$aInfos['table_type']' is not a known table type.");
-	}
-
-	/**
-		Returns the string representation of the table.
-
-		@return string	The fully-qualified table name.
-	*/
-
-	public function toString()
-	{
-		return $this->aInfos['table_schema'] . '.' .$this->name();
+			"'" . $aInfos['table_type'] . "' is not a known table type.");
 	}
 }

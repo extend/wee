@@ -25,64 +25,17 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class used to query meta informations about schemas and their objects.
 */
 
-class weeDbMetaSchema implements Printable
+class weeDbMetaSchema extends weeDbMetaObject
 {
 	/**
-		The database to query.
+		Returns the array of fields which need to be passed to the constructor of the class.
+
+		@return	array	The array of fields.
 	*/
 
-	protected $oDb;
-
-	/**
-		The schema informations.
-	*/
-
-	protected $aInfos;
-
-	/**
-		Initializes a new schema meta.
-
-		This class should NEVER be instantiated manually.
-		An instance of this class should be returned by weeDbMeta
-		or by its own static method create.
-
-		@param	$oDb	The database to query.
-		@param	$aInfos The schema informations.
-		@todo			Some sanity checks on $aInfos?
-	*/
-
-	public function __construct(weeDatabase $oDb, array $aInfos)
+	public static function getFields()
 	{
-		fire($oDb == null, 'UnexpectedValueException',
-			'$oDb is null.');
-
-		$this->oDb		= $oDb;
-		$this->aInfos	= $aInfos;
-	}
-
-	/**
-		Creates a new instance of the class from a database and a schema name.
-
-		@param	weeDatabase The database.
-		@param	string		The schema name.
-		@return self		The schema meta.
-		@todo				Is this static method really *that* useful?
-	*/
-
-	public static function create(weeDatabase $oDb, $sName)
-	{
-		return $oDb->meta()->schema($sName);
-	}
-
-	/**
-		Returns the SQL query used to fetch meta infos about schemas.
-
-		@return string	The SQL query.
-	*/
-
-	public static function getQuery()
-	{
-		return 'SELECT schema_name FROM information_schema.schemata';
+		return array('schema_name');
 	}
 
 	/**
@@ -118,16 +71,5 @@ class weeDbMetaSchema implements Printable
 	public function tables()
 	{
 		return $this->oDb->meta()->tables($this->name());
-	}
-
-	/**
-		Returns the string representation of the schema.
-
-		@return string	The name of the schema.
-	*/
-
-	public function toString()
-	{
-		return $this->name();
 	}
 }
