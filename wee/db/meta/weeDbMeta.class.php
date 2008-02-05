@@ -132,7 +132,7 @@ class weeDbMeta
 
 	public function column($sName)
 	{
-		$sClass = $this->getColumnClass();
+		$sClass = $this->getClass('column');
 		$sQuery	= self::buildQuery($sClass, 'columns');
 
 		$oQuery = $this->oDb->query(
@@ -155,7 +155,7 @@ class weeDbMeta
 
 	public function columns($sTable)
 	{
-		$sClass		= $this->getColumnClass();
+		$sClass		= $this->getClass('column');
 		$sQuery		= self::buildQuery($sClass, 'columns');
 		$aColumns	= array();
 
@@ -175,39 +175,28 @@ class weeDbMeta
 	}
 
 	/**
-		Returns the name of class to use to build a column.
+		Returns the name of class used to build a dbmeta object of a given type.
 
-		@return string	The column class name.
-		@todo			Maybe we could use get_class($this) . 'Column' instead?
+		@param	$sType	The type of the dbmeta object.
 	*/
 
-	public function getColumnClass()
+	public function getClass($sType)
 	{
-		return 'weeDbMetaColumn';
-	}
+		$sSuffix	= ucfirst($sType);
+		$sMetaClass	= get_class($this);
+		$sClass		= $sMetaClass . $sSuffix;
+		if (class_exists($sClass))
+			return $sClass;
 
-	/**
-		Returns the name of class to use to build a schema.
+		while (($sMetaClass = get_parent_class($sMetaClass)) !== false)
+		{
+			$sClass = $sMetaClass . $sSuffix;
+			if (class_exists($sClass))
+				return $sClass;
+		}
 
-		@return string	The schema class name.
-		@todo			Maybe we could use get_class($this) . 'Schema' instead?
-	*/
-
-	public function getSchemaClass()
-	{
-		return 'weeDbMetaSchema';
-	}
-
-	/**
-		Returns the name of class to use to build a table.
-
-		@return string	The table class name.
-		@todo			Maybe we could use get_class($this) . 'Table' instead?
-	*/
-
-	public function getTableClass()
-	{
-		return 'weeDbMetaTable';
+		burn('UnexpectedValueException',
+			"'$sType' dbmeta object type is not associated with any class");
 	}
 
 	/**
@@ -220,7 +209,7 @@ class weeDbMeta
 
 	public function schema($sName)
 	{
-		$sClass = $this->getSchemaClass();
+		$sClass = $this->getClass('schema');
 		$sQuery	= $this->buildQuery($sClass, 'schemata');
 
 		return new $sClass($this->oDb, $this->oDb->query(
@@ -237,7 +226,7 @@ class weeDbMeta
 
 	public function schemas()
 	{
-		$sClass		= $this->getSchemaClass();
+		$sClass		= $this->getClass('schema');
 		$sQuery		= self::buildQuery($sClass, 'schemata');
 		$oQuery		= $this->oDb->query($sQuery . ' ORDER BY schema_name');
 		$aSchemas	= array();
@@ -262,7 +251,7 @@ class weeDbMeta
 
 	public function table($sName)
 	{
-		$sClass = $this->getTableClass();
+		$sClass = $this->getClass('table');
 		$sQuery	= self::buildQuery($sClass, 'tables');
 
 		$oQuery = $this->oDb->query($sQuery . '
@@ -283,7 +272,7 @@ class weeDbMeta
 
 	public function tables($sSchema)
 	{
-		$sClass		= $this->getTableClass();
+		$sClass		= $this->getClass('table');
 		$sQuery		= $this->buildQuery($sClass, 'tables');
 
 		$oQuery = $this->oDb->query(
