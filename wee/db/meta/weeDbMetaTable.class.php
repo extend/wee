@@ -49,7 +49,7 @@ class weeDbMetaTable extends weeDbMetaObject
 
 	public function column($sName)
 	{
-		return $this->oDb->meta()->column($this->toString() . '.' . $sName);
+		return $this->oMeta->column($this->toString() . '.' . $sName);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class weeDbMetaTable extends weeDbMetaObject
 
 	public function columns()
 	{
-		return $this->oDb->meta()->columns($this->toString());
+		return $this->oMeta->columns($this->toString());
 	}
 
 	/**
@@ -149,7 +149,7 @@ class weeDbMetaTable extends weeDbMetaObject
 
 	protected function schema()
 	{
-		return $this->oDb->meta()->schema($this->aInfos['table_schema']);
+		return $this->oMeta->schema($this->aInfos['table_schema']);
 	}
 
 	/**

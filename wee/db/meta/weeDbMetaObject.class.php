@@ -31,7 +31,7 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 		The database to query.
 	*/
 
-	protected $oDb;
+	protected $oMeta;
 
 	/**
 		The database object informations.
@@ -50,9 +50,9 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 		@param	$aInfos		The object informations.
 	*/
 
-	public function __construct(weeDatabase $oDb, array $aInfos)
+	public function __construct(weeDbMeta $oMeta, array $aInfos)
 	{
-		fire($oDb == null, 'UnexpectedValueException',
+		fire($oMeta === null, 'UnexpectedValueException',
 			'$oDb is null.');
 
 		// We can't use __CLASS__ or self without breaking inheritance.
@@ -61,7 +61,7 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 			fire(!array_key_exists($sField, $aInfos), 'UnexpectedValueException',
 				'$aInfos[' . $sField . '] must be set.');
 
-		$this->oDb		= $oDb;
+		$this->oMeta	= $oMeta;
 		$this->aInfos	= $aInfos;
 	}
 

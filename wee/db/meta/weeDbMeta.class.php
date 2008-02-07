@@ -195,7 +195,7 @@ class weeDbMeta
 
 		foreach ($oResults as $aRow)
 		{
-			$oObject					= new $sClass($this->oDb, $aRow);
+			$oObject					= new $sClass($this, $aRow);
 			$aObjects[$oObject->name()]	= $oObject;
 		}
 

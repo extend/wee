@@ -82,7 +82,7 @@ class weeDbMetaSchema extends weeDbMetaObject
 
 	public function table($sName)
 	{
-		return $this->oDb->meta()->table($this->name() . '.' . $sName);
+		return $this->oMeta->table($this->name() . '.' . $sName);
 	}
 
 	/**
@@ -93,6 +93,6 @@ class weeDbMetaSchema extends weeDbMetaObject
 
 	public function tables()
 	{
-		return $this->oDb->meta()->tables($this->name());
+		return $this->oMeta->tables($this->name());
 	}
 }

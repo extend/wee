@@ -36,9 +36,9 @@ class weeDbMetaColumn extends weeDbMetaObject
 		@see	weeDbMetaObject::__construct()
 	*/
 
-	public function __construct(weeDatabase $oDb, array $aInfos)
+	public function __construct(weeDbMeta $oMeta, array $aInfos)
 	{
-		parent::__construct($oDb, $aInfos);
+		parent::__construct($oMeta, $aInfos);
 
 		// These fields are integers.
 		$this->aInfos['ordinal_position']	= (int) $this->aInfos['ordinal_position'];
@@ -155,7 +155,7 @@ class weeDbMetaColumn extends weeDbMetaObject
 
 	protected function schema()
 	{
-		return $this->oDb->meta()->schema($this->aInfos['table_schema']);
+		return $this->oMeta->schema($this->aInfos['table_schema']);
 	}
 
 	/**
@@ -166,7 +166,7 @@ class weeDbMetaColumn extends weeDbMetaObject
 
 	protected function table()
 	{
-		return $this->oDb->meta()->table(
+		return $this->oMeta->table(
 			$this->aInfos['table_schema'] . '.' . $this->aInfos['table_name']);
 	}
 
