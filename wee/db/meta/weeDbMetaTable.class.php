@@ -107,6 +107,29 @@ class weeDbMetaTable extends weeDbMetaObject
 	}
 
 	/**
+		Returns the array of fields used to order the objects in the SQL SELECT query.
+
+		@return	array	The array of order fields.
+	*/
+
+	public static function getOrderFields()
+	{
+		return array('table_schema', 'table_name');
+	}
+
+	/**
+		Returns the name of the information_schema table where the dbmeta objects
+		are stored.
+
+		@return	string	The table name.
+	*/
+
+	public static function getTable()
+	{
+		return 'information_schema.tables';
+	}
+
+	/**
 		Returns the name of the table.
 		
 		@return string	The name of the table.

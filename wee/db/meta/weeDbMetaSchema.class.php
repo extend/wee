@@ -39,6 +39,29 @@ class weeDbMetaSchema extends weeDbMetaObject
 	}
 
 	/**
+		Returns the array of fields used to order the objects in the SQL SELECT query.
+
+		@return	array	The array of order fields.
+	*/
+
+	public static function getOrderFields()
+	{
+		self::getFields();
+	}
+
+	/**
+		Returns the name of the information_schema table where the column objects
+		are stored.
+
+		@return	string	The table name.
+	*/
+
+	public static function getTable()
+	{
+		return 'information_schema.schemas';
+	}
+
+	/**
 		Returns the name of the schema.
 		
 		@return string	The name of the schema.

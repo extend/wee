@@ -110,6 +110,32 @@ class weeDbMetaColumn extends weeDbMetaObject
 	}
 
 	/**
+		Returns the array of fields used to order the objects in the SQL SELECT query.
+
+		@return	array	The array of order fields.
+	*/
+
+	public static function getOrderFields()
+	{
+		return array(
+			'table_schema',
+			'table_name',
+			'ordinal_position');
+	}
+
+	/**
+		Returns the name of the information_schema table where the column objects
+		are stored.
+
+		@return	string	The table name.
+	*/
+
+	public static function getTable()
+	{
+		return 'information_schema.columns';
+	}
+
+	/**
 		Returns the name of the column.
 		
 		@return string	The name of the column.

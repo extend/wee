@@ -51,37 +51,14 @@ class weeDbMeta
 	}
 
 	/**
-		Build a query for a given dbmeta class and information_schema table.
-
-		This method gets an array of SQL fields from the given class and returns
-		the corresponding SELECT SQL query.
-
-		The given dbmeta class must extends weeDbMetaObject.
-
-		@param	$sClass						The dbmeta class.
-		@param	$sTable						The information_schema table.
-		@return	string						The SELECT SQL query.
-		@throw	UnexpectedValueException	The class does not extends weeDbMetaObject.
-	*/
-
-	protected static function buildQuery($sClass, $sTable)
-	{
-		fire(!is_subclass_of($sClass, 'weeDbMetaObject'), 'UnexpectedValueException',
-			"'$sClass' does not extends weeDbMetaObject");
-
-		$aFields = call_user_func(array($sClass, 'getFields'));
-		return 'SELECT ' . implode(', ', $aFields) . ' FROM information_schema.' . $sTable;
-	}
-
-	/**
-		Build a SQL WHERE clause from an object name and an array of fields.
+		Builds an array of filters given a dbmeta object name and an array of fields.
 
 		For example, given those parameters:
 			$sName = 'bbs.forum';
 			$aFields = array('table_space', 'table_name');
 
-		The method will return the following WHERE clause:
-			table_space = 'bbs' AND table_name = 'forum'
+		The method will return the following filters:
+			array('table_space' => 'bbs', 'table_name' => 'forum');
 
 		If the number of parts in the name is smaller than the number of fields,
 		priority is given to the LAST fields.
@@ -90,17 +67,14 @@ class weeDbMeta
 			$sName = 'forum';
 
 		The method will return the following WHERE clause:
-			table_name = 'forum'
-
-		If the number of parts in the name exceeds the size of the array of fields,
-		an UnexpectedValueException is thrown.
+			array('table_name' => 'forum');
 
 		@param	$sName		The object name.
 		@param	$aFields	The array of fields.
-		@return string		The SQL WHERE clause built from the name and the array of fields.
+		@return array		The array of filters.
 	*/
 
-	protected function buildWhereClause($sName, $aFields)
+	protected static function buildFilters($sName, $aFields)
 	{
 		fire(substr_count($sName, '.') > sizeof($aFields), 'UnexpectedValueException',
 			'The number of parts in $sName cannot exceeds the size of $aFields.');
@@ -113,65 +87,119 @@ class weeDbMeta
 		}
 
 		if (!empty($aFields))
-			$aFilters[array_pop($aFields)]	= $sName;
+			$aFilters[array_pop($aFields)]			= $sName;
 
-		$sWhereClause = '';
-		foreach ($aFilters as $sField => $sValue)
-			$sWhereClause .= $sField . ' = ' . $this->oDb->escape($sValue) . ' AND ';
-		return substr($sWhereClause, 0, -5);
+		return $aFilters;
+	}
+
+
+	/**
+		Builds a query for a given dbmeta object type.
+
+		@param	$sType	The type of the wanted dbmeta objects.
+		@return	string	The SELECT SQL query.
+	*/
+
+	protected function buildQuery($sType, $aFilters = array())
+	{
+		$sClass			= $this->getClass($sType);
+		$sTable			= call_user_func(array($sClass, 'getTable'));
+		$aFields		= call_user_func(array($sClass, 'getFields'));
+		$aOrderFields	= call_user_func(array($sClass, 'getOrderFields'));
+
+		return 'SELECT ' . implode(', ', $aFields) . '
+			FROM ' . $sTable . 
+			$this->buildWhereClause($aFilters) . '
+			ORDER BY ' . implode(', ', $aOrderFields);
+	}
+
+	/**
+		Builds a SQL WHERE clause from an array of filters.
+
+		For example, given the following array of filters:
+			$aFilters = array('table_space' => 'bbs', 'table_name' => 'forum');
+
+		The method will return the following WHERE clause:
+			WHERE table_space = 'bbs' AND table_name = 'forum'
+
+		The returned string will be preceded and terminated with a space to be easily
+		concatenated in a full SQL request.
+
+		If the provided array is empty, the method will return an empty string.
+
+		@param	$aFilters	The array of filters.
+		@return string		The SQL WHERE clause.
+	*/
+
+	protected function buildWhereClause(array $aFilters)
+	{
+		if (empty($aFilters))
+			return '';
+
+		$sWhere = ' WHERE ';
+		foreach ($aFilters as $sField => $mValue)
+			$sWhere .= $sField . '=' . $this->oDb->escape($mValue) . ' AND ';
+
+		return substr($sWhere, 0, -4);
 	}
 
 	/**
 		Returns a column of a given name in the database.
 
-		@param	$sName						The name of the column.
-		@throw	DatabaseException			The column does not exist in the database.
-		@throw	UnexpectedValueException	The name matched multiple columns in the database.
-		@return	weeDbMetaColumn				The column.
+		@param	$sName			The name of the column.
+		@return	weeDbMetaColumn	The column.
 	*/
 
 	public function column($sName)
 	{
-		$sClass = $this->getClass('column');
-		$sQuery	= self::buildQuery($sClass, 'columns');
+		$aColumns = $this->create('column', self::buildFilters($sName,
+			array('table_schema', 'table_name', 'column_name')));
 
-		$oQuery = $this->oDb->query(
-			$sQuery . ' WHERE ' . $this->buildWhereClause($sName, array(
-				'table_schema', 'table_name', 'column_name')));
+		fire(count($aColumns) == 0, 'UnexpectedValueException',
+			"The name '$sName' did not match any column in the database.");
 
-		fire(count($oQuery) > 1, 'UnexpectedValueException',
+		fire(count($aColumns) != 1, 'UnexpectedValueException',
 			"The name '$sName' matched multiple columns in the database.");
 
-		return new $sClass($this->oDb, $oQuery->fetch());
+		return array_shift($aColumns);
 	}
 
 	/**
 		Returns all the columns of a given table in the database.
 
-		@return array		The array of schemas.
-		@bug				A table name which is not fully-qualified may match multiple
-							tables in the database, we should prevent that.
+		@return array	The array of schemas.
+		@bug			A table name which is not fully-qualified may match multiple
+						tables in the database, we should prevent that.
 	*/
 
 	public function columns($sTable)
 	{
-		$sClass		= $this->getClass('column');
-		$sQuery		= self::buildQuery($sClass, 'columns');
-		$aColumns	= array();
+		return $this->create('column', self::buildFilters($sTable,
+			array('table_schema', 'table_name')));
+	}
 
-		// TODO remove table_name one from the ORDER clause when the bug is taken care of.
-		$oQuery = $this->oDb->query(
-			$sQuery . ' WHERE ' . $this->buildWhereClause($sTable, array(
-				'table_schema', 'table_name')) . '
-				ORDER BY table_name, column_name');
+	/**
+		Creates an array of dbmeta objects of a given type which matches an array of filters.
+		The keys of the returned array are the names of the matched dbmeta objects.
 
-		foreach ($oQuery as $aColumn)
+		@param	$sType		The type of the dbmeta objects.
+		@param	$aFilters	The array of filters.
+		@param	array		The requested dbmeta objects.
+	*/
+
+	protected function create($sType, array $aFilters = array())
+	{
+		$sClass		= $this->getClass($sType);
+		$oResults	= $this->oDb->query($this->buildQuery($sType, $aFilters));
+		$aObjects	= array();
+
+		foreach ($oResults as $aRow)
 		{
-			$oColumn					= new $sClass($this->oDb, $aColumn);
-			$aColumns[$oColumn->name()]	= $oColumn;
+			$oObject					= new $sClass($this->oDb, $aRow);
+			$aObjects[$oObject['name']]	= $oObject;
 		}
 
-		return $aColumns;
+		return $aObjects;
 	}
 
 	/**
@@ -185,6 +213,7 @@ class weeDbMeta
 		$sSuffix	= ucfirst($sType);
 		$sMetaClass	= get_class($this);
 		$sClass		= $sMetaClass . $sSuffix;
+
 		if (class_exists($sClass))
 			return $sClass;
 
@@ -203,19 +232,18 @@ class weeDbMeta
 		Returns a schema of a given name in the database.
 
 		@param	$sName				The name of the schema.
-		@throw	DatabaseException	The schema does not exist in the database.
 		@return weeDbMetaSchema		The schema.
 	*/
 
 	public function schema($sName)
 	{
-		$sClass = $this->getClass('schema');
-		$sQuery	= $this->buildQuery($sClass, 'schemata');
+		$aSchemas = $this->create('schema', self::buildFilters($sName,
+			array('schema_name')));
 
-		return new $sClass($this->oDb, $this->oDb->query(
-			$sQuery . ' WHERE schema_name = ?',
-			$sName
-		)->fetch());
+		fire(count($aSchemas) == 0, 'UnexpectedValueException',
+			"The name '$sName' did not match any schema in the database.");
+
+		return array_shift($aSchemas);
 	}
 
 	/**
@@ -226,41 +254,28 @@ class weeDbMeta
 
 	public function schemas()
 	{
-		$sClass		= $this->getClass('schema');
-		$sQuery		= self::buildQuery($sClass, 'schemata');
-		$oQuery		= $this->oDb->query($sQuery . ' ORDER BY schema_name');
-		$aSchemas	= array();
-
-		foreach ($oQuery as $aSchema)
-		{
-			$oSchema					= new $sClass($this->oDb, $aSchema);
-			$aSchemas[$oSchema->name()] = $oSchema;
-		}
-
-		return $aSchemas;
+		return $this->create('schema');
 	}
 
 	/**
 		Returns a table of a given name in the database.
 
-		@param	$sName						The name of the table.
-		@throw	DatabaseException			The table does not exist in the database.
-		@throw	UnexpectedValueException	The name matched multiple tables in the database.
-		@return weeDbMetaTable				The table.
+		@param	$sName			The name of the table.
+		@return weeDbMetaTable	The table.
 	*/
 
 	public function table($sName)
 	{
-		$sClass = $this->getClass('table');
-		$sQuery	= self::buildQuery($sClass, 'tables');
+		$aTables = $this->create('table', self::buildFilters($sName,
+			array('table_schema', 'table_name')));
 
-		$oQuery = $this->oDb->query($sQuery . '
-			WHERE ' . $this->buildWhereClause($sName, array('table_schema', 'table_name')));
-		
-		fire(count($oQuery) > 1, 'UnexpectedValueException',
+		fire(count($aTables) == 0, 'UnexpectedValueException',
+			"The name '$sName' did not match any table in the database.");
+
+		fire(count($aTables) != 1, 'UnexpectedValueException',
 			"The name '$sName' matched multiple tables in the database.");
 
-		return new $sClass($this->oDb, $oQuery->fetch());
+		return array_shift($aTables);
 	}
 
 	/**
@@ -272,22 +287,7 @@ class weeDbMeta
 
 	public function tables($sSchema)
 	{
-		$sClass		= $this->getClass('table');
-		$sQuery		= $this->buildQuery($sClass, 'tables');
-
-		$oQuery = $this->oDb->query(
-			$sQuery . '
-				WHERE table_schema = ?
-				ORDER BY table_name',
-			$sSchema);
-
-		$aTables = array();
-		foreach ($oQuery as $aTable)
-		{
-			$oTable						= new $sClass($this->oDb, $aTable);
-			$aTables[$oTable->name()]	= $oTable;
-		}
-
-		return $aTables;
+		return $this->create('table', self::buildFilters($sSchema,
+			array('table_schema')));
 	}
 }

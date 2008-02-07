@@ -110,6 +110,33 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 	}
 
 	/**
+		Returns the array of fields used to order the objects in the SQL SELECT query.
+
+		@return	array	The array of order fields.
+	*/
+
+	public static function getOrderFields()
+	{
+		// We can't declare abstract static methods.
+		burn('BadMethodCallException',
+			'This method must be overriden in subclasses.');
+	}
+
+	/**
+		Returns the name of the information_schema table where the dbmeta objects
+		are stored.
+
+		@return	string	The table name.
+	*/
+
+	public static function getTable()
+	{
+		// We can't declare abstract static methods.
+		burn('BadMethodCallException',
+			'This method must be overriden in subclasses.');
+	}
+
+	/**
 		Returns the name of the database object.
 
 		@return	string	The name of the database object.
@@ -128,8 +155,9 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 
 	public function offsetExists($sOffset)
 	{
-		$aOffsets	= call_user_func(array(get_class($this), 'getFields'))
-					+ call_user_func(array(get_class($this), 'getCustomOffsets'));
+		$aOffsets	= array_merge(
+			call_user_func(array(get_class($this), 'getFields')),
+			call_user_func(array(get_class($this), 'getCustomOffsets')));
 
 		return in_array($sOffset, $aOffsets);
 	}
@@ -150,10 +178,10 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 		fire(!$this->offsetExists($sOffset), 'UnexpectedValueException',
 			"'$sOffset' is not a valid offset");
 		
-		if (array_key_exists($sOffset, $aInfos))
-			$aInfos[$sOffset] = $this->getCustomOffset($sOffset);
+		if (!array_key_exists($sOffset, $this->aInfos))
+			$this->aInfos[$sOffset] = $this->getCustomOffset($sOffset);
 
-		return $aInfos[$sOffset];
+		return $this->aInfos[$sOffset];
 	}
 
 	/**
