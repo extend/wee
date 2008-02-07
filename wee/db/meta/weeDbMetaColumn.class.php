@@ -64,7 +64,8 @@ class weeDbMetaColumn extends weeDbMetaObject
 
 	protected static function getCustomOffsets()
 	{
-		return parent::getCustomOffsets() + array('schema', 'table', 'position', 'type');
+		return array_merge(parent::getCustomOffsets(),
+			array('schema', 'table', 'position', 'type'));
 	}
 
 	/**
