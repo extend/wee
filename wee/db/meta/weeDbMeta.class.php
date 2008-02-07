@@ -196,7 +196,7 @@ class weeDbMeta
 		foreach ($oResults as $aRow)
 		{
 			$oObject					= new $sClass($this->oDb, $aRow);
-			$aObjects[$oObject['name']]	= $oObject;
+			$aObjects[$oObject->name()]	= $oObject;
 		}
 
 		return $aObjects;
@@ -225,7 +225,7 @@ class weeDbMeta
 		}
 
 		burn('UnexpectedValueException',
-			"'$sType' dbmeta object type is not associated with any class");
+			"'$sType' dbmeta object type is not associated with any class.");
 	}
 
 	/**
