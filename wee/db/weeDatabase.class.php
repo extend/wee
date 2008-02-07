@@ -173,8 +173,21 @@ abstract class weeDatabase
 	public function meta()
 	{
 		if (!isset($this->oMeta))
-			$this->oMeta = new weeDbMeta($this);
+		{
+			$sDbClass	= get_class($this);
+			$sClass		= str_replace('Database', 'DbMeta', $sDbClass);
 
+			if (!class_exists($sClass))
+				while (($sDbClass = get_parent_class($sDbClass)) !== false)
+				{
+					$sClass = str_replace('Database', 'DbMeta', $sDbClass);
+					if (class_exists($sClass))
+						break;
+				}
+
+			$this->oMeta = new $sClass($this);
+		}
+		
 		return $this->oMeta;
 	}
 
