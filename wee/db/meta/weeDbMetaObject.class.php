@@ -40,7 +40,7 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 	protected $aInfos;
 
 	/**
-		Initializes a new table schema.
+		Initializes a new dbmeta object.
 
 		This class should NEVER be instantiated manually.
 		An instance of this class should be returned by weeDbMeta
