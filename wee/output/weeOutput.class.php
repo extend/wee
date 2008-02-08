@@ -150,17 +150,21 @@ abstract class weeOutput
 	/**
 		Determine the cookie path.
 		Called only once the first time setCookie or deleteCookie is called.
+
+		@todo We should have some common code for handling the request uri and various base path
 	*/
 
 	protected static function initCookiePath()
 	{
-		self::$sCookiePath		= str_replace('\\', '/', dirname($_SERVER['PHP_SELF']));
-		$s						= APP_PATH;
+		$sRequestURI		= (isset($_SERVER['REDIRECT_URL'])) ? $_SERVER['REDIRECT_URL'] : $_SERVER['PHP_SELF'];
+		self::$sCookiePath	= str_replace('\\', '/', dirname($sRequestURI));
+		$s					= APP_PATH;
 		while (substr($s, 0, 3) == '../')
 		{
 			self::$sCookiePath	= dirname(self::$sCookiePath);
 			$s					= substr($s, 3);
 		}
+		//TODO:this part looks useless, to be tested and confirmed
 		if (substr(self::$sCookiePath, strlen(self::$sCookiePath) - 1) != '/')
 			self::$sCookiePath .= '/';
 	}
@@ -234,5 +238,3 @@ abstract class weeOutput
 		}
 	}
 }
-
-?>
