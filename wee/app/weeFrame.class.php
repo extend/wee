@@ -71,22 +71,6 @@ abstract class weeFrame implements Printable
 	protected $oTpl;
 
 	/**
-		Initialize the frame by loading the template.
-	*/
-
-	public function __construct()
-	{
-		$sTemplate = $this->sBaseTemplatePrefix;
-
-		if (empty($this->sBaseTemplate))
-			$sTemplate .= get_class($this);
-		else
-			$sTemplate .= $this->sBaseTemplate;
-
-		$this->oTpl = new weeTemplate($sTemplate);
-	}
-
-	/**
 		Map an event to the respective method of this class.
 
 		@param $aEvent Event information
@@ -127,6 +111,25 @@ abstract class weeFrame implements Printable
 	}
 
 	/**
+		Load a template for this frame.
+
+		@param $sTemplate		Name of the template to load, overriding the property $sBaseTemplate if not null.
+		@param $sTemplatePrefix	Prefix to the template, overriding the property $sBaseTemplatePrefix if not null.
+	*/
+
+	protected function loadTemplate($sTemplate = null, $sTemplatePrefix = null)
+	{
+		$sTemplatePath = (empty($sTemplatePrefix)) ? $this->sBaseTemplatePrefix : $sTemplatePrefix;
+
+		if (empty($sTemplate))
+			$sTemplatePath .= (empty($this->sBaseTemplate)) ? get_class($this) : $this->sBaseTemplate;
+		else
+			$sTemplatePath .= $sTemplate;
+
+		$this->oTpl = new weeTemplate($sTemplatePath);
+	}
+
+	/**
 		Send an event to its respective frame.
 		If no context is given, current context is used.
 
@@ -159,6 +162,9 @@ abstract class weeFrame implements Printable
 
 	public function set($mName, $mValue = null)
 	{
+		if (empty($this->oTpl))
+			$this->loadTemplate();
+
 		$this->oTpl->set($mName, $mValue);
 	}
 
@@ -195,6 +201,13 @@ abstract class weeFrame implements Printable
 			$sHeader .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
 
 			return $sHeader . $this->oTaconite->toString();
+		}
+
+		if (empty($this->oTpl))
+		{
+			if (empty($this->sBaseTemplate))
+				return null;
+			$this->loadTemplate();
 		}
 
 		if (!empty($this->oTaconite))
