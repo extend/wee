@@ -40,6 +40,12 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 	const UNIQUE_KEY = 2;
 
 	/**
+		Foreign key.
+	*/
+
+	const FOREIGN_KEY = 3;
+
+	/**
 		Initializes a new mysql metadb column object.
 
 		@see	weeDbMetaColumn::__construct()
@@ -83,7 +89,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 		This class defines four new offsets:
 			- comment:				The comment of the column.
 			- is_auto_incremented:	Whether the column is auto incremented.
-			- key:					The type of the key.
+			- key_type:				The type of the key in which the column takes part.
 
 		@return	array	The array of custom offsets.
 		@todo			Define more custom offsets.
@@ -107,7 +113,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 		switch ($sOffset)
 		{
 			case 'comment':				return $this->comment();
-			case 'key':					return $this->key();
+			case 'key_type':			return $this->keyType();
 			case 'is_auto_incremented':	return $this->isAutoIncremented();
 		}
 
@@ -126,20 +132,21 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 	}
 
 	/**
-		Return the type of the key of the column or null if it doesn't have one.
+		Return the type of the key in which the key takes part, or null if any.
 
-		The type is one of the two PRIMARY_KEY, UNIQUE_KEY class constants.
+		The type is one of the three PRIMARY_KEY, UNIQUE_KEY, FOREIGN_KEY class constants.
 
 		@return	int	The type of the key or null.
-		@todo		Check if other storage engines like InnoDB define extra key types.
+		@todo		Check whether foreign keys are really indicated with FOR.
 	*/
 
-	public function key()
+	public function keyType()
 	{
 		switch ($aInfos['column_key'])
 		{
 			case 'PRI':	return self::PRIMARY_KEY;
 			case 'UNI':	return self::UNIQUE_KEY;
+			case 'FOR':	return self::FOREIGN_KEY;
 			case '':	return null;
 		}
 
