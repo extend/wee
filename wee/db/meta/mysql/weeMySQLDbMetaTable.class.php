@@ -65,17 +65,6 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 	}
 
 	/**
-		Returns the comment of the table.
-
-		@return	string	The comment of the table.
-	*/
-
-	public function comment()
-	{
-		return $this->aInfos['table_comment'];
-	}
-
-	/**
 		Returns the number of rows in the table.
 
 		@see	http://www.php.net/~helly/php/ext/spl/interfaceCountable.html
@@ -119,7 +108,7 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 		switch ($sOffset)
 		{
 			case 'charset': return $this->charset();
-			case 'comment': return $this->comment();
+			case 'comment': return $this->aInfos['table_comment'];
 		}
 
 		return parent::getCustomOffset($sOffset);

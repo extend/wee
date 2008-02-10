@@ -57,17 +57,6 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 	}
 
 	/**
-		Returns the comment of the column.
-
-		@return	string	The comment.
-	*/
-
-	public function comment()
-	{
-		return $this->aInfos['column_comment'];
-	}
-
-	/**
 		Returns the array of fields which need to be passed to the constructor of the class.
 
 		@return	array	The array of fields.
@@ -112,7 +101,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 	{
 		switch ($sOffset)
 		{
-			case 'comment':				return $this->comment();
+			case 'comment':				return $this->aInfos['column_comment'];
 			case 'key_type':			return $this->keyType();
 			case 'is_auto_incremented':	return $this->isAutoIncremented();
 		}
