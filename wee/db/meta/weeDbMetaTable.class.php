@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class used to query meta informations about tables and their objects.
 */
 
-class weeDbMetaTable extends weeDbMetaObject
+class weeDbMetaTable extends weeDbMetaObject implements Countable
 {
 	/**
 		Base table type
@@ -61,6 +61,20 @@ class weeDbMetaTable extends weeDbMetaObject
 	public function columns()
 	{
 		return $this->oMeta->columns($this->toString());
+	}
+
+	/**
+		Returns the number of rows in the table.
+
+		@see	http://www.php.net/~helly/php/ext/spl/interfaceCountable.html
+	*/
+
+	public function count()
+	{
+		$aCount = $this->oMeta->db()->query(
+			'SELECT COUNT(*) AS table_rows FROM ' . $this);
+
+		return (int) $aCount['table_rows'];
 	}
 
 	/**
