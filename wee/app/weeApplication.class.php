@@ -130,6 +130,13 @@ class weeApplication implements Singleton
 		if (!empty($this->oConfig['start.output']))
 			call_user_func(array($this->oConfig['output.driver'], 'select'));
 
+		// Define cache settings
+
+		if (!empty($this->oConfig['output.cache.path']))
+			define('CACHE_PATH',	$this->oConfig['output.cache.path']);
+		if (!empty($this->oConfig['output.cache.expire']))
+			define('CACHE_EXPIRE',	$this->oConfig['output.cache.expire']);
+
 		// Load database driver
 
 		if (!empty($this->oConfig['start.db']))
@@ -192,6 +199,59 @@ class weeApplication implements Singleton
 	}
 
 	/**
+		Inform the application that we want to cache the output of the frame.
+
+		The parameter is an array of variable defining how to cache the output.
+		The only accepted variable currently is 'expire', defining the number of seconds
+		the cache file will be valid. The default value is defined by the constant
+		CACHE_EXPIRE, or 300 seconds if this constant is not found.
+
+		@param $aParams Array of variables defining how to cache the output.
+	*/
+
+	public function cacheEvent($aParams = array())
+	{
+		if (empty($aParams['expire']))
+			$aParams['expire'] = (defined('CACHE_EXPIRE')) ? CACHE_EXPIRE : 300;
+
+		$this->aCacheParams = $aParams;
+	}
+
+	/**
+		Clear all the cache files that matches the specified events.
+
+		There is an additional event option used only by clearCache: query_string.
+		It is what would fit in an urldecoded $_SERVER['QUERY_STRING'],
+		that is the part after ? in an url, but with the ? INCLUDED.
+
+		Giving the ? alone would delete only the cache file with no query string present,
+		while giving ?query_string would delete only ?query_string. Giving nothing or
+		giving an empty string would delete all the cache files for the specified frame, name and pathinfo.
+
+		@param $aEvent The event for which cache will be deleted. Uses frame, name, pathinfo and query_string parameters. Frame is mandatory.
+	*/
+
+	public function clearCache($aEvent)
+	{
+		fire(empty($aEvent['frame']), 'InvalidParameterException', 'The frame name must be given to clear its cache.');
+		$aEvent = array('name' => null, 'pathinfo' => null, 'query_string' => null) + $aEvent;
+
+		$sCache = CACHE_PATH . $aEvent['frame'];
+		if (!empty($aEvent['name']))
+		{
+			$sCache .= '/' . $aEvent['name'];
+			if (!empty($aEvent['pathinfo']))
+				$sCache .= $aEvent['pathinfo'];
+		}
+		$sCache .= '/' . $aEvent['query_string'];
+
+		if (is_dir($sCache))
+			rmdir_recursive($sCache);
+		else
+			@unlink($sCache);
+	}
+
+	/**
 		Get a configuration value.
 
 		@param	$sName	Name of the configuration parameter
@@ -251,7 +311,7 @@ class weeApplication implements Singleton
 		The path information is the text after the file and before the query string in an URI.
 		Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
 
-		@return	string				The path information
+		@return	string The path information
 	*/
 
 	public static function getPathInfo()
@@ -304,6 +364,38 @@ class weeApplication implements Singleton
 	}
 
 	/**
+		Return whether the event is cached.
+
+		If the event is cached, this method will add a value to the $aEvent
+		event array, 'cache', to give the path to the cache file to output.
+
+		@param [IN, OUT] $aEvent Event data given by weeApplication::translateEvent.
+	*/
+
+	protected function isEventCached(&$aEvent)
+	{
+		if (defined('NO_CACHE') || !defined('CACHE_PATH'))
+			return false;
+
+		$sCacheFilename = CACHE_PATH . $aEvent['frame'] . '/' . $aEvent['name'] . $aEvent['pathinfo'] . '/?' . urldecode($_SERVER['QUERY_STRING']);
+
+		if (!file_exists($sCacheFilename))
+			return false;
+
+		$iTime = filemtime($sCacheFilename);
+
+		if ($iTime === false)
+			return false;
+
+		if ($iTime < time())
+			return false;
+
+		$aEvent['cache'] = $sCacheFilename;
+
+		return true;
+	}
+
+	/**
 		Load and initialize the specified frame.
 
 		@param	$sFrame		Frame's class name
@@ -324,17 +416,42 @@ class weeApplication implements Singleton
 	/**
 		Entry point for a wee application.
 
-		Basically translate event sent by browser,
-		dispatch it to the frame, and then
-		display the frame.
+		It translate the event sent by the browser, then
+			if there is a cache file for this event, just output it and quit
+			otherwise dispatch the event to the frame and display it.
+
+		Before displaying it, if the frame requested it, the output will be
+		stored in a file for later use for caching. The request is made by
+		calling weeApp()->cacheEvent() from within the frame.
 	*/
 
 	public function main()
 	{
-		$this->dispatchEvent($this->translateEvent());
+		$aEvent = $this->translateEvent();
 
-		weeOutput::instance()->start();
-		echo $this->oFrame->toString();
+		if ($this->isEventCached($aEvent))
+			readfile($aEvent['cache']);
+		else
+		{
+			$this->dispatchEvent($aEvent);
+
+			weeOutput::instance()->start();
+			$sOutput = $this->oFrame->toString();
+
+			if (!empty($this->aCacheParams) && defined('CACHE_PATH'))
+			{
+				$sCachePath = CACHE_PATH . $aEvent['frame'] . '/' . $aEvent['name'] . $aEvent['pathinfo'] . '/';
+				$sCacheFilename = $sCachePath . '?' . urldecode($_SERVER['QUERY_STRING']);
+
+				if (!is_dir($sCachePath))
+					mkdir($sCachePath);
+
+				file_put_contents($sCacheFilename, $sOutput);
+				touch($sCacheFilename, time() + $this->aCacheParams['expire']);
+			}
+
+			echo $sOutput;
+		}
 	}
 
 	/**
@@ -346,34 +463,37 @@ class weeApplication implements Singleton
 
 	protected function translateEvent()
 	{
-		$aEvent = array();
+		$aEvent = array(
+			//TODO:sometimes we may want to only accept xmlhttprequest when the
+			//request comes from a user who we know is using this application,
+			//and not some random other webserver using it for its own purpose...
+			'context' => (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http',
 
-		//TODO:sometimes we may want to only accept xmlhttprequest when the
-		//request comes from a user who we know is using this application,
-		//and not some random other webserver using it for its own purpose...
-		$aEvent['context'] = (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http';
+			'get'	=> $_GET,
+			'post'	=> $_POST,
 
-		$aEvent['get']	= $_GET;
-		$aEvent['post']	= $_POST;
+			'name'		=> null,
+			'pathinfo'	=> null,
+		);
 
 		$sPathInfo = substr(self::getPathInfo(), 1);
 
 		if (empty($sPathInfo))
-			return $aEvent + array('frame' => (isset($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage');
+			return array('frame' => (isset($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage') + $aEvent;
 
 		if (isset($this->oAliases))
 			$sPathInfo = $this->oAliases->resolveAlias($sPathInfo);
 
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
-			return $aEvent + array('frame' => $sPathInfo);
-		
+			return array('frame' => $sPathInfo) + $aEvent;
+
 		$aEvent['frame']	= substr($sPathInfo, 0, $i);
 		$sPathInfo			= substr($sPathInfo, $i + 1);
 
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
-			return $aEvent + array('name' => $sPathInfo);
+			return array('name' => $sPathInfo) + $aEvent;
 
 		$aEvent['name']		= substr($sPathInfo, 0, $i);
 		$aEvent['pathinfo']	= substr($sPathInfo, $i + 1);

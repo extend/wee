@@ -34,7 +34,9 @@ mail.debug.reply-to =
 
 # Output settings
 
-output.driver	= weeXHTMLOutput
+output.driver		= weeXHTMLOutput
+output.cache.path	= /tmp/cache/
+output.cache.expire	= 300
 
 # Session settings
 

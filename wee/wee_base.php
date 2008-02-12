@@ -59,6 +59,28 @@ function nl2uli($s)
 }
 
 /**
+	Remove a directory and all its contents.
+
+	Original author: vboedefeld at googlemail dot com on PHP comments for rmdir.
+	Also thanks to all the contributors before him.
+
+	@param $sPath Path to the directory to remove.
+*/
+
+function rmdir_recursive($sPath)
+{
+	foreach (glob($sPath . '/*') as $sFile)
+	{
+		if (is_dir($sFile) && !is_link($sFile))
+			rmdir_recursive($sFile);
+		else
+			@unlink($sFile);
+	}
+
+	@rmdir($sPath);
+}
+
+/**
 	PHP namespace emulation.
 	Namespaces should be declared as final.
 */
