@@ -57,7 +57,7 @@ class weePgSQLDatabase extends weeDatabase
 		foreach ($aParams as $sKey => $sValue)
 			$sConnection .= $sKey . '=' . $sValue . ' ';
 
-		$this->rLink = pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
+		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
 		fire($this->rLink === false, 'DatabaseException', 'Failed to connect to database.');
 
 		// Set encoding

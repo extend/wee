@@ -45,7 +45,7 @@ class weeMySQLDatabase extends weeDatabase
 		fire(!function_exists('mysql_connect'), 'ConfigurationException',
 			'The MySQL PHP extension is required by the MySQL database driver.');
 
-		$this->rLink = mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'));
+		$this->rLink = @mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'));
 		fire($this->rLink === false, 'DatabaseException', 'Failed to connect to database.');
 
 		// Set encoding and collation

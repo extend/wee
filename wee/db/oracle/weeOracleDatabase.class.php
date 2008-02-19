@@ -54,7 +54,7 @@ class weeOracleDatabase extends weeDatabase
 		fire(!function_exists('oci_new_connect'), 'ConfigurationException');
 
 		putenv('NLS_LANG=UTF8');
-		$this->rLink = oci_new_connect(array_value($aParams, 'user'), array_value($aParams, 'password'), array_value($aParams, 'dbname'), 'UTF8');
+		$this->rLink = @oci_new_connect(array_value($aParams, 'user'), array_value($aParams, 'password'), array_value($aParams, 'dbname'), 'UTF8');
 		fire($this->rLink === false, 'DatabaseException');
 
 		// Initialize additional database services
