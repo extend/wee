@@ -42,8 +42,8 @@ class weeCLITestSuite extends weeTestSuite
 
 		echo $sFile . ': ';
 
-		if ($mResult === 'success')
-			echo 'success';
+		if ($mResult === 'success' || $mResult === 'skip')
+			echo $mResult;
 		else
 			echo (($mResult['exception'] == 'UnitTestException') ? 'failure' : 'error') .
 				"\n    " . $mResult['message'];
@@ -62,12 +62,18 @@ class weeCLITestSuite extends weeTestSuite
 		$aCounts = @array_count_values($this->aResults);
 		fire(!isset($aCounts['success']), 'IllegalStateException', 'Please run the suite before trying to output its results.');
 
+		if (!isset($aCounts['skip']))
+			$aCounts['skip'] = 0;
+
 		$s = "\n";
 
-		if ($aCounts['success'] == sizeof($this->aResults))
+		if ($aCounts['success'] + $aCounts['skip'] == sizeof($this->aResults))
 			$s .= 'All ' . $aCounts['success'] . ' tests succeeded!';
 		else
-			$s .= (sizeof($this->aResults) - $aCounts['success']) . ' of ' . sizeof($this->aResults) . ' tests failed.';
+			$s .= (sizeof($this->aResults) - $aCounts['success'] - $aCounts['skip']) . ' of ' . sizeof($this->aResults) . ' tests failed.';
+
+		if ($aCounts['skip'] != 0)
+			$s .= ' (' . $aCounts['skip'] . ' skipped)';
 
 		return $s . "\n";
 	}

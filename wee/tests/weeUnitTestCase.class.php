@@ -191,4 +191,13 @@ abstract class weeUnitTestCase
 	*/
 
 	abstract public function run();
+
+	/**
+		Skip a test.
+	*/
+
+	protected function skip()
+	{
+		throw new SkipTestException;
+	}
 }

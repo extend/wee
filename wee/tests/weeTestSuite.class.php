@@ -106,6 +106,10 @@ abstract class weeTestSuite implements Printable
 
 				$this->addResult((string)$sPath, 'success');
 			}
+			catch (SkipTestException $o)
+			{
+				$this->addResult((string)$sPath, 'skip');
+			}
 			catch (Exception $o)
 			{
 				$this->addResult((string)$sPath, array(
