@@ -88,8 +88,10 @@ abstract class weeDatabase
 
 		foreach ($aMatches[1] as $sName)
 		{
-			fire(!array_key_exists($sName, $aArguments[1]), 'DatabaseException',
+			fire(((is_array($aArguments[1]) && !array_key_exists($sName, $aArguments[1]))
+				|| (!is_array($aArguments[1]) && !isset($aArguments[1][$sName]))), 'DatabaseException',
 				'Could not bind the named parameter for ' . $sName . ' because the value was not given in the arguments.');
+
 			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
 		}
 
