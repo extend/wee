@@ -111,7 +111,7 @@ abstract class weeDatabaseRow implements ArrayAccess, Iterator
 
 	public function offsetExists($offset)
 	{
-		return isset($this->aRow[$offset]);
+		return array_key_exists($offset, $this->aRow);
 	}
 
 	/**
@@ -180,5 +180,3 @@ abstract class weeDatabaseRow implements ArrayAccess, Iterator
 		return $this->aCurrentElement !== false;
 	}
 }
-
-?>
