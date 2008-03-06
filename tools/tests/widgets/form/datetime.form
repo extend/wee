@@ -9,6 +9,7 @@
 			<widget type="weeFormDateInput">
 				<name>datetime1</name>
 				<label>weeFormDateInput :</label>
+				<value>2008-02-29</value>
 			</widget>
 
 			<widget type="weeFormFieldset">
