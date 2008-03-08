@@ -70,7 +70,7 @@ class weeForm implements Printable
 
 	protected function buildXSLStylesheet()
 	{
-		$oWeeStylesheets = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(ROOT_PATH . 'wee/form/xslt/'));
+		$oWeeStylesheets = new DirectoryIterator(ROOT_PATH . 'wee/form/xslt/');
 		//TODO: $oUserStylesheets
 
 		if ((int)$this->oXML->formkey)
