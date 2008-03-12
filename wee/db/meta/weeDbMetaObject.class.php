@@ -72,30 +72,6 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 		@return	array	The array of custom offsets.
 	*/
 
-	protected static function getCustomOffsets()
-	{
-		return array('name');
-	}
-
-	/**
-		Returns the value of a custom offset.
-
-		@param	$sOffset					The custom offset.
-		@throw	UnexpectedValueException	The custom offset is invalid.
-		@return mixed						The value associated with the custom offset.
-	*/
-
-	protected function getCustomOffset($sOffset)
-	{
-		switch ($sOffset)
-		{
-			case 'name':	return $this->name();
-		}
-
-		burn('UnexpectedValueException',
-			"'$sOffset' is not a valid custom offset");
-	}
-
 	/**
 		Returns the array of fields which need to be passed to the constructor of the class.
 
@@ -103,19 +79,6 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 	*/
 
 	public static function getFields()
-	{
-		// We can't declare abstract static methods.
-		burn('BadMethodCallException',
-			'This method must be overriden in subclasses.');
-	}
-
-	/**
-		Returns the array of fields used to order the objects in the SQL SELECT query.
-
-		@return	array	The array of order fields.
-	*/
-
-	public static function getOrderFields()
 	{
 		// We can't declare abstract static methods.
 		burn('BadMethodCallException',
@@ -147,18 +110,14 @@ abstract class weeDbMetaObject implements ArrayAccess, Printable
 	/**
 		Returns whether a given offset is a valid offset for the ArrayAccess interface.
 
-		It returns true if $sOffset is in in one of the arrays returned by getFields() and
-		getCustomOffsets() methods.
+		It returns true if $sOffset is in in one of the arrays returned by getFields() methods.
 
 		@see	http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
 	*/
 
 	public function offsetExists($sOffset)
 	{
-		$aOffsets	= array_merge(
-			call_user_func(array(get_class($this), 'getFields')),
-			call_user_func(array(get_class($this), 'getCustomOffsets')));
-
+		$aOffsets = call_user_func(array(get_class($this), 'getFields'));
 		return in_array($sOffset, $aOffsets);
 	}
 

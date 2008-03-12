@@ -82,39 +82,6 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 	}
 
 	/**
-		Returns the array of custom offsets reachable through ArrayAccess interface.
-		This class defines two new offsets:
-			- charset:	The character set of the table.
-			- comment:	The comment of the table.
-
-		@return	array	The array of custom offsets.
-	*/
-
-	protected static function getCustomOffsets()
-	{
-		return array_merge(parent::getCustomOffsets(),
-			array('charset', 'comment'));
-	}
-
-	/**
-		Returns the value of a custom offset.
-
-		@param	$sOffset	The custom offset.
-		@return mixed		The value associated with the custom offset.
-	*/
-
-	protected function getCustomOffset($sOffset)
-	{
-		switch ($sOffset)
-		{
-			case 'charset': return $this->charset();
-			case 'comment': return $this->aInfos['table_comment'];
-		}
-
-		return parent::getCustomOffset($sOffset);
-	}
-
-	/**
 		Returns the array of fields which need to be passed to the constructor of the class.
 
 		@return	array	The array of fields.

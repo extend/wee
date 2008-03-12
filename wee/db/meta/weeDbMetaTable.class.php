@@ -78,39 +78,6 @@ class weeDbMetaTable extends weeDbMetaObject implements Countable
 	}
 
 	/**
-		Returns the array of custom offsets reachable through ArrayAccess interface.
-		This class defines two new offsets:
-			- schema:		Returns a weeDbMetaSchema object for the schema of the table.
-			- type:			Returns the type of the table.
-
-		@return	array	The array of custom offsets.
-	*/
-
-	protected static function getCustomOffsets()
-	{
-		return array_merge(parent::getCustomOffsets(),
-			array('schema', 'type'));
-	}
-
-	/**
-		Returns the value of a custom offset.
-
-		@param	$sOffset	The custom offset.
-		@return mixed		The value associated with the custom offset.
-	*/
-
-	protected function getCustomOffset($sOffset)
-	{
-		switch ($sOffset)
-		{
-			case 'schema':	return $this->schema();
-			case 'type':	return $this->type();
-		}
-
-		return parent::getCustomOffset($sOffset);
-	}
-
-	/**
 		Returns the array of fields which need to be passed to the constructor of the class.
 
 		@return	array	The array of fields.

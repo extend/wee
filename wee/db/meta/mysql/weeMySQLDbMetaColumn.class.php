@@ -74,42 +74,6 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn
 	}
 
 	/**
-		Returns the array of custom offsets reachable through ArrayAccess interface.
-		This class defines four new offsets:
-			- comment:				The comment of the column.
-			- is_auto_incremented:	Whether the column is auto incremented.
-			- key_type:				The type of the key in which the column takes part.
-
-		@return	array	The array of custom offsets.
-		@todo			Define more custom offsets.
-	*/
-
-	protected static function getCustomOffsets()
-	{
-		return array_merge(parent::getCustomOffsets(),
-			array('comment', 'is_auto_incremented', 'key'));
-	}
-
-	/**
-		Returns the value of a custom offset.
-
-		@param	$sOffset	The custom offset.
-		@return mixed		The value associated with the custom offset.
-	*/
-
-	protected function getCustomOffset($sOffset)
-	{
-		switch ($sOffset)
-		{
-			case 'comment':				return $this->aInfos['column_comment'];
-			case 'key_type':			return $this->keyType();
-			case 'is_auto_incremented':	return $this->isAutoIncremented();
-		}
-
-		return parent::getCustomOffset($sOffset);
-	}
-
-	/**
 		Returns whether the column is auto incremented or not.
 
 		@return	boolean	True is the column is auto incremented, false otherwise.

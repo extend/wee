@@ -42,50 +42,16 @@ class weeDbMetaColumn extends weeDbMetaObject
 
 		// These fields are integers.
 		$this->aInfos['ordinal_position']	= (int) $this->aInfos['ordinal_position'];
-		$this->aInfos['numeric_precision']	= (int) $this->aInfos['numeric_precision'];
-		$this->aInfos['numeric_scale']		= (int) $this->aInfos['numeric_scale'];
+
+		if ($this->aInfos['numeric_precision'] !== null)
+			$this->aInfos['numeric_precision']	= (int) $this->aInfos['numeric_precision'];
+
+		if ($this->aInfos['numeric_scale'] !== null)
+			$this->aInfos['numeric_scale']		= (int) $this->aInfos['numeric_scale'];
 
 		// is_nullable field contains either 'YES' or 'NO', we convert
 		// it to a boolean value.
 		$this->aInfos['is_nullable']		= $this->aInfos['is_nullable'] == 'YES';
-	}
-
-	/**
-		Returns the array of custom offsets reachable through ArrayAccess interface.
-		This class defines four new offsets:
-			- schema:		Returns a weeDbMetaSchema object for the schema of the column.
-			- table:		Returns a weeDbMetaTable object for the table of the column.
-			- position:		Returns the position of the column in the table.
-			- type:			Returns the type of the column.
-
-		@return	array	The array of custom offsets.
-		@todo			Define more custom offsets.
-	*/
-
-	protected static function getCustomOffsets()
-	{
-		return array_merge(parent::getCustomOffsets(),
-			array('schema', 'table', 'position', 'type'));
-	}
-
-	/**
-		Returns the value of a custom offset.
-
-		@param	$sOffset	The custom offset.
-		@return mixed		The value associated with the custom offset.
-	*/
-
-	protected function getCustomOffset($sOffset)
-	{
-		switch ($sOffset)
-		{
-			case 'schema':		return $this->schema();
-			case 'table':		return $this->table();
-			case 'position':	return $this->aInfos['ordinal_position'];
-			case 'type':		return $this->type();
-		}
-
-		return parent::getCustomOffset($sOffset);
 	}
 
 	/**
