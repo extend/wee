@@ -52,6 +52,7 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	public static function getFields()
 	{
 		return array_merge(parent::getFields(), array(
+			'numeric_precision_radix',
 			'is_updatable'));
 	}
 }
