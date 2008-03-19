@@ -1,0 +1,99 @@
+<?php
+
+/**
+	Base class for defining a model.
+*/
+
+abstract class weeModel extends weeDataSource implements ArrayAccess
+{
+	/**
+		Data for the instances of this model.
+	*/
+
+	protected $aData = array();
+
+	/**
+		Creates a new instance of this model with the data passed as parameter.
+
+		@param $aData Data to be set at initialization.
+	*/
+
+	public function __construct($aData = array())
+	{
+		$this->setFromArray($aData);
+	}
+
+	/**
+		Returns whether offset exists.
+
+		@param	$offset	Offset name.
+		@return	bool	Whether the offset exists.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetExists($offset)
+	{
+		return array_key_exists($offset, $this->aData);
+	}
+
+	/**
+		Returns value at given offset.
+
+		@param	$offset	Offset name.
+		@return	bool	value at given offset
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetGet($offset)
+	{
+		fire(!array_key_exists($offset, $this->aData), 'InvalidArgumentException',
+			'The value for offset ' . $offset . ' was not found in the data.');
+
+		if ($this->bMustEncodeData)
+			return weeOutput::encodeValue($this->aData[$offset]);
+		return $this->aData[$offset];
+	}
+
+	/**
+		Sets a new value for the given offset.
+
+		@param	$offset	Offset name.
+		@param	$value	New value for this offset.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetSet($offset, $value)
+	{
+		$this->aData[$offset] = $value;
+	}
+
+	/**
+		Unsets offset.
+
+		@param	$offset	Offset name.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetUnset($offset)
+	{
+		unset($this->aData[$offset]);
+	}
+
+	/**
+		Saves all the changes made to this object.
+	*/
+
+	abstract public function save();
+
+	/**
+		Copy data directly from an array.
+
+		@param $aData Array containing the data to copy from.
+	*/
+
+	public function setFromArray($aData)
+	{
+		fire(!is_array($aData), 'InvalidArgumentException', '$aData must be an array.');
+		$this->aData = $aData + $this->aData;
+	}
+}
