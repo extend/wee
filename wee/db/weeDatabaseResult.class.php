@@ -26,14 +26,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 	An object of this class is created by the weeDatabase's query method for SELECT statements.
 */
 
-abstract class weeDatabaseResult implements Countable, Iterator
+abstract class weeDatabaseResult extends weeDataSource implements Countable, Iterator
 {
-	/**
-		Wether we are in the template and must encode the results.
-	*/
-
-	protected $bEncodeResults = false;
-
 	/**
 		The class used to return row's data.
 		If empty, an array will be returned.
@@ -48,18 +42,6 @@ abstract class weeDatabaseResult implements Countable, Iterator
 	*/
 
 	abstract public function __construct($rResult);
-
-	/**
-		Used by weeTemplate to automatically encode row results.
-
-		@return $this
-	*/
-
-	public function encodeResults()
-	{
-		$this->bEncodeResults = true;
-		return $this;
-	}
 
 	/**
 		Fetch the next row.
@@ -95,10 +77,10 @@ abstract class weeDatabaseResult implements Countable, Iterator
 
 	protected function processRow($aRow)
 	{
-		if ($this->bEncodeResults)
+		if ($this->bMustEncodeData)
 		{
 			if ($aRow instanceof weeDatabaseRow)
-				return $aRow->encodeResults();
+				return $aRow->encodeData();
 
 			return weeOutput::encodeArray($aRow);
 		}
@@ -128,5 +110,3 @@ abstract class weeDatabaseResult implements Countable, Iterator
 		return $this;
 	}
 }
-
-?>

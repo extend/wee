@@ -26,19 +26,13 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Values can be accessed like an array.
 */
 
-abstract class weeDatabaseRow implements ArrayAccess, Iterator
+abstract class weeDatabaseRow extends weeDataSource implements ArrayAccess, Iterator
 {
 	/**
 		Key of the current iterated element.
 	*/
 
 	protected $aCurrentElement;
-
-	/**
-		Wether we are in the template and must encode the results.
-	*/
-
-	protected $bEncodeResults = false;
 
 	/**
 		The values returned by the database for this row.
@@ -67,18 +61,6 @@ abstract class weeDatabaseRow implements ArrayAccess, Iterator
 	public function current()
 	{
 		return $this->aCurrentElement['value'];
-	}
-
-	/**
-		Used by weeTemplate to automatically encode row results.
-
-		@return $this
-	*/
-
-	public function encodeResults()
-	{
-		$this->bEncodeResults = true;
-		return $this;
 	}
 
 	/**
@@ -127,7 +109,7 @@ abstract class weeDatabaseRow implements ArrayAccess, Iterator
 		fire(!array_key_exists($offset, $this->aRow), 'InvalidArgumentException',
 			'The value for offset ' . $offset . ' was not found in the data.');
 
-		if ($this->bEncodeResults)
+		if ($this->bMustEncodeData)
 			return weeOutput::encodeValue($this->aRow[$offset]);
 		return $this->aRow[$offset];
 	}

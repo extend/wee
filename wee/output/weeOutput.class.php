@@ -114,8 +114,8 @@ abstract class weeOutput
 	{
 		foreach ($a as $mName => $mValue)
 		{
-			if ($mValue instanceof weeDatabaseResult || $mValue instanceof weeDatabaseRow)
-				$a[$mName] = $mValue->encodeResults();
+			if ($mValue instanceof weeDataSource)
+				$a[$mName] = $mValue->encodeData();
 			elseif (is_object($mValue))
 				continue;
 			elseif (is_array($mValue))

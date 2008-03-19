@@ -99,4 +99,30 @@ interface Singleton { public static function instance(); }
 
 interface Printable { public function toString(); }
 
-?>
+/**
+	Base class for data source objects.
+	These object are required to encode the data when needed.
+
+	Use weeOutput::encodeValue or weeOutput::encodeArray to encode it.
+*/
+
+abstract class weeDataSource
+{
+	/**
+		Whether to automatically encode the data before returning it.
+	*/
+
+	protected $bMustEncodeData = false;
+
+	/**
+		Tells the object to automatically encode the data before returning it.
+
+		@return $this
+	*/
+
+	public function encodeData()
+	{
+		$this->bMustEncodeData = true;
+		return $this;
+	}
+}
