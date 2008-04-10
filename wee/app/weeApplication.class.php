@@ -91,7 +91,7 @@ class weeApplication implements Singleton
 		}
 
 		// Load aliases file
-		
+
 		if (!empty($this->oConfig['aliases.file']))
 		{
 			$sFile = $this->oConfig['aliases.file'];
@@ -152,7 +152,7 @@ class weeApplication implements Singleton
 
 		// Start session
 
-		if (!empty($this->oConfig['start.session']))
+		if (!defined('WEE_CLI') && !empty($this->oConfig['start.session']))
 		{
 			$s = $this->oConfig['session.driver'];
 			$this->aModules['session'] = new $s(
