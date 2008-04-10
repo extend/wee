@@ -22,42 +22,34 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Base class for defining a set of rows for a database table.
+	Model for filesystem directories.
 */
 
-abstract class weeDbSet extends weeSet
+class weeFsDirectoryModel extends weeFsModel
 {
 	/**
-		The database this set is associated to.
-		Defaults to weeApp()->db.
+		Delete the directory and its contents.
 	*/
 
-	protected $oDatabase;
-
-	/**
-		Returns the database associated to this set.
-
-		@return weeDatabase The database associated to this set.
-	*/
-
-	public function getDb()
+	public function delete()
 	{
-		fire(empty($this->oDatabase) && !is_callable('weeApp'), 'IllegalStateException',
-			'No database has been associated to this set.');
-
-		return (empty($this->oDatabase) ? weeApp()->db : $this->oDatabase);
+		rmdir_recursive($this->sFilename);
 	}
 
 	/**
-		Associate a database to this set.
-
-		@param $oDb weeDatabase The database instance to associate to this set.
-		@return $this
+		Delete the contents of the directory.
 	*/
 
-	public function setDb($oDb)
+	public function deleteContents()
 	{
-		$this->oDatabase = $oDb;
-		return $this;
+		// Code taken from rmdir_recursive
+
+		foreach (glob($sPath . '/*') as $sFile)
+		{
+			if (is_dir($sFile) && !is_link($sFile))
+				rmdir_recursive($sFile);
+			else
+				@unlink($sFile);
+		}
 	}
 }
