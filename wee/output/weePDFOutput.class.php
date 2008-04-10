@@ -36,8 +36,16 @@ class weePDFOutput extends weeLaTeXOutput
 	protected $sFilename = 'file.pdf';
 
 	/**
+		Options sent to PDFLaTeX.
+	*/
+
+	protected $sOptions = '';
+
+	/**
 		Fetch the buffered LaTeX, convert it to PDF and echo it.
 		It will then be handled by the weeOutput defined ob callback.
+
+		TODO: do not execute this function if the script is terminating following an error or an exception
 	*/
 
 	public function __destruct()
@@ -53,9 +61,11 @@ class weePDFOutput extends weeLaTeXOutput
 		$sTmpDir = sys_get_temp_dir();
 		chdir($sTmpDir);
 
-		$sPdfLatex = 'pdflatex ' . $sTmpFilename;
+		$sPdfLatex = 'pdflatex ' . $this->sOptions . ' ' . $sTmpFilename;
 		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex1.log');
 		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex2.log');
+
+		// TODO: Throw an exception or something if the PDF generation isnt completed
 
 		// Send the PDF to the browser
 
@@ -91,6 +101,20 @@ class weePDFOutput extends weeLaTeXOutput
 	public function setFilename($sPDFFilename)
 	{
 		$this->sFilename = $sPDFFilename;
+		return $this;
+	}
+
+	/**
+		Sets options to be given to PDFLaTeX.
+
+		@param $sOptions The options sent to PDFLaTeX (default: none).
+		@see man pdflatex
+	*/
+
+	public function setOptions($sOptions)
+	{
+		$this->sOptions = $sOptions;
+		return $this;
 	}
 
 	/**
@@ -104,5 +128,3 @@ class weePDFOutput extends weeLaTeXOutput
 		ob_start();
 	}
 }
-
-?>
