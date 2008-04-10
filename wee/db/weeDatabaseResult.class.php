@@ -79,7 +79,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 	{
 		if ($this->bMustEncodeData)
 		{
-			if ($aRow instanceof weeDatabaseRow)
+			if ($aRow instanceof weeDataSource)
 				return $aRow->encodeData();
 
 			return weeOutput::encodeArray($aRow);
