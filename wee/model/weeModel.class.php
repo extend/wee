@@ -104,11 +104,14 @@ abstract class weeModel extends weeDataSource implements ArrayAccess
 		Copy data directly from an array.
 
 		@param $aData Array containing the data to copy from.
+		@return $this
 	*/
 
 	public function setFromArray($aData)
 	{
 		fire(!is_array($aData), 'InvalidArgumentException', '$aData must be an array.');
 		$this->aData = $aData + $this->aData;
+
+		return $this;
 	}
 }
