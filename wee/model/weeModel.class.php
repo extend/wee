@@ -25,8 +25,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for defining a model.
 */
 
-abstract class weeModel extends weeDataSource implements ArrayAccess
+abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator
 {
+	/**
+		Key and value for the currently iterated element.
+	*/
+
+	protected $aCurrentElement;
+
 	/**
 		Data for the instances of this model.
 	*/
@@ -42,6 +48,37 @@ abstract class weeModel extends weeDataSource implements ArrayAccess
 	public function __construct($aData = array())
 	{
 		$this->setFromArray($aData);
+	}
+
+	/**
+		Return the current element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function current()
+	{
+		return $this->aCurrentElement['value'];
+	}
+
+	/**
+		Return the key of the current element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function key()
+	{
+		return $this->aCurrentElement['key'];
+	}
+	/**
+		Move forward to next element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function next()
+	{
 	}
 
 	/**
@@ -101,6 +138,17 @@ abstract class weeModel extends weeDataSource implements ArrayAccess
 	}
 
 	/**
+		Rewind the Iterator to the first element.
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function rewind()
+	{
+		reset($this->aData);
+	}
+
+	/**
 		Copy data directly from an array.
 
 		@param $aData Array containing the data to copy from.
@@ -113,5 +161,17 @@ abstract class weeModel extends weeDataSource implements ArrayAccess
 		$this->aData = $aData + $this->aData;
 
 		return $this;
+	}
+
+	/**
+		Check if there is a current element after calls to rewind() or next().
+
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function valid()
+	{
+		$this->aCurrentElement = each($this->aData);
+		return $this->aCurrentElement !== false;
 	}
 }
