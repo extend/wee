@@ -61,23 +61,40 @@ function nl2uli($s)
 /**
 	Remove a directory and all its contents.
 
-	Original author: vboedefeld at googlemail dot com on PHP comments for rmdir.
-	Also thanks to all the contributors before him.
-
-	@param $sPath Path to the directory to remove.
+	@param	$sPath					Path to the directory to remove.
+	@param	$bOnlyContents			Boolean to check if the directory is to be left in place.
+	@throw	FileNotFoundException	$sPath is not a directory.
+	@throw	NotPermittedException	$sPath cannot be removed because of insufficient file permissions.
 */
 
-function rmdir_recursive($sPath)
+function rmdir_recursive($sPath, $bOnlyContents = false)
 {
-	foreach (glob($sPath . '/*') as $sFile)
-	{
-		if (is_dir($sFile) && !is_link($sFile))
-			rmdir_recursive($sFile);
-		else
-			@unlink($sFile);
-	}
+	fire(!is_dir($sPath), 'FileNotFoundException',
+		"'$sPath' is not a directory.");
 
-	@rmdir($sPath);
+	$r = @opendir($sPath);
+	fire($r === false, 'NotPermittedException', "'$sPath' directory cannot be opened.");
+
+	while (($s = readdir($r)) !== false)
+		if ($s != '.' && $s !== '..')
+		{
+			$s = $sPath . '/' . $s;
+			if (is_dir($s) && !is_link($s))
+				rmdir_recursive($s);
+			else
+			{
+				$b = @unlink($s);
+				fire(!$b, 'NotPermittedException', "'$s' file cannot be deleted.");
+			}
+		}
+
+	closedir($r);
+
+	if (!$bOnlyContents)
+	{
+		$b = @rmdir($sPath);
+		fire(!$b, 'NotPermittedException', "'$sPath' directory cannot be deleted.");
+	}
 }
 
 /**

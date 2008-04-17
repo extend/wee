@@ -42,14 +42,6 @@ class weeFsDirectoryModel extends weeFsModel
 
 	public function deleteContents()
 	{
-		// Code taken from rmdir_recursive
-
-		foreach (glob($sPath . '/*') as $sFile)
-		{
-			if (is_dir($sFile) && !is_link($sFile))
-				rmdir_recursive($sFile);
-			else
-				@unlink($sFile);
-		}
+		rmdir_recursive($this->sFilename, true);
 	}
 }
