@@ -58,7 +58,7 @@ class weeEmailTemplate extends weeTemplate
 		$sEmail = parent::toString();
 
 		if ($sOutputClass !== false)
-			call_user_func($sOutputClass . '::select');
+			call_user_func(array($sOutputClass, 'select'));
 
 		// Retrieve email headers
 
