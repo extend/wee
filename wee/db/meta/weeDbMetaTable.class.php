@@ -72,7 +72,7 @@ class weeDbMetaTable extends weeDbMetaObject implements Countable
 	public function count()
 	{
 		$aCount = $this->oMeta->db()->query(
-			'SELECT COUNT(*) AS table_rows FROM ' . $this);
+			'SELECT COUNT(*) AS table_rows FROM ' . $this->toString());
 
 		return (int) $aCount['table_rows'];
 	}
@@ -97,6 +97,36 @@ class weeDbMetaTable extends weeDbMetaObject implements Countable
 	public static function getOrderFields()
 	{
 		return array('table_schema', 'table_name');
+	}
+
+	/**
+		Returns an array containing the column names of the primary key of the table.
+		@return	array	The array of column names
+	*/
+
+	public function primaryKey()
+	{
+		$a = array();
+		$oQuery = $this->oMeta->db()->query(
+			'SELECT kcu.column_name
+				FROM	information_schema.key_column_usage		kcu,
+						information_schema.table_constraints	tc
+				WHERE		tc.table_schema			= ?
+						AND tc.table_name			= ?
+						AND tc.constraint_type		= ?
+						AND kcu.constraint_schema	= tc.constraint_schema
+						AND kcu.table_schema		= tc.table_schema
+						AND kcu.table_name			= tc.table_name
+						AND kcu.constraint_name		= tc.constraint_name
+				ORDER BY kcu.ordinal_position',
+			$this->aInfos['table_schema'],
+			$this->aInfos['table_name'],
+			'PRIMARY KEY');
+
+		foreach ($oQuery as $aColumn)
+			$a[] = $aColumn['column_name'];
+
+		return $a;
 	}
 
 	/**

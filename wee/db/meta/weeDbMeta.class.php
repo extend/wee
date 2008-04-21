@@ -203,6 +203,17 @@ class weeDbMeta
 	}
 
 	/**
+		Returns the associated database object.
+
+		@return	weeDatabase	The associated database object.
+	*/
+
+	public function db()
+	{
+		return $this->oDb;
+	}
+
+	/**
 		Returns the name of class used to build a dbmeta object of a given type.
 
 		@param	$sType	The type of the dbmeta object.
