@@ -284,9 +284,6 @@ class weeApplication implements Singleton
 
 	public function dispatchEvent($aEvent)
 	{
-		if (defined('DEBUG'))
-			weeLog('weeApplication::dispatchEvent ' . print_r($aEvent, true));
-
 		$oFrame = $this->loadFrame($aEvent['frame']);
 
 		if (empty($aEvent['noframechange']))
