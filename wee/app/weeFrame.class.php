@@ -204,11 +204,7 @@ abstract class weeFrame implements Printable
 		}
 
 		if (empty($this->oTpl))
-		{
-			if (empty($this->sBaseTemplate))
-				return null;
 			$this->loadTemplate();
-		}
 
 		if (!empty($this->oTaconite))
 			return $this->oTaconite->applyTo($this->oTpl);
