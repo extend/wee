@@ -456,7 +456,7 @@ class weeForm implements Printable
 			$sKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
 			$_SESSION['session_formkeys'][$sKey] = $sTime;
 
-			$s .= '<input type="hidden" name="wee_formkey" value="' . $sKey . '"/>';
+			$s .= '<fieldset class="formkey"><input type="hidden" name="wee_formkey" value="' . $sKey . '"/></fieldset>';
 		}
 
 		return $s . $this->oForm->toString() . '</form>';
