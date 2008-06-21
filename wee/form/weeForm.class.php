@@ -243,7 +243,7 @@ class weeForm implements Printable
 
 		$this->sValidationErrors = null;
 
-		if ($this->bFormKey)
+		if (!defined('DEBUG') && $this->bFormKey)
 		{
 			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
 				'You cannot use the formkey protection without an active session.' .
