@@ -174,6 +174,21 @@ class weeTaconite implements Printable
 	}
 
 	/**
+		Perform a "replaceContent" operation.
+
+		@param $oAction		The taconite action.
+		@param $oElement	The document element.
+	*/
+
+	protected function applyTagReplaceContent(DOMNode $oAction, DOMNode $oElement)
+	{
+		foreach ($oElement->childNodes as $oChild)
+			$oElement->removeChild($oChild);
+		$this->applyTagAppend($oAction, $oElement);
+	}
+		
+
+	/**
 		Apply taconite operations against an XML document.
 
 		Note:	Only works with id attributes, XPath and XML tags!
