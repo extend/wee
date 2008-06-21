@@ -50,7 +50,7 @@ class weeTaconite implements Printable
 		//TODO:filter $sTagName, $sSelect
 		//TODO:check if $sContents is valid XML?
 
-		if ($sContents instanceof weePrintable)
+		if ($sContents instanceof Printable)
 			$sContents = $sContents->toString();
 
 		$this->sXML .= '<' . $sTagName . ' select="' . htmlspecialchars($sSelect) . '"';
@@ -190,7 +190,7 @@ class weeTaconite implements Printable
 	{
 		//TODO:test
 
-		if ($sXMLDocument instanceof weePrintable)
+		if ($sXMLDocument instanceof Printable)
 			$sXMLDocument = $sXMLDocument->toString();
 
 		$oDocument = new DOMDocument();
