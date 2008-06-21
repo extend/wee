@@ -224,13 +224,14 @@ class weeTaconite implements Printable
 		{
 			//TODO:Ignore some of the selects that we can't handle (yet)
 			//TODO:not all actions have a select attribute
+			
+			$sFunc = 'applyTag' . ucwords($oAction->nodeName);
+			if (!is_callable(array($this, $sFunc)))
+				continue;
 
 			$aElements = $this->select($oAction->getAttribute('select'), $oDocument);
 			foreach ($aElements as $oElement)
-			{
-				$sFunc = 'applyTag' . ucwords($oAction->nodeName);
 				$this->$sFunc($oAction, $oElement);
-			}
 		}
 
 		return $oDocument->saveXML();
