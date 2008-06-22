@@ -209,12 +209,24 @@ class weeTaconite implements Printable
 			$sXMLDocument = $sXMLDocument->toString();
 
 		$oDocument = new DOMDocument();
-		if (!defined(DEBUG))
+		if (defined('DEBUG'))
+		{
 			$oDocument->preserveWhiteSpace	= false;
-		$oDocument->validateOnParse			= true;
+			$oDocument->validateOnParse		= true;
+		}
 
 		$b = $oDocument->loadXML($sXMLDocument);
 		fire(!$b, 'BadXMLException', 'Document $sXMLDocument is not valid XML.');
+
+		if (!defined('DEBUG'))
+		{
+			// If the DEBUG mode is not enabled, the DTD is not used and id attributes are not of type ID.
+			// We must traverse the DOM Document and manually set id attributes' type.
+
+			$oXPath = new DOMXPath($oDocument);
+			foreach ($oXPath->query('//*[@id]') as $oElement)
+				$oElement->setIdAttribute('id', true);
+		}
 
 		$oXML = new DOMDocument();
 		$b = $oXML->loadXML($this->toString());
