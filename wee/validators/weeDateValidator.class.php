@@ -73,7 +73,7 @@ class weeDateValidator implements weeValidator
 		$aDate = explode('-', $mValue);
 		$iTime = @mktime(0, 0, 0, $aDate[1], $aDate[2], $aDate[0]);
 
-		if (!checkdate($aDate[1], $aDate[2], $aDate[0]) || strlen($mValue) != 10 || sizeof($aDate) != 3)
+		if (strlen($mValue) != 10 || sizeof($aDate) != 3 || !checkdate($aDate[1], $aDate[2], $aDate[0]))
 			$this->setError('nad');
 		elseif (isset($aArgs['max']))
 		{
