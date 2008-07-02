@@ -99,6 +99,9 @@ class weeTemplate implements Printable
 		$aArgs = $aArgs + $this->aLinkArgs;
 		foreach ($aArgs as $sName => $sValue)
 		{
+			if ($sValue instanceof Printable)
+				$sValue = $sValue->toString();
+
 			$sLink .= $sSeparator . $sName . '=' . $sValue;
 			$sSeparator = '&amp;';
 		}
