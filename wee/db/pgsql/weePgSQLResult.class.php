@@ -125,7 +125,8 @@ class weePgSQLResult extends weeDatabaseResult
 		fire(!empty($this->sRowClass), 'IllegalStateException',
 			'You cannot use a row class with weePgSQLResult::fetchAll yet.');
 
-		return pg_fetch_all($this->rResult);
+		$m = pg_fetch_all($this->rResult);
+		return $m === false ? array() : $m;
 	}
 
 	/**
