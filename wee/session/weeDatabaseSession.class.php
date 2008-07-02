@@ -162,7 +162,7 @@ class weeDatabaseSession extends weeSession
 
 	public function logIn($sLogin, $sPassword, $bKeepAlive = false)
 	{
-		if ($_SESSION['session_is_logged'])
+		if ($this->isLogged())
 			return true;
 
 		$oResults	= $this->oDatabase->query(
