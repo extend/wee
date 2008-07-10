@@ -52,13 +52,13 @@ class weeEmailTemplate extends weeTemplate
 	{
 		// Switch to text output, get email string, switch back (if possible)
 
-		$sOutputClass = get_class(weeOutput::instance());
+		$oOutput = weeOutput::instance();
 		weeTextOutput::select();
 
 		$sEmail = parent::toString();
 
-		if ($sOutputClass !== false)
-			call_user_func(array($sOutputClass, 'select'));
+		if (!is_null($oOutput))
+			weeOutput::setInstance($oOutput);
 
 		// Retrieve email headers
 

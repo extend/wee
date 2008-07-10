@@ -214,6 +214,20 @@ abstract class weeOutput
 	}
 
 	/**
+		Set the output object to use.
+
+		@param weeOutput The object to use.
+	*/
+
+	public static function setInstance($oInstance)
+	{
+		fire(!($oInstance instanceof weeOutput), 'InvalidParameterException',
+			'The output object $oInstance must be an instance of weeOutput.');
+
+		self::$oInstance = $oInstance;
+	}
+
+	/**
 		Start the output.
 		Checks if gzip compression is supported and initialize output buffering.
 	*/
