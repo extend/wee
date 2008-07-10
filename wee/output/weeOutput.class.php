@@ -216,14 +216,11 @@ abstract class weeOutput
 	/**
 		Set the output object to use.
 
-		@param weeOutput The object to use.
+		@param $oInstance The object to use.
 	*/
 
-	public static function setInstance($oInstance)
+	public static function setInstance(weeOutput $oInstance)
 	{
-		fire(!($oInstance instanceof weeOutput), 'InvalidParameterException',
-			'The output object $oInstance must be an instance of weeOutput.');
-
 		self::$oInstance = $oInstance;
 	}
 
