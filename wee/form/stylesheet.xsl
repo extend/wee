@@ -1,8 +1,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
-<?php foreach ($oWeeStylesheets as $oFile): if ($oFile->isFile()):?>
+<?php foreach ($oWeeStylesheets as $oFile): if ($oFile->isFile()):?> 
 	<xsl:import href="<?php echo $oFile->getPathname()?>"/>
-<?php endif; endforeach?>
+<?php endif; endforeach?> 
 
 <!-- TODO: include user stylesheet to override defaults -->
 

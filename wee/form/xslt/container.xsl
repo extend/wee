@@ -6,9 +6,14 @@
 
 	<ol>
 		<xsl:for-each select="$select">
-			<li>
-				<xsl:apply-templates select="."/>
-			</li>
+			<xsl:choose>
+				<xsl:when test="@type='hidden'">
+					<li class="invisible"><xsl:apply-templates select="."/></li>
+				</xsl:when>
+				<xsl:otherwise>
+					<li><xsl:apply-templates select="."/></li>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:for-each>
 	</ol>
 </xsl:template>

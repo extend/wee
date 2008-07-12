@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xhtml="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xhtml" version="1.0">
 
-<xsl:template name="weeFormChoiceItem">
+<xsl:template name="choiceitem">
 	<option>
 		<xsl:if test="@disabled">
 			<xsl:attribute name="disabled">
@@ -25,7 +25,7 @@
 	</option>
 </xsl:template>
 
-<xsl:template name="weeFormChoiceGroup">
+<xsl:template name="choicegroup">
 	<optgroup>
 		<xsl:if test="@disabled">
 			<xsl:attribute name="disabled">
@@ -38,12 +38,12 @@
 		</xsl:attribute>
 
 		<xsl:for-each select="item">
-			<xsl:call-template name="weeFormChoiceItem"/>
+			<xsl:call-template name="choiceitem"/>
 		</xsl:for-each>
 	</optgroup>
 </xsl:template>
 
-<xsl:template match="widget[@type='weeFormChoice']">
+<xsl:template match="widget[@type='choice']">
 	<xsl:call-template name="label">
 		<xsl:with-param name="name" select="name"/>
 		<xsl:with-param name="help" select="help"/>
@@ -89,10 +89,10 @@
 		<xsl:for-each select="options/*">
 			<xsl:choose>
 				<xsl:when test="self::group">
-					<xsl:call-template name="weeFormChoiceGroup"/>
+					<xsl:call-template name="choicegroup"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:call-template name="weeFormChoiceItem"/>
+					<xsl:call-template name="choiceitem"/>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:for-each>

@@ -9,7 +9,7 @@
 <xsl:template match="class"/>
 <xsl:template match="label"/>
 
-<xsl:template match="widget[@type='weeFormFieldset']">
+<xsl:template match="widget[@type='fieldset']">
 	<fieldset>
 		<xsl:if test="class">
 			<xsl:attribute name="class">

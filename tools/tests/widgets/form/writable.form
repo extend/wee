@@ -5,16 +5,37 @@
 	<formkey>0</formkey>
 
 	<widgets>
-		<widget type="weeFormFieldset">
-			<widget type="weeFormTextBox">
+		<widget type="fieldset">
+			<widget type="hidden">
+				<name>hidden1</name>
+				<label>hidden:</label>
+				<value>33</value>
+				<validator type="weeNumberValidator" min="1" max="42"/>
+			</widget>
+
+			<widget type="textbox">
 				<name>textbox1</name>
-				<label>weeFormTextBox :</label>
+				<label>textbox:</label>
+				<value>what</value>
 				<validator type="weeStringValidator" max="20"/>
 			</widget>
 
-			<widget type="weeFormFieldset">
+			<widget type="password">
+				<name>password1</name>
+				<label>password:</label>
+				<value>badword</value>
+				<validator type="weeStringValidator" max="20"/>
+			</widget>
+
+			<widget type="textarea">
+				<name>textarea1</name>
+				<label>textarea:</label>
+				<value>lolo rerem ipipipsum</value>
+			</widget>
+
+			<widget type="fieldset">
 				<class>buttonsfieldset</class>
-				<widget type="weeFormSubmitButton"/>
+				<widget type="submitbutton"/>
 			</widget>
 		</widget>
 	</widgets>

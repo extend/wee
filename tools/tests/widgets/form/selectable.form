@@ -5,10 +5,10 @@
 	<formkey>0</formkey>
 
 	<widgets>
-		<widget type="weeFormFieldset">
-			<widget type="weeFormChoice">
+		<widget type="fieldset">
+			<widget type="choice">
 				<name>choice1</name>
-				<label>weeFormChoice :</label>
+				<label>choice (1):</label>
 				<validator type="weeOptionValidator"/>
 				<options>
 					<item label="test a" value="test a"/>
@@ -28,9 +28,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormChoice">
+			<widget type="choice">
 				<name>choice2</name>
-				<label>weeFormChoice :</label>
+				<label>choice (2):</label>
 				<validator type="weeOptionValidator"/>
 				<options>
 					<item label="1" value="1"/>
@@ -41,9 +41,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormCheckList">
+			<widget type="checklist">
 				<name>checklist</name>
-				<label>weeFormCheckList :</label>
+				<label>checklist:</label>
 				<options>
 					<item label="1" value="1"/>
 					<item label="2 (selected by default)" value="2" selected="selected"/>
@@ -53,9 +53,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormCheckList">
+			<widget type="checklist">
 				<name>scrollablechecklist</name>
-				<label>weeFormCheckList :</label>
+				<label>checklist (scrollable):</label>
 				<class>scrollablechecklist</class>
 				<options>
 					<item label="1" value="1"/>
@@ -66,9 +66,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormRadioBox">
-				<name>radiobox</name>
-				<label>weeFormRadioBox :</label>
+			<widget type="radiobox">
+				<name>radiobox1</name>
+				<label>radiobox (1):</label>
 				<options>
 					<item label="1" value="1"/>
 					<item label="2" value="2"/>
@@ -78,9 +78,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormRadioBox">
+			<widget type="radiobox">
 				<name>radiobox2</name>
-				<label>weeFormRadioBox :</label>
+				<label>radiobox (2):</label>
 				<options>
 					<item label="1" value="1"/>
 					<item label="2" value="2"/>
@@ -90,9 +90,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormRadioBox">
+			<widget type="radiobox">
 				<name>radiobox3</name>
-				<label>weeFormRadioBox :</label>
+				<label>radiobox (3):</label>
 				<options>
 					<item label="1" value="1"/>
 					<item label="2" value="2"/>
@@ -108,9 +108,9 @@
 				</options>
 			</widget>
 
-			<widget type="weeFormFieldset">
+			<widget type="fieldset">
 				<class>buttonsfieldset</class>
-				<widget type="weeFormSubmitButton"/>
+				<widget type="submitbutton"/>
 			</widget>
 		</widget>
 	</widgets>

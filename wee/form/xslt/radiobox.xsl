@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xhtml="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xhtml" version="1.0">
 
-<xsl:template name="weeFormRadioBoxItem">
+<xsl:template name="radioboxitem">
 	<xsl:param name="radioboxid"/>
 	<xsl:param name="radioboxname"/>
 
@@ -46,7 +46,7 @@
 	</label></li>
 </xsl:template>
 
-<xsl:template name="weeFormRadioBoxGroup">
+<xsl:template name="radioboxgroup">
 	<xsl:param name="radioboxid"/>
 	<xsl:param name="radioboxname"/>
 
@@ -57,7 +57,7 @@
 
 		<ol>
 			<xsl:for-each select="*">
-				<xsl:call-template name="weeFormRadioBoxOptions">
+				<xsl:call-template name="radioboxoptions">
 					<xsl:with-param name="radioboxid" select="concat($radioboxid, '_', position())"/>
 					<xsl:with-param name="radioboxname" select="$radioboxname"/>
 				</xsl:call-template>
@@ -66,19 +66,19 @@
 	</li>
 </xsl:template>
 
-<xsl:template name="weeFormRadioBoxOptions">
+<xsl:template name="radioboxoptions">
 	<xsl:param name="radioboxid"/>
 	<xsl:param name="radioboxname"/>
 
 	<xsl:choose>
 		<xsl:when test="self::group">
-			<xsl:call-template name="weeFormRadioBoxGroup">
+			<xsl:call-template name="radioboxgroup">
 				<xsl:with-param name="radioboxid" select="$radioboxid"/>
 				<xsl:with-param name="radioboxname" select="$radioboxname"/>
 			</xsl:call-template>
 		</xsl:when>
 		<xsl:otherwise>
-			<xsl:call-template name="weeFormRadioBoxItem">
+			<xsl:call-template name="radioboxitem">
 				<xsl:with-param name="radioboxid" select="$radioboxid"/>
 				<xsl:with-param name="radioboxname" select="$radioboxname"/>
 			</xsl:call-template>
@@ -86,7 +86,7 @@
 	</xsl:choose>
 </xsl:template>
 
-<xsl:template match="widget[@type='weeFormRadioBox']">
+<xsl:template match="widget[@type='radiobox']">
 	<xsl:variable name="radioboxid" select="concat($formidprefix, name, $formidsuffix)"/>
 
 	<fieldset>
@@ -111,7 +111,7 @@
 
 		<ol>
 			<xsl:for-each select="options/*">
-				<xsl:call-template name="weeFormRadioBoxOptions">
+				<xsl:call-template name="radioboxoptions">
 					<xsl:with-param name="radioboxid" select="$radioboxid"/>
 					<xsl:with-param name="radioboxname" select="../../name"/>
 				</xsl:call-template>

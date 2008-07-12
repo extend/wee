@@ -5,16 +5,16 @@
 	<formkey>0</formkey>
 
 	<widgets>
-		<widget type="weeFormFieldset">
-			<widget type="weeFormDateInput">
+		<widget type="fieldset">
+			<widget type="dateinput">
 				<name>datetime1</name>
-				<label>weeFormDateInput :</label>
+				<label>dateinput:</label>
 				<value>2008-02-29</value>
 			</widget>
 
-			<widget type="weeFormFieldset">
+			<widget type="fieldset">
 				<class>buttonsfieldset</class>
-				<widget type="weeFormSubmitButton"/>
+				<widget type="submitbutton"/>
 			</widget>
 		</widget>
 	</widgets>

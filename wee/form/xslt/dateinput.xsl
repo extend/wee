@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:php="http://php.net/xsl" xmlns:xhtml="http://www.w3.org/1999/xhtml" exclude-result-prefixes="php xhtml" version="1.0">
 
-<xsl:template match="widget[@type='weeFormDateInput']">
+<xsl:template match="widget[@type='dateinput']">
 	<!-- validate node -->
 
 	<xsl:if test="date-format and string-length(date-format) != 4">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xhtml="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xhtml" version="1.0">
 
-<xsl:template name="weeFormCheckListItem">
+<xsl:template name="checklistitem">
 	<xsl:param name="checklistid"/>
 	<xsl:param name="checklistname"/>
 
@@ -46,7 +46,7 @@
 	</label>
 </xsl:template>
 
-<xsl:template match="widget[@type='weeFormCheckList']">
+<xsl:template match="widget[@type='checklist']">
 	<xsl:variable name="checklistid" select="concat($formidprefix, name, $formidsuffix)"/>
 
 	<fieldset>
@@ -72,7 +72,7 @@
 		<ol>
 			<xsl:for-each select="options/*">
 				<li>
-					<xsl:call-template name="weeFormCheckListItem">
+					<xsl:call-template name="checklistitem">
 						<xsl:with-param name="checklistid" select="$checklistid"/>
 						<xsl:with-param name="checklistname" select="../../name"/>
 					</xsl:call-template>

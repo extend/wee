@@ -44,8 +44,9 @@ class weeForm implements Printable
 
 	const ACTION_DEL	= 4;
 
-
 	protected $iAction;
+	protected $aData	= array();
+	protected $aErrors	= array();
 	protected $oXML;
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
@@ -57,7 +58,7 @@ class weeForm implements Printable
 		fire(!file_exists($sFilename), 'FileNotFoundException',
 			'The file ' . $sFilename . " doesn't exist.");
 
-		$this->oXML = simplexml_load_file($sFilename);//, 'weeSimpleXMLHack');
+		$this->oXML = simplexml_load_file($sFilename);
 		fire($this->oXML === false || !isset($this->oXML->widgets), 'BadXMLException',
 			'The file ' . $sFilename . ' is not a valid form document.');
 
@@ -95,11 +96,36 @@ class weeForm implements Printable
 		return ob_get_clean();
 	}
 
+	public function fill($aData)
+	{
+		fire(!is_array($aData) && !($aData instanceof ArrayAccess), 'InvalidArgumentException',
+			'$aData must be an associative array of names and values.');
+
+		$this->aData = $aData + $this->aData;
+	}
+
+	public function fillErrors($aErrors)
+	{
+		fire(!is_array($aErrors) && !($aErrors instanceof ArrayAccess), 'InvalidArgumentException',
+			'$aErrors must be an associative array of names and values.');
+
+		$this->aErrors = $aErrors + $this->aErrors;
+	}
+
+	public function process(&$aData)
+	{
+	}
+
+	public function validate($aData)
+	{
+	}
+
 	public function toString()
 	{
 		$oDoc = new DOMDocument();
 		$oXSL = new XSLTProcessor();
 
+//TODO:tmp
 function getLocalizedDate($sFormat, $sValue)
 {
 	static $aMap = array('Y' => 0, 'M' => 1, 'D' => 2);
@@ -111,9 +137,39 @@ function getLocalizedDate($sFormat, $sValue)
 }
 
 $oXSL->registerPHPFunctions('getLocalizedDate');
+// /tmp
 
 		$oDoc->loadXML($this->buildXSLStylesheet());
-		$oXSL->importStyleSheet($oDoc);
+		$oXSL->importStyleSheet($oDoc); // time consuming
+
+		// Fill in the values and errors if any
+
+		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
+		foreach ($aKeys as $sName)
+		{
+			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
+
+			$a = $this->oXML->xpath('//name[text()="' . $sName . '"]/..');
+			if (!empty($a))
+			{
+				$oWidget = $a[0];
+
+				if (!empty($this->aData[$sName]))
+				{
+					if (empty($oWidget->options))
+						$oWidget->value = $this->aData[$sName];
+					else
+					{
+						$a = $oWidget->xpath('//item[@value="' . $this->aData[$sName] . '"]');
+						if (!empty($a))
+							$a[0]->addAttribute('selected', 'selected');
+					}
+				}
+
+				if (!empty($this->aErrors[$sName]))
+					$oWidget->errors = $this->aData[$sName];
+			}
+		}
 
 		return $oXSL->transformToXML(dom_import_simplexml($this->oXML)->ownerDocument);
 	}

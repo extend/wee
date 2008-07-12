@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xhtml="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xhtml" version="1.0">
 
-<xsl:template match="widget[@type='weeFormSubmitButton']">
+<xsl:template match="widget[@type='submitbutton']">
 	<input type="submit">
 		<xsl:if test="class">
 			<xsl:attribute name="class">
