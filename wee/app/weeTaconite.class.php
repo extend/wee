@@ -37,6 +37,12 @@ class weeTaconite implements Printable
 	protected $sXML;
 
 	/**
+		The XPath object attached to the XML document created in applyTo()
+	*/
+
+	protected $oXPath;
+
+	/**
 		Add a tag to the taconite document.
 
 		@param	$sTagName	The tag name.
@@ -103,6 +109,8 @@ class weeTaconite implements Printable
 			$oChild = $oElement->ownerDocument->importNode($oChild, true);
 			$oElement->appendChild($oChild);
 		}
+
+		$this->fixIDTypes($oElement);
 	}
 
 	/**
@@ -209,24 +217,10 @@ class weeTaconite implements Printable
 			$sXMLDocument = $sXMLDocument->toString();
 
 		$oDocument = new DOMDocument();
-		if (defined('DEBUG'))
-		{
-			$oDocument->preserveWhiteSpace	= false;
-			$oDocument->validateOnParse		= true;
-		}
-
-		$b = $oDocument->loadXML($sXMLDocument);
+		$b = @$oDocument->loadXML($sXMLDocument);
 		fire(!$b, 'BadXMLException', 'Document $sXMLDocument is not valid XML.');
-
-		if (!defined('DEBUG'))
-		{
-			// If the DEBUG mode is not enabled, the DTD is not used and id attributes are not of type ID.
-			// We must traverse the DOM Document and manually set id attributes' type.
-
-			$oXPath = new DOMXPath($oDocument);
-			foreach ($oXPath->query('//*[@id]') as $oElement)
-				$oElement->setIdAttribute('id', true);
-		}
+		$this->oXPath = new DOMXPath($oDocument);
+		$this->fixIDTypes();
 
 		$oXML = new DOMDocument();
 		$b = $oXML->loadXML($this->toString());
@@ -246,7 +240,25 @@ class weeTaconite implements Printable
 				$this->$sFunc($oAction, $oElement);
 		}
 
+		unset($this->oXPath);
 		return $oDocument->saveXML();
+	}
+
+	/**
+		This method traverses the given node and sets every id attribute type to ID.
+
+		@param $oElement if null, the whole document is traversed.
+	*/
+
+	protected function fixIDTypes(DOMNode $oElement = null)
+	{
+		if ($oElement === null)
+			$oChildren = $this->oXPath->query('//*[@id]');
+		else
+			$oChildren = $this->oXPath->query('//*[@id]', $oElement);
+
+		foreach ($oChildren as $oChild)
+			$oChild->setIdAttribute('id', true);
 	}
 
 	/**
@@ -273,7 +285,6 @@ class weeTaconite implements Printable
 		if ($sSelect[0] == '#')
 		{
 			$oElement = $oDocument->getElementById(substr($sSelect, 1));
-
 			if (is_null($oElement))
 				return array();
 			return array($oElement);
