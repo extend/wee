@@ -104,6 +104,9 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function escape($mValue)
 	{
+		if ($mValue === null)
+			return 'null';
+
 		return "'" . pg_escape_string($mValue) . "'";
 	}
 
@@ -131,9 +134,15 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		fire(empty($sName), 'InvalidArgumentException', 'Sequence name $sName must not be empty.');
+		if ($sName === null)
+			$sQuery = 'SELECT pg_catalog.lastval()';
+		else
+			$sQuery = $this->bindQuestionMarks(array(
+				'SELECT pg_catalog.currval(?)',
+				$sName
+			));
 
-		$r = pg_query($this->rLink, 'SELECT currval(' . $this->escape($sName) . ')');
+		$r = pg_query($sQuery);
 		fire($r === false, 'DatabaseException', 'Failed to retrieve the value of the sequence: ' . $this->getLastError());
 
 		return (int)pg_fetch_result($r, 0, 0);
