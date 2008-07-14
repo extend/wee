@@ -187,7 +187,7 @@ final class weeException extends Namespace
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>' . _('Fatal error') . '</title>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><style type="text/css">
 *{font-family:Verdana,sans-serif}
-body{background-color:#ccdbfa;font-size:0.8em}
+html{background-color:#ccdbfa;font-size:0.8em}
 h1{font-size:1.5em;height:2em;width:100%;text-align:right}
 h2{font-size:1.3em}
 ul{padding-top:1em}
