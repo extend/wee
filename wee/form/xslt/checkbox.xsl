@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xhtml="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xhtml" version="1.0">
 
 <xsl:template match="widget[@type='checkbox']">
-	<label>
+	<label class="checkbox">
 		<xsl:attribute name="for">
 			<xsl:value-of select="concat($formidprefix, name, $formidsuffix)"/>
 		</xsl:attribute>
@@ -13,7 +13,7 @@
 			</xsl:attribute>
 		</xsl:if>
 
-		<input type="checkbox">
+		<input type="checkbox" value="1">
 			<xsl:if test="@selected">
 				<xsl:attribute name="checked">
 					<xsl:text>checked</xsl:text>
@@ -34,13 +34,15 @@
 				<xsl:value-of select="name"/>
 			</xsl:attribute>
 
-			<xsl:attribute name="value">
-				<xsl:value-of select="@value"/>
-			</xsl:attribute>
+			<xsl:if test="value">
+				<xsl:attribute name="value">
+					<xsl:value-of select="value"/>
+				</xsl:attribute>
+			</xsl:if>
 		</input>
 
 		<xsl:text> </xsl:text>
-		<xsl:value-of select="@label"/>
+		<xsl:value-of select="label"/>
 	</label>
 </xsl:template>
 
