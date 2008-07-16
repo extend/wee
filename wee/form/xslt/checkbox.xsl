@@ -39,6 +39,7 @@
 			</xsl:attribute>
 		</input>
 
+		<xsl:text> </xsl:text>
 		<xsl:value-of select="@label"/>
 	</label>
 </xsl:template>
