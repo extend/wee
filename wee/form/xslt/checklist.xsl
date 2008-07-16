@@ -35,6 +35,7 @@
 
 			<xsl:attribute name="name">
 				<xsl:value-of select="$checklistname"/>
+				<xsl:text>[]</xsl:text>
 			</xsl:attribute>
 
 			<xsl:attribute name="value">
