@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -61,8 +61,7 @@ class weeOptionValidator implements weeFormValidator
 		Default error messages.
 	*/
 
-	protected $aErrorList	= array(
-		'invalid'	=> 'Input must be available in the options');
+	protected $aErrorList = array('invalid' => 'Input must be available in the options');
 
 	/**
 		Initialize the validator.
@@ -98,24 +97,27 @@ class weeOptionValidator implements weeFormValidator
 	public function hasError()
 	{
 		fire(empty($this->oWidget), 'InvalidStateException',
-			'You must set the widget using weeOptionValidator::setWidget before calling this method.');
-		fire($this->oWidget instanceof weeFormMultipleSelectable, 'InvalidArgumentException',
-			'weeOptionValidator must be used only on weeFormMultipleSelectable widgets.');
+			'You must set the widget using weeOptionValidator::setFormData before calling this method.');
 
-		if (!$this->oWidget->isInOptions($this->mValue))
+		// TODO: possible xpath injection
+		$a = $this->oWidget->xpath('//item[@value="' . $this->mValue . '" and not(disabled)]');
+		if (empty($a))
 			$this->setError('invalid');
 
 		return $this->bHasError;
 	}
 
 	/**
-		Not used.
+		Sets the widget and complete data passed to the weeForm object.
+		Usually either $_POST or $_GET.
 
+		@param $oWidget The widget to validate.
 		@param $aData The data to check, if applicable.
 	*/
 
-	public function setData($aData)
+	public function setFormData($oWidget, $aData)
 	{
+		$this->oWidget = $oWidget;
 	}
 
 	/**
@@ -136,19 +138,6 @@ class weeOptionValidator implements weeFormValidator
 	}
 
 	/**
-		Sets the widget to validate.
-
-		@param $oWidget The widget to validate.
-	*/
-
-	public function setWidget($oWidget)
-	{
-		fire(!($oWidget instanceof weeFormSelectable), 'InvalidArgumentException',
-			'$oWidget must be an instance of weeFormSelectable.');
-		$this->oWidget = $oWidget;
-	}
-
-	/**
 		Convenience function for quick validation tests.
 
 		@param	$mValue	The value to check.
@@ -163,5 +152,3 @@ class weeOptionValidator implements weeFormValidator
 		return !$o->hasError();
 	}
 }
-
-?>

@@ -25,11 +25,12 @@ function weeFormTest($sForm)
 
 	if (!empty($_POST))
 	{
-		if ($oForm->hasErrors($_POST))
-			$oTpl->set('errors', $oForm->getErrors());
+		try {
+			$oForm->validate($_POST);
+		} catch (FormValidationException $e) {
+			$oTpl->set('errors', $e->toString());
+		}
 	}
 
 	return $oTpl;
 }
-
-?>

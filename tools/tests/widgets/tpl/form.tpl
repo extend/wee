@@ -22,7 +22,7 @@ $(document).ready(function() {
 	<?php if ($is_submitted):?>
 		<?php if (!empty($errors)):?>
 			<h2>Error:</h2>
-			<?php echo weeUtils::nl2uli($errors)?>
+			<?php echo nl2uli($errors)?>
 		<?php endif?>
 
 		<div class="post"><?php print_r($_POST)?></div>

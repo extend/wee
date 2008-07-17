@@ -44,10 +44,40 @@ class weeForm implements Printable
 
 	const ACTION_DEL	= 4;
 
-	protected $iAction;
+	/**
+		Arrays mapping actions to their string names.
+	*/
+
+	protected $aActionMap = array(
+		1 => 'ACTION_ADD',
+		2 => 'ACTION_UPD',
+		4 => 'ACTION_DEL',
+	);
+
+	/**
+		Data used to fill the form when generating it.
+	*/
+
 	protected $aData	= array();
+
+	/**
+		Error messages shown after each widget if provided.
+	*/
+
 	protected $aErrors	= array();
+
+	/**
+		The SimpleXML object for this form.
+	*/
+
 	protected $oXML;
+
+	/**
+		Initializes the form.
+
+		@param	$sFilename	The filename of the form XML (without path and extension).
+		@param	$iAction	The action to be performed by the form (usually add, update or delete).
+	*/
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
 	{
@@ -62,12 +92,35 @@ class weeForm implements Printable
 		fire($this->oXML === false || !isset($this->oXML->widgets), 'BadXMLException',
 			'The file ' . $sFilename . ' is not a valid form document.');
 
-		$this->iAction = $iAction;
 		if (!isset($this->oXML->uri))
 			$this->oXML->addChild('uri', $_SERVER['REQUEST_URI']);
 		if (!isset($this->oXML->formkey))
 			$this->oXML->addChild('formkey', 1);
+
+		// Delete elements with wrong action
+
+		$sXPath = '//*[@action!=' . $iAction;
+		if (!empty($this->aActionMap[$iAction]))
+			$sXPath .= ' and @action!="weeForm::' . $this->aActionMap[$iAction] . '"';
+		$sXPath .= ']';
+
+		foreach ($this->oXML->xpath($sXPath) as $oNode)
+		{
+			$oNode = dom_import_simplexml($oNode);
+			$oNode->parentNode->removeChild($oNode);
+		}
 	}
+
+	/**
+		Load and parse the XSL stylesheet and return it.
+
+		This method loads every available stylesheets and include them in the resulting file.
+		System stylesheets are first "imported" followed by user stylesheets getting "included".
+
+		The form key is given to the stylesheet if any.
+
+		@return The built XSL stylesheet.
+	*/
 
 	protected function buildXSLStylesheet()
 	{
@@ -96,6 +149,13 @@ class weeForm implements Printable
 		return ob_get_clean();
 	}
 
+	/**
+		Provide values to each widgets of the form.
+		When a value has no corresponding widget, it is discarded.
+
+		@param $aData The data used to fill the form's widgets values.
+	*/
+
 	public function fill($aData)
 	{
 		fire(!is_array($aData) && !($aData instanceof ArrayAccess), 'InvalidArgumentException',
@@ -103,6 +163,13 @@ class weeForm implements Printable
 
 		$this->aData = $aData + $this->aData;
 	}
+
+	/**
+		Provide error messages to each widgets of the form.
+		When a message has no corresponding widget, it is discarded.
+
+		@param $aData The error messages to be given to the corresponding widgets.
+	*/
 
 	public function fillErrors($aErrors)
 	{
@@ -112,32 +179,108 @@ class weeForm implements Printable
 		$this->aErrors = $aErrors + $this->aErrors;
 	}
 
-	public function process(&$aData)
-	{
-	}
+	/**
+		Validates the data against the form validators.
+
+		This method first checks if the form key is valid.
+		If it's not, it stops the validation and indicates there is an error.
+
+		If an error is found an exception FormValidationException is triggered.
+		Use this object to retrieve all the error messages and output them.
+		You can also give the array of errors directly to the weeForm::fillErrors
+		method to output all the messages after each widget.
+
+		@param $aData The data to check (usually either $_GET or $_POST).
+		@throw FormValidationException
+	*/
 
 	public function validate($aData)
 	{
+		fire(empty($aData), 'InvalidArgumentException', '$aData must not be empty.');
+
+		$oException = new FormValidationException('The validation of the form failed. See FormValidationException::getErrors to retrieve error messages.');
+
+		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
+		{
+			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+				'You cannot use the formkey protection without an active session.' .
+				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
+
+			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
+				$oException->addError('', _('Form key not found.'));
+			else
+			{
+				// Recalculate form key to check validity
+
+				if ($aData['wee_formkey'] != md5($_SERVER['HTTP_HOST'] . $_SESSION['session_formkeys'][$aData['wee_formkey']] . MAGIC_STRING))
+					$oException->addError('', _('Invalid form key.'));
+				else
+				{
+					// If form key was generated more than 6 hours ago, it is considered invalid
+
+					$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
+					if (time() > $aTime[1] + 3600 * 6)
+						$oException->addError('', _('Form key out of date.'));
+				}
+			}
+
+			// Form has been submitted, unset the form key
+
+			unset($_SESSION['session_formkeys'][$aData['wee_formkey']]);
+		}
+
+		// Select widgets that use validators and validates data
+
+		foreach ($this->oXML->xpath('//widget/validator/..') as $oNode)
+		{
+			// If we don't have any data we check the required flag
+			// If it's not required we skip, otherwise we note an error
+
+			if (empty($aData[(string)$oNode->name]))
+			{
+				if (!empty($oNode['required']))
+				{
+					if (!empty($oNode['required_error']))
+						$oException->addError((string)$oNode->name, _($oNode['required_error']));
+					else
+						$oException->addError((string)$oNode->name, sprintf(_('Input is required for %s'), (string)$oNode->label));
+				}
+
+				continue;
+			}
+
+			// Then we validate the data with each validators
+
+			foreach ($oNode->validator as $oValidatorNode)
+			{
+				fire(!class_exists($oValidatorNode['type']), 'BadXMLException',
+					'Validator ' . $oValidatorNode['type'] . ' do not exist.');
+
+				$sClass		= (string)$oValidatorNode['type'];
+				$oValidator	= new $sClass($aData[(string)$oNode->name], (array)$oValidatorNode->attributes());
+
+				if ($oValidator instanceof weeFormValidator)
+					$oValidator->setFormData($oNode, $aData);
+
+				if ($oValidator->hasError())
+					$oException->addError((string)$oNode->name, $oValidator->getError());
+			}
+		}
+
+		if ($oException->hasErrors())
+			throw $oException;
 	}
+
+	/**
+		Output the form to string.
+
+		@return string The resulting XHTML form.
+	*/
 
 	public function toString()
 	{
 		$oDoc = new DOMDocument();
 		$oXSL = new XSLTProcessor();
-
-//TODO:tmp
-function getLocalizedDate($sFormat, $sValue)
-{
-	static $aMap = array('Y' => 0, 'M' => 1, 'D' => 2);
-
-	$aItems = explode('-', $sValue);
-	return $aItems[$aMap[$sFormat[0]]]
-		. $sFormat[3] . $aItems[$aMap[$sFormat[1]]]
-		. $sFormat[3] . $aItems[$aMap[$sFormat[2]]];
-}
-
-$oXSL->registerPHPFunctions('getLocalizedDate');
-// /tmp
 
 		$oDoc->loadXML($this->buildXSLStylesheet());
 		$oXSL->importStyleSheet($oDoc); // time consuming
@@ -149,6 +292,7 @@ $oXSL->registerPHPFunctions('getLocalizedDate');
 		{
 			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
 
+			// TODO: possible xpath injection here
 			$a = $this->oXML->xpath('//name[text()="' . $sName . '"]/..');
 			if (!empty($a))
 			{
@@ -160,6 +304,7 @@ $oXSL->registerPHPFunctions('getLocalizedDate');
 						$oWidget->value = $this->aData[$sName];
 					else
 					{
+						// TODO: possible xpath injection here
 						$a = $oWidget->xpath('//item[@value="' . $this->aData[$sName] . '"]');
 						if (!empty($a))
 							$a[0]->addAttribute('selected', 'selected');
@@ -167,7 +312,13 @@ $oXSL->registerPHPFunctions('getLocalizedDate');
 				}
 
 				if (!empty($this->aErrors[$sName]))
-					$oWidget->errors = $this->aData[$sName];
+				{
+					if (empty($oWidget->errors))
+						$oWidget->addChild('errors');
+
+					foreach ($this->aErrors[$sName] as $sMsg)
+						$oWidget->errors->addChild('error', $sMsg);
+				}
 			}
 		}
 

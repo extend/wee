@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -28,21 +28,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 interface weeFormValidator extends weeValidator
 {
 	/**
-		Sets data passed to the weeForm object.
+		Sets the widget and complete data passed to the weeForm object.
 		Usually either $_POST or $_GET.
 
+		@param $oWidget The widget to validate.
 		@param $aData The data to check, if applicable.
 	*/
 
-	public function setData($aData);
-
-	/**
-		Sets the widget to validate.
-
-		@param $oWidget The widget to validate.
-	*/
-
-	public function setWidget($oWidget);
+	public function setFormData($oWidget, $aData);
 }
-
-?>
