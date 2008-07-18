@@ -164,6 +164,17 @@ abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator
 	}
 
 	/**
+		Returns the data as array, since we can't cast weeModel to retrieve the array's data.
+
+		@return array Object's data.
+	*/
+
+	public function toArray()
+	{
+		return $this->aData;
+	}
+
+	/**
 		Check if there is a current element after calls to rewind() or next().
 
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
