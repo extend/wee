@@ -333,14 +333,21 @@ class weeApplication implements Singleton
 		}
 
 		// The path info begins after the script name part of the request URI.
-		$sPathInfo = substr($_SERVER['REQUEST_URI'], strlen($_SERVER['SCRIPT_NAME']));
+		
+		$iScriptLength	= strlen($_SERVER['SCRIPT_NAME']);
+		$sName			= basename($_SERVER['SCRIPT_NAME']);
+		$iNameLength	= strlen($sName);
+		$sPathInfo		= substr($_SERVER['REQUEST_URI'], $iScriptLength - $iNameLength);
+
+		if (substr($sPathInfo, 0, $iNameLength) == $sName)
+			$sPathInfo	= substr($sPathInfo, $iNameLength);
 
 		if (!empty($_SERVER['QUERY_STRING']))
 		{
 			// We need to remove the query string from the path info.
 			$i = strlen($_SERVER['QUERY_STRING']);
 			if (substr($sPathInfo, -$i) == $_SERVER['QUERY_STRING'])
-				$sPathInfo = substr($sPathInfo, 0, -$i);
+				$sPathInfo = substr($sPathInfo, 0, -$i - 1);
 		}
 
 		return urldecode($sPathInfo);
