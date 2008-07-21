@@ -324,8 +324,8 @@ class weeApplication implements Singleton
 		{
 			// We found the path info from either PATH_INFO or PHP_SELF server variables.
 
-			if (empty($_SERVER['REQUEST_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
-				// If the request string is empty, but that an interrogation mark has been
+			if (empty($_SERVER['QUERY_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
+				// If the query string is empty, but that an interrogation mark has been
 				// explicitely included in the request URI, we keep it.
 				$sPathInfo .= '?';
 
@@ -335,11 +335,11 @@ class weeApplication implements Singleton
 		// The path info begins after the script name part of the request URI.
 		$sPathInfo = substr($_SERVER['REQUEST_URI'], strlen($_SERVER['SCRIPT_NAME']));
 
-		if (!empty($_SERVER['REQUEST_STRING']))
+		if (!empty($_SERVER['QUERY_STRING']))
 		{
 			// We need to remove the query string from the path info.
-			$i = strlen($_SERVER['REQUEST_STRING']);
-			if (substr($sPathInfo, -$i) == $_SERVER['REQUEST_STRING'])
+			$i = strlen($_SERVER['QUERY_STRING']);
+			if (substr($sPathInfo, -$i) == $_SERVER['QUERY_STRING'])
 				$sPathInfo = substr($sPathInfo, 0, -$i);
 		}
 
