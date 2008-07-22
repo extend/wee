@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -50,11 +50,12 @@ class weeMySQLDatabase extends weeDatabase
 
 		// Set encoding and collation
 
-		$this->query("SET NAMES 'utf8'");
-		$this->query("SET character_set_server = 'utf8'");
-		$this->query("SET collation_connection = 'utf8_bin'");
-		$this->query("SET collation_database = 'utf8_bin'");
-		$this->query("SET collation_server = 'utf8_bin'");
+		if (!empty($aParams['encoding']))
+		{
+			fire(!ctype_alnum($aParams['encoding']), 'InvalidParameterException',
+				'The encoding parameter must be comprised of letters and numbers only.');
+			$this->query("SET NAMES '" . $aParams['encoding'] . "'");
+		}
 
 		// Select database if needed
 
@@ -167,5 +168,3 @@ class weeMySQLDatabase extends weeDatabase
 		fire(!$b, 'DatabaseException', 'Failed to select the database ' . $sDatabase . ': ' . $this->getLastError());
 	}
 }
-
-?>
