@@ -180,6 +180,76 @@ class weeForm implements Printable
 	}
 
 	/**
+		Create and initialize an helper for the specified widget.
+
+		@param $sHelper Class name of the helper you want to create.
+		@param $sWidget Widget name in the XML, which is then selected using XPath.
+		@return object The helper of the type requested.
+	*/
+
+	public function helper($sHelper, $sWidget)
+	{
+		fire(!ctype_print($sWidget), 'InvalidArgumentException', 'The widget name must be printable.');
+
+		$oXML = $this->xpathOne('//name[text()="' . $sWidget . '"]/..');
+		return new $sHelper($oXML);
+	}
+
+	/**
+		Output the form to string.
+
+		@return string The resulting XHTML form.
+	*/
+
+	public function toString()
+	{
+		$oDoc = new DOMDocument();
+		$oXSL = new XSLTProcessor();
+
+		$oDoc->loadXML($this->buildXSLStylesheet());
+		$oXSL->importStyleSheet($oDoc); // time consuming
+
+		// Fill in the values and errors if any
+
+		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
+		foreach ($aKeys as $sName)
+		{
+			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
+
+			// TODO: possible xpath injection here
+			$a = $this->oXML->xpath('//name[text()="' . $sName . '"]/..');
+			if (!empty($a))
+			{
+				$oWidget = $a[0];
+
+				if (!empty($this->aData[$sName]))
+				{
+					if (empty($oWidget->options))
+						$oWidget->value = $this->aData[$sName];
+					else
+					{
+						// TODO: possible xpath injection here
+						$a = $oWidget->xpath('//item[@value="' . $this->aData[$sName] . '"]');
+						if (!empty($a))
+							$a[0]->addAttribute('selected', 'selected');
+					}
+				}
+
+				if (!empty($this->aErrors[$sName]))
+				{
+					if (empty($oWidget->errors))
+						$oWidget->addChild('errors');
+
+					foreach ($this->aErrors[$sName] as $sMsg)
+						$oWidget->errors->addChild('error', $sMsg);
+				}
+			}
+		}
+
+		return $oXSL->transformToXML(dom_import_simplexml($this->oXML)->ownerDocument);
+	}
+
+	/**
 		Validates the data against the form validators.
 
 		This method first checks if the form key is valid.
@@ -272,56 +342,30 @@ class weeForm implements Printable
 	}
 
 	/**
-		Output the form to string.
+		Performs an XPath query on the form XML.
 
-		@return string The resulting XHTML form.
+		@param $sPath The XPath query to run.
+		@return array The XPath result.
 	*/
 
-	public function toString()
+	public function xpath($sPath)
 	{
-		$oDoc = new DOMDocument();
-		$oXSL = new XSLTProcessor();
+		return $this->oXML->xpath($sPath);
+	}
 
-		$oDoc->loadXML($this->buildXSLStylesheet());
-		$oXSL->importStyleSheet($oDoc); // time consuming
+	/**
+		Performs an XPath query on the form XML and retrieve exactly one result.
+		The result has to exist otherwise an UnexpectedValueException is thrown.
 
-		// Fill in the values and errors if any
+		@param $sPath The XPath query to run.
+		@return SimpleXMLElement The element retrieved by the query.
+	*/
 
-		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
-		foreach ($aKeys as $sName)
-		{
-			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
-
-			// TODO: possible xpath injection here
-			$a = $this->oXML->xpath('//name[text()="' . $sName . '"]/..');
-			if (!empty($a))
-			{
-				$oWidget = $a[0];
-
-				if (!empty($this->aData[$sName]))
-				{
-					if (empty($oWidget->options))
-						$oWidget->value = $this->aData[$sName];
-					else
-					{
-						// TODO: possible xpath injection here
-						$a = $oWidget->xpath('//item[@value="' . $this->aData[$sName] . '"]');
-						if (!empty($a))
-							$a[0]->addAttribute('selected', 'selected');
-					}
-				}
-
-				if (!empty($this->aErrors[$sName]))
-				{
-					if (empty($oWidget->errors))
-						$oWidget->addChild('errors');
-
-					foreach ($this->aErrors[$sName] as $sMsg)
-						$oWidget->errors->addChild('error', $sMsg);
-				}
-			}
-		}
-
-		return $oXSL->transformToXML(dom_import_simplexml($this->oXML)->ownerDocument);
+	public function xpathOne($sPath)
+	{
+		$a = $this->xpath($sPath);
+		fire(sizeof($a) != 1, 'UnexpectedValueException',
+			'weeForm::xpathOne expects one and only one result; it retrieved ' . sizeof($a) . '.');
+		return $a[0];
 	}
 }
