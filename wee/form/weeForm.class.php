@@ -301,41 +301,44 @@ class weeForm implements Printable
 
 		// Select widgets that use validators and validates data
 
-		foreach ($this->oXML->xpath('//widget/validator/..') as $oNode)
-		{
-			// If we don't have any data we check the required flag
-			// If it's not required we skip, otherwise we note an error
+		$aValidators = $this->oXML->xpath('//widget/validator/..');
 
-			if (empty($aData[(string)$oNode->name]))
+		if ($aValidators !== false)
+			foreach ($aValidators as $oNode)
 			{
-				if (!empty($oNode['required']))
+				// If we don't have any data we check the required flag
+				// If it's not required we skip, otherwise we note an error
+
+				if (empty($aData[(string)$oNode->name]))
 				{
-					if (!empty($oNode['required_error']))
-						$oException->addError((string)$oNode->name, _($oNode['required_error']));
-					else
-						$oException->addError((string)$oNode->name, sprintf(_('Input is required for %s'), (string)$oNode->label));
+					if (!empty($oNode['required']))
+					{
+						if (!empty($oNode['required_error']))
+							$oException->addError((string)$oNode->name, _($oNode['required_error']));
+						else
+							$oException->addError((string)$oNode->name, sprintf(_('Input is required for %s'), (string)$oNode->label));
+					}
+
+					continue;
 				}
 
-				continue;
+				// Then we validate the data with each validators
+
+				foreach ($oNode->validator as $oValidatorNode)
+				{
+					fire(!class_exists($oValidatorNode['type']), 'BadXMLException',
+						'Validator ' . $oValidatorNode['type'] . ' do not exist.');
+
+					$sClass		= (string)$oValidatorNode['type'];
+					$oValidator	= new $sClass($aData[(string)$oNode->name], (array)$oValidatorNode->attributes());
+
+					if ($oValidator instanceof weeFormValidator)
+						$oValidator->setFormData($oNode, $aData);
+
+					if ($oValidator->hasError())
+						$oException->addError((string)$oNode->name, $oValidator->getError());
+				}
 			}
-
-			// Then we validate the data with each validators
-
-			foreach ($oNode->validator as $oValidatorNode)
-			{
-				fire(!class_exists($oValidatorNode['type']), 'BadXMLException',
-					'Validator ' . $oValidatorNode['type'] . ' do not exist.');
-
-				$sClass		= (string)$oValidatorNode['type'];
-				$oValidator	= new $sClass($aData[(string)$oNode->name], (array)$oValidatorNode->attributes());
-
-				if ($oValidator instanceof weeFormValidator)
-					$oValidator->setFormData($oNode, $aData);
-
-				if ($oValidator->hasError())
-					$oException->addError((string)$oNode->name, $oValidator->getError());
-			}
-		}
 
 		if ($oException->hasErrors())
 			throw $oException;

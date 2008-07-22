@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<enctype>multipart/form-data</enctype>
+	<formkey>0</formkey>
+
+	<widgets>
+		<h1>This is a title directly in the form file!</h1>
+
+		<table border="1"><tr><td>This is a table!</td><td>It really is.</td></tr></table>
+
+		<widget type="fieldset">
+			<strong>1. You need to input a file.</strong>
+
+			<widget type="fileinput">
+				<name>fileinput1</name>
+				<label>fileinput:</label>
+			</widget>
+
+			<i>2. You need to press a button.</i>
+
+			<widget type="fieldset">
+				<class>buttonsfieldset</class>
+				<widget type="button"><label>Random button</label></widget>
+				<widget type="resetbutton"/>
+				<widget type="submitbutton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>
