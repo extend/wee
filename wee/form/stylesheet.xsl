@@ -4,7 +4,9 @@
 	<xsl:import href="<?php echo $oFile->getPathname()?>"/>
 <?php endif; endforeach?> 
 
-<!-- TODO: include user stylesheet to override defaults -->
+<?php foreach ($oUserStylesheets as $oFile): if ($oFile->isFile()):?> 
+	<xsl:include href="<?php echo $oFile->getPathname()?>"/>
+<?php endif; endforeach?> 
 
 <xsl:output method="xml" omit-xml-declaration="yes"/>
 

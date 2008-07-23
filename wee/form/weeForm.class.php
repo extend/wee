@@ -67,6 +67,12 @@ class weeForm implements Printable
 	protected $aErrors	= array();
 
 	/**
+		Path to user stylesheets.
+	*/
+
+	protected $sUserStylesheetsPath;
+
+	/**
 		The SimpleXML object for this form.
 	*/
 
@@ -125,7 +131,7 @@ class weeForm implements Printable
 	protected function buildXSLStylesheet()
 	{
 		$oWeeStylesheets = new DirectoryIterator(ROOT_PATH . 'wee/form/xslt/');
-		//TODO: $oUserStylesheets
+		$oUserStylesheets = empty($this->sUserStylesheetsPath) ? array() : new DirectoryIterator($this->sUserStylesheetsPath);
 
 		if ((int)$this->oXML->formkey)
 		{
@@ -193,6 +199,17 @@ class weeForm implements Printable
 
 		$oXML = $this->xpathOne('//name[text()="' . $sWidget . '"]/..');
 		return new $sHelper($oXML);
+	}
+
+	/**
+		Set the user stylesheets path used to override default stylesheets.
+
+		@param $sUserStylesheetsPath Path to the stylesheets to include.
+	*/
+
+	public function setUserStylesheetsPath($sUserStylesheetsPath)
+	{
+		$this->sUserStylesheetsPath = $sUserStylesheetsPath;
 	}
 
 	/**
