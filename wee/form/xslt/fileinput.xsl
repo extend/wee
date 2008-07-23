@@ -42,6 +42,10 @@
 			<xsl:value-of select="name"/>
 		</xsl:attribute>
 	</input>
+
+	<xsl:if test="errors">
+		<xsl:apply-templates select="errors"/>
+	</xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>

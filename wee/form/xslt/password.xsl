@@ -42,6 +42,10 @@
 			</xsl:attribute>
 		</xsl:if>
 	</input>
+
+	<xsl:if test="errors">
+		<xsl:apply-templates select="errors"/>
+	</xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>

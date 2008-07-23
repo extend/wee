@@ -62,6 +62,10 @@
 
 		<xsl:value-of select="value"/>
 	</textarea>
+
+	<xsl:if test="errors">
+		<xsl:apply-templates select="errors"/>
+	</xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>

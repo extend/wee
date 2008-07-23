@@ -30,6 +30,7 @@ if (!empty($_POST))
 	try {
 		$oForm->validate($_POST);
 	} catch (FormValidationException $e) {
+		$oForm->fillErrors($e->getErrors());
 		$oTpl->set('errors', $e->toString());
 	}
 }

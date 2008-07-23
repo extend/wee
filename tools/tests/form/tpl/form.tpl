@@ -3,16 +3,7 @@
 <head>
 	<title>Form examples</title>
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
-	<link rel="stylesheet" type="text/css" media="all" href="<?=APP_PATH?>res/wee/wee.css"/>
-	<script type="text/javascript" src="<?=APP_PATH?>res/jquery/jquery.js"></script>
-	<script type="text/javascript" src="<?=APP_PATH?>res/wee/wee.js"></script>
-
-	<script type="text/javascript">
-$(document).ready(function() {
-	// fix firefox inline-block
-	wee.fixes.inlineblock();
-});
-	</script>
+	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/wee.css"/>
 </head>
 
 <body>

@@ -10,6 +10,7 @@
 				<name>choice1</name>
 				<label>choice (1):</label>
 				<validator type="weeOptionValidator"/>
+				<validator type="weeNumberValidator"/>
 				<options>
 					<item label="test a" value="test a"/>
 					<item label="test b" value="test b"/>
@@ -39,6 +40,18 @@
 					<item label="4 (selected by default)" value="4" selected="selected"/>
 					<item label="5" value="5"/>
 				</options>
+			</widget>
+
+			<widget type="checkbox">
+				<name>checkbox1</name>
+				<label>checkbox (1)</label>
+				<value>1</value>
+			</widget>
+
+			<widget type="checkbox" selected="selected">
+				<name>checkbox2</name>
+				<label>checkbox (2)</label>
+				<value>2</value>
 			</widget>
 
 			<widget type="checklist">
