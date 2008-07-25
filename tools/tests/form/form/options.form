@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<formkey>0</formkey>
+
+	<widgets>
+		<widget type="choice">
+			<name>choice</name>
+			<label>choice:</label>
+			<validator type="weeOptionValidator"/>
+		</widget>
+
+		<widget type="submitbutton"/>
+	</widgets>
+</form>

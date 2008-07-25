@@ -92,6 +92,9 @@ class weeFormOptionsHelper
 
 	protected function createOption($aOption, $oDest)
 	{
+		if (empty($this->oXML->options))
+			$this->oXML->addChild('options');
+
 		$oItem = $oDest->addChild(array_value($aOption, 'name', 'item'));
 		unset($aOption['name']);
 
@@ -172,7 +175,7 @@ class weeFormOptionsHelper
 	{
 		// TODO: possible xpath injection here
 		$aOption = $this->oXML->options->xpath('//item[@value="' . $sValue . '" and not(@disabled)]');
-		fire(sizeof($aOptions) != 1, 'BadXMLException',
+		fire(sizeof($aOption) != 1, 'BadXMLException',
 			'The value was not found in the options or was found more than once.');
 
 		$aOption[0]['selected'] = 'selected';
@@ -188,5 +191,25 @@ class weeFormOptionsHelper
 	{
 		$this->selectNone();
 		$this->selectItem($sValue);
+	}
+
+	/**
+		Return the XML node at the specified XPath.
+		There must be only ONE result returned.
+
+		@param	$sDestXPath			XPath statement
+		@return	weeSimpleXMLHack	XML node found at the specified path
+	*/
+
+	protected function translateDestXPath($sDestXPath)
+	{
+		if (empty($sDestXPath))
+			return $this->oXML->options;
+
+		$aDest = $this->oXML->options->xpath($sDestXPath);
+		fire(sizeof($aDest) != 1, 'BadXMLException',
+			'The XPath statement ' . $sDestXPath . ' must return exactly 1 result, ' . sizeof($aDest) . ' were returned.');
+
+		return $aDest[0];
 	}
 }
