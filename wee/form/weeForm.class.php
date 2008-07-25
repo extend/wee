@@ -87,9 +87,6 @@ class weeForm implements Printable
 
 	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
 	{
-		fire(is_null(weeOutput::instance()), 'IllegalStateException',
-			'You must select an output before creating a weeForm object.');
-
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException',
 			'The file ' . $sFilename . " doesn't exist.");
@@ -257,8 +254,11 @@ class weeForm implements Printable
 					if (empty($oWidget->errors))
 						$oWidget->addChild('errors');
 
-					foreach ($this->aErrors[$sName] as $sMsg)
-						$oWidget->errors->addChild('error', $sMsg);
+					if (is_array($this->aErrors[$sName]))
+						foreach ($this->aErrors[$sName] as $sMsg)
+							$oWidget->errors->addChild('error', $sMsg);
+					else
+						$oWidget->errors->addChild('error', $this->aErrors[$sName]);
 				}
 			}
 		}
@@ -346,8 +346,9 @@ class weeForm implements Printable
 					fire(!class_exists($oValidatorNode['type']), 'BadXMLException',
 						'Validator ' . $oValidatorNode['type'] . ' do not exist.');
 
-					$sClass		= (string)$oValidatorNode['type'];
-					$oValidator	= new $sClass($aData[(string)$oNode->name], (array)$oValidatorNode->attributes());
+					$aAttributes	= (array)$oValidatorNode->attributes();
+					$sClass			= (string)$oValidatorNode['type'];
+					$oValidator		= new $sClass($aData[(string)$oNode->name], $aAttributes['@attributes']);
 
 					if ($oValidator instanceof weeFormValidator)
 						$oValidator->setFormData($oNode, $aData);
