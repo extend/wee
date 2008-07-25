@@ -83,9 +83,9 @@ abstract class weeUnitTestCase
 		@param $sMessage Error message if test returns false.
 	*/
 
-	protected function isMatching($sSubject, $sPattern, $sMessage)
+	protected function isMatching($sPattern, $sSubject, $sMessage)
 	{
-		if (0 === preg_match($sSubject, $sPattern))
+		if (0 === preg_match($sPattern, $sSubject))
 			throw new UnitTestException($sMessage);
 	}
 
@@ -131,9 +131,9 @@ abstract class weeUnitTestCase
 		@param $sMessage Error message if test returns false.
 	*/
 
-	protected function isNotMatching($sSubject, $sPattern, $sMessage)
+	protected function isNotMatching($sPattern, $sSubject, $sMessage)
 	{
-		if (1 === preg_match($sSubject, $sPattern))
+		if (1 === preg_match($sPattern, $sSubject))
 			throw new UnitTestException($sMessage);
 	}
 
