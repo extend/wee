@@ -60,6 +60,7 @@
 			</xsl:choose>
 		</xsl:attribute>
 
+		<xsl:comment/>
 		<xsl:value-of select="value"/>
 	</textarea>
 
