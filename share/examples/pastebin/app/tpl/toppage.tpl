@@ -48,10 +48,10 @@
 
 		<h2>Find a Pastebin</h2>
 
-		<form action="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/view" class="finder" method="get">
+		<form action="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/view" class="finder" method="get"><div>
 			<label for="id">Number: <input class="number" id="id" name="id" type="text"/></label>
 			<input type="submit"/>
-		</form>
+		</div></form>
 
 		<p><a href="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/last">View Last 5 Pastebins</a></p>
 
