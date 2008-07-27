@@ -99,9 +99,8 @@ class weeOptionValidator implements weeFormValidator
 		fire(empty($this->oWidget), 'InvalidStateException',
 			'You must set the widget using weeOptionValidator::setFormData before calling this method.');
 
-		// TODO: possible xpath injection
-		$a = $this->oWidget->xpath('//item[@value="' . $this->mValue . '" and not(disabled)]');
-		if (empty($a))
+		$oHelper = new weeFormOptionsHelper($this->oWidget);
+		if (!$oHelper->isInOptions($this->mValue))
 			$this->setError('invalid');
 
 		return $this->bHasError;

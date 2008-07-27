@@ -116,9 +116,8 @@ class weeFormOptionsHelper
 
 	public function isInOptions($sValue)
 	{
-		// TODO: possible xpath injection here
-		$aOptions = $this->oXML->options->xpath('//item[@value="' . $sValue . '" and not(@disabled)]');
-		return sizeof($aOptions != 0);
+		$aOptions = $this->oXML->options->xpath('//item[@value="' . xmlspecialchars($sValue) . '" and not(@disabled)]');
+		return sizeof($aOptions) != 0;
 	}
 
 	/**
@@ -130,8 +129,7 @@ class weeFormOptionsHelper
 
 	public function isSelected($sValue)
 	{
-		// TODO: possible xpath injection here
-		$aOptions = $this->oXML->options->xpath('//item[@value="' . $sValue . '" and @selected]');
+		$aOptions = $this->oXML->options->xpath('//item[@value="' . xmlspecialchars($sValue) . '" and @selected]');
 		return sizeof($aOptions) != 0;
 	}
 
@@ -173,8 +171,7 @@ class weeFormOptionsHelper
 
 	protected function selectItem($sValue)
 	{
-		// TODO: possible xpath injection here
-		$aOption = $this->oXML->options->xpath('//item[@value="' . $sValue . '" and not(@disabled)]');
+		$aOption = $this->oXML->options->xpath('//item[@value="' . xmlspecialchars($sValue) . '" and not(@disabled)]');
 		fire(sizeof($aOption) != 1, 'BadXMLException',
 			'The value was not found in the options or was found more than once.');
 

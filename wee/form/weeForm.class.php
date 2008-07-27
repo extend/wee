@@ -102,9 +102,9 @@ class weeForm implements Printable
 
 		// Delete elements with wrong action
 
-		$sXPath = '//*[@action!=' . $iAction;
+		$sXPath = '//*[@action!=' . xmlspecialchars($iAction);
 		if (!empty($this->aActionMap[$iAction]))
-			$sXPath .= ' and @action!="weeForm::' . $this->aActionMap[$iAction] . '"';
+			$sXPath .= ' and @action!="weeForm::' . xmlspecialchars($this->aActionMap[$iAction]) . '"';
 		$sXPath .= ']';
 
 		foreach ($this->oXML->xpath($sXPath) as $oNode)
@@ -194,7 +194,7 @@ class weeForm implements Printable
 	{
 		fire(!ctype_print($sWidget), 'InvalidArgumentException', 'The widget name must be printable.');
 
-		$oXML = $this->xpathOne('//name[text()="' . $sWidget . '"]/..');
+		$oXML = $this->xpathOne('//name[text()="' . xmlspecialchars($sWidget) . '"]/..');
 		return new $sHelper($oXML);
 	}
 
@@ -230,8 +230,7 @@ class weeForm implements Printable
 		{
 			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
 
-			// TODO: possible xpath injection here
-			$a = $this->oXML->xpath('//name[text()="' . $sName . '"]/..');
+			$a = $this->oXML->xpath('//name[text()="' . xmlspecialchars($sName) . '"]/..');
 			if (!empty($a))
 			{
 				$oWidget = $a[0];
@@ -242,8 +241,7 @@ class weeForm implements Printable
 						$oWidget->value = $this->aData[$sName];
 					else
 					{
-						// TODO: possible xpath injection here
-						$a = $oWidget->xpath('//item[@value="' . $this->aData[$sName] . '"]');
+						$a = $oWidget->xpath('//item[@value="' . xmlspecialchars($this->aData[$sName]) . '"]');
 						if (!empty($a))
 							$a[0]->addAttribute('selected', 'selected');
 					}
