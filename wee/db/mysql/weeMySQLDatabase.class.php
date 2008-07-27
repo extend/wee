@@ -61,15 +61,6 @@ class weeMySQLDatabase extends weeDatabase
 
 		if (!empty($aParams['dbname']))
 			$this->selectDb($aParams['dbname']);
-
-		// Initialize additional database services
-
-		$sPath = dirname(__FILE__);
-		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
-		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
-
-		weeDatabaseQuery::$criteriaClass	= 'weeDatabaseCriteria';
-		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -56,16 +56,6 @@ class weeOracleDatabase extends weeDatabase
 		putenv('NLS_LANG=UTF8');
 		$this->rLink = @oci_new_connect(array_value($aParams, 'user'), array_value($aParams, 'password'), array_value($aParams, 'dbname'), 'UTF8');
 		fire($this->rLink === false, 'DatabaseException');
-
-		// Initialize additional database services
-
-		$sPath = dirname(__FILE__);
-		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
-		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
-
-		//TODO:change the criteria class
-		weeDatabaseQuery::$criteriaClass	= 'weeDatabaseCriteria';
-		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}
 
 	/**
@@ -169,5 +159,3 @@ class weeOracleDatabase extends weeDatabase
 		burn('BadMethodCallException', 'This method is not implemented yet.');
 	}
 }
-
-?>

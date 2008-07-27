@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -63,15 +63,6 @@ class weePgSQLDatabase extends weeDatabase
 		// Set encoding
 
 		pg_set_client_encoding($this->rLink, 'UNICODE');
-
-		// Initialize additional database services
-
-		$sPath = dirname(__FILE__);
-		require_once($sPath . '/../weeDatabaseCriteria' . CLASS_EXT);
-		require_once($sPath . '/../weeDatabaseQuery' . CLASS_EXT);
-
-		weeDatabaseQuery::$criteriaClass	= 'weeDatabaseCriteria';
-		weeDatabaseQuery::$queryClass		= 'weeDatabaseQuery';
 	}
 
 	/**
@@ -174,5 +165,3 @@ class weePgSQLDatabase extends weeDatabase
 		return new weePgSQLStatement($this->rLink, $sQueryString);
 	}
 }
-
-?>
