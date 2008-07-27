@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<formkey>0</formkey>
+
+	<widgets>
+		<widget type="fieldset">
+			<widget type="hidden">
+				<name>hidden1</name>
+				<label>hidden:</label>
+				<value>33</value>
+				<validator type="weeNumberValidator" min="1" max="42"/>
+			</widget>
+
+			<widget type="textbox">
+				<name>textbox1</name>
+				<label>textbox:</label>
+				<value>what</value>
+				<validator type="weeStringValidator" max="20"/>
+			</widget>
+
+			<widget type="password">
+				<name>password1</name>
+				<label>password:</label>
+				<value>badword</value>
+				<validator type="weeStringValidator" max="20"/>
+			</widget>
+
+			<widget type="textarea">
+				<name>textarea1</name>
+				<label>textarea:</label>
+				<value>lolo rerem ipipipsum</value>
+			</widget>
+
+			<widget type="textarea">
+				<name>textarea2</name>
+				<label>textarea (empty):</label>
+			</widget>
+
+			<widget type="fieldset">
+				<class>buttonsfieldset</class>
+				<widget type="submitbutton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>

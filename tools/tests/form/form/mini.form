@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<formkey>0</formkey>
+
+	<widgets>
+		<widget type="hidden" action="weeForm::ACTION_UPD">
+			<name>hidden</name>
+			<label>hidden:</label>
+			<value>42</value>
+			<validator type="weeNumberValidator" max="41"/>
+		</widget>
+
+		<widget type="textbox">
+			<name>textbox</name>
+			<label>textbox:</label>
+			<validator type="weeStringValidator" min="8"/>
+		</widget>
+
+		<widget type="submitbutton"/>
+	</widgets>
+</form>

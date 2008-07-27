@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Container for a web document opened by weeWebBrowser.
 */
 
-class weeWebDocument extends weeSimpleXMLHack
+class weeWebDocument extends SimpleXMLIterator
 {
 	/**
 		Search for a pattern using strpos.
@@ -58,5 +58,3 @@ class weeWebDocument extends weeSimpleXMLHack
 		return (1 == preg_match($sPattern, $this->asXML(), $aMatches, $iFlags, $iOffset));
 	}
 }
-
-?>

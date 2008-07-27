@@ -5,15 +5,15 @@
 	<method>post</method>
 
 	<widgets>
-		<widget type="weeFormFieldset">
-			<widget type="weeFormTextArea" required="required">
+		<widget type="fieldset">
+			<widget type="textarea" required="required">
 				<name>data_text</name>
 				<label>Pasted text :</label>
 			</widget>
 
-			<widget type="weeFormFieldset">
+			<widget type="fieldset">
 				<class>buttonsfieldset</class>
-				<widget type="weeFormSubmitButton"/>
+				<widget type="submitbutton"/>
 			</widget>
 		</widget>
 	</widgets>

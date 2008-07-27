@@ -98,6 +98,20 @@ function rmdir_recursive($sPath, $bOnlyContents = false)
 }
 
 /**
+	Convert special characters to HTML entities.
+
+	Original author: treyh on PHP comments for htmlspecialchars.
+
+	@param $sText The string being converted.
+	@return string The converted string.
+*/
+
+function xmlspecialchars($sText)
+{
+	return str_replace('&#039;', '&apos;', htmlspecialchars($sText, ENT_QUOTES, 'utf-8'));
+}
+
+/**
 	PHP namespace emulation.
 	Namespaces should be declared as final.
 */

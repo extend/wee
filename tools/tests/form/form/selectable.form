@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<formkey>0</formkey>
+
+	<widgets>
+		<widget type="fieldset">
+			<widget type="choice">
+				<name>choice1</name>
+				<label>choice (1):</label>
+				<validator type="weeOptionValidator"/>
+				<validator type="weeNumberValidator"/>
+				<options>
+					<item label="test a" value="test a"/>
+					<item label="test b" value="test b"/>
+					<group label="group test 1">
+						<item label="group test 1a" value="group test 1a"/>
+						<item label="group test 1b" value="group test 1b"/>
+					</group>
+					<item label="test c" value="test c"/>
+					<group label="group test 2">
+						<item label="group test 2a" value="group test 2a"/>
+						<item label="group test 2b" value="group test 2b"/>
+					</group>
+					<item label="test d" value="test d"/>
+					<item label="test e (disabled by default)" value="test e" disabled="disabled"/>
+					<item label="test f" value="test f"/>
+				</options>
+			</widget>
+
+			<widget type="choice">
+				<name>choice2</name>
+				<label>choice (2):</label>
+				<validator type="weeOptionValidator"/>
+				<options>
+					<item label="1" value="1"/>
+					<item label="2" value="2"/>
+					<item label="3" value="3"/>
+					<item label="4 (selected by default)" value="4" selected="selected"/>
+					<item label="5" value="5"/>
+				</options>
+			</widget>
+
+			<widget type="checkbox">
+				<name>checkbox1</name>
+				<label>checkbox (1)</label>
+				<value>1</value>
+			</widget>
+
+			<widget type="checkbox" selected="selected">
+				<name>checkbox2</name>
+				<label>checkbox (2)</label>
+				<value>2</value>
+			</widget>
+
+			<widget type="checklist">
+				<name>checklist</name>
+				<label>checklist:</label>
+				<options>
+					<item label="1" value="1"/>
+					<item label="2 (selected by default)" value="2" selected="selected"/>
+					<item label="3" value="3"/>
+					<item label="4 (selected by default)" value="4" selected="selected"/>
+					<item label="5" value="5"/>
+				</options>
+			</widget>
+
+			<widget type="checklist">
+				<name>scrollablechecklist</name>
+				<label>checklist (scrollable):</label>
+				<class>scrollablechecklist</class>
+				<options>
+					<item label="1" value="1"/>
+					<item label="2 (selected by default)" value="2" selected="selected"/>
+					<item label="3" value="3"/>
+					<item label="4 (selected by default)" value="4" selected="selected"/>
+					<item label="5" value="5"/>
+				</options>
+			</widget>
+
+			<widget type="radiobox">
+				<name>radiobox1</name>
+				<label>radiobox (1):</label>
+				<options>
+					<item label="1" value="1"/>
+					<item label="2" value="2"/>
+					<item label="3" value="3"/>
+					<item label="4" value="4"/>
+					<item label="5" value="5"/>
+				</options>
+			</widget>
+
+			<widget type="radiobox">
+				<name>radiobox2</name>
+				<label>radiobox (2):</label>
+				<options>
+					<item label="1" value="1"/>
+					<item label="2" value="2"/>
+					<item label="3" value="3"/>
+					<item label="4 (selected by default)" value="4" selected="selected"/>
+					<item label="5" value="5"/>
+				</options>
+			</widget>
+
+			<widget type="radiobox">
+				<name>radiobox3</name>
+				<label>radiobox (3):</label>
+				<options>
+					<item label="1" value="1"/>
+					<item label="2" value="2"/>
+					<item label="3" value="3"/>
+					<group label="4">
+						<item label="group item 1" value="group item 1"/>
+						<item label="group item 2" value="group item 2"/>
+						<item label="group item 3" value="group item 3"/>
+						<item label="group item 4" value="group item 4"/>
+						<item label="group item 5" value="group item 5"/>
+					</group>
+					<item label="5" value="5"/>
+				</options>
+			</widget>
+
+			<widget type="fieldset">
+				<class>buttonsfieldset</class>
+				<widget type="submitbutton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>
