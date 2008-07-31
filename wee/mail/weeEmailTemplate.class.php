@@ -39,7 +39,7 @@ class weeEmailTemplate extends weeTemplate
 		for example, you must set From and FromName.
 	*/
 
-	public $aHeaders;
+	public $aHeaders = array();
 
 	/**
 		Returns the template as a string after extracting the headers
