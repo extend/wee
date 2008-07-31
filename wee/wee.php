@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -65,16 +65,11 @@ else
 	ini_set('display_errors', 0);
 }
 
-// Don't use it
-$_REQUEST = array();
-
 // Atomize magic quotes
 
 set_magic_quotes_runtime(0);
 if (get_magic_quotes_gpc())
 {
-	// Note: stripslashes converts null to empty string -- we may need an alternative here
-
 	function mqs(&$sValue, $sKey) { $sValue = stripslashes($sValue); }
 	array_walk_recursive($_GET,		'mqs');
 	array_walk_recursive($_POST,	'mqs');
@@ -91,7 +86,6 @@ if (get_magic_quotes_gpc())
 
 require(WEE_PATH . 'wee_base' . PHP_EXT);
 require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
-require(WEE_PATH . 'weeLog' . PHP_EXT);
 require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
 
 weeAutoload::addPath(WEE_PATH);
@@ -107,5 +101,3 @@ if (!function_exists('_'))
 {
 	function _($s) { return $s; }
 }
-
-?>
