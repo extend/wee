@@ -78,7 +78,17 @@ class weeApplication implements Singleton
 	{
 		// Load ini file and do include/commons
 
-		$this->oConfig = new weeFileConfig(WEE_CONF_FILE);
+		try {
+			$this->oConfig = new weeFileConfig(WEE_CONF_FILE);
+		} catch (FileNotFoundException $e) {
+			// No configuration file. Stop here and display a friendly message.
+
+			if (defined('WEE_CLI'))
+				echo "The configuration file was not found.\nPlease consult the documentation for more information.\n";
+			else
+				require(ROOT_PATH . 'res/wee/noconfig.htm');
+			exit;
+		}
 
 		// Activate debug mode if needed
 
