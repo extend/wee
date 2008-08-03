@@ -70,11 +70,13 @@ else
 set_magic_quotes_runtime(0);
 if (get_magic_quotes_gpc())
 {
-	function mqs(&$sValue, $sKey) { $sValue = stripslashes($sValue); }
-	array_walk_recursive($_GET,		'mqs');
-	array_walk_recursive($_POST,	'mqs');
-	array_walk_recursive($_COOKIE,	'mqs');
-	array_walk_recursive($_FILES,	'mqs');
+	// Can't use array_walk_recursive: see http://fr2.php.net/manual/en/function.array-walk-recursive.php#81835
+	function mqs(&$a) { foreach ($a as &$m) if (is_array($m)) mqs($m); else $m = stripslashes($m); }
+
+	mqs($_GET);
+	mqs($_POST);
+	mqs($_COOKIE);
+	mqs($_FILES);
 
 	// PHP configuration should reflect the fact that magic quotes have been removed
 
