@@ -96,7 +96,7 @@ class weeForm implements Printable
 			'The file ' . $sFilename . ' is not a valid form document.');
 
 		if (!isset($this->oXML->uri))
-			$this->oXML->addChild('uri', $_SERVER['REQUEST_URI']);
+			$this->oXML->addChild('uri', array_value($_SERVER, 'REQUEST_URI'));
 		if (!isset($this->oXML->formkey))
 			$this->oXML->addChild('formkey', 1);
 
