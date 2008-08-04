@@ -105,7 +105,7 @@ abstract class weeFrame implements Printable
 		@return	bool	Whether the user can access the frame
 	*/
 
-	public function isAuthorized($aEvent)
+	protected function isAuthorized($aEvent)
 	{
 		return true;
 	}
@@ -219,7 +219,7 @@ abstract class weeFrame implements Printable
 		@param	$aEvent	Event information
 	*/
 
-	public function unauthorizedAccess($aEvent)
+	protected function unauthorizedAccess($aEvent)
 	{
 		burn('NotPermittedException', 'You are not allowed to access this page.');
 	}
