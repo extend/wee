@@ -372,7 +372,15 @@ class weeApplication implements Singleton
 	public static function instance()
 	{
 		if (!isset(self::$oSingleton))
+		{
+			static $iInstance = 0;
+			fire($iInstance++ != 0, 'IllegalStateException',
+				'Trying to instanciate weeApplication within its own constructor. ' .
+				'This error can happen if you inherited a class created in the constructor ' .
+				'and put logic that uses weeApplication in it (models, for example).');
+
 			self::$oSingleton = new self;
+		}
 
 		return self::$oSingleton;
 	}
