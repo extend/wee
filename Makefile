@@ -21,7 +21,7 @@ all: lint api test
 	@@echo "Web:Extend build complete."
 
 lint:
-	@@for file in `find . -type f -name "*.php"`; do php -l $$file; done
+	@@for file in `find . -type f -name "*.php" -o -name "*.tpl"`; do php -l $$file; done
 
 svnlint:
 	@@svn stat | grep 'php' | awk '{print "php -l " $$2}' | sh
