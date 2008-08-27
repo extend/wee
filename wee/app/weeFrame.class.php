@@ -190,12 +190,9 @@ abstract class weeFrame implements Printable
 
 	public function toString()
 	{
-		if ($this->sContext == 'xmlhttprequest')
+		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
 		{
 			header('Content-Type: text/xml');
-
-			if (empty($this->oTaconite))
-				return '<taconite></taconite>';
 
 			$sHeader  = '<?xml version="1.0" encoding="utf-8"?>';
 			$sHeader .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
