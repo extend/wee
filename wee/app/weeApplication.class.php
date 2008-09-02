@@ -457,6 +457,15 @@ class weeApplication implements Singleton
 		{
 			$this->dispatchEvent($aEvent);
 
+			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS)
+			{
+				if (defined('WEE_CLI'))
+					echo _('You have not access to the specified frame/event.'), "\n";
+				else
+					require(ROOT_PATH . 'res/wee/unauthorized.htm');
+				exit;
+			}
+
 			weeOutput::instance()->start();
 			$sOutput = $this->oFrame->toString();
 

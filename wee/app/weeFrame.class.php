@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2007 Dev:Extend
+	Copyright (c) 2007-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,18 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 abstract class weeFrame implements Printable
 {
+	/**
+		An event has been correctly dispatched.
+	*/
+
+	const EVENT_DISPATCHED = 1;
+
+	/**
+		An unauthorized access occured.
+	*/
+
+	const UNAUTHORIZED_ACCESS = 2;
+
 	/**
 		Name of the template for the frame.
 		If not defined its value will be the name of the frame's class.
@@ -59,6 +71,12 @@ abstract class weeFrame implements Printable
 	protected $oController;
 
 	/**
+		The current status of the frame.
+	*/
+
+	protected $iStatus = 0;
+
+	/**
 		Taconite object for applying transformations to the document.
 	*/
 
@@ -79,35 +97,39 @@ abstract class weeFrame implements Printable
 
 	public function dispatchEvent($aEvent)
 	{
-		$this->sContext = $aEvent['context'];
+		fire($this->iStatus != 0, 'IllegalStateException',
+			_('An attempt to dispatch an event already occured.'));
 
-		if (empty($aEvent['name']))
-			$sFunc = 'defaultEvent';
-		else
-			$sFunc = 'event' . $aEvent['name'];
-
+		$this->sContext		= array_value($aEvent, 'context');
+		$sFunc				= empty($aEvent['name']) ? 'defaultEvent' : 'event' . $aEvent['name'];
 		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
-			'The ' . (empty($aEvent['name']) ? 'default event' : 'event ' . $aEvent['name']) . ' do not exist.');
+			(empty($aEvent['name']) ? _('The default event does not exist.') : sprintf(_('The event "%s" does not exist.'), $aEvent['name'])));
 
-		if (!$this->isAuthorized($aEvent))
+		try
 		{
-			$this->unauthorizedAccess($aEvent);
-			exit;
-		}
+			$this->setup($aEvent);
+			$this->$sFunc($aEvent);
 
-		$this->$sFunc($aEvent);
+			$this->iStatus = self::EVENT_DISPATCHED;
+		}
+		catch (UnauthorizedAccessException $e)
+		{
+			$this->iStatus = self::UNAUTHORIZED_ACCESS;
+			$this->unauthorizedAccess($aEvent);
+		}
 	}
 
 	/**
-		Check and return whether the user can access the frame.
+		Return the status of the frame.
 
-		@param	$aEvent	Event information
-		@return	bool	Whether the user can access the frame
+		@return integer The status of the frame.
+		@see EVENT_DISPATCHED
+		@see UNAUTHORIZED_ACCESS
 	*/
 
-	protected function isAuthorized($aEvent)
+	public function getStatus()
 	{
-		return true;
+		return $this->iStatus;
 	}
 
 	/**
@@ -142,10 +164,7 @@ abstract class weeFrame implements Printable
 		if (empty($aEvent['context']))
 			$aEvent['context'] = $this->sContext;
 
-		if (empty($aEvent['frame']) || $aEvent['frame'] == get_class($this))
-			$this->dispatchEvent($aEvent);
-		else
-			$this->oController->dispatchEvent($aEvent);
+		$this->oController->dispatchEvent($aEvent);
 	}
 
 	/**
@@ -177,8 +196,18 @@ abstract class weeFrame implements Printable
 
 	public function setController($oController)
 	{
-		fire(!empty($this->oController), 'UnexpectedValueException', '$oController must not be empty.');
+		fire(!empty($this->oController), 'UnexpectedValueException', _('$oController must not be empty.'));
 		$this->oController = $oController;
+	}
+
+	/**
+		Setup the frame.
+
+		This method is called before each event method call.
+	*/
+
+	protected function setup($aEvent)
+	{
 	}
 
 	/**
@@ -190,6 +219,9 @@ abstract class weeFrame implements Printable
 
 	public function toString()
 	{
+		fire($this->iStatus != self::EVENT_DISPATCHED, 'IllegalStateException',
+			_('An event must be dispatched before calling toString().'));
+
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
 		{
 			header('Content-Type: text/xml');
@@ -210,7 +242,7 @@ abstract class weeFrame implements Printable
 	}
 
 	/**
-		Method called when the user doesn't have access to the specified frame/event.
+		Method called when the user have not access to the specified frame/event.
 		The process will stop after this method returns.
 
 		@param	$aEvent	Event information
@@ -218,7 +250,6 @@ abstract class weeFrame implements Printable
 
 	protected function unauthorizedAccess($aEvent)
 	{
-		burn('NotPermittedException', 'You are not allowed to access this page.');
 	}
 
 	/**
