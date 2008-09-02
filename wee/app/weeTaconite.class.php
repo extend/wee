@@ -53,13 +53,13 @@ class weeTaconite implements Printable
 
 	public function addTag($sTagName, $sSelect, $sContents = null)
 	{
-		//TODO:filter $sTagName, $sSelect
+		//TODO:filter $sTagName
 		//TODO:check if $sContents is valid XML?
 
 		if ($sContents instanceof Printable)
 			$sContents = $sContents->toString();
 
-		$this->sXML .= '<' . $sTagName . ' select="' . htmlspecialchars($sSelect) . '"';
+		$this->sXML .= '<' . $sTagName . ' select="' . xmlspecialchars($sSelect) . '"';
 		if ($sContents !== null)
 			$this->sXML .= '>' . $sContents . '</' . $sTagName . '>';
 		else
@@ -109,8 +109,6 @@ class weeTaconite implements Printable
 			$oChild = $oElement->ownerDocument->importNode($oChild, true);
 			$oElement->appendChild($oChild);
 		}
-
-		$this->fixIDTypes($oElement);
 	}
 
 	/**
@@ -220,7 +218,6 @@ class weeTaconite implements Printable
 		$b = @$oDocument->loadXML($sXMLDocument);
 		fire(!$b, 'BadXMLException', 'Document $sXMLDocument is not valid XML.');
 		$this->oXPath = new DOMXPath($oDocument);
-		$this->fixIDTypes();
 
 		$oXML = new DOMDocument();
 		$b = $oXML->loadXML($this->toString());
@@ -245,23 +242,6 @@ class weeTaconite implements Printable
 	}
 
 	/**
-		This method traverses the given node and sets every id attribute type to ID.
-
-		@param $oElement if null, the whole document is traversed.
-	*/
-
-	protected function fixIDTypes(DOMNode $oElement = null)
-	{
-		if ($oElement === null)
-			$oChildren = $this->oXPath->query('//*[@id]');
-		else
-			$oChildren = $this->oXPath->query('//*[@id]', $oElement);
-
-		foreach ($oChildren as $oChild)
-			$oChild->setIdAttribute('id', true);
-	}
-
-	/**
 		Convenience function for creating taconite objects in one line.
 
 		@return weeTaconite A new weeTaconite object.
@@ -269,7 +249,7 @@ class weeTaconite implements Printable
 
 	public static function create()
 	{
-		return new weeTaconite();
+		return new self;
 	}
 
 	/**
@@ -283,17 +263,10 @@ class weeTaconite implements Printable
 	protected function select($sSelect, DOMDocument $oDocument)
 	{
 		if ($sSelect[0] == '#')
-		{
-			$oElement = $oDocument->getElementById(substr($sSelect, 1));
-			if (is_null($oElement))
-				return array();
-			return array($oElement);
-		}
-		elseif (strpos($sSelect, '/') !== false)
-		{
-			$oXPath = new DOMXPath($oDocument);
-			return $oXPath->query($sSelect);
-		}
+			return $this->oXPath->query('[@id="' . substr($sSelect, 1) . '"]');
+
+		if (strpos($sSelect, '/') !== false)
+			return $this->oXPath->query($sSelect);
 
 		return $oDocument->getElementsByTagName($sSelect);
 	}
