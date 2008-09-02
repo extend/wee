@@ -2,7 +2,7 @@
 
 class weeAliasesFile_testResolveAlias extends weeAliasesFile
 {
-	// We are testing this alias so let's expose it.
+	// We are testing this method so let's expose it.
 	public function resolveAlias($sPathInfo)
 	{
 		return parent::resolveAlias($sPathInfo);
