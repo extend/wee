@@ -24,6 +24,12 @@
 			</xsl:attribute>
 		</xsl:if>
 
+		<xsl:if test="id">
+			<xsl:attribute name="id">
+				<xsl:value-of select="id"/>
+			</xsl:attribute>
+		</xsl:if>
+
 		<xsl:attribute name="method">
 			<xsl:value-of select="method"/>
 		</xsl:attribute>
