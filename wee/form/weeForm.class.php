@@ -314,12 +314,12 @@ class weeForm implements Printable
 			unset($_SESSION['session_formkeys'][$aData['wee_formkey']]);
 		}
 
-		// Select widgets that use validators and validates data
+		// Select widgets which use validators or are required and validates data
 
-		$aValidators = $this->oXML->xpath('//widget/validator/..');
+		$aWidgets = $this->oXML->xpath('//widget[@required or validator]');
 
-		if ($aValidators !== false)
-			foreach ($aValidators as $oNode)
+		if ($aWidgets !== false)
+			foreach ($aWidgets as $oNode)
 			{
 				// If we don't have any data we check the required flag
 				// If it's not required we skip, otherwise we note an error
