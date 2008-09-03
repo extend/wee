@@ -103,8 +103,7 @@ class weeFormOptionsHelper
 		unset($aOption['selected']);
 
 		foreach ($aOption as $sName => $sValue)
-			if (strlen($aOption[$sName]) != 0)
-				$oItem->addAttribute($sName, $sValue);
+			$oItem->addAttribute($sName, $sValue);
 	}
 
 	/**
