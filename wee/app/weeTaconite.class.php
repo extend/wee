@@ -263,7 +263,7 @@ class weeTaconite implements Printable
 	protected function select($sSelect, DOMDocument $oDocument)
 	{
 		if ($sSelect[0] == '#')
-			return $this->oXPath->query('[@id="' . substr($sSelect, 1) . '"]');
+			return $this->oXPath->query('//*[@id="' . xmlspecialchars(substr($sSelect, 1)) . '"]');
 
 		if (strpos($sSelect, '/') !== false)
 			return $this->oXPath->query($sSelect);
