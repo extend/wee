@@ -230,7 +230,7 @@ class weeForm implements Printable
 		{
 			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
 
-			$a = $this->oXML->xpath('//name[text()="' . xmlspecialchars($sName) . '"]/..');
+			$a = $this->oXML->xpath('//*[name="' . xmlspecialchars($sName) . '"]');
 			if (!empty($a))
 			{
 				$oWidget = $a[0];
@@ -249,8 +249,12 @@ class weeForm implements Printable
 
 				if (!empty($this->aErrors[$sName]))
 				{
-					if (empty($oWidget->errors))
-						$oWidget->addChild('errors');
+					if (!empty($oWidget->errors))
+					{
+						$oNode = dom_import_simplexml($oWidget->errors);
+						$oNode->parentNode->removeChild($oNode);
+					}
+					$oWidget->addChild('errors');
 
 					if (is_array($this->aErrors[$sName]))
 						foreach ($this->aErrors[$sName] as $sMsg)
