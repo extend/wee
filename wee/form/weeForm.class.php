@@ -75,12 +75,7 @@ class weeForm implements Printable
 			$this->oXML->addChild('formkey', 1);
 
 		// Delete elements with wrong action
-
-		foreach ($this->oXML->xpath('//*[@action!="' . xmlspecialchars($sAction) . '"]') as $oNode)
-		{
-			$oNode = dom_import_simplexml($oNode);
-			$oNode->parentNode->removeChild($oNode);
-		}
+		$this->removeNodes('//*[@action!="' . xmlspecialchars($sAction) . '"]');
 	}
 
 	/**
@@ -149,6 +144,21 @@ class weeForm implements Printable
 			'$aErrors must be an associative array of names and values.');
 
 		$this->aErrors = $aErrors + $this->aErrors;
+	}
+
+	/**
+		Remove every node of the form XML returned by the given XPath query.
+
+		@param $sXPath the XPath query.
+	*/
+
+	public function removeNodes($sXPath)
+	{
+		foreach ($this->oXML->xpath($sXPath) as $oNode)
+		{
+			$oNode = dom_import_simplexml($oNode);
+			$oNode->parentNode->removeChild($oNode);
+		}
 	}
 
 	/**

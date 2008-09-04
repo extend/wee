@@ -19,3 +19,7 @@ try {
 	$this->fail('weeForm::xpathOne should fail when finding more than 1 result.');
 } catch (UnexpectedValueException $e) {
 }
+
+$oForm->removeNodes('//widget[name="hidden"]');
+$this->isEqual(count($oForm->xpath('//widget[name="hidden"]')), 0,
+	_('weeForm::removeNodes does not work.'));
