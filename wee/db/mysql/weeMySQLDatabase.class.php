@@ -90,6 +90,11 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function escape($mValue)
 	{
+		if ($mValue === null)
+			return 'null';
+		elseif ($mValue instanceof Printable)
+			$mValue = $mValue->toString();
+
 		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
 	}
 

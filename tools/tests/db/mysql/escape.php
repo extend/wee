@@ -16,6 +16,9 @@ $this->isEqual("'7.5'", $oDb->escape(7.50),
 $this->isEqual("'that\\'s all folks!'", $oDb->escape("that's all folks!"),
 	'Escaping of the string "that\'s all folks" is wrong.');
 
+$this->isEqual('null', $oDb->escape(null),
+	'null is not properly escaped.');
+
 // Test the method weeMySQLDatabase::escapeIdent
 
 $this->isEqual('`egg`', $oDb->escapeIdent('egg'),

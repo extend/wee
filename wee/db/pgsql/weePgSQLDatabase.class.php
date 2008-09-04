@@ -97,6 +97,8 @@ class weePgSQLDatabase extends weeDatabase
 	{
 		if ($mValue === null)
 			return 'null';
+		elseif ($mValue instanceof Printable)
+			$mValue = $mValue->toString();
 
 		return "'" . pg_escape_string($mValue) . "'";
 	}
