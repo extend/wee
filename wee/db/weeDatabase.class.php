@@ -144,6 +144,15 @@ abstract class weeDatabase
 	abstract public function escape($mValue);
 
 	/**
+		Escape the given identifier for safe concatenation in an SQL query.
+
+		@param	$sValue	The identifier to escape
+		@return	string	The escaped identifier, wrapped around adequate quotes
+	*/
+
+	abstract public function escapeIdent($sValue);
+
+	/**
 		Gets the last error the database returned.
 		The drivers usually throw an exception when there's an error,
 		but you can get the error if you catch the exception and then call this method.

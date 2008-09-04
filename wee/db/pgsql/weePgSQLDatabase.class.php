@@ -102,6 +102,21 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
+		Escape the given identifier for safe concatenation in an SQL query.
+
+		@param	$sValue	The identifier to escape
+		@return	string	The escaped identifier, wrapped around double quotes
+	*/
+
+	public function escapeIdent($sValue)
+	{
+		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
+			_('$sValue is not a valid pgsql identifier.'));
+
+		return '"' . str_replace('"', '""', $sValue) . '"';
+	}
+
+	/**
 		Gets the last error the database returned.
 		The drivers usually throw an exception when there's an error,
 		but you can get the error if you catch the exception and then call this method.
