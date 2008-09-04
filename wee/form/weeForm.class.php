@@ -59,6 +59,8 @@ class weeForm implements Printable
 
 	public function __construct($sFilename, $sAction = 'add')
 	{
+		fire(!ctype_print($sAction), 'InvalidArgumentException', 'The action name must be printable.');
+
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException',
 			'The file ' . $sFilename . " doesn't exist.");
@@ -161,7 +163,7 @@ class weeForm implements Printable
 	{
 		fire(!ctype_print($sWidget), 'InvalidArgumentException', 'The widget name must be printable.');
 
-		$oXML = $this->xpathOne('//name[text()="' . xmlspecialchars($sWidget) . '"]/..');
+		$oXML = $this->xpathOne('//widget[name="' . xmlspecialchars($sWidget) . '"]');
 		return new $sHelper($oXML);
 	}
 
@@ -197,7 +199,7 @@ class weeForm implements Printable
 		{
 			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
 
-			$a = $this->oXML->xpath('//*[name="' . xmlspecialchars($sName) . '"]');
+			$a = $this->oXML->xpath('//widget[name="' . xmlspecialchars($sName) . '"]');
 			if (!empty($a))
 			{
 				$oWidget = $a[0];
