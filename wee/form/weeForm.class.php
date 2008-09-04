@@ -152,6 +152,35 @@ class weeForm implements Printable
 	}
 
 	/**
+		Removes any data sent not found in the widgets of the form.
+		Helps prevent data injection vulnerabilities.
+
+		Data injection vulnerabilities allow the attacker to inject data in a model
+		without prior validation. This can be used to update a field without the developer's consent.
+
+		For example let's say you have a form to update your profile's information. In the users
+		table you have a simple field 'isadmin' to determine who's administrator. An attacker could
+		submit the form with an additional 'isadmin' value set to 1, the whole POST data would be
+		sent to the model and the model would save the 'isadmin' value, granting administrator
+		rights to the attacker. Of course this imply that the model you are using allow the saving
+		of an 'isadmin' value, which may not always be the case if you write a custom save method.
+
+		@param $aData Data to filter.
+		@return array Filtered data.
+	*/
+
+	public function filter($aData)
+	{
+		$aWidgets	= $this->oXML->xpath('//widget/name');
+		$aNames		= array();
+
+		foreach ($aWidgets as $i => $oWidget)
+			$aNames[(string)$oWidget] = $i;
+
+		return array_intersect_key($aData, $aNames);
+	}
+
+	/**
 		Create and initialize an helper for the specified widget.
 
 		@param $sHelper Class name of the helper you want to create.
