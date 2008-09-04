@@ -249,9 +249,9 @@ class weeForm implements Printable
 						$oWidget->value = $this->aData[$sName];
 					else
 					{
-						$a = $oWidget->xpath('//item[@value="' . xmlspecialchars($this->aData[$sName]) . '"]');
-						if (!empty($a))
-							$a[0]->addAttribute('selected', 'selected');
+						$oOptionHelper = $this->helper('weeFormOptionsHelper', $sName);
+						if ($oOptionHelper->isInOptions($this->aData[$sName]))
+							$oOptionHelper->select($this->aData[$sName]);
 					}
 				}
 

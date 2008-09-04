@@ -56,3 +56,33 @@ $this->isFalse($oHelper->isSelected(41), 'Only 43 should have been selected.');
 $this->isFalse($oHelper->isSelected(42), 'Only 43 should have been selected.');
 $this->isTrue($oHelper->isSelected(43), 'Only 43 should have been selected.');
 $this->isFalse($oHelper->isSelected(44), 'Only 43 should have been selected.');
+
+$oForm		= new weeForm('options', 'update');
+$oHelper	= $oForm->helper('weeFormOptionsHelper', 'choice');
+
+class Printable_concrete implements Printable
+{
+	private $s;
+
+	public function __construct($s)
+	{
+		$this->s = $s;
+	}
+
+	public function toString()
+	{
+		return $this->s;
+	}
+}
+
+$oHelper->addOption('string');
+$this->isTrue($oHelper->isInOptions('string'), _('Adding an option as a string does not work.'));
+
+$oHelper->addOption(new Printable_concrete('printable'));
+$this->isTrue($oHelper->isInOptions('printable'), _('Adding an option as a printable object does not work.'));
+
+$oHelper->select('string');
+$this->isTrue($oHelper->isSelected('string'), _('Selecting an option which has been added as a string does not work.'));
+
+$oHelper->selectOne('printable');
+$this->isTrue($oHelper->isSelected('printable'), _('Selecting an option which has been added as a printable object does not work.'));

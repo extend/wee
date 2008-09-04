@@ -50,20 +50,24 @@ class weeFormOptionsHelper
 	/**
 		Add an option to the selectable items.
 
-		The $aOption array can contain the following elements:
+		The $mOption can be a string, a printable object or a an array.
+
+		The valid offsets of the array are:
 			label		string	The label to display
 			value		mixed	The value, if any (no value usually means it is a group node which can contain other items)
 			help		string	The help message
 			disabled	string	Whether this option is disabled (any non-empty value means disabled)
 			selected	string	Whether this option is selected (any non-empty value means selected)
 
-		@param $aOption		Option's information
+		If the option is a string or a printable object, it will be used as the label of the option.
+
+		@param $mOption		Option's information
 		@param $sDestXPath	XPath leading to the node where this option will be added
 	*/
 
-	public function addOption($aOption, $sDestXPath = null)
+	public function addOption($mOption, $sDestXPath = null)
 	{
-		$this->createOption($aOption, $this->translateDestXPath($sDestXPath));
+		$this->createOption($mOption, $this->translateDestXPath($sDestXPath));
 	}
 
 	/**
@@ -71,38 +75,44 @@ class weeFormOptionsHelper
 
 		@param $aOptions	Array of options
 		@param $sDestXPath	XPath leading to the node where this option will be added
-		@see addOption for $aOption's details
+		@see addOption for $mOption's details
 	*/
 
 	public function addOptions($aOptions, $sDestXPath = null)
 	{
 		$oDest = $this->translateDestXPath($sDestXPath);
 
-		foreach ($aOptions as $aOption)
-			$this->createOption($aOption, $oDest);
+		foreach ($aOptions as $mOption)
+			$this->createOption($mOption, $oDest);
 	}
 
 	/**
 		Create the option in the XML tree.
 
-		@param $aOption	Option's information
+		@param $mOption	Option's information
 		@param $oDest	XML node where this option will be created
-		@see addOption for $aOption's details
+		@see addOption for $mOption's details
 	*/
 
-	protected function createOption($aOption, $oDest)
+	protected function createOption($mOption, $oDest)
 	{
 		if (empty($this->oXML->options))
 			$this->oXML->addChild('options');
 
-		$oItem = $oDest->addChild(array_value($aOption, 'name', 'item'));
-		unset($aOption['name']);
+		if ($mOption instanceof Printable)
+			$mOption = $mOption->toString();
 
-		if (!empty($aOption['selected']))
+		if (!is_array($mOption))
+			$mOption = array('label' => $mOption);
+
+		$oItem = $oDest->addChild(array_value($mOption, 'name', 'item'));
+		unset($mOption['name']);
+
+		if (!empty($mOption['selected']))
 			$oItem->addAttribute('selected', 'selected');
-		unset($aOption['selected']);
+		unset($mOption['selected']);
 
-		foreach ($aOption as $sName => $sValue)
+		foreach ($mOption as $sName => $sValue)
 			$oItem->addAttribute($sName, $sValue);
 	}
 
@@ -115,7 +125,9 @@ class weeFormOptionsHelper
 
 	public function isInOptions($sValue)
 	{
-		$aOptions = $this->oXML->options->xpath('//item[@value="' . xmlspecialchars($sValue) . '" and not(@disabled)]');
+		$sEscapedValue	= xmlspecialchars($sValue);
+		$aOptions		= $this->oXML->options->xpath(
+			'//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]');
 		return sizeof($aOptions) != 0;
 	}
 
@@ -128,7 +140,11 @@ class weeFormOptionsHelper
 
 	public function isSelected($sValue)
 	{
-		$aOptions = $this->oXML->options->xpath('//item[@value="' . xmlspecialchars($sValue) . '" and @selected]');
+		$sEscapedValue	= xmlspecialchars($sValue);
+		$aOptions		= $this->oXML->options->xpath(
+			'//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and @selected]
+		');
+
 		return sizeof($aOptions) != 0;
 	}
 
@@ -140,10 +156,10 @@ class weeFormOptionsHelper
 
 	public function select($mValue)
 	{
-		if (!is_array($mValue))
-			$mValue = array($mValue);
+		if ($mValue instanceof Printable)
+			$mValue = $mValue->toString();
 
-		foreach ($mValue as $sValue)
+		foreach ((array)$mValue as $sValue)
 			$this->selectItem($sValue);
 	}
 
@@ -170,7 +186,11 @@ class weeFormOptionsHelper
 
 	protected function selectItem($sValue)
 	{
-		$aOption = $this->oXML->options->xpath('//item[@value="' . xmlspecialchars($sValue) . '" and not(@disabled)]');
+		$sEscapedValue	= xmlspecialchars($sValue);
+		$aOption		= $this->oXML->options->xpath(
+			'//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
+		);
+
 		fire(sizeof($aOption) != 1, 'BadXMLException',
 			'The value was not found in the options or was found more than once.');
 
