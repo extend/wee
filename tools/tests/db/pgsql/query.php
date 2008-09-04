@@ -97,3 +97,27 @@ $this->isEqual($aRow['c'], 4,
 $aRow = $oDb->query('SELECT q_name, q_quantity, q_price FROM query WHERE q_name=? LIMIT 1', 'Eggs')->fetch();
 $this->isEqual($aRow, $aInsertValues[1],
 	'The data of the row "Eggs" is wrong.');
+
+// Test the queryValue method
+
+try {
+	$this->isEqual($oDb->queryValue('SELECT count(*) FROM query'), count($aInsertValues),
+		'queryValue does not return the value expected.');
+} catch (UnexpectedValueException $e) {
+	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
+}
+
+try {
+	$oDb->queryValue('DELETE FROM query WHERE false');
+	$this->fail('queryValue does not throw an InvalidArgumentException when the query is not a SELECT query.');
+} catch (InvalidArgumentException $e) {}
+
+try {
+	$oDb->queryValue('SELECT q_name FROM query LIMIT 2');
+	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns two rows.');
+} catch (UnexpectedValueException $e) {}
+
+try {
+	$oDb->queryValue('SELECT q_name, q_quantity FROM query LIMIT 1');
+	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns one row of two columns.');
+} catch (UnexpectedValueException $e) {}

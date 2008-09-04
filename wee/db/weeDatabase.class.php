@@ -290,4 +290,35 @@ abstract class weeDatabase
 
 		return $this->doQuery($mQueryString);
 	}
+
+	/**
+		Build and execute an SQL value query.
+
+		This method is a shortcut to the following idiom:
+			$a = $this->query('SELECT count(*) FROM example_table')->fetch();
+			return array_shift($a);
+
+		An UnexpectedValueException will be thrown if the query did not return exactly one row or if the row does
+		not contain exactly one column.
+
+		@overload query($mQueryString, $mArg1, $mArg2, ...) Example of query call with multiple unnamed parameters
+		@overload query($mQueryString, $aNamedParameters) Example of query call with named parameters
+		@param	$mQueryString		The query string
+		@param	...					The additional arguments that will be inserted into the query
+		@see	query($mQueryString)
+	*/
+
+	public function queryValue($mQueryString)
+	{
+		$aArgs	= func_get_args();
+		$m		= call_user_func_array(array($this, 'query'), $aArgs);
+
+		fire(!($m instanceof weeDatabaseResult), 'InvalidArgumentException', 'The query is not a SELECT query.');
+		fire(count($m) != 1, 'UnexpectedValueException', 'The query did not return exactly one row.');
+
+		$a = $m->fetch();
+		fire(count($a) != 1, 'UnexpectedValueException', 'The queried row does not contain exactly one column.');
+
+		return array_shift($a);
+	}
 }
