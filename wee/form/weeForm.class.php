@@ -27,34 +27,6 @@ if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
 class weeForm implements Printable
 {
 	/**
-		Constant for 'add' action.
-	*/
-
-	const ACTION_ADD	= 1;
-
-	/**
-		Constant for 'upd' action.
-	*/
-
-	const ACTION_UPD	= 2;
-
-	/**
-		Constant for 'del' action.
-	*/
-
-	const ACTION_DEL	= 4;
-
-	/**
-		Arrays mapping actions to their string names.
-	*/
-
-	protected $aActionMap = array(
-		1 => 'ACTION_ADD',
-		2 => 'ACTION_UPD',
-		4 => 'ACTION_DEL',
-	);
-
-	/**
 		Data used to fill the form when generating it.
 	*/
 
@@ -82,10 +54,10 @@ class weeForm implements Printable
 		Initializes the form.
 
 		@param	$sFilename	The filename of the form XML (without path and extension).
-		@param	$iAction	The action to be performed by the form (usually add, update or delete).
+		@param	$sAction	The action to be performed by the form (usually 'add', 'update' or 'delete').
 	*/
 
-	public function __construct($sFilename, $iAction = weeForm::ACTION_ADD)
+	public function __construct($sFilename, $sAction = 'add')
 	{
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		fire(!file_exists($sFilename), 'FileNotFoundException',
@@ -102,12 +74,7 @@ class weeForm implements Printable
 
 		// Delete elements with wrong action
 
-		$sXPath = '//*[@action!=' . xmlspecialchars($iAction);
-		if (!empty($this->aActionMap[$iAction]))
-			$sXPath .= ' and @action!="weeForm::' . xmlspecialchars($this->aActionMap[$iAction]) . '"';
-		$sXPath .= ']';
-
-		foreach ($this->oXML->xpath($sXPath) as $oNode)
+		foreach ($this->oXML->xpath('//*[@action!="' . xmlspecialchars($sAction) . '"]') as $oNode)
 		{
 			$oNode = dom_import_simplexml($oNode);
 			$oNode->parentNode->removeChild($oNode);

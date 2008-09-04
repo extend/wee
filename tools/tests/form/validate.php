@@ -7,7 +7,7 @@ if (!defined('FORM_PATH'))
 
 // Test
 
-$oForm = new weeForm('mini', weeForm::ACTION_UPD);
+$oForm = new weeForm('mini', 'update');
 $aPost = array(
 	'hidden'	=> 42,
 	'textbox'	=> 'error',

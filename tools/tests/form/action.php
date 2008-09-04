@@ -7,10 +7,10 @@ if (!defined('FORM_PATH'))
 
 // Test
 
-$oForm = new weeForm('mini', weeForm::ACTION_ADD);
+$oForm = new weeForm('mini', 'add');
 $this->isEqual(2, sizeof($oForm->xpath('//widget')),
 	'weeForm::xpath returned a wrong count of widgets.');
 
-$oForm = new weeForm('mini', weeForm::ACTION_UPD);
+$oForm = new weeForm('mini', 'update');
 $this->isEqual(3, sizeof($oForm->xpath('//widget')),
 	'weeForm::xpath returned a wrong count of widgets.');

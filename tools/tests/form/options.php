@@ -7,7 +7,7 @@ if (!defined('FORM_PATH'))
 
 // Test
 
-$oForm = new weeForm('options', weeForm::ACTION_UPD);
+$oForm = new weeForm('options', 'update');
 $oHelper = $oForm->helper('weeFormOptionsHelper', 'choice');
 
 $oHelper->addOptions(array(

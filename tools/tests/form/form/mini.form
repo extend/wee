@@ -5,7 +5,7 @@
 	<formkey>0</formkey>
 
 	<widgets>
-		<widget type="hidden" action="weeForm::ACTION_UPD">
+		<widget type="hidden" action="update">
 			<name>hidden</name>
 			<label>hidden:</label>
 			<value>42</value>
