@@ -243,7 +243,7 @@ class weeApplication implements Singleton
 
 	public function clearCache($aEvent)
 	{
-		fire(empty($aEvent['frame']), 'InvalidParameterException', 'The frame name must be given to clear its cache.');
+		fire(empty($aEvent['frame']), 'InvalidArgumentException', 'The frame name must be given to clear its cache.');
 		$aEvent = array('name' => null, 'pathinfo' => null, 'query_string' => null) + $aEvent;
 
 		$sCache = CACHE_PATH . $aEvent['frame'];
