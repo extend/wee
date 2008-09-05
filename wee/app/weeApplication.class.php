@@ -399,7 +399,8 @@ class weeApplication implements Singleton
 		if (defined('NO_CACHE') || !defined('CACHE_PATH'))
 			return false;
 
-		$sCacheFilename = CACHE_PATH . $aEvent['frame'] . '/' . $aEvent['name'] . $aEvent['pathinfo'] . '/?' . urldecode($_SERVER['QUERY_STRING']);
+		$sFrameEvent	= $aEvent['frame'] . (isset($aEvent['name']) ? '/' . $aEvent['name'] : '');
+		$sCacheFilename = CACHE_PATH . $sFrameEvent . array_value($aEvent, 'pathinfo') . (isset($_SERVER['QUERY_STRING']) ? '/?' . urldecode($_SERVER['QUERY_STRING']) : '');
 
 		if (!file_exists($sCacheFilename))
 			return false;
