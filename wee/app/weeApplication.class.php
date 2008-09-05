@@ -421,16 +421,17 @@ class weeApplication implements Singleton
 	/**
 		Load and initialize the specified frame.
 
-		@param	$sFrame		Frame's class name
-		@return	weeFrame	The frame created
+		@param	$sFrame						Frame's class name
+		@return	weeFrame					The frame created
+		@throw	UnexpectedValueException	The frame class does not exist or is not a subclass of weeFrame
 	*/
 
 	protected function loadFrame($sFrame)
 	{
-		fire(!class_exists($sFrame), 'UnexpectedValueException', 'The frame ' . $sFrame . ' do not exist.');
-		$oFrame = new $sFrame;
-		fire(!($oFrame instanceof weeFrame), 'UnexpectedValueException', 'The frame ' . $sFrame . ' must be an instance of weeFrame.');
+		fire(!@is_subclass_of($sFrame, 'weeFrame'), 'UnexpectedValueException',
+			sprintf(_('The frame %s does not exist.'), $sFrame));
 
+		$oFrame = new $sFrame;
 		$oFrame->setController($this);
 
 		return $oFrame;
