@@ -178,7 +178,7 @@ final class weeException extends Namespace
 		while (@ob_end_clean()) ;
 
 		if (!ini_get('html_errors'))
-			echo $sDebug;
+			echo $sDebug, "\n";
 		else
 		{
 			@header('Content-Encoding: identity');
