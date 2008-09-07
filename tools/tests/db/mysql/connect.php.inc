@@ -6,8 +6,8 @@ try
 {
 	$oDb = new weeMySQLDatabase(array(
 		'host'		=> 'localhost',
-		'user'		=> 'wee_tests',
-		'password'	=> 'wee_tests',
+		'user'		=> 'wee',
+		'password'	=> 'wee',
 		'dbname'	=> 'wee_tests',
 	));
 }

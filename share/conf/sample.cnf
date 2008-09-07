@@ -41,7 +41,5 @@ output.cache.expire	= 300
 # Session settings
 
 session.driver				= weeSession
-session.db.table			=
-session.db.field.key		=
-session.db.field.username	=
-session.db.field.password	=
+session.check.ip	= 1
+session.check.token	= 1

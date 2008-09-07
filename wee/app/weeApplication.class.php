@@ -164,14 +164,12 @@ class weeApplication implements Singleton
 
 		if (!defined('WEE_CLI') && !empty($this->oConfig['start.session']))
 		{
-			$s = $this->oConfig['session.driver'];
-			$this->aModules['session'] = new $s(
-				(empty($this->aModules['db'])) ? null : $this->aModules['db'],
-				$this->oConfig['session.db.table'],
-				$this->oConfig['session.db.field.key'],
-				$this->oConfig['session.db.field.username'],
-				$this->oConfig['session.db.field.password']
-			);
+			if (!empty($this->oConfig['session.check.ip']))
+				define('WEE_SESSION_CHECK_IP', 1);
+			if (!empty($this->oConfig['session.check.token']))
+				define('WEE_SESSION_CHECK_TOKEN', 1);
+
+			$this->aModules['session'] = new $this->oConfig['session.driver'];
 		}
 	}
 

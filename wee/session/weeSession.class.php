@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,6 @@
 */
 
 if (!defined('ALLOW_INCLUSION')) die;
-
-if (!defined('MAGIC_STRING'))
-	define('MAGIC_STRING', 'Our dreams are lost in the flow of time, still we are looking for the future in this wired world...');
 
 /**
 	Wrapper for easier session management.
@@ -48,10 +45,10 @@ class weeSession implements ArrayAccess
 		session_start();
 
 		if (!empty($_SESSION) && $this->isSessionInvalid())
-			$this->logOut();
+			$this->clear();
 
 		if (empty($_SESSION))
-			$this->newSession();
+			$this->initSession();
 	}
 
 	/**
@@ -61,6 +58,21 @@ class weeSession implements ArrayAccess
 	public function __destruct()
 	{
 		session_write_close();
+	}
+
+	/**
+		Deletes session and create a new, empty one.
+	*/
+
+	public function clear()
+	{
+		$_SESSION = array();
+		session_regenerate_id();
+
+		weeOutput::setCookie(session_name(), '');
+		unset($_COOKIE[session_name()]);
+
+		$this->initSession();
 	}
 
 	/**
@@ -78,58 +90,53 @@ class weeSession implements ArrayAccess
 	}
 
 	/**
+		Initialize the session if required.
+
+		If WEE_SESSION_CHECK_IP is defined, store the IP into the session.
+		If WEE_SESSION_CHECK_TOKEN is defined, generate a token and store
+		it both into the session and in the client's cookies.
+	*/
+
+	protected function initSession()
+	{
+		if (defined('WEE_SESSION_CHECK_IP'))
+			$_SESSION['session_ip'] = $this->getIP();
+
+		if (defined('WEE_SESSION_CHECK_TOKEN'))
+		{
+			fire(!defined('MAGIC_STRING'), 'IllegalStateException',
+				'You cannot use token session protection without defining the MAGIC_STRING constant first.');
+
+			$_SESSION['session_token'] = substr(md5(rand() . MAGIC_STRING), 0, 8) . substr(md5(time() . MAGIC_STRING), 0, 8);
+			weeOutput::setCookie('session_token', $_SESSION['session_token']);
+		}
+	}
+
+	/**
 		Checks if the session is invalid.
 
 		The session is invalid if:
-		 * the session's IP is empty
-		 * the session's IP is different from the current user IP
-		 * the session token is empty
-		 * the session token is different from the cookie's session token
+		 * WEE_SESSION_CHECK_IP is defined and either of
+			 * the session's IP is empty
+			 * the session's IP is different from the current user IP
+		 * WEE_SESSION_CHECK_TOKEN is defined and either of
+			 * the session token is empty
+			 * the session token is different from the cookie's session token
 
 		@return bool True if the session is invalid, false otherwise.
 	*/
 
 	protected function isSessionInvalid()
 	{
-		return (empty($_SESSION['session_ip']) ||
-				$this->getIP() != $_SESSION['session_ip'] ||
-				empty($_COOKIE['session_token']) ||
-				$_SESSION['session_token'] != $_COOKIE['session_token']);
-	}
+		if (defined('WEE_SESSION_CHECK_IP') &&
+			(empty($_SESSION['session_ip']) || $this->getIP() != $_SESSION['session_ip']))
+			return false;
 
-	/**
-		Deletes session and create a new, empty one.
-	*/
+		if (defined('WEE_SESSION_CHECK_TOKEN') &&
+			(empty($_COOKIE['session_token']) || $_SESSION['session_token'] != $_COOKIE['session_token']))
+			return false;
 
-	public function logOut()
-	{
-		$_SESSION = array();
-		session_regenerate_id();
-
-		weeOutput::setCookie(session_name(), '');
-		unset($_COOKIE['session_name']);
-
-		$this->newSession();
-	}
-
-	/**
-		Creates a new session.
-	*/
-
-	protected function newSession()
-	{
-		$_SESSION['session_ip'] = $this->getIP();
-		$this->newToken();
-	}
-
-	/**
-		Generates and saves a new session token.
-	*/
-
-	protected function newToken()
-	{
-		$_SESSION['session_token'] = substr(md5(rand() . MAGIC_STRING), 0, 8) . substr(md5(time() . MAGIC_STRING), 0, 8);
-		weeOutput::setCookie('session_token', $_SESSION['session_token']);
+		return true;
 	}
 
 	/**
@@ -149,15 +156,15 @@ class weeSession implements ArrayAccess
 		Returns value at given offset.
 
 		@param	$offset	Offset name.
-		@return	bool	value at given offset
+		@return	mixed	Value at given offset
 		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
 	*/
 
 	public function offsetGet($offset)
 	{
-		if (array_key_exists($offset, $_SESSION))
-			return $_SESSION[$offset];
-		return null;
+		fire(!array_key_exists($offset, $_SESSION), 'InvalidArgumentException',
+			'There is no value stored in the session for the offset ' . $offset . '.');
+		return $_SESSION[$offset];
 	}
 
 	/**
@@ -184,6 +191,16 @@ class weeSession implements ArrayAccess
 	{
 		unset($_SESSION[$offset]);
 	}
-}
 
-?>
+	/**
+		Copy data directly from an array.
+
+		@param $aData Array containing the data to copy from.
+	*/
+
+	public function setFromArray($aData)
+	{
+		fire(!is_array($aData), 'InvalidArgumentException', '$aData must be an array.');
+		$_SESSION = $aData + $_SESSION;
+	}
+}

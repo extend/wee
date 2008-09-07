@@ -4,12 +4,12 @@
 
 try
 {
-  $oDb = new weePgSQLDatabase(array(
-    'host'		=> 'localhost',
-    'user'		=> 'wee_tests',
-    'password'	=> 'wee_tests',
-    'dbname'	=> 'wee_tests',
-  ));
+	$oDb = new weePgSQLDatabase(array(
+		'host'		=> 'localhost',
+		'user'		=> 'wee',
+		'password'	=> 'wee',
+		'dbname'	=> 'wee_tests',
+	));
 }
 catch (DatabaseException $o)
 {
