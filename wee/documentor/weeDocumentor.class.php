@@ -50,6 +50,7 @@ class weeDocumentor implements Printable
 		'params'		=> 'param',
 		'properties'	=> 'property',
 		'sees'			=> 'see',
+		'throw'			=> 'exception',
 		'todos'			=> 'todo',
 		'warnings'		=> 'warning'
 	);
@@ -81,12 +82,12 @@ class weeDocumentor implements Printable
 
 		foreach ($a as $sKey => $mValue)
 		{
-			if (empty($mValue))
+			if (!isset($mValue))
 				continue;
 
 			if (is_array($mValue))
 			{
-				if (!empty($this->aSpecialChilds[$sName]))
+				if (isset($this->aSpecialChilds[$sName]))
 					$sNextName = $this->aSpecialChilds[$sName];
 				else
 					$sNextName = $sKey;
@@ -95,7 +96,7 @@ class weeDocumentor implements Printable
 			}
 			else
 			{
-				if (!empty($this->aSpecialChilds[$sName]))
+				if (isset($this->aSpecialChilds[$sName]))
 					$sKey = $this->aSpecialChilds[$sName];
 
 				$s .= '<' . $sKey . '>' . htmlspecialchars($mValue) . '</' . $sKey . '>';
@@ -379,6 +380,14 @@ class weeDocumentor implements Printable
 			$aParsedData['sees'] = array();
 
 		$aParsedData['sees'][] = $sLine;
+	}
+
+	protected function parseDocCommentThrow($sLine, &$aParsedData)
+	{
+		if (empty($aParsedData['throw']))
+			$aParsedData['throw'] = array();
+
+		$aParsedData['throw'][] = $sLine;
 	}
 
 	protected function parseDocCommentTodo($sLine, &$aParsedData)
