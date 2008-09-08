@@ -22,18 +22,18 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	PostgreSQL specialization of weeDbMetaSchema.
+	MySQL specialization of weeDbMetaSchema.
 */
 
-class weePgSQLDbMetaSchema extends weeDbMetaSchema
+class weeMySQLDbMetaSchema extends weeDbMetaSchema
 {
 	/**
-		Initializes a new pgsql dbmeta schema object.
+		Initializes a new mysql dbmeta schema object.
 
 		@see	weeDbMetaSchema::__construct()
 	*/
 
-	public function __construct(weePgSQLDbMeta $oMeta, array $aInfos)
+	public function __construct(weeMySQLDbMeta $oMeta, array $aInfos)
 	{
 		parent::__construct($oMeta, $aInfos);
 	}
