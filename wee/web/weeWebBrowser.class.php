@@ -86,6 +86,7 @@ class weeWebBrowser
 		}
 
 		$sRet = curl_exec($rCurl);
+		// TODO: test du retour de exec manquant
 		curl_close($rCurl);
 
 		return $sRet;
@@ -117,7 +118,7 @@ class weeWebBrowser
 			$sXMLNS	= substr($sDoc, $iXMLNSPos, strpos($sDoc, '"', $iXMLNSPos) - $iXMLNSPos);
 		}
 
-		$oXML = simplexml_load_string($sDoc, 'weeWebDocument', LIBXML_DTDLOAD);
+		$oXML = @simplexml_load_string($sDoc, 'weeWebDocument', LIBXML_DTDLOAD); // TODO: Silencer les erreurs PHP
 		fire($oXML === false, 'BadXMLException', 'File returned by ' . $sURL . ' is not a valid XML document.');
 
 		$oXML->registerXPathNamespace($oXML->getName(), $sXMLNS);
@@ -125,5 +126,3 @@ class weeWebBrowser
 		return $oXML;
 	}
 }
-
-?>
