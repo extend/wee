@@ -144,7 +144,7 @@ abstract class weeFsModel extends weeModel
 
 	public function makeLink($sLinkFilename)
 	{
-		fire(!defined('WEE_ON_WINDOWS'), 'BadConfigurationException',
+		fire(defined('WEE_ON_WINDOWS'), 'ConfigurationException',
 			'This function is not available on Windows.');
 
 		symlink($this->sFilename, $sLinkFilename);

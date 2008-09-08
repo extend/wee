@@ -21,7 +21,7 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-fire(!defined('WEE_ON_WINDOWS'), 'BadConfigurationException',
+fire(defined('WEE_ON_WINDOWS'), 'ConfigurationException',
 	'This class is not available on Windows.');
 
 /**
