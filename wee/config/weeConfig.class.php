@@ -37,7 +37,7 @@ abstract class weeConfig implements ArrayAccess, Iterator
 		Returns the current setting.
 
 		@return	mixed	The current setting.
-		@throws	OutOfBoundsException if the iterator pointer is not valid.
+		@throw	OutOfBoundsException if the iterator pointer is not valid.
 		@see	http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 

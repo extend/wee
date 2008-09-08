@@ -152,7 +152,7 @@ class weeGetTextReader
 		Reads a string of a given size from the file stream at a given offset.
 		@param	$iOffset	The offset where the string begins in the file.
 		@param	$iLength	The length of the string to be read.
-		@retuns	string		The read string.
+		@return	string		The read string.
 	*/
 
 	private function readString($iOffset, $iLength)
