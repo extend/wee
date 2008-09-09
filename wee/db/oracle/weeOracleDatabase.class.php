@@ -23,12 +23,16 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Oracle database driver.
-
-	TODO:finish, test, and add error messages to the exceptions
 */
 
 class weeOracleDatabase extends weeDatabase
 {
+	/**
+		The last error recorded.
+	*/
+
+	protected $sLastError;
+
 	/**
 		Link resource for this database connection.
 	*/
@@ -51,11 +55,19 @@ class weeOracleDatabase extends weeDatabase
 
 	public function __construct($aParams = array())
 	{
-		fire(!function_exists('oci_new_connect'), 'ConfigurationException');
+		fire(!function_exists('oci_new_connect'), 'ConfigurationException',
+			'The OCI8 PHP extension is required by the Oracle database driver.');
 
-		putenv('NLS_LANG=UTF8');
+		if (!empty($aParams['encoding']))
+			putenv('NLS_LANG=' . $aParams['encoding']);
+
 		$this->rLink = @oci_new_connect(array_value($aParams, 'user'), array_value($aParams, 'password'), array_value($aParams, 'dbname'), 'UTF8');
-		fire($this->rLink === false, 'DatabaseException');
+
+		if ($this->rLink === false)
+		{
+			$this->setLastError(oci_error());
+			burn('DatabaseException', 'Failed to connect to database.');
+		}
 	}
 
 	/**
@@ -68,14 +80,24 @@ class weeOracleDatabase extends weeDatabase
 	protected function doQuery($sQueryString)
 	{
 		$rStatement = oci_parse($this->rLink, $sQueryString);
-		fire($rStatement === false, 'DatabaseException');
 
-		$b = oci_execute($rStatement, OCI_DEFAULT);
-		fire(!$b, 'DatabaseException');
+		if ($rStatement === false)
+		{
+			$this->setLastError(oci_error($rStatement));
+			burn('DatabaseException', 'Failed to parse the given query.');
+		}
 
-		//TODO:probably don't work like this
-		if (oci_num_rows($rStatement) > 0)
+		if (!@oci_execute($rStatement, OCI_DEFAULT))
+		{
+			$this->setLastError(oci_error($rStatement));
+			burn('DatabaseException', 'Failed to execute the given query.');
+		}
+
+		if (oci_num_fields($rStatement) > 0)
 			return new weeOracleResult($rStatement);
+
+		$this->iNumAffectedRows = oci_num_rows($rStatement);
+		oci_free_statement($rStatement);
 	}
 
 	/**
@@ -89,7 +111,27 @@ class weeOracleDatabase extends weeDatabase
 
 	public function escape($mValue)
 	{
+		if ($mValue === null)
+			return 'null';
+		elseif ($mValue instanceof Printable)
+			$mValue = $mValue->toString();
+
 		return "'" . addslashes($mValue) . "'";
+	}
+
+	/**
+		Escape the given identifier for safe concatenation in an SQL query.
+
+		@param	$sValue	The identifier to escape
+		@return	string	The escaped identifier, wrapped around double quotes
+	*/
+
+	public function escapeIdent($sValue)
+	{
+		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
+			_('$sValue is not a valid pgsql identifier.'));
+
+		return '"' . str_replace('"', '""', $sValue) . '"';
 	}
 
 	/**
@@ -102,10 +144,7 @@ class weeOracleDatabase extends weeDatabase
 
 	public function getLastError()
 	{
-		$a = oci_error($this->rLink);
-		fire(empty($a), 'IllegalStateException');
-
-		return $a['message'];
+		return $this->sLastError;
 	}
 
 	/**
@@ -119,13 +158,22 @@ class weeOracleDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		fire(empty($sName), 'InvalidArgumentException');
+		fire(empty($sName), 'InvalidArgumentException', 'The argument $sName is required.');
 
-		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escape($sName) . '.currval FROM DUAL');
-		fire($rStatement === false, 'DatabaseException');
+		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escapeIdent($sName) . '.currval FROM DUAL');
 
-		$b = oci_execute($rStatement, OCI_DEFAULT);
-		fire(!$b, 'DatabaseException');
+		if ($rStatement === false)
+		{
+			$this->setLastError(oci_error($rStatement));
+			burn('DatabaseException', 'Failed to parse the query to retrieve the value of the sequence.');
+		}
+
+		if (!@oci_execute($rStatement, OCI_DEFAULT))
+		{
+			$this->setLastError(oci_error($rStatement));
+			echo $this->getLastError();
+			burn('DatabaseException', 'Failed to retrieve the value of the sequence.');
+		}
 
 		$a = oci_fetch_row($rStatement);
 		oci_free_statement($rStatement);
@@ -157,5 +205,16 @@ class weeOracleDatabase extends weeDatabase
 	public function prepare($sQueryString)
 	{
 		burn('BadMethodCallException', 'This method is not implemented yet.');
+	}
+
+	/**
+		Set the last error encountered while using the oracle extension. Used internally.
+
+		@param $aError The array returned by oci_error where the error occurred.
+	*/
+
+	public function setLastError($aError)
+	{
+		$this->sLastError = empty($aError['message']) ? 'Unknown error.' : $aError['message'];
 	}
 }

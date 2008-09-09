@@ -24,27 +24,24 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Class for Oracle query results handling.
 	An object of this class is created by the weeOracleDatabase's query method for SELECT statements.
-
-	TODO:finish, test, and add error messages to the exceptions
 */
 
 class weeOracleResult extends weeDatabaseResult
 {
 	/**
-		Resource for this query result.
+		Number of results.
 	*/
 
-	protected $rResult;
+	protected $iCount;
 
 	/**
-		Data from the current row.
+		All results.
 	*/
 
-	protected $aCurrentFetch;
+	protected $aResults;
 
 	/**
-		Index number of the row to fetch.
-		Second parameter of pg_fetch_assoc.
+		Index number of the row to fetch for Iterator.
 	*/
 
 	protected $iCurrentIndex;
@@ -57,8 +54,10 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function __construct($rResult)
 	{
-		fire(!is_resource($rResult), 'InvalidArgumentException');
-		$this->rResult = $rResult;
+		fire(!is_resource($rResult), 'InvalidArgumentException', '$rResult must be a resource.');
+
+		$this->iCount = @oci_fetch_all($rResult, $this->aResults, 0, -1, OCI_ASSOC + OCI_FETCHSTATEMENT_BY_ROW);
+		oci_free_statement($rResult);
 	}
 
 	/**
@@ -69,10 +68,7 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function count()
 	{
-		$i = oci_num_rows($this->rResult);
-		fire($i === false, 'DatabaseException');
-
-		return $i;
+		return $this->iCount;
 	}
 
 	/**
@@ -83,7 +79,12 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function current()
 	{
-		return $this->processRow($this->aCurrentFetch);
+		if (empty($this->sRowClass))
+			$a = $this->aResults[$this->iCurrentIndex];
+		else
+			$a = new $this->sRowClass($this->aResults[$this->iCurrentIndex]);
+
+		return $this->processRow($a);
 	}
 
 	/**
@@ -100,11 +101,13 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function fetch()
 	{
-		$a = oci_fetch_assoc($this->rResult);
-		fire($a === false, 'DatabaseException');
+		fire(empty($this->aResults[0]), 'DatabaseException',
+			'Failed to retrieve the row because no row were returned by the query.');
 
-		if (!empty($this->sRowClass))
-			$a = new $this->sRowClass($a);
+		if (empty($this->sRowClass))
+			$a = $this->aResults[0];
+		else
+			$a = new $this->sRowClass($this->aResults[0]);
 
 		return $this->processRow($a);
 	}
@@ -121,10 +124,10 @@ class weeOracleResult extends weeDatabaseResult
 	public function fetchAll()
 	{
 		//TODO:handle the row class here too, and don't fire
-		fire(!empty($this->sRowClass), 'IllegalStateException');
+		fire(!empty($this->sRowClass), 'IllegalStateException',
+			'You cannot use a row class with weeOracleResult::fetchAll yet.');
 
-		oci_fetch_all($this->rResult, $aAll, 0, -1, OCI_ASSOC);
-		return $aAll;
+		return $this->aResults;
 	}
 
 	/**
@@ -157,9 +160,6 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function rewind()
 	{
-		// Oracle can't rewind results. We need to find another way to do that
-		fire(!empty($this->iCurrentIndex), 'DatabaseException');
-
 		$this->iCurrentIndex = 0;
 	}
 
@@ -171,13 +171,6 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function valid()
 	{
-		$this->aCurrentFetch = oci_fetch_assoc($this->rResult, $this->iCurrentIndex);
-
-		if (!empty($this->sRowClass) && $this->aCurrentFetch !== false)
-			$this->aCurrentFetch = new $this->sRowClass($this->aCurrentFetch);
-
-		return ($this->aCurrentFetch !== false);
+		return !empty($this->aResults[$this->iCurrentIndex]);
 	}
 }
-
-?>
