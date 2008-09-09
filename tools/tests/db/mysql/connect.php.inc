@@ -11,7 +11,7 @@ try
 		'dbname'	=> 'wee_tests',
 	));
 }
-catch (DatabaseException $o)
+catch (Exception $o)
 {
 	$this->skip();
 }

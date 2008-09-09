@@ -10,7 +10,7 @@ try
 		'password'	=> 'wee',
 	));
 }
-catch (DatabaseException $o)
+catch (Exception $o)
 {
 	$this->skip();
 }
