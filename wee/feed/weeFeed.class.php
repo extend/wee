@@ -62,7 +62,7 @@ abstract class weeFeed implements Printable
 	{
 		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidArgumentException',
 			'$sName must be defined and contain only alpha characters or a colon.');
-		fire(!$this->isElementValid($sName), 'IllegalMethodCallException', $sName . ' is not a valid feed element name.');
+		fire(!$this->isElementValid($sName), 'BadMethodCallException', $sName . ' is not a valid feed element name.');
 		fire(sizeof($aArgs) != 1, 'InvalidArgumentException', 'Only one value is accepted in $aArgs.');
 
 		$this->aFeed[$sName] = $aArgs[0];
