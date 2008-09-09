@@ -98,6 +98,25 @@ $aRow = $oDb->query('SELECT q_name, q_quantity, q_price FROM query WHERE q_name=
 $this->isEqual($aRow, $aInsertValues[1],
 	'The data of the row "Eggs" is wrong.');
 
+// Test foreach
+
+$oResults = $oDb->query('SELECT * FROM query');
+foreach ($oResults as $aRow)
+{
+	$this->isFalse(empty($aRow), 'The returned row should not be empty.');
+	$this->isTrue(ctype_digit($aRow['q_id']), 'The field q_id should not be empty.');
+}
+
+class weeMysqlResult_testForeach extends weeDatabaseRow {}
+
+$oResults = $oDb->query('SELECT * FROM query')->rowClass('weeMysqlResult_testForeach');
+foreach ($oResults as $aRow)
+{
+	$this->isInstanceOf($aRow, 'weeMysqlResult_testForeach', 'The returned row should be an instance of weeMysqlResult_testForeach.');
+	$this->isFalse(empty($aRow), 'The returned row should not be empty.');
+	$this->isTrue(ctype_digit($aRow['q_id']), 'The field q_id should not be empty.');
+}
+
 // Test the queryValue method
 
 try {
