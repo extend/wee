@@ -130,13 +130,13 @@ class weeSession implements ArrayAccess
 	{
 		if (defined('WEE_SESSION_CHECK_IP') &&
 			(empty($_SESSION['session_ip']) || $this->getIP() != $_SESSION['session_ip']))
-			return false;
+			return true;
 
 		if (defined('WEE_SESSION_CHECK_TOKEN') &&
-			(empty($_COOKIE['session_token']) || $_SESSION['session_token'] != $_COOKIE['session_token']))
-			return false;
+			(empty($_COOKIE['session_token']) || empty($_SESSION['session_token']) || $_SESSION['session_token'] != $_COOKIE['session_token']))
+			return true;
 
-		return true;
+		return false;
 	}
 
 	/**
@@ -200,7 +200,11 @@ class weeSession implements ArrayAccess
 
 	public function setFromArray($aData)
 	{
-		fire(!is_array($aData), 'InvalidArgumentException', '$aData must be an array.');
-		$_SESSION = $aData + $_SESSION;
+		is_array($aData)
+			or burn('InvalidArgumentException',
+				_('$aData is not an array.'));
+
+		foreach ($aData as $sKey => $mValue)
+			$this[$sKey] = $mValue;
 	}
 }
