@@ -205,6 +205,6 @@ class weeSession implements ArrayAccess
 				_('$aData is not an array.'));
 
 		foreach ($aData as $sKey => $mValue)
-			$this[$sKey] = $mValue;
+			$_SESSION[$sKey] = $mValue;
 	}
 }
