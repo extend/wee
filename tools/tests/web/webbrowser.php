@@ -30,3 +30,5 @@ try {
 	$oWebBrowser->fetchDoc($sXmlNotValidFile);
 	$this->fail(sprintf(_('weeWebBrowser should throw a BadXMLException when fetching the file %s.'), $sXmlNotValidFile));
 } catch (BadXMLException $e) {}
+
+unlink($sCookieFile);
