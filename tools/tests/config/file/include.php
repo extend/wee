@@ -64,8 +64,7 @@ catch (FileNotFoundException $e) {}
 try
 {
 	$o->parseFile(dirname(__FILE__) . '/recursive.cnf');
-	// TODO if the exception is not thrown, the next line will not be executed 
-	// anyway as the execution stack will explode.
+	// If the exception is not thrown, the next line will not be executed because the execution stack will explode.
 	$this->fail('weeFileConfig fails to throw an UnexpectedValueException when there is a loop in the inclusions.');
 }
 catch (UnexpectedValueException $e) {}
@@ -73,8 +72,7 @@ catch (UnexpectedValueException $e) {}
 try
 {
 	$o->parseFile(dirname(__FILE__) . '/recursive1.cnf');
-	// TODO if the exception is not thrown, the next line will not be executed 
-	// anyway as the execution stack will explode.
+	// If the exception is not thrown, the next line will not be executed because the execution stack will explode.
 	$this->fail('weeFileConfig fails to throw an UnexpectedValueException when there is a circuit in the inclusions.');
 }
 catch (UnexpectedValueException $e) {}

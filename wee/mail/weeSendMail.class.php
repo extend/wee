@@ -95,12 +95,8 @@ class weeSendMail extends PHPMailer
 				$this->ReplyTo = array();
 				$this->addReplyTo(WEE_MAIL_DEBUG_REPLY_TO);
 			}
-
-			//TODO:add debug infos to the email body?
 		}
 
 		return parent::send();
 	}
 }
-
-?>
