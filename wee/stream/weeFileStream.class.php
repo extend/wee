@@ -62,10 +62,9 @@ class weeFileStream
 	public function __construct($sFilename)
 	{
 		fire(!is_file($sFilename), 'FileNotFoundException', "File '$sFilename' does not exist.");
-		$rHandle = @fopen($sFilename, 'r');
 
-		// I don't think FileNotFoundException is the adequate exception to be thrown here.
-		fire($rHandle === false, 'FileNotFoundException', "Can't open file '$sFilename'.");
+		$rHandle = @fopen($sFilename, 'r');
+		fire($rHandle === false, 'NotPermittedException', "Can't open file '$sFilename'.");
 
 		$this->rHandle		= $rHandle;
 		$this->sFilename	= $sFilename;
