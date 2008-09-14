@@ -52,7 +52,7 @@ class weeMySQLDatabase extends weeDatabase
 
 		if (!empty($aParams['encoding']))
 		{
-			fire(!ctype_alnum($aParams['encoding']), 'InvalidParameterException',
+			fire(!ctype_alnum($aParams['encoding']), 'InvalidArgumentException',
 				'The encoding parameter must be comprised of letters and numbers only.');
 			$this->query("SET NAMES '" . $aParams['encoding'] . "'");
 		}
