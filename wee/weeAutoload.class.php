@@ -142,5 +142,5 @@ if (defined('WEE_AUTOLOAD_FILE'))
 	if (is_readable(WEE_AUTOLOAD_FILE))
 		weeAutoload::loadFromCache(WEE_AUTOLOAD_FILE);
 	else
-		register_shutdown_function('weeAutoload::saveToCache', WEE_AUTOLOAD_FILE);
+		register_shutdown_function(array('weeAutoload', 'saveToCache'), WEE_AUTOLOAD_FILE);
 }
