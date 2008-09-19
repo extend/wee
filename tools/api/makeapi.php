@@ -25,21 +25,24 @@ if ($argc != 2)
 	return -1;
 }
 
-define('DEBUG', 1);
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 
-$o = new weeDocumentor;
+$o = new weeDocumentorXML;
 file_put_contents(
 	$argv[1] . 'api.xml',
 	$o	->docClassFromPath('wee')
+		->docClass('Namespace')
+		->docClass('Singleton')
+		->docClass('Printable')
+		->docClass('weeDataSource')
 		->docFunc('fire')
 		->docFunc('burn')
 		->docFunc('array_value')
+		->docFunc('nl2uli')
+		->docFunc('rmdir_recursive')
+		->docFunc('xmlspecialchars')
 		->toString()
 );
 
-echo $argv[1] . 'api.xml created successfully.';
-
-?>
-
+echo $argv[1] . "api.xml created successfully.\n";

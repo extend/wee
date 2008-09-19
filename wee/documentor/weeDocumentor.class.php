@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -23,38 +23,10 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Builds an XML based on PHP code.
-
-	TODO:Handles the following docComments commands:
-	- @bug comment
-	- @overload func($arg, ...) comment
-	- @param $arg comment
-	- @return type comment
-	- @todo comment
-	- @warning comment
 */
 
-class weeDocumentor implements Printable
+abstract class weeDocumentor implements Printable
 {
-	/**
-		Maps elements to their childs.
-		Used by arrayToXML ONLY.
-	*/
-
-	protected $aSpecialChilds = array(
-		'bugs'			=> 'bug',
-		'classes'		=> 'class',
-		'funcs'			=> 'func',
-		'implements'	=> 'implement',
-		'methods'		=> 'method',
-		'overloads'		=> 'overload',
-		'params'		=> 'param',
-		'properties'	=> 'property',
-		'sees'			=> 'see',
-		'throw'			=> 'exception',
-		'todos'			=> 'todo',
-		'warnings'		=> 'warning'
-	);
-
 	/**
 		Stores parsed classes data.
 	*/
@@ -66,45 +38,6 @@ class weeDocumentor implements Printable
 	*/
 
 	protected $aFuncs	= array();
-
-	/**
-		Recursive method that converts specified array to XML.
-		It maps the element name to the property $aSpecialChilds.
-
-		@param	$a		Array to convert.
-		@param	$sName	Name of the current element.
-		@return	string	The XML generated from the array.
-	*/
-
-	protected function arrayToXML(array $a, $sName)
-	{
-		$s = '<' . $sName . '>';
-
-		foreach ($a as $sKey => $mValue)
-		{
-			if (!isset($mValue))
-				continue;
-
-			if (is_array($mValue))
-			{
-				if (isset($this->aSpecialChilds[$sName]))
-					$sNextName = $this->aSpecialChilds[$sName];
-				else
-					$sNextName = $sKey;
-
-				$s .= $this->arrayToXML($mValue, $sNextName);
-			}
-			else
-			{
-				if (isset($this->aSpecialChilds[$sName]))
-					$sKey = $this->aSpecialChilds[$sName];
-
-				$s .= '<' . $sKey . '>' . htmlspecialchars($mValue) . '</' . $sKey . '>';
-			}
-		}
-
-		return $s . '</' . $sName . '>';
-	}
 
 	/**
 		Tells weeDocumentor to get data of the specified class.
@@ -121,19 +54,18 @@ class weeDocumentor implements Printable
 		$a = array(
 			'name'			=> $oClass->getName(),
 			'parent'		=> $oClass->getParentClass() == null ? null : $oClass->getParentClass()->getName(),
-			'type'			=> $oClass->isInterface() ? 'interface' : ($oClass->isAbstract() ? 'abstract' : ($oClass->isFinal() ? 'final' : 'class')),
+			'type'			=> $oClass->isInterface() ? 'interface' : ($oClass->isAbstract() ? 'abstract' : ($oClass->isFinal() ? 'final' : null)),
 
-			'filename'		=> $oClass->getFileName(),
+			'filename'		=> substr($oClass->getFileName(), strlen(getcwd()) + 1),
 			'startline'		=> $oClass->getStartLine(),
 			'endline'		=> $oClass->getEndLine(),
 
-			'doccomment'	=> $this->trimDocComment($oClass->getDocComment()),
-			'constants'		=> $oClass->getConstants(),
+			'consts'		=> $oClass->getConstants(),
 		);
 
 		// Get DocComment data
 
-		$a['doccomment'] = $this->parseDocComment($a['doccomment'], $aParsedData);
+		$this->parseDocComment($this->trimDocComment($oClass->getDocComment()), $aParsedData);
 		$a = array_merge($a, $aParsedData);
 
 		// Interfaces
@@ -151,24 +83,27 @@ class weeDocumentor implements Printable
 		{
 			$aMethod	= array(
 				'name'			=> $o->getName(),
-				'type'			=> $o->isStatic() ? 'static' : ($o->isAbstract() ? 'abstract' : ($o->isFinal() ? 'final' : 'method')),
+				'type'			=> $o->isStatic() ? 'static' : ($o->isAbstract() ? 'abstract' : ($o->isFinal() ? 'final' : null)),
 				'visibility'	=> $o->isPublic() ? 'public' : ($o->isPrivate() ? 'private' : 'protected'),
 				'internal'		=> $o->isInternal(),
 
 				'startline'		=> $o->getStartLine(),
 				'endline'		=> $o->getEndLine(),
 
-				'returnsref'	=> $o->returnsReference(),
-				'numparams'		=> $o->getNumberOfParameters(),
-				'numrequired'	=> $o->getNumberOfRequiredParameters(),
-
-				'doccomment'	=> $this->trimDocComment($o->getDocComment()),
+				'numreqparams'	=> $o->getNumberOfRequiredParameters(),
 			);
+
+			$sFilename = substr($o->getFileName(), strlen(getcwd()) + 1);
+			if (!empty($sFilename) && $sFilename != $a['filename'])
+				$aMethod['filename'] = $sFilename;
 
 			// Get DocComment data
 
-			$aMethod['doccomment'] = $this->parseDocComment($aMethod['doccomment'], $aParsedData);
+			$this->parseDocComment($this->trimDocComment($o->getDocComment()), $aParsedData);
 			$aMethod = array_merge($aMethod, $aParsedData);
+
+			if (!empty($aFunc['return']))
+				$aFunc['return']['ref'] = $o->returnsReference();
 
 			$aMethod['params'] = array();
 			foreach ($o->getParameters() as $oParameter)
@@ -178,12 +113,8 @@ class weeDocumentor implements Printable
 					'ref'		=> $oParameter->isPassedByReference(),
 					'array'		=> $oParameter->isArray(),
 					'null'		=> $oParameter->allowsNull(),
-					'optional'	=> $oParameter->isOptional(),
 					'default'	=> $oParameter->isDefaultValueAvailable() ? var_export($oParameter->getDefaultValue(), true) : null,
 				);
-
-				if ($aParameter['default'] == 'NULL')
-					$aParameter['default'] = 'null';
 
 				if (isset($aMethod['paramscomment'][$aParameter['name']]))
 					$aParameter['comment'] = $aMethod['paramscomment'][$aParameter['name']];
@@ -205,16 +136,21 @@ class weeDocumentor implements Printable
 				'name'			=> $o->getName(),
 				'static'		=> $o->isStatic(),
 				'visibility'	=> $o->isPublic() ? 'public' : ($o->isPrivate() ? 'private' : 'protected'),
-				'doccomment'	=> $this->trimDocComment($o->getDocComment()),
 			);
 
 			// Get DocComment data
 
-			$aProperty['doccomment'] = $this->parseDocComment($aProperty['doccomment'], $aParsedData);
+			$this->parseDocComment($this->trimDocComment($o->getDocComment()), $aParsedData);
 			$aProperty = array_merge($aProperty, $aParsedData);
 
 			$a['properties'][] = $aProperty;
 		}
+
+		// Sort child arrays
+
+		usort($a['implements'], 'weeDocumentor::nameCmp');
+		usort($a['methods'], 'weeDocumentor::nameCmp');
+		usort($a['properties'], 'weeDocumentor::nameCmp');
 
 		// Finally store the data
 
@@ -259,21 +195,16 @@ class weeDocumentor implements Printable
 
 		$aFunc	= array(
 			'name'			=> $o->getName(),
-
+			'filename'		=> substr($o->getFileName(), strlen(getcwd()) + 1),
 			'startline'		=> $o->getStartLine(),
 			'endline'		=> $o->getEndLine(),
-
-			'returnsref'	=> $o->returnsReference(),
-			'numparams'		=> $o->getNumberOfParameters(),
-			'numrequired'	=> $o->getNumberOfRequiredParameters(),
-
-			'doccomment'	=> $this->trimDocComment($o->getDocComment()),
+			'numreqparams'	=> $o->getNumberOfRequiredParameters(),
 		);
 
-		// Get DocComment data
-
-		$aFunc['doccomment'] = $this->parseDocComment($aFunc['doccomment'], $aParsedData);
+		$this->parseDocComment($this->trimDocComment($o->getDocComment()), $aParsedData);
 		$aFunc = array_merge($aFunc, $aParsedData);
+		if (!empty($aFunc['return']))
+			$aFunc['return']['ref'] = $o->returnsReference();
 
 		$aFunc['params'] = array();
 		foreach ($o->getParameters() as $oParameter)
@@ -283,12 +214,8 @@ class weeDocumentor implements Printable
 				'ref'		=> $oParameter->isPassedByReference(),
 				'array'		=> $oParameter->isArray(),
 				'null'		=> $oParameter->allowsNull(),
-				'optional'	=> $oParameter->isOptional(),
 				'default'	=> $oParameter->isDefaultValueAvailable() ? var_export($oParameter->getDefaultValue(), true) : null,
 			);
-
-			if ($aParameter['default'] == 'NULL')
-				$aParameter['default'] = 'null';
 
 			if (isset($aFunc['paramscomment'][$aParameter['name']]))
 				$aParameter['comment'] = $aFunc['paramscomment'][$aParameter['name']];
@@ -297,10 +224,30 @@ class weeDocumentor implements Printable
 		}
 
 		unset($aFunc['paramscomment']);
-		$this->aFuncs[]	= $aFunc;
+		$this->aFuncs[] = $aFunc;
 
 		return $this;
 	}
+
+	/**
+		Compare names like strcasecmp. Used internally to sort classes and functions.
+
+		@param $a1 The first array.
+		@param $a2 The second array.
+		@return int Returns < 0 if a1['name'] is less than a2['name'] ; > 0 if a1['name'] is greater than a2['name'] , and 0 if they are equal.
+	*/
+
+	protected static function nameCmp($a1, $a2)
+	{
+		return strcasecmp($a1['name'], $a2['name']);
+	}
+
+	/**
+		Parse docComments to retrieve the comment and the modifiers.
+
+		@param $sDocComment The docComment.
+		@param aParsedData Array where the parsed data is saved.
+	*/
 
 	protected function parseDocComment($sDocComment, &$aParsedData)
 	{
@@ -311,11 +258,8 @@ class weeDocumentor implements Printable
 
 		foreach ($a as $sLine)
 		{
-			if (strlen($sLine) < 2)
-				continue;
-
-			if ($sLine[0] != '@' || ($sLine[1] == ' ' || $sLine[1] == "\t"))
-				$sDocComment .= $sLine . "\r\n";
+			if (empty($sLine) || $sLine[0] != '@' || ($sLine[1] == ' ' || $sLine[1] == "\t"))
+				$sDocComment .= $sLine . "\n";
 			else
 			{
 				$sLine	= substr($sLine, 1);
@@ -326,8 +270,16 @@ class weeDocumentor implements Printable
 				$this->$sFunc($sLine, $aParsedData);
 			}
 		}
-		$aParsedData['doccomment'] = trim($sDocComment);
+
+		$aParsedData['comment'] = trim($sDocComment);
 	}
+
+	/**
+		Parse a @bug line from the docComment.
+
+		@param $sLine The @bug line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
 
 	protected function parseDocCommentBug($sLine, &$aParsedData)
 	{
@@ -336,6 +288,13 @@ class weeDocumentor implements Printable
 
 		$aParsedData['bugs'][] = $sLine;
 	}
+
+	/**
+		Parse a @overload line from the docComment.
+
+		@param $sLine The @overload line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
 
 	protected function parseDocCommentOverload($sLine, &$aParsedData)
 	{
@@ -349,8 +308,15 @@ class weeDocumentor implements Printable
 		$sFunc		= substr($sLine, 0, $iPos);
 		$sComment	= trim(substr($sLine, $iPos + 1));
 
-		$aParsedData['overloads'][] = array('function' => $sFunc, 'comment' => $sComment);
+		$aParsedData['overloads'][] = array('func' => $sFunc, 'comment' => $sComment);
 	}
+
+	/**
+		Parse a @param line from the docComment.
+
+		@param $sLine The @param line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
 
 	protected function parseDocCommentParam($sLine, &$aParsedData)
 	{
@@ -364,15 +330,32 @@ class weeDocumentor implements Printable
 			$aParsedData['paramscomment'][$a[0]] = $a[1];
 	}
 
+	/**
+		Parse the @return line from the docComment.
+
+		As opposed to other docComment modifiers, there can be only one return line.
+		If more than one is found, only the last one is used.
+
+		@param $sLine The @return line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
+
 	protected function parseDocCommentReturn($sLine, &$aParsedData)
 	{
 		$aParsedData['return']	= array();
 		$a						= preg_split('/\s+/', $sLine, 2);
 
-		$aParsedData['return']['what'] = $a[0];
+		$aParsedData['return']['type'] = $a[0];
 		if (isset($a[1]))
 			$aParsedData['return']['comment'] = $a[1];
 	}
+
+	/**
+		Parse a @see line from the docComment.
+
+		@param $sLine The @see line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
 
 	protected function parseDocCommentSee($sLine, &$aParsedData)
 	{
@@ -382,6 +365,13 @@ class weeDocumentor implements Printable
 		$aParsedData['sees'][] = $sLine;
 	}
 
+	/**
+		Parse a @throw line from the docComment.
+
+		@param $sLine The @throw line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
+
 	protected function parseDocCommentThrow($sLine, &$aParsedData)
 	{
 		if (empty($aParsedData['throw']))
@@ -390,6 +380,13 @@ class weeDocumentor implements Printable
 		$aParsedData['throw'][] = $sLine;
 	}
 
+	/**
+		Parse a @todo line from the docComment.
+
+		@param $sLine The @todo line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
+
 	protected function parseDocCommentTodo($sLine, &$aParsedData)
 	{
 		if (empty($aParsedData['todos']))
@@ -397,6 +394,13 @@ class weeDocumentor implements Printable
 
 		$aParsedData['todos'][] = $sLine;
 	}
+
+	/**
+		Parse a @warning line from the docComment.
+
+		@param $sLine The @warning line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
 
 	protected function parseDocCommentWarning($sLine, &$aParsedData)
 	{
@@ -407,53 +411,42 @@ class weeDocumentor implements Printable
 	}
 
 	/**
-		Builds and prints an XML from parsed data.
-
-		@return string The XML generated by this class.
+		@return array Array containing all the classes and functions metadata.
 	*/
 
-	public function toString()
+	public function toArray()
 	{
-		$s  = '<?xml version="1.0" encoding="utf-8"?>' . "\r\n";
-		$s .= <<<EOF
-
-<!--
-	Web:Extend
-	Copyright (c) 2006 Dev:Extend
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License as published by the Free Software Foundation; either
-	version 2.1 of the License, or (at your option) any later version.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	Lesser General Public License for more details.
-
-	You should have received a copy of the GNU Lesser General Public
-	License along with this library; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
--->
-
-
-EOF;
-
-		$s .= '<wee>';
-
-		if (!empty($this->aClasses))
-			$s .= $this->arrayToXML($this->aClasses, 'classes');
-
-		if (!empty($this->aFuncs))
-			$s .= $this->arraytoXML($this->aFuncs, 'funcs');
-
-		return $s . '</wee>';
+		return array(
+			'classes'	=> $this->aClasses,
+			'funcs'		=> $this->aFuncs,
+		);
 	}
+
+	/**
+		Trim the docComment.
+
+		This will remove the comment operators, as well as a number of
+		tabulations from the beginning of each line equal to the number
+		of tabulations before the text on the first line.
+
+		@param $sDocComment The docComment.
+		@return string Trimmed docComment.
+	*/
 
 	protected function trimDocComment($sDocComment)
 	{
-		return preg_replace('/^[\t ]*/m', '', trim(substr($sDocComment, 3, -2)));
+		$sDocComment = substr($sDocComment, 3, -2);	// Remove comment operators.
+		$sDocComment = ltrim($sDocComment, "\r\n");	// Strip the beginning of linebreaks.
+		$sDocComment = rtrim($sDocComment);			// Strip the end of whitespaces.
+
+		if (!empty($sDocComment))
+		{
+			for ($i = 0; !empty($sDocComment[$i]) && $sDocComment[$i] == "\t"; $i++)
+				;
+
+			$sDocComment = str_replace("\n" . str_repeat("\t", $i), "\n", "\n" . $sDocComment);
+		}
+
+		return $sDocComment;
 	}
 }
-
-?>
