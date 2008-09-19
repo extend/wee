@@ -169,7 +169,10 @@ abstract class weeFrame implements Printable
 		if (empty($aEvent['frame']) || $aEvent['frame'] == get_class($this))
 		{
 			$this->dispatchEvent($aEvent);
-			$this->iStatus == self::UNAUTHORIZED_ACCESS and burn('UnauthorizedAccessException');
+			$this->iStatus == self::UNAUTHORIZED_ACCESS
+				and burn('IllegalStateException',
+					_('An UnauthorizedAccessException was thrown while trying to send an event from within the frame. All events sent using sendEvent must be authorized.'));
+			$this->iStatus = 0;
 		}
 		else
 			$this->oController->dispatchEvent($aEvent);

@@ -109,6 +109,7 @@ $o->dispatchEvent(array('frame' => 'test_frame', 'context' => 'xmlhttprequest'))
 $this->isEqual($o->getFrame()->sContext, 'xmlhttprequest',
 	_('The context is not correctly propagated to the frame.'));
 
-$o->dispatchEvent(array('frame' => 'test_frame', 'name' => 'sentUnauthorizedEvent'));
-$this->isEqual($o->getFrame()->getStatus(), weeFrame::UNAUTHORIZED_ACCESS,
-	sprintf(_('frame status is "%s" instead of "%s".'), frame_status($o->getFrame()->getStatus()), frame_status(weeFrame::UNAUTHORIZED_ACCESS)));
+try {
+	$o->dispatchEvent(array('frame' => 'test_frame', 'name' => 'sentUnauthorizedEvent'));
+	$this->fail(_('An IllegalStateException should be thrown when a nested event throws an UnauthorizedAccessException.'));
+} catch (IllegalStateException $e) {}
