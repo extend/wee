@@ -155,6 +155,8 @@ abstract class weeFrame implements Printable
 		Send an event to its respective frame.
 		If no context is given, current context is used.
 
+		If the sent event is in the same frame, the event is performed directly without sending it to the controller.
+
 		@param $aEvent Event information
 		@see weeApplication::dispatchEvent for event details
 	*/
@@ -164,7 +166,10 @@ abstract class weeFrame implements Printable
 		if (empty($aEvent['context']))
 			$aEvent['context'] = $this->sContext;
 
-		$this->oController->dispatchEvent($aEvent);
+		if (empty($aEvent['frame']) || $aEvent['frame'] == get_class($this))
+			$this->dispatchEvent($aEvent);
+		else
+			$this->oController->dispatchEvent($aEvent);
 	}
 
 	/**
