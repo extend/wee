@@ -21,6 +21,11 @@ class test_frame extends weeFrame
 	{
 	}
 
+	protected function eventSentUnauthorizedEvent()
+	{
+		$this->sendEvent(array('name' => 'getOut'));
+	}
+
 	protected function eventGetOut($aEvent)
 	{
 		burn('UnauthorizedAccessException');
@@ -103,3 +108,7 @@ catch (UnauthorizedAccessException $e)
 $o->dispatchEvent(array('frame' => 'test_frame', 'context' => 'xmlhttprequest'));
 $this->isEqual($o->getFrame()->sContext, 'xmlhttprequest',
 	_('The context is not correctly propagated to the frame.'));
+
+$o->dispatchEvent(array('frame' => 'test_frame', 'name' => 'sentUnauthorizedEvent'));
+$this->isEqual($o->getFrame()->getStatus(), weeFrame::UNAUTHORIZED_ACCESS,
+	sprintf(_('frame status is "%s" instead of "%s".'), frame_status($o->getFrame()->getStatus()), frame_status(weeFrame::UNAUTHORIZED_ACCESS)));
