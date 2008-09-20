@@ -185,7 +185,7 @@ clickFuncLink = function(e) {
 
 	el = $('funcs>func[name="' + e.target.textContent + '"]', api);
 
-	$('#contents').append('<h2 id="' + $(el).attr('name') + '">' + formatFuncName(el) + '</h2>');
+	$('#contents').append('<h2 id="func/' + $(el).attr('name') + '">' + formatFuncName(el) + '</h2>');
 	writeFuncDetails(el, '#contents', $(el).attr('filename'));
 }
 
