@@ -6,7 +6,6 @@
 
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/wee.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>pub/pastebin.css"/>
-	<script type="text/javascript" src="<?php echo APP_PATH?>res/wee/wee.js"></script>
 
 	<!-- compliance patch for microsoft browsers -->
 	<!--[if lt IE 8]>
