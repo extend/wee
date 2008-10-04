@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@warning Experimental.
 */
 
-class weeExplainSQLResult extends weeDatabaseResult
+class weeExplainSQLResult extends weeDatabaseResult implements ArrayAccess
 {
 	/**
 		Real results object returned by the query.
@@ -113,6 +113,55 @@ class weeExplainSQLResult extends weeDatabaseResult
 	public function next()
 	{
 		$this->oResult->next();
+	}
+
+	/**
+		Bypassed, always returns true.
+
+		@param	$offset	Offset name.
+		@return	bool	Always true.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetExists($offset)
+	{
+		return true;
+	}
+
+	/**
+		Bypassed, return $this.
+
+		@param	$offset	Offset name.
+		@return	$this
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetGet($offset)
+	{
+		return $this;
+	}
+
+	/**
+		Bypassed, do nothing.
+
+		@param	$offset	Offset name.
+		@param	$value	New value for this offset.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetSet($offset, $value)
+	{
+	}
+
+	/**
+		Bypassed, do nothing.
+
+		@param	$offset	Offset name.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetUnset($offset)
+	{
 	}
 
 	/**
