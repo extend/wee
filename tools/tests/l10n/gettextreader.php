@@ -25,6 +25,8 @@ $iWrote = file_put_contents($sPoFilename, $sPoContents);
 $iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot write the file %s.'), $sPoFilename));
 
 exec(sprintf('msgfmt -o %s %s', $sMoFilename, $sPoFilename));
+if (!is_file($sMoFilename))
+	return $this->skip();
 
 try {
 	$o = new weeGetTextReader($sMoFilename);
