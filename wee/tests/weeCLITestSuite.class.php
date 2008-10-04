@@ -69,15 +69,19 @@ class weeCLITestSuite extends weeTestSuite
 			echo "\nExtended data:\n\n";
 
 			foreach ($this->aExtData as $sFile => $aTestData)
+			{
+				echo $sFile . "\n";
+
 				foreach ($aTestData as $aData)
 				{
-					echo $sFile . "\n " . $aData[0] . ': ';
+					echo ' ' . $aData[0] . ': ';
 					if (is_array($aData[1]))
 						echo str_replace(array("\n ", "\n"), '', var_export($aData[1], true));
 					else
 						echo $aData[1];
 					echo "\n";
 				}
+			}
 		}
 
 		// Count the number of test failed, succeeded and skipped and output a summary
