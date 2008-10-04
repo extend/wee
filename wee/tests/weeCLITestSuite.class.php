@@ -62,6 +62,26 @@ class weeCLITestSuite extends weeTestSuite
 		$aCounts = @array_count_values($this->aResults);
 		fire(!isset($aCounts['success']), 'IllegalStateException', 'Please run the suite before trying to output its results.');
 
+		// Output the extended data returned by the test cases
+
+		if (!empty($this->aExtData))
+		{
+			echo "\nExtended data:\n\n";
+
+			foreach ($this->aExtData as $sFile => $aTestData)
+				foreach ($aTestData as $aData)
+				{
+					echo $sFile . "\n " . $aData[0] . ': ';
+					if (is_array($aData[1]))
+						echo str_replace(array("\n ", "\n"), '', var_export($aData[1], true));
+					else
+						echo $aData[1];
+					echo "\n";
+				}
+		}
+
+		// Count the number of test failed, succeeded and skipped and output a summary
+
 		if (!isset($aCounts['skip']))
 			$aCounts['skip'] = 0;
 
