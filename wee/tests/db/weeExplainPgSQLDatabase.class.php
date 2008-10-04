@@ -23,6 +23,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Encapsulate weePgSQLDatabase and run EXPLAIN on the queries sent to it.
+
+	@warning Experimental.
 */
 
 class weeExplainPgSQLDatabase extends weePgSQLDatabase
@@ -37,6 +39,6 @@ class weeExplainPgSQLDatabase extends weePgSQLDatabase
 
 	protected function doQuery($sQueryString)
 	{
-		return parent::doQuery('EXPLAIN ' . $sQueryString);
+		return new weeExplainSQLResult(parent::doQuery('EXPLAIN ' . $sQueryString));
 	}
 }
