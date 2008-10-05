@@ -72,7 +72,7 @@ final class weeAutoload extends Namespace
 	}
 
 	/**
-		Autoloads the specified class, if it's in the autoload paths. Else throws a FileNotFoundException.
+		Autoloads the specified class, if it's in the autoload paths.
 		You should never need to call this function yourself.
 
 		@param $sClass The class to autoload.
