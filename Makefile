@@ -31,10 +31,13 @@ api: tools/api/api.xml
 
 tools/api/api.xml:
 
-test:
+test: clean
 	@@php tools/tests/maketests.php tools/tests/
 
-clean:
+clean: fclean
+	@@-rm -rf app/tmp/*
+
+fclean:
 	@@-rm -rf tools/api/api.xml
 
 todo:

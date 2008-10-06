@@ -143,7 +143,7 @@ class weeApplication implements Singleton
 		// Define cache settings
 
 		if (!empty($this->oConfig['output.cache.path']))
-			define('CACHE_PATH',	$this->oConfig['output.cache.path']);
+			define('CACHE_PATH',	str_replace('//', ROOT_PATH, $this->oConfig['output.cache.path']) . '/');
 		if (!empty($this->oConfig['output.cache.expire']))
 			define('CACHE_EXPIRE',	$this->oConfig['output.cache.expire']);
 
@@ -475,7 +475,7 @@ class weeApplication implements Singleton
 				$sCacheFilename = $sCachePath . '?' . urldecode($_SERVER['QUERY_STRING']);
 
 				if (!is_dir($sCachePath))
-					mkdir($sCachePath);
+					mkdir($sCachePath, 0777, true);
 
 				file_put_contents($sCacheFilename, $sOutput);
 				touch($sCacheFilename, time() + $this->aCacheParams['expire']);

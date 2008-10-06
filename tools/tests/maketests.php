@@ -26,6 +26,7 @@ if ($argc != 2)
 }
 
 define('DEBUG', 1);
+define('NO_CACHE', 1);
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 

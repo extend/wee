@@ -22,10 +22,10 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 if (!defined('CACHE_EXPIRE'))	define('CACHE_EXPIRE',	300);
-if (!defined('CACHE_PATH'))		define('CACHE_PATH',	'/tmp/cache/');
+if (!defined('CACHE_PATH'))		define('CACHE_PATH',	ROOT_PATH . 'app/tmp/appcache/');
 
 if (!is_dir(CACHE_PATH))
-	mkdir(CACHE_PATH);
+	mkdir(CACHE_PATH, 0777, true);
 
 /**
 	Template handling, cache aware version.

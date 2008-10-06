@@ -1,7 +1,7 @@
 <?
 
-$sPoFilename	= ROOT_PATH . 'tools/tests/l10n/messages.po';
-$sMoFilename	= ROOT_PATH . 'tools/tests/l10n/messages.mo';
+$sPoFilename	= ROOT_PATH . 'app/tmp/messages.po';
+$sMoFilename	= ROOT_PATH . 'app/tmp/messages.mo';
 $aHeaders 		= array('Content-Type' => 'text/plain; charset=UTF-8', 'Plural-Forms' => 'nplurals=2; plural=(n>1);');
 $aTranslation	= array('Wrong password' => 'Mot de passe incorrect');
 

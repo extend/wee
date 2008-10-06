@@ -35,11 +35,11 @@ mail.debug.reply-to =
 # Output settings
 
 output.driver		= weeXHTMLOutput
-output.cache.path	= /tmp/cache/
+output.cache.path	= //app/tmp/appcache
 output.cache.expire	= 300
 
 # Session settings
 
-session.driver				= weeSession
+session.driver		= weeSession
 session.check.ip	= 1
 session.check.token	= 1

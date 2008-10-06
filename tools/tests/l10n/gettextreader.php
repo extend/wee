@@ -1,8 +1,8 @@
 <?
 
-$sFilename		= ROOT_PATH . 'tools/tests/l10n/file.txt';
-$sPoFilename	= ROOT_PATH . 'tools/tests/l10n/messages.po';
-$sMoFilename	= ROOT_PATH . 'tools/tests/l10n/messages.mo';
+$sFilename		= ROOT_PATH . 'app/tmp/gettextreader_badfile.txt';
+$sPoFilename	= ROOT_PATH . 'app/tmp/messages.po';
+$sMoFilename	= ROOT_PATH . 'app/tmp/messages.mo';
 $sPoContents	= '# default domain "messages.mo"
 msgid  "message : ad vitam aeternam"
 msgstr "translation : forever"';
