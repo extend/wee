@@ -27,8 +27,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@see share/conf/sample.cnf for an example configuration file
 */
 
-class weeFileConfig extends weeConfig
+class weeFileConfig implements ArrayAccess
 {
+	/**
+		Contains the configuration data.
+	*/
+
+	protected $aConfig = array();
+
 	/**
 		The stack of the files being currently parsed.
 
@@ -46,6 +52,53 @@ class weeFileConfig extends weeConfig
 	public function __construct($sFilename)
 	{
 		$this->parseFile($sFilename);
+	}
+
+	/**
+		Return the filename of the configuration file which is to be included.
+
+		If the path of the configuration file begins with "//" the path is relative to ROOT_PATH,
+		if it begins with "./", then it is relative to the current file being parsed,
+		otherwise the standard behaviour is adopted, working directory being the one of the process.
+
+		@param	$sPath	The path of the configuration file.
+		@return	string	The filename of the configuration file.
+	*/
+
+	protected function getIncludeFilename($sPath)
+	{
+		switch (substr($sPath, 0, 2))
+		{
+			case '//':
+				return ROOT_PATH . substr($sPath, 2);
+				break;
+
+			case './':
+				return dirname($this->aFilesStack[sizeof($this->aFilesStack) - 1]) . '/' . substr($sPath, 2);
+				break;
+		}
+
+		return $sPath;
+	}
+
+	/**
+		Return the table of target functions.
+
+		@return array The table of the functions supported by the class in targets.
+	*/
+
+	protected function getTargetFunctions()
+	{
+		static $aFunc = array(
+			'os'		=> 'php_uname("s")',
+			'host'		=> 'php_uname("n")',
+			'phpver'	=> 'phpversion()',
+			'extver'	=> 'phpversion(":1")',
+			'sapi'		=> 'php_sapi_name()',
+			'path'		=> 'dirname(dirname(dirname(__FILE__)))',
+		);
+
+		return $aFunc;
 	}
 
 	/**
@@ -102,6 +155,55 @@ class weeFileConfig extends weeConfig
 		$sResult = eval('return ' . $sEval . ';');
 
 		return ($sResult == $sWanted);
+	}
+
+	/**
+		Check if the $offset offset does exist.
+
+		@param	$offset	The offset checked.
+		@return	bool	True if it exists.
+	*/
+
+	public function offsetExists($offset)
+	{
+		return isset($this->aConfig[$offset]);
+	}
+
+	/**
+		Returns the $offset offset value, or null if it does not exist.
+
+		@param	$offset	The offset to return.
+		@return	mixed	The value of the offset.
+	*/
+
+	public function offsetGet($offset)
+	{
+		return array_value($this->aConfig, $offset);
+	}
+
+	/**
+		Throw an exception.
+		Do NOT use it.
+
+		@param	$offset	The offset to set.
+		@param	$value	The new value of the offset.
+	*/
+
+	public function offsetSet($offset, $value)
+	{
+		burn('BadMethodCallException', 'Configuration is not modifiable');
+	}
+
+	/**
+		Throw an exception.
+		Do NOT use it.
+
+		@param	$offset	The offset to unset.
+	*/
+
+	public function offsetUnset($offset)
+	{
+		burn('BadMethodCallException', 'Configuration is not modifiable');
 	}
 
 	/**
@@ -175,52 +277,5 @@ class weeFileConfig extends weeConfig
 		$sRight	= ltrim(substr($sLine, $i + 1));
 
 		$this->aConfig[$sLeft] = $sRight;
-	}
-
-	/**
-		Return the filename of the configuration file which is to be included.
-
-		If the path of the configuration file begins with "//" the path is relative to ROOT_PATH,
-		if it begins with "./", then it is relative to the current file being parsed,
-		otherwise the standard behaviour is adopted, working directory being the one of the process.
-
-		@param	$sPath	The path of the configuration file.
-		@return	string	The filename of the configuration file.
-	*/
-
-	protected function getIncludeFilename($sPath)
-	{
-		switch (substr($sPath, 0, 2))
-		{
-			case '//':
-				return ROOT_PATH . substr($sPath, 2);
-				break;
-
-			case './':
-				return dirname($this->aFilesStack[sizeof($this->aFilesStack) - 1]) . '/' . substr($sPath, 2);
-				break;
-		}
-
-		return $sPath;
-	}
-
-	/**
-		Return the table of target functions.
-
-		@return array The table of the functions supported by the class in targets.
-	*/
-
-	protected function getTargetFunctions()
-	{
-		static $aFunc = array(
-			'os'		=> 'php_uname("s")',
-			'host'		=> 'php_uname("n")',
-			'phpver'	=> 'phpversion()',
-			'extver'	=> 'phpversion(":1")',
-			'sapi'		=> 'php_sapi_name()',
-			'path'		=> 'dirname(dirname(dirname(__FILE__)))',
-		);
-
-		return $aFunc;
 	}
 }
