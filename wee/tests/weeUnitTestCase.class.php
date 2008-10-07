@@ -274,7 +274,7 @@ class weeUnitTestCase
 
 	public function run()
 	{
-		$b = require_once($this->sFilename);
+		$b = require($this->sFilename);
 		return $b !== false;
 	}
 

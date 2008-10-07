@@ -21,7 +21,7 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-require_once(WEE_PATH . 'vendor/phpmailer/class.phpmailer.php');
+require(WEE_PATH . 'vendor/phpmailer/class.phpmailer.php');
 
 /**
 	Class extending PHPMailer, used to send emails via SMTP.
