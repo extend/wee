@@ -15,6 +15,11 @@ define('WEE_AUTOLOAD_FILE', getcwd() . '/app/tmp/autoload.php');
 
 // define('NO_CACHE', 1);
 
+// The following string will be used as salt to enhance protection when using some of the
+// session and cookie-related features in the framework. Do NOT use the default value.
+
+// define('MAGIC_STRING', 'This is a magic string used to salt various hash throughout the framework.');
+
 // Load Web:Extend
 
 define('ALLOW_INCLUSION', 1);

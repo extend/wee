@@ -22,6 +22,11 @@
 if (!defined('ALLOW_INCLUSION')) die;
 if (version_compare(phpversion(), '5.0.0', '<')) die;
 
+// Prevent the script from using the default value for MAGIC_STRING
+
+!defined('MAGIC_STRING') or MAGIC_STRING != 'This is a magic string used to salt various hash throughout the framework.'
+	or die('The constant MAGIC_STRING defined in your script is using the default value. Please change its value before retrying.');
+
 // Detect whether we are on Windows
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
