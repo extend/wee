@@ -24,14 +24,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Namespace for class autoloading.
 
-	When using caching by configuring WEE_AUTOLOAD_FILE, please ensure that you give
+	When using caching by configuring WEE_AUTOLOAD_CACHE, please ensure that you give
 	the complete path to the file, as the file is saved in a shutdown function and
 	under certain servers (e.g. Apache), the working directory can change at that point.
 
 	For example, instead of using:
-		define('WEE_AUTOLOAD_FILE', 'app/tmp/autoload.php');
+		define('WEE_AUTOLOAD_CACHE', 'app/tmp/autoload.php');
 	Use:
-		define('WEE_AUTOLOAD_FILE', getcwd() . '/app/tmp/autoload.php');
+		define('WEE_AUTOLOAD_CACHE', getcwd() . '/app/tmp/autoload.php');
 
 	The cache file generation is disabled in DEBUG mode. However, sometimes you might
 	have a development configuration where some scripts (e.g. your application) run
@@ -39,7 +39,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	DEBUG mode disabled. This means that these scripts will create an autoload cache
 	file, and that file will get loaded even in DEBUG mode. The correct fix for this
 	is to activate DEBUG mode in all CLI tools, but if it's not immediately possible
-	you can also remove the WEE_AUTOLOAD_FILE definition to disable autoload caching.
+	you can also remove the WEE_AUTOLOAD_CACHE definition to disable autoload caching.
 */
 
 final class weeAutoload extends Namespace
@@ -65,8 +65,8 @@ final class weeAutoload extends Namespace
 
 		When the path is already loaded, this function will not reload it.
 		If you are in a development environment and the cache is activated
-		(by defining WEE_AUTOLOAD_FILE) in your project, you can make the
-		WEE_AUTOLOAD_FILE file read-protected to prevent the use of the cache.
+		(by defining WEE_AUTOLOAD_CACHE) in your project, you can make the
+		WEE_AUTOLOAD_CACHE file read-protected to prevent the use of the cache.
 
 		@param $sPath The path to autoload from.
 	*/
@@ -160,10 +160,10 @@ elseif (!function_exists('__autoload'))
 
 // Handle cache loading and saving
 
-if (defined('WEE_AUTOLOAD_FILE') && !defined('NO_CACHE'))
+if (defined('WEE_AUTOLOAD_CACHE') && !defined('NO_CACHE'))
 {
-	if (is_readable(WEE_AUTOLOAD_FILE))
-		weeAutoload::loadFromCache(WEE_AUTOLOAD_FILE);
+	if (is_readable(WEE_AUTOLOAD_CACHE))
+		weeAutoload::loadFromCache(WEE_AUTOLOAD_CACHE);
 	else
-		register_shutdown_function(array('weeAutoload', 'saveToCache'), WEE_AUTOLOAD_FILE);
+		register_shutdown_function(array('weeAutoload', 'saveToCache'), WEE_AUTOLOAD_CACHE);
 }
