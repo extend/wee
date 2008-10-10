@@ -168,5 +168,3 @@ class weeTemplate implements Printable
 		return ob_get_clean();
 	}
 }
-
-?>

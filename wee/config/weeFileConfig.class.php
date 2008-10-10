@@ -278,4 +278,15 @@ class weeFileConfig implements ArrayAccess
 
 		$this->aConfig[$sLeft] = $sRight;
 	}
+
+	/**
+		Returns the data as array, since we can't cast weeFileConfig to retrieve the array's data.
+
+		@return array Object's data.
+	*/
+
+	public function toArray()
+	{
+		return $this->aConfig;
+	}
 }

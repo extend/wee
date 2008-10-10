@@ -4,6 +4,11 @@
 
 define('WEE_CONF_FILE', 'app/conf/wee.cnf');
 
+// Cache for the configuration file. Please use an absolute path to prevent possible problems.
+// Commenting it disable configuration caching and moderately reduce the performances of your application.
+
+define('WEE_CONF_CACHE', getcwd() . '/app/tmp/config.php');
+
 // The generated autoload file's path. Please use an absolute path to prevent possible problems.
 // Commenting it disable autoload caching and severely reduce the performances of your application.
 // @see weeAutoload
