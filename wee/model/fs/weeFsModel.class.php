@@ -149,7 +149,7 @@ abstract class weeFsModel extends weeModel
 		fire(defined('WEE_ON_WINDOWS'), 'ConfigurationException',
 			'This function is not available on Windows.');
 
-		symlink($this->sFilename, $sLinkFilename);
+		@symlink($this->sFilename, $sLinkFilename);
 	}
 
 	/**
@@ -177,6 +177,7 @@ abstract class weeFsModel extends weeModel
 		with the modification and access times.
 
 		@todo Save more stuff?
+		@todo Save should write a new directory/link and not a plain file if the file doesn't exist and it is a directory/link...
 	*/
 
 	public function save()
@@ -216,8 +217,10 @@ abstract class weeFsModel extends weeModel
 
 	protected function updateName()
 	{
-		if (strpos($this->aData['name'], '/') !== false)
+		if (strpos($this->sFilename, '/') !== false)
 			$this->aData['name'] = substr(strrchr($this->sFilename, '/'), 1);
+		else
+			$this->aData['name'] = $this->sFilename;
 
 		$aExplode = explode('.', $this->aData['name']);
 		$this->aData['extension'] = (count($aExplode) < 2) ? '' : $aExplode[count($aExplode) - 1];

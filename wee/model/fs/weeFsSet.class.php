@@ -49,6 +49,7 @@ class weeFsSet extends weeSet
 		Returns a specific element.
 
 		@param $sFilename Create and return a model for this parameter.
+		@todo Test if the file exists and fail if it doesn't
 	*/
 
 	public function fetch($sFilename)
