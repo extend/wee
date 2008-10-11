@@ -1,6 +1,6 @@
 <?php
 
-$sCookieFile 	= ROOT_PATH . 'tools/tests/web/cookie.txt';
+$sCookieFile 	= ROOT_PATH . 'app/tmp/cookie.txt';
 $sUrl 			= 'http://www.google.com/xhtml';
 $aMatched		= array();
 

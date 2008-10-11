@@ -102,6 +102,3 @@ try {
 		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
 
 } catch (UnexceptedValueException $e) {}
-
-unlink($sPoFilename);
-unlink($sMoFilename);

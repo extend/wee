@@ -47,5 +47,3 @@ try {
 } catch (EndOfFileException $e) {
 	$this->fail(sprintf(_('read should not throw an EndOfFileException when trying to seek/read the file %s.'), $sFilenameExist));
 }
-
-unlink($sFilenameExist);

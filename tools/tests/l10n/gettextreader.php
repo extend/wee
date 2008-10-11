@@ -46,7 +46,3 @@ try {
 } catch (UnexpectedValueException $e) {
 	$this->fail(sprintf(_('weeGetTextReader should not throw an UnexpectedValueException when trying to read the file %s.'), $sMoFilename));
 }
-
-unlink($sFilename);
-unlink($sMoFilename);
-unlink($sPoFilename);
