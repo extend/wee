@@ -319,6 +319,9 @@ abstract class weeDatabase
 		$a = $m->fetch();
 		fire(count($a) != 1, 'UnexpectedValueException', 'The queried row does not contain exactly one column.');
 
-		return array_shift($a);
+		// Small test to allow weeExplainSQLResult to work correctly with this method
+		if (is_array($a))
+			return array_shift($a);
+		return $a;
 	}
 }
