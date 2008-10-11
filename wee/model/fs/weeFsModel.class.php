@@ -48,6 +48,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 	You can rewrite everything, however your changes may be overwritten
 	by using some of the methods.
+
+	@todo Normalise paths.
 */
 
 abstract class weeFsModel extends weeModel
@@ -214,7 +216,8 @@ abstract class weeFsModel extends weeModel
 
 	protected function updateName()
 	{
-		$this->aData['name'] = substr(strrchr($this->sFilename, '/'), 1);
+		if (strpos($this->aData['name'], '/') !== false)
+			$this->aData['name'] = substr(strrchr($this->sFilename, '/'), 1);
 
 		$aExplode = explode('.', $this->aData['name']);
 		$this->aData['extension'] = (count($aExplode) < 2) ? '' : $aExplode[count($aExplode) - 1];
