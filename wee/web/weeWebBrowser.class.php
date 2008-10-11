@@ -63,7 +63,6 @@ class weeWebBrowser
 		@param	$sURL	URL to fetch
 		@param	$aPost	Values to pass using POST
 		@return	string	Contents downloaded from URL
-		@todo Array of values in $aPost
 	*/
 
 	public function fetch($sURL, $aPost = array())
@@ -86,9 +85,9 @@ class weeWebBrowser
 		}
 
 		$sRet = curl_exec($rCurl);
-		// TODO: test du retour de exec manquant
-		curl_close($rCurl);
+		$sRet === false and burn('UnexpectedValueException', 'Failed to fetch the requested URL.');
 
+		curl_close($rCurl);
 		return $sRet;
 	}
 
@@ -102,23 +101,24 @@ class weeWebBrowser
 		@param	$sURL	URL to fetch
 		@param	$aPost	Values to pass using POST
 		@return	object	Contents downloaded from URL returned as weeWebDocument
-		@todo registerXPathNamespace does not exists for PHP < 5.1
 	*/
 
-	public function fetchDoc($sURL, $aPost = array())
+	public function fetchDoc($sURL, $aPost = array(), $bLoadDTD = false)
 	{
 		$sDoc		= $this->fetch($sURL, $aPost);
 
 		$iXMLNSPos	= strpos($sDoc, 'xmlns="');
 		if ($iXMLNSPos === false)
-			$sXMLNS	= ''; //TODO:not sure if this helps
+			$sXMLNS	= '';
 		else
 		{
 			$iXMLNSPos += 7;
 			$sXMLNS	= substr($sDoc, $iXMLNSPos, strpos($sDoc, '"', $iXMLNSPos) - $iXMLNSPos);
 		}
 
-		$oXML = @simplexml_load_string($sDoc, 'weeWebDocument', LIBXML_DTDLOAD); // TODO: Silencer les erreurs PHP
+		$iOptions = $bLoadDTD ? LIBXML_DTDLOAD : null;
+
+		$oXML = @simplexml_load_string($sDoc, 'weeWebDocument', $iOptions);
 		fire($oXML === false, 'BadXMLException', 'File returned by ' . $sURL . ' is not a valid XML document.');
 
 		$oXML->registerXPathNamespace($oXML->getName(), $sXMLNS);
