@@ -99,6 +99,13 @@ class weePgSQLDatabase extends weeDatabase
 			return 'null';
 		elseif ($mValue instanceof Printable)
 			$mValue = $mValue->toString();
+		elseif (is_float($mValue))
+		{
+			// The decimal separator used when a float is cast to string is locale-dependent.
+			$sDecimalSeparator = array_value(localeconv(), 'decimal_point');
+			if ($sDecimalSeparator != '.')
+				$mValue = str_replace($sDecimalSeparator, '.', $mValue);
+		}
 
 		return "'" . pg_escape_string($mValue) . "'";
 	}
@@ -112,6 +119,8 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function escapeIdent($sValue)
 	{
+		if ($sValue instanceof Printable)
+			$sValue = $sValue->toString();
 		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
 			_('$sValue is not a valid pgsql identifier.'));
 
