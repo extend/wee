@@ -32,6 +32,7 @@ $this->isFalse(empty($aFiles), _('weeFsSet::fetchPath should not return an empty
 
 unlink($sFilename);
 unlink($sFilename2);
+unlink($sLinkFilename);
 
 $aFiles = $o->fetchPath($sDirname);
 $this->isTrue(empty($aFiles), _('weeFsSet::fetchPath should return an empty array.'));
