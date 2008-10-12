@@ -1,4 +1,4 @@
-<?
+<?php
 
 class test_weeModel extends weeModel {}
 

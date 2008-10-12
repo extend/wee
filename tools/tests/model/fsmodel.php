@@ -1,4 +1,4 @@
-<?
+<?php
 
 class weeFsModel_testFsModel extends weeFsModel
 {

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sPoFilename	= ROOT_PATH . 'app/tmp/messages.po';
 $sMoFilename	= ROOT_PATH . 'app/tmp/messages.mo';

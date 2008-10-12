@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sFilename		= ROOT_PATH . 'app/tmp/gettextreader_badfile.txt';
 $sPoFilename	= ROOT_PATH . 'app/tmp/messages.po';

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sDirname 		= ROOT_PATH . 'app/tmp/fsset';
 $sFilename 		= ROOT_PATH . 'app/tmp/fsset/file.txt';

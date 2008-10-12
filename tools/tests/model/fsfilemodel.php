@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sFilename 			= ROOT_PATH . 'app/tmp/fsfilemodel.txt';
 $sContents 			= 'some ';

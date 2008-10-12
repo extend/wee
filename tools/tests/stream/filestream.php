@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sFilenameNotExist	= 'file_which_does_not_exist.txt';
 $sFilenameExist		= ROOT_PATH . 'app/tmp/stream.txt';

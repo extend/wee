@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sFilename 		= ROOT_PATH . 'app/tmp/fslinkmodel.txt';
 $sLinkFilename 	= ROOT_PATH . 'app/tmp/fslinkmodellinkfile.txt';

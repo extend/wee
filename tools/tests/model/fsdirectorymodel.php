@@ -1,4 +1,4 @@
-<?
+<?php
 
 $sDirname	= ROOT_PATH . 'app/tmp/fsdirectorymodel';
 $sDirname2	= ROOT_PATH . 'app/tmp/fsdirectorymodel/tmp2';
