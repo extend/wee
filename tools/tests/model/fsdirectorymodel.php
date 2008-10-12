@@ -21,29 +21,33 @@ touch($sFilename);
 touch($sFilename2);
 touch($sFilename3);
 
-chmod($sDirname, 0400);
+if (!defined('WEE_ON_WINDOWS')) {
+	// These tests are not compatible with Windows
 
-try {
-	$o = new weeFsDirectoryModel($aData);
+	chmod($sDirname, 0400);
 
-	$o->deleteContents();
-	$this->isTrue(file_exists($sFilename), 
-		sprintf(_('weeFsDirectoryModel::deleteContents(), the contents in %s should not be deleted.'), $sDirname));
+	try {
+		$o = new weeFsDirectoryModel($aData);
 
-	$this->fail(sprintf(_('weeFsDirectoryModel should throw an NotPermittedException when trying to delete the contents of %'), $sDirname));
-} catch (NotPermittedException $e) {}
+		$o->deleteContents();
+		$this->isTrue(file_exists($sFilename), 
+			sprintf(_('weeFsDirectoryModel::deleteContents(), the contents in %s should not be deleted.'), $sDirname));
 
-try {
-	$o = new weeFsDirectoryModel($aData);
+		$this->fail(sprintf(_('weeFsDirectoryModel should throw an NotPermittedException when trying to delete the contents of %'), $sDirname));
+	} catch (NotPermittedException $e) {}
 
-	$o->delete();
-	$this->isTrue(file_exists($sDirname),
-		sprintf(_('weeFsDirectoryModel::delete(), the directory %s should not be deleted.'), $sDirname));
+	try {
+		$o = new weeFsDirectoryModel($aData);
 
-	$this->fail(sprintf(_('weeFsDirectoryModel should throw an NotPermittedException when trying to delete %'), $sDirname));
-} catch (NotPermittedException $e) {}
+		$o->delete();
+		$this->isTrue(file_exists($sDirname),
+			sprintf(_('weeFsDirectoryModel::delete(), the directory %s should not be deleted.'), $sDirname));
 
-exec(sprintf('chmod -R 755 %s', $sDirname));
+		$this->fail(sprintf(_('weeFsDirectoryModel should throw an NotPermittedException when trying to delete %'), $sDirname));
+	} catch (NotPermittedException $e) {}
+
+	exec(sprintf('chmod -R 755 %s', $sDirname));
+}
 
 try {
 	$o = new weeFsDirectoryModel($aData);

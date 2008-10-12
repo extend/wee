@@ -14,14 +14,18 @@ try {
 	$this->fail(sprintf(_('weeFileStream should throw a FileNotFoundException when trying to access %s.'), $sFilenameNotExist));
 } catch (FileNotFoundException $e) {}
 
-// The file exists but has not reading permission
-chmod($sFilenameExist, 0000);
-try {
-	$oFileStream = new weeFileStream($sFilenameExist);
-	$this->fail(sprintf(_('weeFileStream should throw a NotPermittedException when trying to access %s'), $sFilenameExist));
-} catch (NotPermittedException $e) {}
+if (!defined('WEE_ON_WINDOWS')) {
+	// The file exists but has not reading permission
+	// (this test is not compatible with Windows)
 
-chmod($sFilenameExist, 0644);
+	chmod($sFilenameExist, 0000);
+	try {
+		$oFileStream = new weeFileStream($sFilenameExist);
+		$this->fail(sprintf(_('weeFileStream should throw a NotPermittedException when trying to access %s.'), $sFilenameExist));
+	} catch (NotPermittedException $e) {}
+	chmod($sFilenameExist, 0644);
+}
+
 try {
 	$oFileStream = new weeFileStream($sFilenameExist);
 

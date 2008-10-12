@@ -44,10 +44,12 @@ try {
 	$this->isTrue($o->isWritable(), 
 		sprintf(_("The file %s should be writable."), $sFilename));
 
-	$o->makeLink($sLinkFilename);
-	$this->isTrue(is_link($sLinkFilename), 
-		sprintf(_("The file %s should be a symbolic link."), $sLinkFilename));
-	unlink($sLinkFilename);
+	if (!defined('WEE_ON_WINDOWS')) {
+		$o->makeLink($sLinkFilename);
+		$this->isTrue(is_link($sLinkFilename), 
+			sprintf(_("The file %s should be a symbolic link."), $sLinkFilename));
+		unlink($sLinkFilename);
+	}
 
 	$o->delete();
 	$this->isFalse(file_exists($sFilename),
@@ -69,8 +71,10 @@ try {
 	$this->isFalse($o->isWritable(), 
 		sprintf(_("The file %s should not be writable."), $sFilename));
 
-	$o->makeLink('');
-	$this->isFalse(is_link(''), _('The symbolic link "" (empty) should not exists'));
+	if (!defined('WEE_ON_WINDOWS')) {
+		$o->makeLink('');
+		$this->isFalse(is_link(''), _('The symbolic link "" (empty) should not exists'));
+	}
 
 } catch (InvalidArgumentException $e) {
 	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
