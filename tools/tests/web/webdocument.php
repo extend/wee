@@ -16,6 +16,8 @@ try {
 		sprintf(_('weeWebDocument::regex should find the pattern "/google/" in the document returned by %s.'), $sUrl));
 } catch (InvalidArgumentException $e) {
 	$this->fail('weeWebBrowser should not throw an InvalidArgumentException when trying to find the pattern "/google/".');
+} catch (ConfigurationException $e) {
+	$this->skip();
 }
 
 try {

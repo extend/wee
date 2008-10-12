@@ -1,5 +1,8 @@
 <?php
 
+if (defined('WEE_ON_WINDOWS'))
+	$this->fail('This test is not compatible with Windows.');
+
 $sCookieFile		= ROOT_PATH . 'app/tmp/cookie.txt';
 $sXmlNotWellFormed	= 'http://www.w3schools.com/XML/note_error.xml';
 $sXmlWellFormed		= 'http://www.w3schools.com/XML/note.xml';
@@ -9,7 +12,10 @@ chmod($sCookieFile, 0000);
 try {
 	$oWebBrowser = new weeWebBrowser($sCookieFile);
 	$this->fail(sprintf(_('weeWebBrowser should throw a NotPermittedException when trying to access the file %s.'), $sCookieFile));
-} catch (NotPermittedException $e) {}
+} catch (NotPermittedException $e) {
+} catch (ConfigurationException $e) {
+	$this->skip();
+}
 
 chmod($sCookieFile, 0644);
 try {
@@ -30,4 +36,3 @@ try {
 	$oWebBrowser->fetchDoc($sXmlNotWellFormed);
 	$this->fail(sprintf(_('weeWebBrowser should throw a BadXMLException when fetching the file %s.'), $sXmlNotWellFormed));
 } catch (BadXMLException $e) {}
-
