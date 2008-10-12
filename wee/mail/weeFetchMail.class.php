@@ -21,9 +21,6 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-function_exists('imap_open') or burn('ConfigurationException',
-	'The IMAP PHP extension is required by the weeFetchMail class.');
-
 /**
 	Fetch mail from IMAP and POP3 mailboxes.
 */
@@ -58,6 +55,9 @@ class weeFetchMail
 
 	public function __construct($aParams)
 	{
+		function_exists('imap_open') or burn('ConfigurationException',
+			'The IMAP PHP extension is required by the weeFetchMail class.');
+
 		fire(empty($aParams['user']), 'InvalidParameterException',
 			'The user name was not provided in the connection parameters.');
 		fire(empty($aParams['password']), 'InvalidParameterException',

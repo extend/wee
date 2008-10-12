@@ -21,9 +21,6 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-function_exists('mysql_connect') or burn('ConfigurationException',
-	'The MySQL PHP extension is required by the MySQL database driver.');
-
 /**
 	MySQL database driver.
 */
@@ -45,6 +42,9 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function __construct($aParams = array())
 	{
+		function_exists('mysql_connect') or burn('ConfigurationException',
+			'The MySQL PHP extension is required by the MySQL database driver.');
+
 		$this->rLink = @mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'));
 		fire($this->rLink === false, 'DatabaseException', 'Failed to connect to database.');
 

@@ -21,9 +21,6 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-class_exists('XSLTProcessor') or burn('ConfigurationException',
-	'The XSL PHP extension is required by weeForm.');
-
 if (!defined('FORM_PATH'))	define('FORM_PATH',	ROOT_PATH . 'app/form/');
 if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
 
@@ -67,6 +64,9 @@ class weeForm implements Printable
 
 	public function __construct($sFilename, $sAction = 'add')
 	{
+		class_exists('XSLTProcessor') or burn('ConfigurationException',
+			'The XSL PHP extension is required by weeForm.');
+
 		fire(!ctype_print($sAction), 'InvalidArgumentException', 'The action name must be printable.');
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;

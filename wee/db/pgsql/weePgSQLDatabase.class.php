@@ -21,9 +21,6 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-function_exists('pg_connect') or burn('ConfigurationException',
-	'The PostgreSQL PHP extension is required by the PostgreSQL database driver.');
-
 /**
 	PostgreSQL database driver.
 */
@@ -52,6 +49,9 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function __construct($aParams = array())
 	{
+		function_exists('pg_connect') or burn('ConfigurationException',
+			'The PostgreSQL PHP extension is required by the PostgreSQL database driver.');
+
 		//TODO:maybe quote & escape values...
 		$sConnection = null;
 		foreach ($aParams as $sKey => $sValue)
