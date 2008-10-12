@@ -44,6 +44,7 @@ class weeWebBrowser
 
 	public function __construct($sCookieFile)
 	{
+		function_exists('curl_init') or burn('ConfigurationException', 'The CURL PHP extension is required by weeWebBrowser.');
 		fire(file_exists($sCookieFile) && !(is_readable($sCookieFile) && is_writable($sCookieFile)), 'NotPermittedException',
 			"Permission refused while trying to access the file '" . $sCookieFile . "'.");
 
