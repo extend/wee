@@ -79,9 +79,12 @@ try
 
 	$this->isFalse($o->isTargetedSystem('$(os os_which_is_not_the_one_currently_used)'),
 		'weeFileConfig fails to see that the targeted system is not the one currently used.');
+
+	// Special test for "Windows NT" which is in two words instead of one
+	$this->isTrue(defined('WEE_ON_WINDOWS') && $o->isTargetedSystem('$(os Windows NT)'),
+		'weeFileConfig fails when the operating system name uses two words.');
 }
 catch (UnexpectedValueException $e)
 {
 	$this->fail('weeFileConfig throws an UnexpectedValueException when the given instruction is valid.');
 }
-
