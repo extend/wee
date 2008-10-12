@@ -8,8 +8,10 @@ $sLinkFilename 	= ROOT_PATH . 'app/tmp/fsset/linkfile.txt';
 $iRet = mkdir($sDirname);
 $iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), $sDirname));
 
-$iRet = symlink($sFilename, $sLinkFilename);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the symbolic link %s.'), $sLinkFilename));
+if (!defined('WEE_ON_WINDOWS')) {
+	$iRet = symlink($sFilename, $sLinkFilename);
+	$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the symbolic link %s.'), $sLinkFilename));
+}
 
 touch($sFilename);
 touch($sFilename2);
@@ -19,9 +21,11 @@ $oModel = $o->fetch($sDirname);
 $this->isInstanceof($oModel, 'weeFsDirectoryModel',
 		sprintf(_('weeFsSet::fetch should return a weeFsDirectoryModel instance, got a %s instance instead.'), get_class($oModel)));
 
-$oModel = $o->fetch($sLinkFilename);
-$this->isInstanceof($oModel, 'weeFsLinkModel',
-		sprintf(_('weeFsSet::fetch should return a weeFsDirectoryModel instance, got a %s instance instead.'), get_class($oModel)));
+if (!defined('WEE_ON_WINDOWS')) {
+	$oModel = $o->fetch($sLinkFilename);
+	$this->isInstanceof($oModel, 'weeFsLinkModel',
+			sprintf(_('weeFsSet::fetch should return a weeFsDirectoryModel instance, got a %s instance instead.'), get_class($oModel)));
+}
 
 $oModel = $o->fetch($sFilename);
 $this->isInstanceof($oModel, 'weeFsFileModel',
@@ -32,7 +36,8 @@ $this->isFalse(empty($aFiles), _('weeFsSet::fetchPath should not return an empty
 
 unlink($sFilename);
 unlink($sFilename2);
-unlink($sLinkFilename);
+if (!defined('WEE_ON_WINDOWS'))
+	unlink($sLinkFilename);
 
 $aFiles = $o->fetchPath($sDirname);
 $this->isTrue(empty($aFiles), _('weeFsSet::fetchPath should return an empty array.'));

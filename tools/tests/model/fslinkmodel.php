@@ -1,5 +1,8 @@
 <?php
 
+if (defined('WEE_ON_WINDOWS'))
+	$this->skip();
+
 $sFilename 		= ROOT_PATH . 'app/tmp/fslinkmodel.txt';
 $sLinkFilename 	= ROOT_PATH . 'app/tmp/fslinkmodellinkfile.txt';
 $aData 			= array('filename' => $sLinkFilename);
