@@ -56,7 +56,10 @@ abstract class weeTestSuite implements Printable
 
 	public function __construct($sTestsPath)
 	{
-		$this->sTestsPath = $_SERVER['PWD'] . '/' . $sTestsPath;
+		if (defined('WEE_ON_WINDOWS'))
+			$this->sTestsPath = realpath(getcwd()) . '\\' . str_replace('/', '\\', $sTestsPath);
+		else
+			$this->sTestsPath = $_SERVER['PWD'] . '/' . $sTestsPath;
 	}
 
 	/**
