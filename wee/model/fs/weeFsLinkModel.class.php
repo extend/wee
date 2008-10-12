@@ -21,8 +21,8 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
-fire(defined('WEE_ON_WINDOWS'), 'ConfigurationException',
-	'This class is not available on Windows.');
+defined('WEE_ON_WINDOWS') and burn('ConfigurationException',
+	'File links are not available on Windows.');
 
 /**
 	Model for filesystem links.

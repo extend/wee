@@ -21,6 +21,9 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+function_exists('oci_new_connect') or burn('ConfigurationException',
+	'The OCI8 PHP extension is required by the Oracle database driver.');
+
 /**
 	Oracle database driver.
 */
@@ -55,9 +58,6 @@ class weeOracleDatabase extends weeDatabase
 
 	public function __construct($aParams = array())
 	{
-		fire(!function_exists('oci_new_connect'), 'ConfigurationException',
-			'The OCI8 PHP extension is required by the Oracle database driver.');
-
 		if (!empty($aParams['encoding']))
 			putenv('NLS_LANG=' . $aParams['encoding']);
 

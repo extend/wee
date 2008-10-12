@@ -21,8 +21,16 @@
 
 if (!defined('ALLOW_INCLUSION')) die;
 
+class_exists('XSLTProcessor') or burn('ConfigurationException',
+	'The XSL PHP extension is required by weeForm.');
+
 if (!defined('FORM_PATH'))	define('FORM_PATH',	ROOT_PATH . 'app/form/');
 if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
+
+/**
+	Automatically generate and validate forms using a simple XML file.
+	The generation is done using XSLT with a dynamically generated stylesheet.
+*/
 
 class weeForm implements Printable
 {
