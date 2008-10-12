@@ -24,7 +24,7 @@ $iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot write t
 
 exec(sprintf('msgfmt -o %s %s', $sMoFilename, $sPoFilename));
 if (!is_file($sMoFilename))
-	return $this->skip();
+	$this->skip();
 
 try {
 	$o = new weeGetTextDictionary($sMoFilename);
