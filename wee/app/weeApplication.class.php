@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2007 Dev:Extend
+	Copyright (c) 2007, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -360,19 +360,23 @@ class weeApplication implements Singleton
 	/**
 		Returns an instance of the weeApplication singleton.
 
+		At the time of the first call of this method, a shortcut function to this method called weeApp is created.
+
 		@return weeApplication The weeApplication object for this process
 	*/
 
 	public static function instance()
 	{
-		if (!isset(self::$oSingleton))
+		if (self::$oSingleton === null)
 		{
 			static $iInstance = 0;
-			fire($iInstance++ != 0, 'IllegalStateException',
-				'Trying to instanciate weeApplication within its own constructor. ' .
-				'This error can happen if you inherited a class created in the constructor ' .
-				'and put logic that uses weeApplication in it (models, for example).');
+			$iInstance++ == 0 or
+				burn('IllegalStateException',
+					_('Trying to instanciate weeApplication within its own constructor. ') .
+					_('This error can happen if you inherited a class created in the constructor ') .
+					_('and put logic that uses weeApplication in it (models, for example).'));
 
+			function weeApp() { return weeApplication::instance(); }
 			self::$oSingleton = new self;
 		}
 
@@ -527,13 +531,4 @@ class weeApplication implements Singleton
 
 		return $aEvent;
 	}
-}
-
-/**
-	Shortcut to weeApplication::instance().
-*/
-
-function weeApp()
-{
-	return weeApplication::instance();
 }
