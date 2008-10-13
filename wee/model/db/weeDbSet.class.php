@@ -49,6 +49,33 @@ abstract class weeDbSet extends weeSet
 	}
 
 	/**
+		Builds and executes a SQL query.
+
+		This method is a shortcut to the following idiom:
+			$this->getDb()->query('...')->rowClass($this->sModel);
+
+		If the query returned a result set, it is automatically associated to the model
+		of this class.
+
+		@overload query($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters
+		@overload query($mQueryString, $aNamedParameters)	Example of query call with named parameters
+		@param	$mQueryString								The query string
+		@param	...											The additional arguments that will be inserted into the query
+		@return	weeDatabaseResult							Only with SELECT queries: an object for results handling
+		@see												weeDatabase::query
+	*/
+
+	protected function query($mQueryString)
+	{
+		$aArgs	= func_get_args();
+		$m		= call_user_func_array(array($this->getDb(), 'query'), $aArgs);
+
+		if ($m instanceof weeDatabaseResult && $this->sModel !== null)
+			$m->rowClass($this->sModel);
+		return $m;
+	}
+
+	/**
 		Associate a database to this set.
 
 		@param $oDb weeDatabase The database instance to associate to this set.
