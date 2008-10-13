@@ -1,5 +1,13 @@
 <?php
 
+// Uncomment the following line to enable DEBUG mode.
+// This has the effect to turn on all PHP errors and warnings,
+// to provide you with an useful trace when an exception occurs,
+// and to disable any caching that might happen in the framework.
+// Do NOT enable DEBUG mode on a production environment.
+
+// define('DEBUG', 1);
+
 // Path to the configuration file used by the application.
 
 define('WEE_CONF_FILE', 'app/conf/wee.cnf');

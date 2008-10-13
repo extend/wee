@@ -27,6 +27,19 @@ if (version_compare(phpversion(), '5.0.0', '<')) die;
 !defined('MAGIC_STRING') or MAGIC_STRING != 'This is a magic string used to salt various hash throughout the framework.'
 	or die('The constant MAGIC_STRING defined in your script is using the default value. Please change its value before retrying.');
 
+// Enable/disable error reporting depending on DEBUG
+
+if (defined('DEBUG'))
+{
+	error_reporting(E_ALL | E_STRICT);
+	ini_set('display_errors', 1);
+}
+else
+{
+	error_reporting(0);
+	ini_set('display_errors', 0);
+}
+
 // Detect whether we are on Windows
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
@@ -58,17 +71,6 @@ if (!defined('APP_PATH'))
 if (!defined('WEE_PATH'))	define('WEE_PATH', ROOT_PATH . 'wee/');
 if (!defined('PHP_EXT'))	define('PHP_EXT',  strrchr(__FILE__, '.'));
 if (!defined('CLASS_EXT'))	define('CLASS_EXT',	'.class' . PHP_EXT);
-
-if (defined('DEBUG'))
-{
-	error_reporting(E_ALL | E_STRICT);
-	ini_set('display_errors', 1);
-}
-else
-{
-	error_reporting(0);
-	ini_set('display_errors', 0);
-}
 
 // Atomize magic quotes
 

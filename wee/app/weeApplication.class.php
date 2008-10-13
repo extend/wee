@@ -79,12 +79,12 @@ class weeApplication implements Singleton
 		// Loads from cache if possible, otherwise tries to load the configuration file
 		// and then, if cache is enabled, cache the configuration array
 
-		if (defined('WEE_CONF_CACHE') && !defined('NO_CACHE') && is_readable(WEE_CONF_CACHE))
+		if (!defined('DEBUG') && !defined('NO_CACHE') && defined('WEE_CONF_CACHE') && is_readable(WEE_CONF_CACHE))
 			$this->oConfig = require(WEE_CONF_CACHE);
 		else try {
 			$this->oConfig = new weeFileConfig(WEE_CONF_FILE);
 
-			if (defined('WEE_CONF_CACHE'))
+			if (!defined('DEBUG') && defined('WEE_CONF_CACHE'))
 				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->oConfig->toArray(), true) . ';');
 		} catch (FileNotFoundException $e) {
 			// No configuration file. Stop here and display a friendly message.
@@ -94,16 +94,6 @@ class weeApplication implements Singleton
 			else
 				require(ROOT_PATH . 'res/wee/noconfig.htm');
 			exit;
-		}
-
-		// Activate debug mode if needed
-
-		if (!defined('DEBUG') && !empty($this->oConfig['debug.mode']))
-		{
-			define('DEBUG', 1);
-
-			error_reporting(E_ALL | E_STRICT);
-			ini_set('display_errors', 1);
 		}
 
 		// Load aliases file
