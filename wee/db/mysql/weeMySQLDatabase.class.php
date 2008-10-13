@@ -94,6 +94,12 @@ class weeMySQLDatabase extends weeDatabase
 			return 'null';
 		elseif ($mValue instanceof Printable)
 			$mValue = $mValue->toString();
+		elseif (is_float($mValue))
+		{
+			$sDecimalSeparator = array_value(localeconv(), 'decimal_point');
+			if ($sDecimalSeparator != '.')
+				$mValue = str_replace($sDecimalSeparator, '.', $mValue);
+		}
 
 		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
 	}
