@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,95 +25,162 @@ if (!defined('ALLOW_INCLUSION')) die;
 	MySQL specialization of weeDbMetaTable.
 */
 
-class weeMySQLDbMetaTable extends weeDbMetaTable
+class weeMySQLDbMetaTable extends weeDbMetaTable implements weeDbMetaCommentable
 {
 	/**
-		Temporary table type
+		Initializes a new mysql table object.
+
+		This class should NEVER be instantiated manually.
+		Instances of this class should be returned by weeMySQLDbMeta.
+
+		@param	$oMeta						The mysql dbmeta object.
+		@param	$aData						The object data.
 	*/
 
-	const TEMPORARY = 3;
-
-	/**
-		Initializes a new mysql metadb table object.
-
-		@see	weeDbMetaTable::__construct()
-	*/
-
-	public function __construct(weeMySQLDbMeta $oMeta, array $aInfos)
+	public function __construct(weeMySQLDbMeta $oMeta, array $aData)
 	{
-		parent::__construct($oMeta, $aInfos);
-
-		// These are integers...
-		$this->aInfos['version']		= (int) $this->aInfos['version'];
-		$this->aInfos['table_rows']		= (int) $this->aInfos['table_rows'];
-
-		// ...but auto_increment can be null.
-		if ($this->aInfos['auto_increment'] !== null)
-			$this->aInfos['auto_increment']	= (int) $this->aInfos['auto_increment'];
+		parent::__construct($oMeta, $aData);
 	}
 
 	/**
-		Returns the character set of the table.
+		Returns a column of the table.
 
-		@return	string	The character set.
+		@param	$sName						The column name.
+		@return	weeMySQLDbMetaColumn		The column.
 	*/
 
-	public function charset()
+	public function column($sName)
 	{
-		return substr($this->aInfos['table_collation'], 0,
-			strpos($this->aInfos['table_collation'], '_'));
+		$oQuery = $this->meta()->db()->query('
+			SELECT		TABLE_NAME AS `table`, COLUMN_NAME AS name, ORDINAL_POSITION AS num,
+						COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment
+				FROM	information_schema.columns
+				WHERE	COLUMN_NAME		= ?
+					AND	TABLE_NAME		= ?
+					AND	TABLE_SCHEMA	= DATABASE()
+				LIMIT	1
+		', $sName, $this->name());
+
+		count($oQuery) == 1
+			or burn('UnexpectedValueException',
+				sprintf(_('Column "%s" does not exist.'), $sName));
+
+		return $this->instantiateObject($this->getColumnClass(), $oQuery->fetch());
 	}
 
 	/**
-		Returns the number of rows in the table.
+		Returns whether a given column exists in the table.
 
-		@see	http://www.php.net/~helly/php/ext/spl/interfaceCountable.html
+		@param	$sName						The column name.
+		@return	bool						true if the column exists, false otherwise.
 	*/
 
-	public function count()
+	public function columnExists($sName)
 	{
-		// table_rows is the number of rows in the table, but it is only a rough
-		// approximation if the storage engine is InnoDB.
-
-		if ($this->aInfos['engine'] == 'InnoDB')
-			return parent::count();
-
-		return $aCount['table_rows'];
+		return (bool)$this->db()->queryValue('SELECT EXISTS(
+			SELECT 1
+				FROM	information_schema.columns
+				WHERE	COLUMN_NAME		= ?
+					AND	TABLE_NAME		= ?
+					AND	TABLE_SCHEMA	= DATABASE()
+		)', $sName, $this->name());
 	}
 
 	/**
-		Returns the array of fields which need to be passed to the constructor of the class.
+		Returns all the columns of the table.
 
-		@return	array	The array of fields.
+		@return	array(weeMySQLDbMetaColumn)	The array of tables.
 	*/
 
-	public static function getFields()
+	public function columns()
 	{
-		return array_merge(parent::getFields(), array(
-			'engine',
-			'version',
-			'table_rows',
-			'auto_increment',
-			'table_collation',
-			'table_comment'));
+		$oQuery = $this->meta()->db()->query('
+			SELECT			TABLE_NAME AS `table`, COLUMN_NAME AS name, ORDINAL_POSITION AS num,
+							COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment
+				FROM		information_schema.columns
+				WHERE		TABLE_NAME		= :name
+						AND	TABLE_SCHEMA	= DATABASE()
+				ORDER BY	ORDINAL_POSITION
+		', $this->aData);
+
+		$aColumns = array();
+		foreach ($oQuery as $aColumn)
+			$aColumns[] = $this->instantiateObject($this->getColumnClass(), $aColumn);
+		return $aColumns;
 	}
 
 	/**
-		Returns the type of the table.
+		Returns the comment of the table.
 
-		The type is either one of the three BASE_TABLE, VIEW, TEMPORARY
-		class constants.
-
-		@return int	The table type.
+		@return	string						The comment of the table.
 	*/
 
-	public function type()
+	public function comment()
 	{
-		switch ($this->aInfos['table_type'])
-		{
-			case 'TEMPORARY': return self::TEMPORARY;
-		}
+		return $this->aData['comment'];
+	}
 
-		return parent::type();
+	/**
+		Returns the name of the column class.
+
+		@return	string						The name of the column class.
+	*/
+
+	public function getColumnClass()
+	{
+		return 'weeMySQLDbMetaColumn';
+	}
+
+	/**
+		Returns the name of the primary key class.
+
+		@return	string					The name of the primary key class.
+	*/
+
+	public function getPrimaryKeyClass()
+	{
+		return 'weeMySQLDbMetaPrimaryKey';
+	}
+
+	/**
+		Returns whether the table has a primary key.
+
+		@return	bool						true if the table has a primary key, false otherwise.
+	*/
+
+	public function hasPrimaryKey()
+	{
+		return (bool)$this->db()->queryValue("SELECT EXISTS(
+			SELECT 1
+				FROM	information_schema.table_constraints
+				WHERE	TABLE_NAME		= ?
+					AND	CONSTRAINT_TYPE	= 'PRIMARY KEY'
+					AND	TABLE_SCHEMA	= DATABASE()
+		)", $this->name());
+	}
+
+	/**
+		Returns the primary key of the table.
+
+		@return	weeMySQLDbMetaPrimaryKey	The primary key of the table.
+		@throw	IllegalStateException		The table does not have a primary key.
+	*/
+
+	public function primaryKey()
+	{
+		$oQuery = $this->db()->query("
+			SELECT		CONSTRAINT_NAME AS name, CONSTRAINT_TYPE AS type
+				FROM	information_schema.TABLE_CONSTRAINTS
+				WHERE	TABLE_NAME		= ?
+					AND	TABLE_SCHEMA	= DATABASE()
+					AND	CONSTRAINT_TYPE	= 'PRIMARY KEY'
+				LIMIT	1
+		", $this->name());
+
+		count($oQuery) == 1
+			or burn('IllegalStateException',
+				_('The table does not have a primary key.'));
+
+		return $this->instantiateObject($this->getPrimaryKeyClass(), $oQuery->fetch());
 	}
 }

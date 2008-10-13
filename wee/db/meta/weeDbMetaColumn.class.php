@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,130 +22,40 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class used to query meta informations about columns and their objects.
+	Class used to query meta data about columns and their objects.
 */
 
-class weeDbMetaColumn extends weeDbMetaObject
+abstract class weeDbMetaColumn extends weeDbMetaTableObject
 {
 	/**
-		Initializes a new metadb column object.
+		Returns the default value of the column.
 
-		We override the default constructor from weeDbMetaObject to do some
-		modifications on the informations.
-
-		@see	weeDbMetaObject::__construct()
+		@return	string	The default value of the column.
 	*/
 
-	public function __construct(weeDbMeta $oMeta, array $aInfos)
-	{
-		parent::__construct($oMeta, $aInfos);
-
-		// These fields are integers.
-		$this->aInfos['ordinal_position']	= (int) $this->aInfos['ordinal_position'];
-
-		if ($this->aInfos['numeric_precision'] !== null)
-			$this->aInfos['numeric_precision']	= (int) $this->aInfos['numeric_precision'];
-
-		if ($this->aInfos['numeric_scale'] !== null)
-			$this->aInfos['numeric_scale']		= (int) $this->aInfos['numeric_scale'];
-
-		// is_nullable field contains either 'YES' or 'NO', we convert
-		// it to a boolean value.
-		$this->aInfos['is_nullable']		= $this->aInfos['is_nullable'] == 'YES';
-	}
+	abstract public function defaultValue();
 
 	/**
-		Returns the array of fields which need to be passed to the constructor of the class.
+		Returns whether the column has a default value.
 
-		@return	array	The array of fields.
-		@todo			Handle more fields.
+		@return	bool	true if the column has a default value, false otherwise.
 	*/
 
-	public static function getFields()
-	{
-		return array(
-			'table_schema',
-			'table_name',
-			'column_name',
-			'ordinal_position',
-			'column_default',
-			'is_nullable',
-			'data_type',
-			'character_maximum_length',
-			'numeric_precision',
-			'numeric_scale');
-	}
+	abstract public function hasDefault();
 
 	/**
-		Returns the array of fields used to order the objects in the SQL SELECT query.
-
-		@return	array	The array of order fields.
+		Returns whether the column can contain null values.
+	
+		@return	bool	true if the column accepts null as a value, false otherwise.
 	*/
 
-	public static function getOrderFields()
-	{
-		return array(
-			'table_schema',
-			'table_name',
-			'ordinal_position');
-	}
+	abstract public function isNullable();
 
 	/**
-		Returns the name of the information_schema table where the column objects
-		are stored.
+		Returns the number of the column in the table.
 
-		@return	string	The table name.
+		@return	int		The number of the column in the table.
 	*/
 
-	public static function getTable()
-	{
-		return 'information_schema.columns';
-	}
-
-	/**
-		Returns the name of the column.
-		
-		@return string	The name of the column.
-	*/
-
-	public function name()
-	{
-		return $this->aInfos['column_name'];
-	}
-
-	/**
-		Returns the schema of the column.
-
-		@return weeDbMetaSchema The schema.
-	*/
-
-	protected function schema()
-	{
-		return $this->oMeta->schema($this->aInfos['table_schema']);
-	}
-
-	/**
-		Returns the table of the column.
-
-		@return weeDbMetaTable	The table.
-	*/
-
-	protected function table()
-	{
-		return $this->oMeta->table(
-			$this->aInfos['table_schema'] . '.' . $this->aInfos['table_name']);
-	}
-
-	/**
-		Returns the string representation of the column.
-
-		@return	string	The fully-qualified column name.
-	*/
-
-	public function toString()
-	{
-		return $this->aInfos['table_schema']
-			. '.' . $this->aInfos['table_name']
-			. '.' . $this->name();
-	}
+	abstract public function num();
 }

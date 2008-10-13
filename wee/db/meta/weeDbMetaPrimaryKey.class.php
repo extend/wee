@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,31 +22,16 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	MySQL specialization of weeDbMetaSchema.
+	Class used to query meta data about primary keys.
 */
 
-class weeMySQLDbMetaSchema extends weeDbMetaSchema
+abstract class weeDbMetaPrimaryKey extends weeDbMetaTableObject
 {
 	/**
-		Initializes a new mysql dbmeta schema object.
+		Returns the columns of the table constraint.
 
-		@see	weeDbMetaSchema::__construct()
+		@return	array(string)				The names of the columns of the constraint.
 	*/
 
-	public function __construct(weeMySQLDbMeta $oMeta, array $aInfos)
-	{
-		parent::__construct($oMeta, $aInfos);
-	}
-
-	/**
-		Returns the array of fields which need to be passed to the constructor of the class.
-
-		@return	array	The array of fields.
-	*/
-
-	public static function getFields()
-	{
-		return array_merge(parent::getFields(), array(
-			'schema_owner'));
-	}
+	abstract public function columns();
 }

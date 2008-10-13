@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,85 +25,80 @@ if (!defined('ALLOW_INCLUSION')) die;
 	MySQL specialization of weeDbMetaColumn.
 */
 
-class weeMySQLDbMetaColumn extends weeDbMetaColumn
+class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentable
 {
 	/**
-		Primary key.
+		Initializes a new mysql column object.
+
+		This class should NEVER be instantiated manually.
+		Instances of this class should be returned by weeMySQLDbMetaColumn.
+
+		@param	$oMeta						The dbmeta object.
+		@param	$aData						The object data.
 	*/
 
-	const PRIMARY_KEY = 1;
-
-	/**
-		Unique key.
-	*/
-
-	const UNIQUE_KEY = 2;
-
-	/**
-		Foreign key.
-	*/
-
-	const FOREIGN_KEY = 3;
-
-	/**
-		Initializes a new mysql metadb column object.
-
-		@see	weeDbMetaColumn::__construct()
-	*/
-
-	public function __construct(weeMySQLDbMeta $oMeta, array $aInfos)
+	public function __construct(weeMySQLDbMeta $oMeta, array $aData, weeMySQLDbMetaTable $oTable)
 	{
-		parent::__construct($oMeta, $aInfos);
+		parent::__construct($oMeta, $aData, $oTable);
 	}
 
 	/**
-		Returns the array of fields which need to be passed to the constructor of the class.
+		Returns the comment of the column.
 
-		@return	array	The array of fields.
-		@todo			Handle more fields.
+		@return	string						The comment of the column.
 	*/
 
-	public static function getFields()
+	public function comment()
 	{
-		return array_merge(parent::getFields(), array(
-			'character_set_name',
-			'collation_name',
-			'column_key',
-			'extra',
-			'column_comment'));
+		return $this->aData['comment'];
 	}
 
 	/**
-		Returns whether the column is auto incremented or not.
+		Returns the default value of the column.
 
-		@return	boolean	True is the column is auto incremented, false otherwise.
+		@return	string						The default value of the column.
+		@throw	IllegalStateException		The column does not have a default value.
 	*/
 
-	public function isAutoIncremented()
+	public function defaultValue()
 	{
-		return $this->aInfos['extra'] == 'AUTO_INCREMENT';
+		$this->hasDefault()
+			or burn('IllegalStateException',
+			_('The column does not have any default value.'));
+
+		return $this->aData['default'];
 	}
 
 	/**
-		Return the type of the key in which the key takes part, or null if any.
+		Returns whether the column has a default value.
 
-		The type is one of the three PRIMARY_KEY, UNIQUE_KEY, FOREIGN_KEY class constants.
-
-		@return	int	The type of the key or null.
-		@todo		Check whether foreign keys are really indicated with FOR.
+		@return	bool						true if the column has a default value, false otherwise.
 	*/
 
-	public function keyType()
+	public function hasDefault()
 	{
-		switch ($aInfos['column_key'])
-		{
-			case 'PRI':	return self::PRIMARY_KEY;
-			case 'UNI':	return self::UNIQUE_KEY;
-			case 'FOR':	return self::FOREIGN_KEY;
-			case '':	return null;
-		}
+		return $this->isNullable() || $this->aData['default'] !== null;
+	}
 
-		burn('UnexpectedValueException',
-			"'" . $Infos['column_key'] . '" is not a valid key type.');
+	/**
+		Returns whether the column can contain null values.
+	
+		@return	bool						true if the column accepts null as a value, false otherwise.
+	*/
+
+	public function isNullable()
+	{
+		return $this->aData['nullable'] == 'YES';
+	}
+
+	/**
+		Returns the number of the column in the table.
+
+		@return	int							The number of the column in the table.
+	*/
+
+	public function num()
+	{
+		return $this->aData['num'];
 	}
 }

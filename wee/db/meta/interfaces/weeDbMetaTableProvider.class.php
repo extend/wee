@@ -22,45 +22,34 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class used to query meta data about databases and their objects.
+	Interface implemented by dbmeta objects which driver supports tables.
 */
 
-abstract class weeDbMeta
-	implements weeDbMetaTableProvider
+interface weeDbMetaTableProvider
 {
 	/**
-		The database to query.
+		Returns a table of a given name in the database.
+
+		@param	$sName					The name of the table.
+		@return	weeDbMetaTable			The table.
 	*/
 
-	protected $oDb;
+	public function table($sName);
 
 	/**
-		Initializes a new database meta.
+		Returns whether a table of a given name exists in the database.
 
-		@param	$oDb		The database to query.
+		@param	$sName					The name of the table.
+		@return	bool					true if the table exists in the database, false otherwise.
 	*/
 
-	public function __construct(weeDatabase $oDb)
-	{
-		$this->oDb = $oDb;
-	}
+	public function tableExists($sName);
 
 	/**
-		Returns the name of the table class.
+		Returns all the tables of the database.
 
-		@return	string					The name of the table class.
+		@return	array(weeDbMetaTable)	The array of tables.
 	*/
 
-	abstract public function getTableClass();
-
-	/**
-		Returns the associated database object.
-
-		@return	weeDatabase	The associated database object.
-	*/
-
-	public function db()
-	{
-		return $this->oDb;
-	}
+	public function tables();
 }

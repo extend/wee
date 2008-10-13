@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,155 +22,106 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Base class used to query meta informations about database objects.
+	Base class used to query meta data about database objects.
 */
 
-abstract class weeDbMetaObject implements ArrayAccess, Printable
+abstract class weeDbMetaObject implements Printable
 {
 	/**
 		The database to query.
 	*/
 
-	protected $oMeta;
+	private $oMeta;
 
 	/**
-		The database object informations.
+		The database object data.
 	*/
 
-	protected $aInfos;
+	protected $aData;
 
 	/**
-		Initializes a new dbmeta object.
+		Initializes a new database object.
 
 		This class should NEVER be instantiated manually.
-		An instance of this class should be returned by weeDbMeta
-		or the other classes of the dbmeta component.
+		Instances of this class should be returned by weeDbMeta
+		and the other classes of the dbmeta component.
 
-		@param	$oDb		The database to query.
-		@param	$aInfos		The object informations.
+		@param	$oMeta		The dbmeta object.
+		@param	$aData		The object data.
 	*/
 
-	public function __construct(weeDbMeta $oMeta, array $aInfos)
+	public function __construct(weeDbMeta $oMeta, array $aData)
 	{
-		fire($oMeta === null, 'UnexpectedValueException',
-			'$oDb is null.');
-
-		// We can't use __CLASS__ or self without breaking inheritance.
-		$aFields = call_user_func(array(get_class($this), 'getFields'));
-		foreach ($aFields as $sField)
-			fire(!array_key_exists($sField, $aInfos), 'UnexpectedValueException',
-				'$aInfos[' . $sField . '] must be set.');
-
-		$this->oMeta	= $oMeta;
-		$this->aInfos	= $aInfos;
+		$this->oMeta = $oMeta;
+		$this->aData = $aData;
 	}
 
 	/**
-		Returns the array of custom offsets reachable through ArrayAccess interface.
-		By default, there is only one custom offset: "name".
+		Returns the associated database object.
 
-		@return	array	The array of custom offsets.
+		@return	weeDatabase	The associated database object.
 	*/
 
-	/**
-		Returns the array of fields which need to be passed to the constructor of the class.
-
-		@return	array	The array of fields.
-	*/
-
-	public static function getFields()
+	public function db()
 	{
-		// We can't declare abstract static methods.
-		burn('BadMethodCallException',
-			'This method must be overriden in subclasses.');
+		return $this->meta()->db();
 	}
 
 	/**
-		Returns the name of the information_schema table where the dbmeta objects
-		are stored.
+		Returns the dbmeta object of this database object.
 
-		@return	string	The table name.
+		@return	weeDbMeta	The dbmeta object.
 	*/
 
-	public static function getTable()
+	public function meta()
 	{
-		// We can't declare abstract static methods.
-		burn('BadMethodCallException',
-			'This method must be overriden in subclasses.');
+		return $this->oMeta;
 	}
 
 	/**
 		Returns the name of the database object.
 
-		@return	string	The name of the database object.
+		@return	string		The name of the database object.
 	*/
 
-	abstract public function name();
-
-	/**
-		Returns whether a given offset is a valid offset for the ArrayAccess interface.
-
-		It returns true if $sOffset is in in one of the arrays returned by getFields() methods.
-
-		@see	http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
-	*/
-
-	public function offsetExists($sOffset)
+	public function name()
 	{
-		$aOffsets = call_user_func(array(get_class($this), 'getFields'));
-		return in_array($sOffset, $aOffsets);
+		return $this->aData['name'];
 	}
 
 	/**
-		Returns the information associated with the given offset.
+		Returns the quoted name of the database object.
 
-		The offset can be a SQL field returned by the getFields() method, or a custom
-		offset returned by the getCustomFields(), these offsets are lazy constructed by the class
-		on demand. They can be used to construct other meta objects.
-
-		@see	http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
-		@throw	UnexpectedValueException	The offset is invalid.
+		@return	string		The quoted name.
 	*/
 
-	public function offsetGet($sOffset)
+	public function quotedName()
 	{
-		fire(!$this->offsetExists($sOffset), 'UnexpectedValueException',
-			"'$sOffset' is not a valid offset");
-		
-		if (!array_key_exists($sOffset, $this->aInfos))
-			$this->aInfos[$sOffset] = $this->getCustomOffset($sOffset);
-
-		return $this->aInfos[$sOffset];
+		return $this->db()->escapeIdent($this->name());
 	}
 
 	/**
-		Do NOT use it. Informations about database objects are read-only for the time being.
+		Returns the database object as an array.
+
+		@return	array		The database object as an array.
 	*/
 
-	public final function offsetSet($sOffset, $mValue)
+	public function toArray()
 	{
-		burn('BadMethodCallException',
-			'Informations about database objects are read-only.');
-	}
-
-	/**
-		Do NOT use it. Informations about database objects are read-only for the time being.
-	*/
-
-	public final function offsetUnset($sOffset)
-	{
-		burn('BadMethodCallException',
-			'Informations about database objects are read-only.');
+		return $this->aData;
 	}
 
 	/**
 		Returns the string representation of the database object.
 
-		@return	string	The string representation.
+		By default, the string representation of the database object if its
+		quoted name.
+
+		@return	string		The string representation.
 	*/
 
 	public function toString()
 	{
-		return $this->name();
+		return $this->quotedName();
 	}
 }

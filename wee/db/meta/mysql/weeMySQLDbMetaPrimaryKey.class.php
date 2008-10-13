@@ -22,45 +22,35 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class used to query meta data about databases and their objects.
+	MySQL specialization of weeDbMetaPrimaryKey.
+
+	In MySQL, primary keys cannot have a custom name, they are always named "PRIMARY".
 */
 
-abstract class weeDbMeta
-	implements weeDbMetaTableProvider
+class weeMySQLDbMetaPrimaryKey extends weeDbMetaPrimaryKey
 {
 	/**
-		The database to query.
+		Returns the columns of the table constraint.
+
+		The columns are ordered as specified in the definition of the table.
+
+		@return	array(string)	The names of the columns of the constraint.
 	*/
 
-	protected $oDb;
-
-	/**
-		Initializes a new database meta.
-
-		@param	$oDb		The database to query.
-	*/
-
-	public function __construct(weeDatabase $oDb)
+	public function columns()
 	{
-		$this->oDb = $oDb;
-	}
+		$oQuery = $this->db()->query("
+			SELECT			COLUMN_NAME
+				FROM		information_schema.COLUMNS
+				WHERE		TABLE_NAME		= ?
+						AND	TABLE_SCHEMA	= DATABASE()
+						AND COLUMN_KEY		= 'PRI'
+				ORDER BY	ORDINAL_POSITION
+		", $this->table()->name());
 
-	/**
-		Returns the name of the table class.
-
-		@return	string					The name of the table class.
-	*/
-
-	abstract public function getTableClass();
-
-	/**
-		Returns the associated database object.
-
-		@return	weeDatabase	The associated database object.
-	*/
-
-	public function db()
-	{
-		return $this->oDb;
+		$aColumns = array();
+		foreach ($oQuery as $aColumn)
+			$aColumns[] = $aColumn['COLUMN_NAME'];
+		return $aColumns;
 	}
 }

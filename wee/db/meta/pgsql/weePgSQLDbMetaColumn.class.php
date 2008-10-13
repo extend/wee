@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,34 +25,98 @@ if (!defined('ALLOW_INCLUSION')) die;
 	PostgreSQL specialization of weeDbMetaColumn.
 */
 
-class weePgSQLDbMetaColumn extends weeDbMetaColumn
+class weePgSQLDbMetaColumn extends weeDbMetaColumn 
+	implements weeDbMetaCommentable, weeDbMetaSchemaObject
 {
 	/**
-		Initializes a new pgsql metadb column object.
+		Initializes a new pgsql column object.
 
-		@see	weeDbMetaColumn::__construct()
+		This class should NEVER be instantiated manually.
+		Instances of this class should be returned by weePgSQLDbMetaTable.
+
+		@param	$oMeta					The pgsql dbmeta object.
+		@param	$aData					The column data.
+		@param	$oTable					The pgsql table of the column.
 	*/
 
-	public function __construct(weeDbMeta $oMeta, array $aInfos)
+	public function __construct(weePgSQLDbMeta $oMeta, array $aData, weePgSQLDbMetaTable $oTable)
 	{
-		parent::__construct($oMeta, $aInfos);
-
-		// is_updatable field contains either 'YES' or 'NO', we convert
-		// it to a boolean value.
-		$this->aInfos['is_updatable'] = $this->aInfos['is_updatable'] == 'YES';
+		parent::__construct($oMeta, $aData, $oTable);
 	}
 
 	/**
-		Returns the array of fields which need to be passed to the constructor of the class.
+		Returns the comment of the column.
 
-		@return	array	The array of fields.
-		@todo			Handle more fields.
+		@return	string					The comment of the column.
 	*/
 
-	public static function getFields()
+	public function comment()
 	{
-		return array_merge(parent::getFields(), array(
-			'numeric_precision_radix',
-			'is_updatable'));
+		return $this->aData['comment'];
+	}
+
+	/**
+		Returns the default value of the column.
+
+		@return	string					The default value of the column.
+		@throw	IllegalStateException	The column does not have a default value.
+	*/
+
+	public function defaultValue()
+	{
+		$this->hasDefault()
+			or burn('IllegalStateException',
+				_('The column does not have a default value.'));
+
+		return $this->db()->queryValue('
+			SELECT		pg_catalog.pg_get_expr(adbin, adrelid)
+				FROM	pg_catalog.pg_attrdef
+				WHERE	adrelid	= ?::regclass
+					AND	adnum	= ?
+		', $this->oTable->quotedName(), $this->num());
+	}
+
+	/**
+		Returns whether the column has a default value.
+
+		@return	bool					true if the column has a default value, false otherwise.
+	*/
+
+	public function hasDefault()
+	{
+		return $this->aData['has_default'] == 't';
+	}
+
+	/**
+		Returns whether the column can contain null values.
+	
+		@return	bool					true if the column accepts null as a value, false otherwise.
+	*/
+
+	public function isNullable()
+	{
+		return $this->aData['nullable'] == 't';
+	}
+
+	/**
+		Returns the number of the column in the table.
+
+		@return	int						The number of the column in the table.
+	*/
+
+	public function num()
+	{
+		return (int)$this->aData['num'];
+	}
+
+	/**
+		Returns the name of the schema of the column.
+
+		@return	string					The name of the schema.
+	*/
+
+	public function schemaName()
+	{
+		return $this->aData['schema'];
 	}
 }

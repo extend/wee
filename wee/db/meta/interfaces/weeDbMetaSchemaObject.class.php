@@ -22,45 +22,16 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class used to query meta data about databases and their objects.
+	Interface implemented by database objects which are contained in schema.
 */
 
-abstract class weeDbMeta
-	implements weeDbMetaTableProvider
+interface weeDbMetaSchemaObject
 {
 	/**
-		The database to query.
+		Returns the name of the schema of the database object.
+
+		@return	string			The name of the schema.
 	*/
 
-	protected $oDb;
-
-	/**
-		Initializes a new database meta.
-
-		@param	$oDb		The database to query.
-	*/
-
-	public function __construct(weeDatabase $oDb)
-	{
-		$this->oDb = $oDb;
-	}
-
-	/**
-		Returns the name of the table class.
-
-		@return	string					The name of the table class.
-	*/
-
-	abstract public function getTableClass();
-
-	/**
-		Returns the associated database object.
-
-		@return	weeDatabase	The associated database object.
-	*/
-
-	public function db()
-	{
-		return $this->oDb;
-	}
+	public function schemaName();
 }

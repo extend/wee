@@ -22,45 +22,19 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class used to query meta data about databases and their objects.
+	Interface implemented by database objects which are commentable.
+
+	weeDbMetaObject implementations of this interface should also accept the comment offset
+	in their alter() methods.
 */
 
-abstract class weeDbMeta
-	implements weeDbMetaTableProvider
+interface weeDbMetaCommentable
 {
 	/**
-		The database to query.
+		Returns the comment of the database object.
+
+		@return string The comment.
 	*/
 
-	protected $oDb;
-
-	/**
-		Initializes a new database meta.
-
-		@param	$oDb		The database to query.
-	*/
-
-	public function __construct(weeDatabase $oDb)
-	{
-		$this->oDb = $oDb;
-	}
-
-	/**
-		Returns the name of the table class.
-
-		@return	string					The name of the table class.
-	*/
-
-	abstract public function getTableClass();
-
-	/**
-		Returns the associated database object.
-
-		@return	weeDatabase	The associated database object.
-	*/
-
-	public function db()
-	{
-		return $this->oDb;
-	}
+	public function comment();
 }
