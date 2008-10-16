@@ -35,38 +35,6 @@ abstract class weeDbSet extends weeSet
 	protected $oDatabase;
 
 	/**
-		Fetches a row from the database.
-
-		This method executes a given SQL query and returns an instance of the model
-		of this set.
-
-		@overload	fetch($mQueryString, $mArg1, $mArg2, ...)		Example of query call with multiple unnamed parameters.
-		@overload	fetch($mQueryString, $aNamedParameters)			Example of query call with named parameters.
-		@param		$mQueryString									The query string.
-		@param		...												The additional arguments that will be inserted into the query.
-		@return		object											An instance of the model of this set.
-		@throw		UnexpectedValueException						The SQL query did not return a result set.
-		@throw		UnexpectedValueException						The result set does not contain exactly one row.
-		@see		weeDatabase::query
-	*/
-
-	protected function fetch($mQueryString)
-	{
-		$a = func_get_args();
-		$m = call_user_func_array(array($this, 'query'), $a);
-
-		$m instanceof weeDatabaseResult
-			or burn('UnexpectedValueException',
-				_('The SQL query did not return a result set.'));
-
-		count($m) == 1
-			or burn('UnexpectedValueException',
-				_('The result set does not contain exactly one row.'));
-
-		return $m->fetch();
-	}
-
-	/**
 		Returns the database associated to this set.
 
 		@return		weeDatabase										The database associated to this set.
@@ -105,6 +73,38 @@ abstract class weeDbSet extends weeSet
 		if ($m instanceof weeDatabaseResult && $this->sModel !== null)
 			$m->rowClass($this->sModel);
 		return $m;
+	}
+
+	/**
+		Fetches a row from the database.
+
+		This method executes a given SQL query and returns an instance of the model
+		of this set.
+
+		@overload	queryRow($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters.
+		@overload	queryRow($mQueryString, $aNamedParameters)		Example of query call with named parameters.
+		@param		$mQueryString									The query string.
+		@param		...												The additional arguments that will be inserted into the query.
+		@return		object											An instance of the model of this set.
+		@throw		UnexpectedValueException						The SQL query did not return a result set.
+		@throw		UnexpectedValueException						The result set does not contain exactly one row.
+		@see		weeDatabase::query
+	*/
+
+	protected function queryRow($mQueryString)
+	{
+		$a = func_get_args();
+		$m = call_user_func_array(array($this, 'query'), $a);
+
+		$m instanceof weeDatabaseResult
+			or burn('UnexpectedValueException',
+				_('The SQL query did not return a result set.'));
+
+		count($m) == 1
+			or burn('UnexpectedValueException',
+				_('The result set does not contain exactly one row.'));
+
+		return $m->fetch();
 	}
 
 	/**

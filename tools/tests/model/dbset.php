@@ -5,12 +5,12 @@ require(ROOT_PATH . 'tools/tests/db/pgsql/connect.php.inc');
 class testSet_weeDbSet extends weeDbSet {
 	protected $sModel = 'testSet_weeDbModel';
 
-	public function fetch($sQueryString) {
-		return parent::fetch($sQueryString);
-	}
-
 	public function query($sQueryString) {
 		return parent::query($sQueryString);
+	}
+
+	public function queryRow($sQueryString) {
+		return parent::queryRow($sQueryString);
 	}
 
 	public function queryValue($sQueryString) {
@@ -62,28 +62,28 @@ try {
 	$this->isNull($oSet->query('DELETE FROM dbset'),
 		_('weeDbSet::query should not return a value when the request is not a query returning a result.'));
 
-	// weeDbSet::fetch
+	// weeDbSet::queryRow
 
 	try {
-		$oSet->fetch('DELETE FROM dbset');
-		$this->fail('weeDbSet::fetch should throw an UnexpectedValueException when the SQL query did not return a result set.');
+		$oSet->queryRow('DELETE FROM dbset');
+		$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the SQL query did not return a result set.');
 	} catch (UnexpectedValueException $e) {}
 
 	try {
-		$oSet->fetch('SELECT * FROM dbset');
-		$this->fail('weeDbSet::fetch should throw an UnexpectedValueException when the result set is empty.');
+		$oSet->queryRow('SELECT * FROM dbset');
+		$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the result set is empty.');
 	} catch (UnexpectedValueException $e) {}
 
 	$oDb->query('INSERT INTO dbset VALUES (42)');
 
-	$this->isInstanceOf($oSet->fetch('SELECT * FROM dbset'), 'testSet_weeDbModel',
-		_('weeDbSet::fetch should return an instance of weeDbSet::sModel.'));
+	$this->isInstanceOf($oSet->queryRow('SELECT * FROM dbset'), 'testSet_weeDbModel',
+		_('weeDbSet::queryRow should return an instance of weeDbSet::sModel.'));
 
 	$oDb->query('INSERT INTO dbset VALUES (42)');
 
 	try {
-		$oSet->fetch('SELECT * FROM dbset');
-		$this->fail('weeDbSet::fetch should throw an UnexpectedValueException when the result set contains more than one row.');
+		$oSet->queryRow('SELECT * FROM dbset');
+		$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the result set contains more than one row.');
 	} catch (UnexpectedValueException $e) {}
 
 } catch (Exception $oException) {}
