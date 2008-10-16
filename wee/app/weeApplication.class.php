@@ -85,7 +85,10 @@ class weeApplication implements Singleton
 			$this->oConfig = new weeFileConfig(WEE_CONF_FILE);
 
 			if (!defined('DEBUG') && defined('WEE_CONF_CACHE'))
+			{
 				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->oConfig->toArray(), true) . ';');
+				chmod(WEE_CONF_CACHE, 0600);
+			}
 		} catch (FileNotFoundException $e) {
 			// No configuration file. Stop here and display a friendly message.
 
@@ -460,7 +463,7 @@ class weeApplication implements Singleton
 			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS)
 			{
 				if (defined('WEE_CLI'))
-					echo _('You have not access to the specified frame/event.'), "\n";
+					echo _('You are not allowed to access the specified frame/event.'), "\n";
 				else
 					require(ROOT_PATH . 'res/wee/unauthorized.htm');
 				exit;
@@ -475,10 +478,11 @@ class weeApplication implements Singleton
 				$sCacheFilename = $sCachePath . '?' . urldecode($_SERVER['QUERY_STRING']);
 
 				if (!is_dir($sCachePath))
-					mkdir($sCachePath, 0777, true);
+					mkdir($sCachePath, 0700, true);
 
 				file_put_contents($sCacheFilename, $sOutput);
 				touch($sCacheFilename, time() + $this->aCacheParams['expire']);
+				chmod($sCacheFilename, 0600);
 			}
 
 			echo $sOutput;

@@ -25,7 +25,7 @@ if (!defined('CACHE_EXPIRE'))	define('CACHE_EXPIRE',	300);
 if (!defined('CACHE_PATH'))		define('CACHE_PATH',	ROOT_PATH . 'app/tmp/appcache/');
 
 if (!is_dir(CACHE_PATH))
-	mkdir(CACHE_PATH, 0777, true);
+	mkdir(CACHE_PATH, 0700, true);
 
 /**
 	Template handling, cache aware version.
@@ -104,10 +104,13 @@ class weeCachedTemplate extends weeTemplate
 			return file_get_contents($this->sCacheFile);
 
 		$sContents = parent::toString();
+
 		if (!defined('NO_CACHE'))
+		{
 			file_put_contents($this->sCacheFile, $sContents);
+			chmod($sCacheFilename, 0600);
+		}
+
 		return $sContents;
 	}
 }
-
-?>

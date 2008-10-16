@@ -137,6 +137,7 @@ final class weeAutoload extends Namespace
 			. ';';
 
 		file_put_contents($sFilename, $sCache);
+		chmod($sFilename, 0600);
 	}
 }
 
