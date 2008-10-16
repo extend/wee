@@ -35,9 +35,41 @@ abstract class weeDbSet extends weeSet
 	protected $oDatabase;
 
 	/**
+		Fetches a row from the database.
+
+		This method executes a given SQL query and returns an instance of the model
+		of this set.
+
+		@overload	fetch($mQueryString, $mArg1, $mArg2, ...)		Example of query call with multiple unnamed parameters.
+		@overload	fetch($mQueryString, $aNamedParameters)			Example of query call with named parameters.
+		@param		$mQueryString									The query string.
+		@param		...												The additional arguments that will be inserted into the query.
+		@return		object											An instance of the model of this set.
+		@throw		UnexpectedValueException						The SQL query did not return a result set.
+		@throw		UnexpectedValueException						The result set does not contain exactly one row.
+		@see		weeDatabase::query
+	*/
+
+	protected function fetch($mQueryString)
+	{
+		$a = func_get_args();
+		$m = call_user_func_array(array($this, 'query'), $a);
+
+		$m instanceof weeDatabaseResult
+			or burn('UnexpectedValueException',
+				_('The SQL query did not return a result set.'));
+
+		count($m) == 1
+			or burn('UnexpectedValueException',
+				_('The result set does not contain exactly one row.'));
+
+		return $m->fetch();
+	}
+
+	/**
 		Returns the database associated to this set.
 
-		@return weeDatabase The database associated to this set.
+		@return		weeDatabase										The database associated to this set.
 	*/
 
 	public function getDb()
@@ -52,17 +84,17 @@ abstract class weeDbSet extends weeSet
 		Builds and executes a SQL query.
 
 		This method is a shortcut to the following idiom:
-			$this->getDb()->query('...')->rowClass($this->sModel);
+			$this->getDb()->query(...)->rowClass($this->sModel);
 
 		If the query returned a result set, it is automatically associated to the model
 		of this class.
 
-		@overload query($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters
-		@overload query($mQueryString, $aNamedParameters)	Example of query call with named parameters
-		@param	$mQueryString								The query string
-		@param	...											The additional arguments that will be inserted into the query
-		@return	weeDatabaseResult							Only with SELECT queries: an object for results handling
-		@see												weeDatabase::query
+		@overload	query($mQueryString, $mArg1, $mArg2, ...)		Example of query call with multiple unnamed parameters
+		@overload	query($mQueryString, $aNamedParameters)			Example of query call with named parameters
+		@param		$mQueryString									The query string
+		@param		...												The additional arguments that will be inserted into the query
+		@return		mixed											An instance of weeDatabaseResult or null.
+		@see		weeDatabase::query
 	*/
 
 	protected function query($mQueryString)
@@ -76,10 +108,29 @@ abstract class weeDbSet extends weeSet
 	}
 
 	/**
+		Build and execute an SQL value query.
+
+		This method is a shortcut to $this->getDb()->queryValue(...).
+
+		@overload	queryValue($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters
+		@overload	queryValue($mQueryString, $aNamedParameters)	Example of query call with named parameters
+		@param		$mQueryString									The query string
+		@param		...												The additional arguments that will be inserted into the query
+		@return		mixed											The queried value.
+		@see		weeDatabase::queryValue
+	*/
+
+	protected function queryValue($mQueryString)
+	{
+		$a = func_get_args();
+		return call_user_func_array(array($this->getDb(), 'queryValue'), $a);
+	}
+
+	/**
 		Associate a database to this set.
 
-		@param $oDb weeDatabase The database instance to associate to this set.
-		@return $this
+		@param		$oDb											The database instance to associate to this set.
+		@return		$this											Used to chain methods.
 	*/
 
 	public function setDb($oDb)
