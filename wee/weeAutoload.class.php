@@ -33,13 +33,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Use:
 		define('WEE_AUTOLOAD_CACHE', getcwd() . '/app/tmp/autoload.php');
 
-	The cache file generation is disabled in DEBUG mode. However, sometimes you might
-	have a development configuration where some scripts (e.g. your application) run
-	in DEBUG mode while others (e.g. a CLI tool used by your application) run with
-	DEBUG mode disabled. This means that these scripts will create an autoload cache
-	file, and that file will get loaded even in DEBUG mode. The correct fix for this
-	is to activate DEBUG mode in all CLI tools, but if it's not immediately possible
-	you can also remove the WEE_AUTOLOAD_CACHE definition to disable autoload caching.
+	The cache file is disabled in DEBUG mode.
 */
 
 final class weeAutoload extends Namespace
@@ -119,17 +113,11 @@ final class weeAutoload extends Namespace
 		The cache file is just PHP code that will get executed at load.
 		It contains code to set the values to weeAutoload::$aPaths and weeAutoload::$aPathsLoaded.
 
-		This method do nothing if DEBUG is activated, to ease development.
-		This means that no autoload cache is generated in DEBUG mode, but existing cache is however used.
-
 		@param $sFilename The autoload cache filename.
 	*/
 
 	public static function saveToCache($sFilename)
 	{
-		if (defined('DEBUG'))
-			return;
-
 		$sCache = '<?php self::$aPaths = '
 			. var_export(self::$aPaths, true)
 			. '; self::$aPathsLoaded = '
@@ -161,7 +149,7 @@ elseif (!function_exists('__autoload'))
 
 // Handle cache loading and saving
 
-if (defined('WEE_AUTOLOAD_CACHE') && !defined('NO_CACHE'))
+if (!defined('DEBUG') && defined('WEE_AUTOLOAD_CACHE') && !defined('NO_CACHE'))
 {
 	if (is_readable(WEE_AUTOLOAD_CACHE))
 		weeAutoload::loadFromCache(WEE_AUTOLOAD_CACHE);
