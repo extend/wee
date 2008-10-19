@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,11 +22,9 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Exception thrown when an user try to do something he doesn't have permission to.
+	Exception thrown when permission requirements are not met.
 */
 
 class NotPermittedException extends RuntimeException
 {
 }
-
-?>
