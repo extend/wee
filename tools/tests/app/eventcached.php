@@ -8,7 +8,7 @@ class weeApplication_testEventCached extends weeApplication
 	// We are testing this method, expose it.
 	public function isEventCached(&$aEvent)
 	{
-		return parent::isEventCached(&$aEvent);
+		return parent::isEventCached($aEvent);
 	}
 }
 
