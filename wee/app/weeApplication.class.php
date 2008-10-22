@@ -401,7 +401,7 @@ class weeApplication implements Singleton
 			return false;
 
 		$sFrameEvent	= $aEvent['frame'] . (isset($aEvent['name']) ? '/' . $aEvent['name'] : '');
-		$sCacheFilename = CACHE_PATH . $sFrameEvent . array_value($aEvent, 'pathinfo') . (isset($_SERVER['QUERY_STRING']) ? '/?' . urldecode($_SERVER['QUERY_STRING']) : '');
+		$sCacheFilename = CACHE_PATH . $sFrameEvent . array_value($aEvent, 'pathinfo') . (isset($_SERVER['QUERY_STRING']) ? '/?' . urldecode($_SERVER['QUERY_STRING']) : '/?');
 
 		if (!file_exists($sCacheFilename))
 			return false;
