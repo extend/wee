@@ -108,11 +108,11 @@ try {
 	$o = new weeFsModel_testFsModel($aData);
 	$o->updateName();
 
-	$this->isEqual($o->aData['name'], 'fsmodel.txt',
-		sprintf(_('The filename should be "fsmodel.txt" got "%s" instead'), $o->aData['name']));
+	$this->isEqual('fsmodel.txt', $o->aData['name'],
+		_('The filename is not the one expected.'));
 
-	$this->isEqual($o->aData['extension'], 'txt',
-		sprintf(_('The file extension should be "txt" got "%s" instead'), $o->aData['extension']));
+	$this->isEqual('txt', $o->aData['extension'],
+		_('The file extension is not the one expected.'));
 
 } catch (InvalidArgumentException $e) {
 	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
@@ -123,11 +123,11 @@ try {
 	$o = new weeFsModel_testFsModel($aData);
 	$o->updateName();
 
-	$this->isEqual($o->aData['name'], 'file.with.dots.tar.gz',
-		sprintf(_('The filename should be "file.with.dots.tar.gz" got "%s" instead'), $o->aData['name']));
+	$this->isEqual('file.with.dots.tar.gz', $o->aData['name'],
+		_('The filename is not the one expected.'));
 
-	$this->isEqual($o->aData['extension'], 'gz',
-		sprintf(_('The file extension should be "gz" got "%s" instead'), $o->aData['extension']));
+	$this->isEqual('gz', $o->aData['extension'],
+		_('The file extension is not the one expected.'));
 
 } catch (InvalidArgumentException $e) {
 	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
@@ -138,11 +138,11 @@ try {
 	$o = new weeFsModel_testFsModel($aData);
 	$o->updateName();
 
-	$this->isEqual($o->aData['name'], 'file_without_extension_and_slash',
-		sprintf(_('The filename should be "file_without_extension_and_slash" got "%s" instead'), $o->aData['name']));
+	$this->isEqual('file_without_extension_and_slash', $o->aData['name'],
+		_('The filename is not the one expected.'));
 
-	$this->isEqual($o->aData['extension'], '',
-		sprintf(_('The file extension should be empty got "%s" instead'), $o->aData['extension']));
+	$this->isEqual('', $o->aData['extension'],
+		_('The file extension is not the one expected.'));
 
 } catch (InvalidArgumentException $e) {
 	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));

@@ -26,12 +26,12 @@ try
 
 	// weeMySQLDbMetaTable::name
 
-	$this->isEqual($oTable->name(), 'dbmeta',
+	$this->isEqual('dbmeta', $oTable->name(),
 		_('weeMySQLDbMeta::table does not return the requested table.'));
 
 	// weeMySQLDbMetaTable::comment
 
-	$this->isEqual($oTable->comment(), 'Tests are marvelous.',
+	$this->isEqual('Tests are marvelous.', $oTable->comment(),
 		_('weeMySQLDbMetaTable::comment does not correctly return the comment of the table.'));
 }
 catch (Exception $oException) {}

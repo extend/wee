@@ -75,28 +75,28 @@ foreach ($aInsertValues as $aRow)
 // Do various queries to check our data (and our query method)
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query')->fetch();
-$this->isEqual($aRow['c'], sizeof($aInsertValues),
-	"The total number of rows in the table isn't matching the number of rows inserted.");
+$this->isEqual(count($aInsertValues), $aRow['c'],
+	_("The total number of rows in the table isn't matching the number of rows inserted."));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_quantity>=?', 10)->fetch();
-$this->isEqual($aRow['c'], 5,
-	'The number of rows with q_quantity>=10 is wrong.');
+$this->isEqual(5, $aRow['c'],
+	_('The number of rows with q_quantity>=10 is wrong.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_price<?', 13.55)->fetch();
-$this->isEqual($aRow['c'], 5,
-	'The number of rows with q_price<13.55 is wrong.');
+$this->isEqual(5, $aRow['c'],
+	_('The number of rows with q_price<13.55 is wrong.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_name=? LIMIT 1', 'Cute Girls')->fetch();
-$this->isEqual($aRow['c'], 0,
-	'There is no cute girl in this table.');
+$this->isEqual(0, $aRow['c'],
+	_('There is no cute girl in this table.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_quantity>=? AND q_price<?', 10, 13.55)->fetch();
-$this->isEqual($aRow['c'], 4,
-	'The number of rows with q_quantity>=10 AND q_price<13.55 is wrong.');
+$this->isEqual(4, $aRow['c'],
+	_('The number of rows with q_quantity>=10 AND q_price<13.55 is wrong.'));
 
 $aRow = $oDb->query('SELECT q_name, q_quantity, q_price FROM query WHERE q_name=? LIMIT 1', 'Eggs')->fetch();
-$this->isEqual($aRow, $aInsertValues[1],
-	'The data of the row "Eggs" is wrong.');
+$this->isEqual($aInsertValues[1], $aRow,
+	_('The data of the row "Eggs" is wrong.'));
 
 // Test foreach
 
@@ -120,8 +120,8 @@ foreach ($oResults as $aRow)
 // Test the queryValue method
 
 try {
-	$this->isEqual($oDb->queryValue('SELECT count(*) FROM query'), count($aInsertValues),
-		'queryValue does not return the value expected.');
+	$this->isEqual(count($aInsertValues), $oDb->queryValue('SELECT count(*) FROM query'),
+		_('queryValue does not return the value expected.'));
 } catch (UnexpectedValueException $e) {
 	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
 }

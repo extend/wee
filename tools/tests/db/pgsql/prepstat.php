@@ -57,8 +57,8 @@ $iNumResults = count($oDb->prepare('
 	SELECT * FROM prepstat
 ')->execute());
 
-$this->isEqual($iNumResults, 4,
-	'"SELECT * FROM prepstat" should return 4 rows.');
+$this->isEqual(4, $iNumResults,
+	_('"SELECT * FROM prepstat" should return 4 rows.'));
 
 // Get a specific row
 
@@ -66,5 +66,5 @@ $aImplicitTest = $oDb->prepare('
 	SELECT ps_integer FROM prepstat WHERE ps_boolean=:0
 ')->bind(array('TRUE'))->execute()->fetch();
 
-$this->isEqual($aImplicitTest['ps_integer'], 4242,
-	'"SELECT ps_integer FROM prepstat WHERE ps_boolean=TRUE" should return 4242.');
+$this->isEqual(4242, $aImplicitTest['ps_integer'],
+	_('"SELECT ps_integer FROM prepstat WHERE ps_boolean=TRUE" should return 4242.'));

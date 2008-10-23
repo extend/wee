@@ -24,7 +24,8 @@ try {
 	$this->fail(_('weeDbModel::getDb should not throw an IllegalStateException when trying to get the database associated to this model.'));
 }
 
-$this->isEqual($oModel->getDb(), $oDb, _('weeDbModel::getDb should return the database object we set using weeDbModel::setDb.'));
+$this->isEqual($oDb, $oModel->getDb(),
+	_('weeDbModel::getDb should return the database object we set using weeDbModel::setDb.'));
 
 $oDb->query('BEGIN');
 

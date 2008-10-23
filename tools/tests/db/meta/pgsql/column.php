@@ -30,7 +30,7 @@ try
 
 	// weePgSQLDbMetaColumn::comment
 
-	$this->isEqual($oColumnA->comment(), 'Column a',
+	$this->isEqual('Column a', $oColumnA->comment(),
 		_('weePgSQLDbMetaColumn::comment does not correctly return the comment of the column.'));
 
 	// weePgSQLDbMetaColumn::hasDefault
@@ -48,7 +48,7 @@ try
 		$this->fail(_('weePgSQLDbMetaColumn::defaultValue should throw an IllegalStateException when the column does not have a default value.'));
 	} catch (IllegalStateException $e) {}
 
-	$this->isEqual($oColumnB->defaultValue(), 42,
+	$this->isEqual(42, $oColumnB->defaultValue(),
 		_('weePgSQLDbMetaColumn::defaultValue does not correctly return the default value of the column.'));
 
 	// weePgSQLDbMetaColumn::isNullable
@@ -66,12 +66,12 @@ try
 
 	// weePgSQLDbMetaColumn::schemaName
 
-	$this->isEqual($oColumnA->schemaName(), 'public',
+	$this->isEqual('public', $oColumnA->schemaName(),
 		_('weePgSQLDbMetaColumn::schemaName does not correctly return the name of the schema of the column.'));
 
 	// weePgSQLDbMetaColumn::tableName
 
-	$this->isEqual($oColumnA->tableName(), 'test',
+	$this->isEqual('test', $oColumnA->tableName(),
 		_('weePgSQLDbMetaColumn::tableName does not correctly return the name of the table of the column.'));
 
 	// weePgSQLDbMetaTable::columns
@@ -79,7 +79,7 @@ try
 	$aNames = array();
 	foreach ($oTable->columns() as $oColumnA)
 		$aNames[] = $oColumnA->name();
-	$this->isEqual($aNames, array('a', 'b'),
+	$this->isEqual(array('a', 'b'), $aNames,
 		_('weePgSQLDbMetaTable::columns does not correctly return all the columns of the table.'));
 }
 catch (Exception $oException) {}

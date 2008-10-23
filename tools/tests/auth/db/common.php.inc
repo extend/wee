@@ -86,7 +86,8 @@ try {
 	$this->isTrue(empty($aData['user_passwd']), 'The password has not been removed from the data.');
 
 	unset($aData['user_id'], $aInsertValues[3]['user_passwd']);
-	$this->isEqual($aData, $aInsertValues[3], 'The data returned by the authentication is incorrect.');
+	$this->isEqual($aInsertValues[3], $aData,
+		_('The data returned by the authentication is incorrect.'));
 } catch (AuthenticationException $e) {
 	$this->fail('The credentials provided were correct and yet the authentication failed.');
 }
@@ -112,7 +113,8 @@ try {
 	$this->isTrue(empty($aData['user_passwd']), 'The password has not been removed from the data.');
 
 	unset($aData['user_id'], $aInsertValues[5]['user_passwd']);
-	$this->isEqual($aData, $aInsertValues[5], 'The data returned by the authentication is incorrect.');
+	$this->isEqual($aInsertValues[5], $aData,
+		_('The data returned by the authentication is incorrect.'));
 } catch (AuthenticationException $e) {
 	$this->fail('The hashed credentials provided were correct and yet the authentication failed.');
 }

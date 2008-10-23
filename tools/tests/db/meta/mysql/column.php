@@ -28,7 +28,7 @@ try
 
 	// weeMySQLDbMetaColumn::comment
 
-	$this->isEqual($oColumnA->comment(), 'Column a',
+	$this->isEqual('Column a', $oColumnA->comment(),
 		_('weeMySQLDbMetaColumn::comment does not correctly return the comment of the column.'));
 
 	// weeMySQLDbMetaColumn::hasDefault
@@ -46,7 +46,7 @@ try
 		$this->fail(_('weeMySQLDbMetaColumn::defaultValue should throw an IllegalStateException when the column does not have a default value.'));
 	} catch (IllegalStateException $e) {}
 
-	$this->isEqual($oColumnB->defaultValue(), 42,
+	$this->isEqual(42, $oColumnB->defaultValue(),
 		_('weeMySQLDbMetaColumn::defaultValue does not correctly return the default value of the column.'));
 
 	// weeMySQLDbMetaColumn::isNullable
@@ -59,12 +59,12 @@ try
 
 	// weeMySQLDbMetaColumn::name
 
-	$this->isEqual($oColumnA->name(), 'a',
+	$this->isEqual('a', $oColumnA->name(),
 		_('weeMySQLDbMetaColumn::name does not correctly return the name of the column.'));
 
 	// weeMySQLDbMetaColumn::tableName
 
-	$this->isEqual($oColumnA->tableName(), 'dbmeta',
+	$this->isEqual('dbmeta', $oColumnA->tableName(),
 		_('weeMySQLDbMetaColumn::tableName does not correctly return the name of the table of the column.'));
 
 	// weeMySQLDbMetaTable::columns
@@ -72,7 +72,7 @@ try
 	$aNames = array();
 	foreach ($oTable->columns() as $oColumnA)
 		$aNames[] = $oColumnA->name();
-	$this->isEqual($aNames, array('a', 'b'),
+	$this->isEqual(array('a', 'b'), $aNames,
 		_('weeMySQLDbMetaTable::columns does not correctly return all the columns of the table.'));
 }
 catch (Exception $oException) {}

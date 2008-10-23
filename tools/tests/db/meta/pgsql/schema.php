@@ -29,7 +29,7 @@ try
 
 	// weePgSQLDbMetaSchema::name
 
-	$this->isEqual($oSchema->name(), 'pikachu',
+	$this->isEqual('pikachu', $oSchema->name(),
 		_('weePgSQLDbMetaSchema does not return a correct name.'));
 
 	// weePgSQLDbMetaSchema::tableExists
@@ -51,17 +51,17 @@ try
 
 	// weePgSQLDbMetaTable::schemaName
 
-	$this->isEqual($oTable->schemaName(), 'pikachu',
+	$this->isEqual('pikachu', $oTable->schemaName(),
 		_('Instances of weePgSQLDbMetaTable returned by weePgSQLDbMetaSchema does not return a correct schema name.'));
 
 	// weePgSQLDbMetaTable::name
 
-	$this->isEqual($oTable->name(), 'test1',
+	$this->isEqual('test1', $oTable->name(),
 		_('Instances of weePgSQLDbMetaTable returned by weePgSQLDbMetaSchema does not return a correct name.'));
 
 	// weePgSQLDbMetaSchema::comment
 
-	$this->isEqual($oSchema->comment(), 'pika pika!',
+	$this->isEqual('pika pika!', $oSchema->comment(),
 		_('weePgSQLDbMetaSchema::comment does not correctly return the comment of the schema.'));
 
 	// weePgSQLDbMetaSchema::tables
@@ -69,7 +69,7 @@ try
 	$aNames = array();
 	foreach ($oSchema->tables() as $oTable)
 		$aNames[] = $oTable->name();
-	$this->isEqual($aNames, array('test1', 'test2'),
+	$this->isEqual(array('test1', 'test2'), $aNames,
 		_('weePgSQLDbMetaSchema::tables does not correctly return all the tables in the schema.'));
 }
 catch (Exception $oException) {}
@@ -80,8 +80,5 @@ if (isset($oException))
 
 // weePgSQLDbMeta::currentSchema
 
-$sCurrentSchema	= $oDb->queryValue('SELECT current_schema()');
-$oCurrent		= $oMeta->currentSchema();
-
-$this->isEqual($oCurrent->name(), $sCurrentSchema,
+$this->isEqual($oDb->queryValue('SELECT current_schema()'), $oMeta->currentSchema()->name(),
 	_('weePgSQLDbMeta::currentSchema does not return the correct schema.'));

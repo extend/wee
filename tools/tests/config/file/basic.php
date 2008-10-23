@@ -20,4 +20,3 @@ $this->isEqual('bar', $o['foo'],
 
 $this->isNull($o['entry_that_does_not_exist'],
 	'The value of an undefined entry in the configuration object is not null.');
-

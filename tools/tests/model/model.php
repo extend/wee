@@ -9,31 +9,30 @@ $aExpectedData	= array('key5' => 'value5', 'key6' => 'value6', 'key2' => 'value2
 $o = new test_weeModel($aData);
 
 $this->isTrue($o->valid(),
-		_('weeModel::valid should return true, the $aData array should have an element.'));
-$this->isEqual($o->key(), key($aData), 
-		sprintf(_('weeModel::key should return "%s" got "%s" instead.'), key($aData), $o->key()));
-$this->isEqual($o->current(), $aData[key($aData)], 
-		sprintf(_('weeModel::current should return "%s" got "%s" instead.'), $aData[key($aData)], $o->current()));
+	_('weeModel::valid should return true, the $aData array should have an element.'));
+$this->isEqual(key($aData), $o->key(), 
+	_('weeModel::key should return the key of the current element.'));
+$this->isEqual($aData[key($aData)], $o->current(),
+	_('weeModel::current should return the value of the current element.'));
 
 $o->next();
 
 $this->isTrue($o->valid(),
-		_('weeModel::valid should return true, the $aData array should have elements.'));
+	_('weeModel::valid should return true, the $aData array should have elements.'));
 
 $this->isNotEqual($o->key(), key($aData), 
-		sprintf(_('weeModel::key should not return "%s" but "key2" instead.'), $o->key()));
+	sprintf(_('weeModel::key should not return "%s" but "key2" instead.'), $o->key()));
 $this->isNotEqual($o->current(), $aData[key($aData)], 
-		sprintf(_('weeModel::current should not return "%s" but "value2" instead.'), $o->current()));
+	sprintf(_('weeModel::current should not return "%s" but "value2" instead.'), $o->current()));
 
 $this->isTrue($o->offsetExists($o->key()),
-		sprintf(_('weeModel::offsetExists the offset "%s" should exists.'), $o->key()));
+	sprintf(_('weeModel::offsetExists the offset "%s" should exists.'), $o->key()));
 $this->isFalse($o->offsetExists('badoffset'),
-		_('weeModel::offsetExists the offset badoffset should not exists.'));
+	_('weeModel::offsetExists the offset badoffset should not exists.'));
 
 try {
-	$sValue = $o->offsetGet('key1');
-	$this->isEqual($sValue, $aData['key1'], 
-		sprintf(_('weeModel::offsetGet should return "%s" got "%s" instead.'), $aData['key1'], $sValue));
+	$this->isEqual($aData['key1'], $o->offsetGet('key1'),
+		_('weeModel::offsetGet should return the value of the element of the given key.'));
 } catch (InvalidArgumentException $e) {
 	$this->fail(_('weeModel::offsetGet should not throw an InvalidArgumentException the offset "key1" should exists.'));
 }
@@ -46,11 +45,10 @@ try {
 try {
 	$o->offsetSet('key3', 'newvalue3');
 
-	$sValue = $o->offsetGet('key3');
-	$this->isEqual($sValue, 'newvalue3', 
-		sprintf(_('weeModel::offsetGet should return "newvalue3" got "%s" instead.'), $sValue));
+	$this->isEqual('newvalue3', $o->offsetGet('key3'),
+		_('weeModel::offsetGet should be able to return the value of an element added through weeModel::offsetSet.'));
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeModel::offsetGet should not throw an InvalidArgumentException the offset "key1" should exists.'));
+	$this->fail(_('weeModel::offsetGet should not throw an InvalidArgumentException the offset "key3" should exist.'));
 }
 
 try {
@@ -61,13 +59,13 @@ try {
 
 $o->rewind();
 $this->isTrue($o->valid(),
-		_('weeModel::valid should return true, the $aData array should have elements.'));
-$this->isEqual($o->current(), 'value2', 
-		sprintf(_('weeModel::current should return "value2" got "%s" instead.'), $o->current()));
+	_('weeModel::valid should return true, the $aData array should have elements.'));
+$this->isEqual('value2', $o->current(),
+	_('weeModel::current should return the value of the first element of the model after a call of weeModel::rewind.'));
 
 try {
 	$o->setFromArray($aData2);
-	$this->isEqual($o->toArray(), $aExpectedData,
+	$this->isEqual($aExpectedData, $o->toArray(),
 		_('weeModel::toArray the array is different from the expected array.'));
 } catch (InvalidArgumentException $e) {
 	$this->fail(_('weeModel::setFromArray should not throw an InvalidArgumentException.'));

@@ -33,9 +33,8 @@ chmod($sFilename, 0644);
 try {
 	$o = new weeFsFileModel($aData);
 	$o->appendContents('words');
-	$sContents = $o->getContents();
-	$this->isEqual($sContents, $sExpectedContents, 
-		sprintf(_('weeFsFileModel::getContents should return %s got %s instead.'), $sExpectedContents, $sContents));
+	$this->isEqual($sExpectedContents, $o->getContents(),
+		_('weeFsFileModel::getContents should return the contents of the file.'));
 } catch (UnexpectedValueException $e) {
 	$this->fail(sprintf(_('weeFsFileModel should not throw an UnexpectedValueException, 
 		the file %s could be appended and the contents could be get.'), $sFilename));

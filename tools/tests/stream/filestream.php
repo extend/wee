@@ -45,9 +45,8 @@ try {
 	$oFileStream = new weeFileStream($sFilenameExist);
 
 	$oFileStream->seek(5);
-	$s = $oFileStream->read(5);
-	$this->isEqual($s, 'words',
-		sprintf(_("read should return the word 'words', got '%s' instead."), $s));
+	$this->isEqual('words', $oFileStream->read(5),
+		_('weeFileStream failed to read 5 bytes from the file.'));
 } catch (EndOfFileException $e) {
 	$this->fail(sprintf(_('read should not throw an EndOfFileException when trying to seek/read the file %s.'), $sFilenameExist));
 }

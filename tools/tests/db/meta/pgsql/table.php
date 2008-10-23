@@ -46,17 +46,17 @@ try
 
 	// weePgSQLDbMetaTable::schemaName
 
-	$this->isEqual($oTable->schemaName(), $oCurrent->name(),
+	$this->isEqual($oCurrent->name(), $oTable->schemaName(),
 		_('weePgSQLDbMeta::table does not return table from the correct schema.'));
 
 	// weePgSQLDbMetaTable::name
 
-	$this->isEqual($oTable->name(), 'test1',
+	$this->isEqual('test1', $oTable->name(),
 		_('weePgSQLDbMeta::table does not return the requested table.'));
 
 	// weePgSQLDbMetaTable::comment
 
-	$this->isEqual($oTable->comment(), 'Tests are marvelous.',
+	$this->isEqual('Tests are marvelous.', $oTable->comment(),
 		_('weePgSQLDbMetaTable::comment does not correctly return the comment of the table.'));
 }
 catch (Exception $oException) {}

@@ -61,8 +61,12 @@ catch (UnexpectedValueException $e)
 try
 {
 	$o->dispatchEvent(array('frame' => 'test_frame'));
-	$this->isTrue($o->getFrame() instanceof test_frame,
-		sprintf(_('The application frame is an instance of class "%s" instead of "%s".'), get_class($o->getFrame()), 'test_frame'));
+
+	$this->isTrue(is_object($o->getFrame()),
+		_('weeApplication::getFrame should return an object.'));
+
+	$this->isInstanceOf($o->getFrame(), 'test_frame',
+		_('weeApplication::getFrame should return an instance of the frame class passed to weeApplication::dispatchEvent.'));
 }
 catch (UnexpectedValueException $e)
 {
@@ -72,41 +76,44 @@ catch (UnexpectedValueException $e)
 function frame_status($iStatus)
 {
 	static $aStatus = array(
-		weeFrame::UNAUTHORIZED_ACCESS	=> 'UNAUTHORIZED_ACCESS',
-		weeFrame::EVENT_DISPATCHED		=> 'EVENT_DISPATCHED'
+		weeFrame::UNAUTHORIZED_ACCESS	=> 'weeFrame::UNAUTHORIZED_ACCESS',
+		weeFrame::EVENT_DISPATCHED		=> 'weeFrame::EVENT_DISPATCHED'
 	);
 
 	return array_value($aStatus, $iStatus, 'undefined');
 }
 
 $o->dispatchEvent(array('frame' => 'test_frame'));
-$this->isEqual($o->getFrame()->getStatus(), weeFrame::EVENT_DISPATCHED,
-	sprintf(_('frame status is "%s" instead of "%s".'), frame_status($o->getFrame()->getStatus()), frame_status(weeFrame::EVENT_DISPATCHED)));
+$this->isEqual(weeFrame::EVENT_DISPATCHED, $o->getFrame()->getStatus(),
+	sprintf(_('weeFrame::getStatus should return weeFrame::EVENT_DISPATCHED instead of %s when the event has been successfully dispatched.'),
+		frame_status($o->getFrame()->getStatus())));
 
 try
 {
 	$o->dispatchEvent(array('frame' => 'test_frame', 'name' => 'getOut'));
-	$this->isEqual($o->getFrame()->getStatus(), weeFrame::UNAUTHORIZED_ACCESS,
-		sprintf(_('frame status is "%s" instead of "%s".'), frame_status($o->getFrame()->getStatus()), frame_status(weeFrame::UNAUTHORIZED_ACCESS)));
+	$this->isEqual(weeFrame::UNAUTHORIZED_ACCESS, $o->getFrame()->getStatus(),
+	sprintf(_('weeFrame::getStatus should return weeFrame::UNAUTHORIZED_ACCESS instead of %s when the event method has thrown an UnauthorizedAccessException.'),
+		frame_status($o->getFrame()->getStatus())));
 }
 catch (UnauthorizedAccessException $e)
 {
-	$this->fail(_('An UnauthorizedAccessException has been left uncaught.'));
+	$this->fail(_('An UnauthorizedAccessException thrown from the event method has been left uncaught.'));
 }
 
 try
 {
 	$o->dispatchEvent(array('frame' => 'test_frame', 'name' => 'burnInSetup'));
-	$this->isEqual($o->getFrame()->getStatus(), weeFrame::UNAUTHORIZED_ACCESS,
-		sprintf(_('frame status is "%s" instead of "%s".'), frame_status($o->getFrame()->getStatus()), frame_status(weeFrame::UNAUTHORIZED_ACCESS)));
+	$this->isEqual(weeFrame::UNAUTHORIZED_ACCESS, $o->getFrame()->getStatus(),
+	sprintf(_('weeFrame::getStatus should return weeFrame::UNAUTHORIZED_ACCESS instead of %s when the setup method has thrown an UnauthorizedAccessException.'),
+		frame_status($o->getFrame()->getStatus())));
 }
 catch (UnauthorizedAccessException $e)
 {
-	$this->fail(_('An UnauthorizedAccessException thrown from the frame setup() method has been left uncaught.'));
+	$this->fail(_('An UnauthorizedAccessException thrown from the setup method has been left uncaught.'));
 }
 
 $o->dispatchEvent(array('frame' => 'test_frame', 'context' => 'xmlhttprequest'));
-$this->isEqual($o->getFrame()->sContext, 'xmlhttprequest',
+$this->isEqual('xmlhttprequest', $o->getFrame()->sContext,
 	_('The context is not correctly propagated to the frame.'));
 
 try {

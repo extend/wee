@@ -13,10 +13,8 @@ class ArrayAccessTest1 extends weeDatabaseRow {}
 $o1 = new ArrayAccessTest1($a);
 
 // We want to test with isset in array_key_exists too
-class ArrayAccessTest2 extends weeDatabaseRow
-{
-	public function offsetExists($offset)
-	{
+class ArrayAccessTest2 extends weeDatabaseRow {
+	public function offsetExists($offset) {
 		return isset($this->aRow[$offset]);
 	}
 }

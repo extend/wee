@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -89,15 +89,18 @@ class weeUnitTestCase
 	}
 
 	/**
-		Check whether $mVarLeft == $mVarRight.
+		Checks whether the actual value of the test is equal to the expected value.
 
-		@param $sMessage Error message if test returns false.
+		@param	$mExpected				The expected value.
+		@param	$mActual				The actual value of the test.
+		@param	$sMessage				The error message used if the test fails.
+		@throw	ComparisonTestException	Thrown when the test fails.
 	*/
 
-	protected function isEqual($mVarLeft, $mVarRight, $sMessage)
+	protected function isEqual($mExpected, $mActual, $sMessage)
 	{
-		if ($mVarLeft != $mVarRight)
-			throw new UnitTestException($sMessage);
+		if ($mExpected != $mActual)
+			throw new ComparisonTestException($mExpected, $mActual, $sMessage);
 	}
 
 	/**
@@ -113,27 +116,38 @@ class weeUnitTestCase
 	}
 
 	/**
-		Check whether $mVarLeft === $mVarRight.
+		Checks whether the actual value of the test is identical to the expected value.
 
-		@param $sMessage Error message if test returns false.
+		@param	$mExpected				The expected value.
+		@param	$mActual				The actual value of the test.
+		@param	$sMessage				The error message used if the test fails.
+		@throw	ComparisonTestException	Thrown when the test fails.
 	*/
 
-	protected function isIdentical($mVarLeft, $mVarRight, $sMessage)
+	protected function isIdentical($mExpected, $mActual, $sMessage)
 	{
-		if ($mVarLeft !== $mVarRight)
-			throw new UnitTestException($sMessage);
+		if ($mExpected !== $mActual)
+			throw new ComparisonTestException($mExpected, $mActual, $sMessage);
 	}
 
 	/**
-		Check whether $oObject is an instance of $sClass.
+		Checks whether the given object is an instance of a given class.
 
-		@param $sMessage Error message if test returns false.
+		@param	$oObject				The object.
+		@param	$sClass					The class.
+		@param	$sMessage				The error message used if the test fails.
+		@throw	DomainException			$oObject is not an object.
+		@throw	ComparisonTestException	Thrown when the test fails.
 	*/
 
 	protected function isInstanceOf($oObject, $sClass, $sMessage)
 	{
+		is_object($oObject)
+			or burn('DomainException',
+				_('$oObject is not an object.'));
+
 		if (!($oObject instanceof $sClass))
-			throw new UnitTestException($sMessage);
+			throw new ComparisonTestException($sClass, get_class($oObject), $sMessage);
 	}
 
 	/**

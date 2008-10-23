@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -63,15 +63,21 @@ abstract class weeTestSuite implements Printable
 	}
 
 	/**
-		Add a result to the result array.
-		Results can be true or an array containing exception class name and message.
+		Adds a result to the result array.
+		
+		Results must be either "success" or "skip" or an Exception.
 
-		@param $sFile Filename of the unit test case.
-		@param $mResult Result of the unit test case.
+		@param	$sFile			The filename of the unit test case.
+		@param	$mResult		The result of the unit test case.
+		@throw	DomainException	$mResult is not a valid result.
 	*/
 
 	protected function addResult($sFile, $mResult)
 	{
+		$mResult == 'success' or $mResult == 'skip' or is_object($mResult) and $mResult instanceof Exception
+			or burn('DomainException',
+				_('$mResult is not a valid result.'));
+
 		$this->aResults[$sFile] = $mResult;
 	}
 
@@ -81,9 +87,18 @@ abstract class weeTestSuite implements Printable
 
 	public function run()
 	{
+		$iFormerErrorReporting	= error_reporting(E_ALL | E_STRICT);
+		$mFormerErrorHandler	= set_error_handler(create_function(
+			'$iLevel, $sMessage, $sFile, $iLine',
+			'if (error_reporting())
+				throw new ErrorTestException($sMessage, $iLevel, $sFile, $iLine);'
+			));
+
 		$oDirectory	= new RecursiveDirectoryIterator($this->sTestsPath);
 		foreach (new RecursiveIteratorIterator($oDirectory) as $sPath)
 		{
+			$sPath = (string)$sPath;
+
 			// Skip files already included
 			if (in_array($sPath, get_included_files()))
 				continue;
@@ -98,22 +113,25 @@ abstract class weeTestSuite implements Printable
 				$bRes = $oTest->run();
 				if (!$bRes) continue;
 
-				$this->addResult((string)$sPath, 'success');
+				$this->addResult($sPath, 'success');
 
 				if ($oTest->hasExtData())
-					$this->aExtData[(string)$sPath] = $oTest->getExtData();
+					$this->aExtData[$sPath] = $oTest->getExtData();
 			}
 			catch (SkipTestException $o)
 			{
-				$this->addResult((string)$sPath, 'skip');
+				$this->addResult($sPath, 'skip');
 			}
 			catch (Exception $o)
 			{
-				$this->addResult((string)$sPath, array(
-					'exception' => get_class($o),
-					'message' => $o->getMessage(),
-				));
+				$this->addResult($sPath, $o);
 			}
 		}
+
+		error_reporting($iFormerErrorReporting);
+		if ($mFormerErrorHandler)
+			set_error_handler($mFormerErrorHandler);
+		else
+			restore_error_handler();
 	}
 }

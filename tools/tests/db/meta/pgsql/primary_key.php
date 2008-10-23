@@ -33,17 +33,17 @@ try
 
 	// weePgSQLDbMetaPrimaryKey::name
 
-	$this->isEqual($oPrimaryKey->name(), 'i_am_a_pk',
+	$this->isEqual('i_am_a_pk', $oPrimaryKey->name(),
 		_('weePgSQLDbMetaPrimaryKey::name does not correctly return the name of the primary key.'));
 
 	// weePgSQLDbMetaPrimaryKey::comment
 
-	$this->isEqual($oPrimaryKey->comment(), 'not a player killer!',
+	$this->isEqual('not a player killer!', $oPrimaryKey->comment(),
 		_('weePgSQLDbMetaPrimaryKey::comment does not correctly return the comment of the primary key.'));
 
 	// weePgSQLDbMetaPrimaryKey::columns
 
-	$this->isEqual($oPrimaryKey->columns(), array('c', 'a'),
+	$this->isEqual(array('c', 'a'), $oPrimaryKey->columns(),
 		_('weePgSQLDbMetaPrimaryKey::columns does not correctly return all the columns of the primary key.'));
 }
 catch (Exception $oException) {}

@@ -29,38 +29,75 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeCLITestSuite extends weeTestSuite
 {
 	/**
-		Add a result to the result array.
-		Results can be true or an array containing exception class name and message.
+		The result of the last test ran.
+		Used to produce a more readable output by separating tests with different results.
+	*/
 
-		@param $sFile Filename of the unit test case.
-		@param $mResult Result of the unit test case.
+	protected $mLastResult = '';
+
+	/**
+		Adds a result to the result array.
+
+		Results must be either "success" or "skip" or an Exception.
+
+		@param	$sFile					Filename of the unit test case.
+		@param	$mResult				Result of the unit test case.
 	*/
 
 	protected function addResult($sFile, $mResult)
 	{
 		parent::addResult($sFile, $mResult);
 
-		echo $sFile . ': ';
+		if (!is_string($this->mLastResult) || !is_string($mResult))
+			echo "--\n";
+		echo $sFile, ': ';
 
 		if ($mResult === 'success' || $mResult === 'skip')
-			echo $mResult;
+			echo _($mResult), "\n";
+		elseif ($mResult instanceof ErrorTestException)
+		{
+			echo _('error'), "\n",
+				_('Message: '), $mResult->getMessage(), "\n",
+				_('Level: '), weeException::getLevelName($mResult->getCode()), "\n",
+				_('File: '), $mResult->getFile(), "\n",
+				_('Line: '), $mResult->getLine(), "\n";
+		}
+		elseif ($mResult instanceof UnitTestException)
+		{
+			echo _('failure'), "\n", _('Message: '), $mResult->getMessage(), "\n";
+			if ($mResult instanceof ComparisonTestException)
+			{
+				echo _('Expected: ');
+				var_export($mResult->getExpected());
+				echo "\n", _('Actual: ');
+				var_export($mResult->getActual());
+				echo "\n";
+			}
+		}
 		else
-			echo (($mResult['exception'] == 'UnitTestException') ? 'failure' : 'error') .
-				"\n    " . $mResult['message'];
+		{
+			echo get_class($mResult), "\n",
+				_('Message: '), $mResult->getMessage(), "\n",
+				_('Trace:'), "\n", $mResult->getTraceAsString(), "\n";
+		}
 
-		echo "\n";
+		$this->mLastResult = $mResult;
 	}
 
 	/**
 		Returns the result of the unit test suite.
 
-		@return string A report of the unit test suite after its completion.
+		@return	string					A report of the unit test suite after its completion.
+		@throw	IllegalStateException	The test suite has not been ran.
 	*/
 
 	public function toString()
 	{
+		$this->aResults !== null
+			or burn('IllegalStateException',
+				_('Please run the suite before trying to output its results.'));
+
 		$aCounts = @array_count_values($this->aResults);
-		fire(!isset($aCounts['success']), 'IllegalStateException', 'Please run the suite before trying to output its results.');
 
 		// Output the extended data returned by the test cases
 

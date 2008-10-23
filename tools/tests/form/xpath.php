@@ -21,5 +21,5 @@ try {
 }
 
 $oForm->removeNodes('//widget[name="hidden"]');
-$this->isEqual(count($oForm->xpath('//widget[name="hidden"]')), 0,
+$this->isEqual(0, count($oForm->xpath('//widget[name="hidden"]')),
 	_('weeForm::removeNodes does not work.'));
