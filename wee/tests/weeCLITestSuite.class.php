@@ -128,13 +128,16 @@ class weeCLITestSuite extends weeTestSuite
 
 		$s = "\n";
 
-		if ($aCounts['success'] + $aCounts['skip'] == sizeof($this->aResults))
-			$s .= 'All ' . $aCounts['success'] . ' tests succeeded!';
+		$iSkippedAndSucceededCount	= $aCounts['success'] + $aCounts['skip'];
+		$iTestsCount				= count($this->aResults);
+
+		if ($iSkippedAndSucceededCount == $iTestsCount)
+			$s .= sprintf(_('All %d tests succeeded!'), $aCounts['success']);
 		else
-			$s .= (sizeof($this->aResults) - $aCounts['success'] - $aCounts['skip']) . ' of ' . sizeof($this->aResults) . ' tests failed.';
+			$s .= sprintf(_('%d of %d tests failed.'), $iTestsCount - $iSkippedAndSucceededCount, $iTestsCount - $aCounts['skip']);
 
 		if ($aCounts['skip'] != 0)
-			$s .= ' (' . $aCounts['skip'] . ' skipped)';
+			$s .= sprintf(_(' (%d skipped)'), $aCounts['skip']);
 
 		return $s . "\n";
 	}
