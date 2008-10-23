@@ -117,44 +117,80 @@ class weeFileConfig implements ArrayAccess
 
 		And target is the value wanted.
 
+		If you need to group some words to form the parameters, surround them with double quotes.
+
 		@param	$sInstruction	The 'instruction' string
 		@return	bool			Whether this system is the targeted system
-		@warning				The value wanted must not have spaces
+		@warning				The function name must not have spaces
 		@todo More targets
 	*/
 
 	protected function isTargetedSystem($sInstruction)
 	{
-		$sInstruction = substr($sInstruction, 2);
-		fire(strpos($sInstruction, ')') === false, 'UnexpectedValueException',
-			'The targeted system instruction is missing the closing parenthese.');
+		$sInstruction	= substr($sInstruction, 2);
+		$i				= strpos($sInstruction, ')');
 
-		$sInstruction = substr($sInstruction, 0, strpos($sInstruction, ')'));
+		$i !== false
+			or burn('UnexpectedValueException',
+				_('The targeted system instruction is missing the closing parenthese.'));
 
-		$aFunc = $this->getTargetFunctions();
-		
-		$aWords = explode(' ', $sInstruction);
-		fire(empty($aFunc[$aWords[0]]), 'UnexpectedValueException',
-			'The targeted system instruction ' . $aWords[0] . ' do not exist.');
+		$sInstruction	= trim(substr($sInstruction, 0, $i));
+		$aFuncs			= $this->getTargetFunctions();
+		$i				= strpos($sInstruction, ' ');
 
-		$sEval = $aFunc[$aWords[0]];
-		fire(sizeof($aWords) != 2 + (strpos($sEval, ':') !== false), 'UnexpectedValueException',
-			'The targeted system instruction should have ' . (2 + (strpos($sEval, ':') !== false)) .
-			' parameters, ' . sizeof($aWords) . ' were given.');
+		$i !== false
+			or burn('UnexpectedValueException',
+				_('The instruction does not have a wanted value.'));
 
-		$iNbArgs = substr_count($sEval, ':');
-		$sWanted = '';
+		$i != 0
+			or burn('UnexpectedValueException',
+				_('The instruction does not have a target function.'));
 
-		for ($i = 1 + $iNbArgs; $i < sizeof($aWords); $i++)
-			$sWanted .= $aWords[$i] . ' ';
-		$sWanted = substr($sWanted, 0, -1);
+		$sFunction = substr($sInstruction, 0, $i);
+		isset($aFuncs[$sFunction])
+			or burn('UnexpectedValueException',
+				sprintf(_('The target function "%s" does not exist.'), $sFunction));
 
-		for ($i = 1; $i <= 1 + $iNbArgs; $i++)
-			$sEval = str_replace(':' . $i, addslashes($aWords[$i]), $sEval);
+		$sInstruction	= substr($sInstruction, $i + 1);
+		$aArgs			= array();
+		while ($sInstruction)
+		{
+			if ($sInstruction[0] == '"')
+			{
+				$sInstruction	= substr($sInstruction, 1);
+				$i				= strpos($sInstruction, '"');
 
-		$sResult = eval('return ' . $sEval . ';');
+				$i !== false
+					or burn('UnexpectedValueException',
+						_('A closing double quote is missing.'));
+			}
+			else
+			{
+				$i = strpos($sInstruction, ' ');
+				if ($i === false)
+				{
+					$aArgs[] = $sInstruction;
+					break;
+				}
+			}
 
-		return ($sResult == $sWanted);
+			$aArgs[]		= substr($sInstruction, 0, $i);
+			$sInstruction	= substr($sInstruction, $i + 1);
+		}
+
+		$sWanted		= array_pop($aArgs);
+		$sEval			= $aFuncs[$sFunction];
+		$iExpectedArgs	= substr_count($sEval, ':');
+		$iActualArgs	= count($aArgs);
+
+		$iExpectedArgs == $iActualArgs
+			or burn('UnexpectedValueException',
+				sprintf(_('The target function expects %d arguments but %d were given.'), $iExpectedArgs, $iActualArgs));
+
+		foreach ($aArgs as $i => $sArg)
+			$sEval = str_replace(':' . $i, addslashes($sArg), $sEval);
+
+		return eval('return ' . $sEval . ';') == $sWanted;
 	}
 
 	/**

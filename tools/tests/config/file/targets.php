@@ -20,6 +20,7 @@ class weeFileConfig_isTargetedSystem extends weeFileConfig
 			return parent::getTargetFunctions();
 
 		static $aFunc = array(
+			'multi'		=> '"Windows NT"',
 			'os'		=> 'php_uname("s")',
 			'extver'	=> 'phpversion(":1")'
 		);
@@ -80,9 +81,9 @@ try
 	$this->isFalse($o->isTargetedSystem('$(os os_which_is_not_the_one_currently_used)'),
 		'weeFileConfig fails to see that the targeted system is not the one currently used.');
 
-	// Special test for "Windows NT" which is in two words instead of one
-	$this->isTrue(defined('WEE_ON_WINDOWS') && $o->isTargetedSystem('$(os Windows NT)'),
-		'weeFileConfig fails when the operating system name uses two words.');
+	$this->isTrue($o->isTargetedSystem('$(multi "Windows NT")'),
+		_('weeFileConfig fails when the operating system name uses two words.'));
+
 }
 catch (UnexpectedValueException $e)
 {
