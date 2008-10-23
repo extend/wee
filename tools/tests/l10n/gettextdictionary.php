@@ -15,7 +15,7 @@ msgid "Wrong password"
 msgstr "Mot de passe incorrect"
 
 msgid "Wrong number"
-msgid_plural "Wrongs numbers"
+msgid_plural "Wrong numbers"
 msgstr[0] "Mauvais chiffre"
 msgstr[1] "Mauvais chiffres"';
 
@@ -26,79 +26,48 @@ exec(sprintf('msgfmt -o %s %s', $sMoFilename, $sPoFilename));
 if (!is_file($sMoFilename))
 	$this->skip();
 
-try {
-	$o = new weeGetTextDictionary($sMoFilename);
+$o = new weeGetTextDictionary($sMoFilename);
 
-	$aMoHeaders = $o->getHeaders();
+// weeGetTextDictionary::getHeaders
 
-	$this->isEqual($aMoHeaders, $aHeaders, _('weeGetTextDictionary::getHeaders should return 
-		[Content-Type] => text/plain; charset=UTF-8 
-		[Plural-Forms] => nplurals=2; plural=(n>1);'));
+$this->isEqual($aHeaders, $o->getHeaders(),
+	_('weeGetTextDictionary::getHeaders does not return the expected headers.'));
 
-	$sCharset = $o->getCharset();
-	$this->isEqual($sCharset, 'UTF-8', sprintf(_('weeGetTextDictionary::getCharset should return UTF-8 got "%s" instead'), $sCharset));
+// weeGetTextDictionary::getCharset
 
-	$sString = $o->getTranslation('Wrong password');
-	$this->isEqual($sString, 'Mot de passe incorrect',
-		sprintf(_('weeGetTextDictionary::getCharset should return "Mot de passe incorrect" got "%s" instead'), $sString));
+$this->isEqual('UTF-8', $o->getCharset(),
+   _('weeGetTextDictionary::getCharset does not return the expected charset.'));
 
-} catch (UnexpectedValueException $e) {
-	$this->fail(sprintf(_('weeGetTextDictionary should not throw an UnexpectedValueException when trying to read the file %s.'), $sMoFilename));
-}
+// weeGetTextDictionary::getTranslation
 
-try {
-	$o = new weeGetTextDictionary($sMoFilename);
+$this->isEqual('Mot de passe incorrect', $o->getTranslation('Wrong password'),
+	_('weeGetTextDictionary::getTranslation does not return the expected translation.'));
 
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'Wrongs numbers', 0);
-	$this->isEqual($sTranslation, 'Mauvais chiffres',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Mauvais chiffres" got "%s" instead'), $sTranslation));	
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'Wrongs numbers', 1);
-	$this->isEqual($sTranslation, 'Mauvais chiffre',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Mauvais chiffre" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'Wrongs numbers', 2);
-	$this->isEqual($sTranslation, 'Mauvais chiffres',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Mauvais chiffres" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'Wrongs numbers', 10);
-	$this->isEqual($sTranslation, 'Mauvais chiffres',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Mauvais chiffres" got "%s" instead'), $sTranslation));
+$this->isEqual('foobar', $o->getTranslation('foobar'),
+	_('weeGetTextDictionary::getTranslation does not return the expected native sentence when there is no translation available.'));
 
-	$sTranslation = $o->getPluralTranslation('pouet', 'Wrongs numbers', 0);
-	$this->isEqual($sTranslation, 'Wrongs numbers',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Wrongs numbers" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('pouet', 'Wrongs numbers', 1);
-	$this->isEqual($sTranslation, 'Wrongs numbers',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Wrongs numbers" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('pouet', 'Wrongs numbers', 2);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('pouet', 'Wrongs numbers', 10);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
+// weeGetTextDictionary::getPluralTranslation
 
-	$sTranslation = $o->getPluralTranslation('Wrongs numbers', 'pouet', 0);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'pouet', 1);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'pouet', 2);
-	$this->isEqual($sTranslation, 'Wrong number',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Wrong number" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('Wrong number', 'pouet', 10);
-	$this->isEqual($sTranslation, 'Wrong number',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "Wrong number" got "%s" instead'), $sTranslation));
+$this->isEqual('Mauvais chiffres', $o->getPluralTranslation('Wrong number', 'Wrong numbers', 0),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected translation when n is %d.'), 0));
 
-	$sTranslation = $o->getPluralTranslation('pouet', 'pouet', 0);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('pouet', 'pouet', 1);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('pouet', 'pouet', 2);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
-	$sTranslation = $o->getPluralTranslation('pouet', 'pouet', 10);
-	$this->isEqual($sTranslation, 'pouet',
-		sprintf(_('weeGetTextDictionary::getPluralTranslation should return "pouet" got "%s" instead'), $sTranslation));
+$this->isEqual('Mauvais chiffre', $o->getPluralTranslation('Wrong number', 'Wrong numbers', 1),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected translation when n is %d.'), 1));
 
-} catch (UnexceptedValueException $e) {}
+$this->isEqual('Mauvais chiffres', $o->getPluralTranslation('Wrong number', 'Wrong numbers', 2),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected plural translation when n is %d.'), 2));
+
+$this->isEqual('Mauvais chiffres', $o->getPluralTranslation('Wrong number', 'Wrong numbers', 10),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected plural translation when n is %d.'), 10));
+
+$this->isEqual('pouet', $o->getPluralTranslation('pouet', 'Wrong numbers', 0),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected native sentence when n is %d and there is no translation available.'), 0));
+
+$this->isEqual('pouet', $o->getPluralTranslation('pouet', 'Wrong numbers', 1),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected native sentence when n is %d and there is no translation available.'), 1));
+
+$this->isEqual('Wrong numbers', $o->getPluralTranslation('pouet', 'Wrong numbers', 2),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected plural native sentence when n is %d and there is no translation available.'), 2));
+
+$this->isEqual('Wrong numbers', $o->getPluralTranslation('pouet', 'Wrong numbers', 10),
+	sprintf(_('weeGetTextDictionary::getTranslation does not return the expected plural native sentence when n is %d and there is no translation available.'), 2));

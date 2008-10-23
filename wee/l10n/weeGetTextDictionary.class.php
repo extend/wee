@@ -185,7 +185,7 @@ class weeGetTextDictionary
 		$sKey = $sString . "\0" . $sPluralString;
 
 		if (!isset($this->aStrings[$sKey]))
-			return $this->getPluralFormIndexDefault($i) ? $sString : $sPluralString;
+			return $this->getPluralFormIndexDefault($i) ? $sPluralString : $sString;
 
 		if (is_string($this->aStrings[$sKey]))
 			$this->aStrings[$sKey] = explode("\0", $this->aStrings[$sKey]);

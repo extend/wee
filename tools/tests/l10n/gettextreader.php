@@ -28,21 +28,8 @@ exec(sprintf('msgfmt -o %s %s', $sMoFilename, $sPoFilename));
 if (!is_file($sMoFilename))
 	$this->skip();
 
-try {
-	$o = new weeGetTextReader($sMoFilename);
-} catch (UnexpectedValueException $e) {
-	$this->fail(sprintf(_('weeGetTextReader should not throw an UnexpectedValueException when trying to read the file %s.'), $sMoFilename));
-}
+$o = new weeGetTextReader($sMoFilename);
 
-$aExpectedResult = array ('message : ad vitam aeternam' => 'translation : forever');
-$aResult = array();
-
-try {
-	$o = new weeGetTextReader($sMoFilename);
-	$aResult = $o->getStrings();
-	$this->isEqual($aExpectedResult, $aResult,
-		sprintf(_('weeGetTextReader::getStrings failed, expected result : "%s=>%s", got "%s=>%s" instead.'),
-		key($aExpectedResult), $aExpectedResult[key($aExpectedResult)], key($aResult), $aResult[key($aResult)]));
-} catch (UnexpectedValueException $e) {
-	$this->fail(sprintf(_('weeGetTextReader should not throw an UnexpectedValueException when trying to read the file %s.'), $sMoFilename));
-}
+$aExpectedResult = array('message : ad vitam aeternam' => 'translation : forever');
+$this->isEqual($aExpectedResult, $o->getStrings(),
+	_('weeGetTextReader::getStrings does not return the expected strings.'));
