@@ -1,11 +1,66 @@
 <?php
 
-class validators_email
-{
-	public function __toString()
-	{
+class PrintableInput_testEmailValidator implements Printable {
+	public function toString() {
 		return 'valid@email.com';
 	}
+}
+
+class CastableInput_testEmailValidator {
+	public function __toString() {
+		return 'valid@email.com';
+	}
+}
+
+// weeEmailValidator should throw a DomainException when the value to validate is neither a string, an instance of Printable or an object castable to string.
+
+try {
+	new weeEmailValidator(new stdClass);
+	$this->fail(_('weeEmailValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
+} catch (DomainException $e) {}
+
+try {
+	new weeEmailValidator(true);
+	$this->fail(_('weeEmailValidator should throw a DomainException when the value is a boolean.'));
+} catch (DomainException $e) {}
+
+try {
+	new weeEmailValidator(null);
+	$this->fail(_('weeEmailValidator should throw a DomainException when the value is null.'));
+} catch (DomainException $e) {}
+
+try {
+	new weeEmailValidator(array());
+	$this->fail(_('weeEmailValidator should throw a DomainException when the value is an array.'));
+} catch (DomainException $e) {}
+
+try {
+	new weeEmailValidator(42);
+	$this->fail(_('weeEmailValidator should throw a DomainException when the value is an integer.'));
+} catch (DomainException $e) {}
+
+try {
+	new weeEmailValidator(42.42);
+	$this->fail(_('weeEmailValidator should throw a DomainException when the value is a float.'));
+} catch (DomainException $e) {}
+
+
+try {
+	new weeEmailValidator('valid@email.com');
+} catch (DomainException $e) {
+	$this->fail(_('weeEmailValidator should not throw a DomainException when the value is a string.'));
+}
+
+try {
+	new weeEmailValidator(new PrintableInput_testEmailValidator);
+} catch (DomainException $e) {
+	$this->fail(_('weeEmailValidator should not throw a DomainException when the value is an instance of Printable.'));
+}
+
+try {
+	new weeEmailValidator(new CastableInput_testEmailValidator);
+} catch (DomainException $e) {
+	$this->fail(_('weeEmailValidator should not throw a DomainException when the value is an object castable to string.'));
 }
 
 // Valid
@@ -14,13 +69,9 @@ $this->isTrue(weeEmailValidator::test('test@example.com'),
 	'weeEmailValidator fails to validate "test@example.com".');
 $this->isTrue(weeEmailValidator::test('test.test@example.com'),
 	'weeEmailValidator fails to validate "test.test@example.com".');
-$this->isTrue(weeEmailValidator::test(new validators_email),
-	'weeEmailValidator fails to validate an object that returns "valid@email.com" as a string.');
 
 // Invalid
 
-$this->isFalse(weeEmailValidator::test(null),
-	'weeEmailValidator returns true for a null value.');
 $this->isFalse(weeEmailValidator::test(''),
 	'weeEmailValidator returns true for the empty string.');
 $this->isFalse(weeEmailValidator::test('example'),
@@ -31,27 +82,15 @@ $this->isFalse(weeEmailValidator::test('@example.com'),
 	'weeEmailValidator returns true for "@example.com".');
 $this->isFalse(weeEmailValidator::test('test@example'),
 	'weeEmailValidator returns true for "test@example".');
-$this->isFalse(weeEmailValidator::test('test@com.example'),
-	'weeEmailValidator returns true for "test@com.example".');
 $this->isFalse(weeEmailValidator::test('test@@example.com'),
 	'weeEmailValidator returns true for "test@@example.com".');
 $this->isFalse(weeEmailValidator::test('test@test@example.com'),
 	'weeEmailValidator returns true for "test@test@example.com".');
-$this->isFalse(weeEmailValidator::test(new stdClass),
-	'weeEmailValidator returns true for an empty object.');
 
-// Other types
+// Objects
 
-$sInvalidTypeError = 'weeEmailValidator returns true for an invalid type.';
+$this->isTrue(weeEmailValidator::test(new PrintableInput_testEmailValidator),
+	_('weeEmailValidator::test should return true when the value is an instance of Printable which returns a valid number.'));
 
-$this->isFalse(weeEmailValidator::test(0), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(1), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(-1), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(111), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(-111), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(20000000), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(1.0), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(1.1), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(true), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(false), $sInvalidTypeError);
-$this->isFalse(weeEmailValidator::test(array(1, 2, 3, 'test', false)), $sInvalidTypeError);
+$this->isTrue(weeEmailValidator::test(new CastableInput_testEmailValidator),
+	_('weeEmailValidator::test should return true when the value is an object castable to string which casts to a valid number.'));

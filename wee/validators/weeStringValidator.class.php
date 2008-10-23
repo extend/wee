@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,137 +22,106 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Check if variable passed to the constructor is a valid string according to the arguments.
-	It only check the string length and if the object is string compatible currently.
+	A string validator.
 
-	@bug Should not accept a string containing the \0 character.
-	@bug Should not accept negative or null length parameters.
-	@bug Should not accept a min length parameter greater than the max parameter.
+	This validator accepts the following arguments:
+	 - invalid_error:	The error message used if the input is not of a string compatible type.
+	 - len:				The length that the string must have.
+	 - len_error:		The error message used if the string has a length not equal to the `len` argument.
+	 - max:				The maximal length that the string must have.
+	 - max_error:		The error message used if the string has a length greater than the `max` argument.
+	 - min:				The minimal length that the string must have.
+	 - min_error:		The error message used if the string has a length smaller than the `min` argument.
+	 - nul_error:		The error message used if the string contains null characters.
 */
 
-class weeStringValidator implements weeValidator
+class weeStringValidator extends weeValidator
 {
-	/**
-		Arguments passed to constructor are saved here for later use.
-	*/
-
-	protected $aArgs;
-
-	/**
-		Error message is saved here by setError and can be retrieved using getError.
-	*/
-
-	protected $sError;
-
 	/**
 		Default error messages.
 	*/
 
-	protected $aErrorList	= array(
-		'len'	=> 'Input must have exactly %len% characters',
-		'max'	=> 'Input must have at most %max% characters',
-		'min'	=> 'Input must have at least %min% characters',
-		'nas'	=> 'Input must be a string',
-		'nul'	=> 'Input must not contain null characters'
+	protected $aErrors = array(
+		'len'		=> 'Input must have exactly %len% characters.',
+		'max'		=> 'Input must have at most %max% characters.',
+		'min'		=> 'Input must have at least %min% characters.',
+		'invalid'	=> 'Input must be a string.',
+		'nul'		=> 'Input must not contain null characters.'
 	);
 
 	/**
-		Check if the variable $mValue is a string according to $aArgs arguments.
+		Initialises a string validator.
 
-		$mValue can be of any type compatible to string.
-		$aArgs can contain one of the following keys:
-			- len:			String length must be equal to len.
-			- len_error:	Error message used if length is different than len. %len% will be replaced by the len value.
-			- max:			String length must not be greater than max.
-			- max_error:	Error message used if length is greater than max. %max% will be replaced by the max value.
-			- min:			String length must not be smaller than min.
-			- min_error:	Error message used if length is smaller than min. %min% will be replaced by the min value.
-			- nas_error:	Error message used if the value is of string type or a string compatible type.
+		$mValue must be either a scalar, the null value, an array, an instance of Printable or an object castable to string.
 
-		@param	$mValue	The value to be checked.
-		@param	$aArgs	Arguments to check against.
+		@param	$mValue						The value to validate.
+		@param	$aArgs						The configuration arguments of the validator.
+		@throw	DomainException				$mValue is not of a correct type.
+		@throw	DomainException				The `len` argument is invalid.
+		@throw	DomainException				The `min` argument is invalid.
+		@throw	DomainException				The `max` argument is invalid.
+		@throw	InvalidArgumentException	The `min` and `max` arguments do not form a valid length range.
+		@throw	InvalidArgumentException	The `len` and one of the `min` or `max` arguments are both specified.
 	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
-		if (isset($aArgs['len']) && $aArgs['len'] < 0)
-			throw new InvalidArgumentException($aArgs['len'] . ' is not a valid length');
-
-		if (isset($aArgs['max']) && $aArgs['max'] < 0)
-			throw new InvalidArgumentException($aArgs['max'] . ' is not a valid maximal length');
-
-		if (isset($aArgs['min']) && $aArgs['min'] < 0)
-			throw new InvalidArgumentException($aArgs['min'] . ' is not a valid minimal length');
-
-		if (isset($aArgs['max'], $aArgs['min']) && $aArgs['min'] > $aArgs['max'])
-			throw new InvalidArgumentException('The minimal length must not be greater than the maximal one');
-
-		$this->aArgs = $aArgs;
-
 		if (is_object($mValue))
 		{
 			if ($mValue instanceof Printable)
 				$mValue = $mValue->toString();
-			elseif (is_callable(array($mValue, '__toString')))
-				$mValue = $mValue->__toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
 		}
 
-		if (is_array($mValue) || is_object($mValue))
-			$this->setError('nas');
-		elseif (isset($aArgs['len']) && strlen($mValue) != $aArgs['len'])
-			$this->setError('len');
-		elseif (isset($aArgs['max']) && strlen($mValue) > $aArgs['max'])
-			$this->setError('max');
-		elseif (isset($aArgs['min']) && strlen($mValue) < $aArgs['min'])
-			$this->setError('min');
-		elseif (strpos($mValue, "\0") !== false)
-			$this->setError('nul');
+		is_scalar($mValue) or is_null($mValue) or is_array($mValue)
+			or burn('DomainException',
+				_('$mValue is not of a correct type.'));
+
+		!isset($aArgs['len']) or filter_var($aArgs['len'], FILTER_VALIDATE_INT) !== false and $aArgs['len'] >= 0
+			or burn('DomainException',
+				_('The `len` argument is invalid.'));
+
+		!isset($aArgs['min']) or filter_var($aArgs['min'], FILTER_VALIDATE_INT) !== false and $aArgs['min'] >= 0
+			or burn('DomainException',
+				_('The `min` argument is invalid.'));
+
+		!isset($aArgs['max']) or filter_var($aArgs['max'], FILTER_VALIDATE_INT) !== false and $aArgs['max'] >= 0
+			or burn('DomainException',
+				_('The `max` argument is invalid.'));
+
+		if (isset($aArgs['min'], $aArgs['max']))
+		{
+			(int)$aArgs['min'] < $aArgs['max']
+				or burn('InvalidArgumentException',
+					_('The `min` and `max` arguments do not form a valid length range.'));
+		}
+
+		!isset($aArgs['len']) or !isset($aArgs['min']) and !isset($aArgs['max'])
+			or burn('InvalidArgumentException',
+				_('The `len` and one of the `min` or `max` arguments are both specified.'));
+
+		parent::__construct($mValue, $aArgs);
 	}
 
 	/**
-		Get the error message, if any.
+		Returns whether if the given input is a valid string or of a compatible type.
 
-		@return	string	The error message, or null if there is no error.
+		@param	$sInput						The input.
+		@return	bool						Whether the given input is a valid string or of a compatible type.
 	*/
 
-	public function getError()
+	protected function isValidInput($mInput)
 	{
-		return $this->sError;
+		return is_scalar($mInput) || $mInput == null;
 	}
 
 	/**
-		Get the result of the check performed in the constructor.
+		Convenience function for inline validating of variables.
 
-		@return	bool	True if value checked is NOT a valid string, false if it is valid.
-	*/
-
-	public function hasError()
-	{
-		return !empty($this->sError);
-	}
-
-	/**
-		Format and save the error message.
-
-		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
-	*/
-
-	protected function setError($sType)
-	{
-		$sMsg = $sType . '_error';
-		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
-		else								$this->sError = $this->aErrorList[$sType];
-
-		if (!empty($this->aArgs[$sType]))
-			$this->sError = str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
-	}
-
-	/**
-		Convenience function for inline checking of variables.
-
-		@param	$mValue	The value to be checked.
-		@param	$aArgs	Arguments to check against. See the constructor documentation for details.
-		@return	bool	True if $mValue IS a valid string, false otherwise.
+		@param	$mValue						The value to validate.
+		@param	$aArgs						The configuration arguments of the validator.
+		@return	bool						Whether the variable is valid.
 	*/
 
 	public static function test($mValue, array $aArgs = array())
@@ -160,6 +129,26 @@ class weeStringValidator implements weeValidator
 		$o = new self($mValue, $aArgs);
 		return !$o->hasError();
 	}
-}
 
-?>
+	/**
+		Validates a string.
+	*/
+
+	protected function validate()
+	{
+		if (!$this->isValidInput($this->mValue))
+			return $this->setError('invalid');
+
+		if (strpos($this->mValue, "\0") !== false)
+			return $this->setError('nul');
+
+		$iLength = strlen($this->mValue);
+
+		if (isset($this->aArgs['len']) && $iLength != $this->aArgs['len'])
+			$this->setError('len');
+		elseif (isset($this->aArgs['max']) && $iLength > $this->aArgs['max'])
+			$this->setError('max');
+		elseif (isset($this->aArgs['min']) && $iLength < $this->aArgs['min'])
+			$this->setError('min');
+	}
+}

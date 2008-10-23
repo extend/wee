@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,102 +22,69 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Checks if the given date is valid according to the arguments.
+	A time validator.
+
+	The input must be a time in format HH:mm, as in 00:00 for midnight.
+
+	This validator accepts the following parameters:
+	 - invalid_error: The error message used if the input is not a valid time.
 */
 
-class weeTimeValidator implements weeValidator
+class weeTimeValidator extends weeValidator
 {
-	/**
-		Arguments passed to constructor are saved here for later use.
-	*/
-
-	protected $aArgs;
-
-	/**
-		Error message is saved here by setError and can be retrieved using getError.
-	*/
-
-	protected $sError;
-
-	/**
-		True if the validation failed, false otherwise.
-	*/
-
-	protected $bHasError	= false;
-
 	/**
 		Default error messages.
 	*/
 
-	protected $aErrorList	= array(
-		'len'	=> 'Input must have exactly 5 characters',
-		'nat'	=> 'Input must be a time',
+	protected $aErrors = array(
+		'invalid' => 'Input must be a time.',
 	);
 
 	/**
-		Check if the variable $mValue is a time according to $aArgs arguments.
+		Initialises a new date validator.
 
-		$mValue can be of any type compatible to string.
-		$aArgs can contain one of the following keys:
-			- invalid_error:	Error message used if the time given is not valid.
+		$mValue must be either a string, an instance of Printable or an object castable to string.
 
-		@param	$mValue	The value to be checked.
-		@param	$aArgs	Arguments to check against.
+		@param	$mValue			The value to validate.
+		@param	$aArgs			The configuration arguments of the validator.
+		@throw	DomainException	$mValue is not of a correct type.
 	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
-		$this->aArgs = $aArgs;
-		
-		if (strlen($mValue) != 5)
-			$this->setError('len');
-		elseif (strtotime($mValue) == false)
-			$this->setError('nat');
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
+		}
+
+		is_string($mValue)
+			or burn('DomainException',
+				_('$mValue is not of a correct type.'));
+
+		parent::__construct($mValue, $aArgs);
 	}
 
 	/**
-		Get the error message, if any.
+		Returns whether a given input is a valid time.
 
-		@return	string	The error message, or null if there is no error.
+		@param	$sInput			The input.
+		@return	bool			Whether the given input is a valid time.
 	*/
 
-	public function getError()
+	protected function isValidInput($sInput)
 	{
-		return $this->sError;
+		return strlen($sInput) != 5 || $sInput[2] != ':' || mktime(substr($sInput, 0, 2), substr($sInput, 3, 2)) !== false;
 	}
 
 	/**
-		Get the result of the check performed in the constructor.
+		Convenience function for inline validating of variables.
 
-		@return	bool	True if value checked is NOT a valid email, false if it is valid.
-	*/
-
-	public function hasError()
-	{
-		return $this->bHasError;
-	}
-
-	/**
-		Format and save the error message.
-
-		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
-	*/
-
-	protected function setError($sType)
-	{
-		$this->bHasError	= true;
-
-		$sMsg = $sType . '_error';
-		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
-		else								$this->sError = $this->aErrorList[$sType];
-	}
-
-	/**
-		Convenience function for inline checking of variables.
-
-		@param	$mValue	The value to be checked.
-		@param	$aArgs	Arguments to check against. See the constructor documentation for details.
-		@return	bool	True if $mValue IS a valid email, false otherwise.
+		@param	$mValue			The value to validate.
+		@param	$aArgs			The configuration arguments of the validator.
+		@return	bool			Whether the variable is valid.
 	*/
 
 	public static function test($mValue, array $aArgs = array())
@@ -126,5 +93,3 @@ class weeTimeValidator implements weeValidator
 		return !$o->hasError();
 	}
 }
-
-?>

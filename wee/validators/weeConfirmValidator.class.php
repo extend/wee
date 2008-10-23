@@ -22,135 +22,68 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Checks if the value given match the value of the confirmation element.
+	A form confirmation validator.
+
+	This validator checks if the value given match the value of the confirmation element.
 
 	Useful to check if a password entered when registering is valid, for example.
 	The user types it two times, and this validator checks if it's correctly entered.
+
+	This validator accepts the following arguments:
+	 - invalid_error:	The error message used if the input is not confirmed in the form data.
+	 - with:			The name of the widget which value must be confirmed by the validator (mandatory).
 */
 
-class weeConfirmValidator implements weeFormValidator
+class weeConfirmValidator extends weeFormValidator
 {
-	/**
-		Arguments passed to constructor are saved here for later use.
-	*/
-
-	protected $aArgs;
-
-	/**
-		The data to check.
-	*/
-
-	protected $aData;
-
-	/**
-		Error message is saved here by setError and can be retrieved using getError.
-	*/
-
-	protected $sError;
-
-	/**
-		True if the validation failed, false otherwise.
-	*/
-
-	protected $bHasError	= false;
-
-	/**
-		The value to check.
-	*/
-
-	protected $mValue;
-
 	/**
 		Default error messages.
 	*/
 
-	protected $aErrorList	= array(
-		'invalid'	=> 'Input confirmation failed');
+	protected $aErrors = array(
+		'invalid' => 'Input confirmation failed');
 
 	/**
-		Initialize the validator.
+		Initialises a new option validator.
 
-		@param $mValue	The value to check.
-		@param $aArgs	Configuration arguments for the validator.
+		$mValue must be either a scalar, an instance of Printable or an object castable to string.
+
+		@param	$mValue						The value to validate.
+		@param	$aArgs						The configuration arguments of the validator.
+		@throw	DomainException				$mValue is not of a correct type.
+		@throw	InvalidArgumentException	The argument `with` is missing.
 	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
-		$this->aArgs	= $aArgs;
-		$this->mValue	= $mValue;
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
+		}
+
+		is_scalar($mValue)
+			or burn('DomainException',
+				_('$mValue is not of a correct type.'));
+
+		!empty($aArgs['with'])
+			or burn('InvalidArgumentException',
+				_('The argument `with` is mandatory.'));
+
+		parent::__construct($mValue, $aArgs);
 	}
 
 	/**
-		Returns the validation error string.
-		Do not call it if the validation was positive.
+		Returns whether the given value is confirmed in the form data.
 
-		@return string The error message.
+		@param	$mInput						The input.
+		@return	bool						Whether the given value is confirmed.
 	*/
 
-	public function getError()
+	protected function isValidInput($mInput)
 	{
-		return $this->sError;
-	}
-
-	/**
-		Tests if the validator failed.
-
-		@return bool True if the validation failed, false otherwise.
-	*/
-
-	public function hasError()
-	{
-		fire(empty($this->aData), 'InvalidStateException',
-			'You must set the form data using weeConfirmValidator::setData before calling this method.');
-
-		if ($this->aData[(string)$this->aArgs['with']] != $this->mValue)
-			$this->setError('invalid');
-
-		return $this->bHasError;
-	}
-
-	/**
-		Sets the widget and complete data passed to the weeForm object.
-		Usually either $_POST or $_GET.
-
-		@param $oWidget The widget to validate.
-		@param $aData The data to check, if applicable.
-	*/
-
-	public function setFormData($oWidget, $aData)
-	{
-		$this->aData = $aData;
-	}
-
-	/**
-		Format and save the error message.
-
-		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
-	*/
-
-	protected function setError($sType)
-	{
-		$this->bHasError	= true;
-
-		$sMsg = $sType . '_error';
-		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
-		else								$this->sError = $this->aErrorList[$sType];
-
-		$this->sError		= _($this->sError);
-	}
-
-	/**
-		Convenience function for quick validation tests.
-
-		@param	$mValue	The value to check.
-		@param	$aArgs	Configuration arguments for the validator.
-		@return	bool	True if the validation SUCCEEDED, false otherwise.
-		@warning		The result of this method is the inverse of hasError.
-	*/
-
-	public static function test($mValue, array $aArgs = array())
-	{
-		$o = new self($mValue, $aArgs);
-		return !$o->hasError();
+		return array_value($this->aData, $this->aArgs['with']) == $mInput;
 	}
 }

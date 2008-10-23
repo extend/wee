@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,133 +22,111 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Checks if the given date is valid according to the arguments.
+	A date validator.
+
+	The input to validate must be a date as specified in the SQL standard, e.g. 1987-29-10 for october 29th, 1987.
+
+	This validator accepts the following arguments:
+	 - max:				The upper bound of the range of the valid dates.
+	 - max_error:		The error message used if the date is after the date specified in the `max` argument.
+	 - min:				The lower bound of the range of the valid dates.
+	 - min_error:		The error message used if the date is before the date specified in the `min` argument.
+	 - invalid_error:	The error message used if the input is not a date.
+
+	 `max` and `min` arguments both accept 'current' as a special value, this special value represents
+	 the current date at the time of the validation.
 */
 
-class weeDateValidator implements weeValidator
+class weeDateValidator extends weeValidator
 {
 	/**
-		Arguments passed to constructor are saved here for later use.
+		The default error messages.
 	*/
 
-	protected $aArgs;
-
-	/**
-		Error message is saved here by setError and can be retrieved using getError.
-	*/
-
-	protected $sError;
-
-	/**
-		True if the validation failed, false otherwise.
-	*/
-
-	protected $bHasError	= false;
-
-	/**
-		Default error messages.
-	*/
-
-	protected $aErrorList	= array(
-		'max'	=> 'Input must be a date before %max%',
-		'min'	=> 'Input must be a date after %min%',
-		'nad'	=> 'Input must be a date',
+	protected $aErrors = array(
+		'max'		=> 'Input must be a date before %max%.',
+		'min'		=> 'Input must be a date after %min%.',
+		'invalid'	=> 'Input must be a date.',
 	);
 
 	/**
-		Check if the variable $mValue is a date according to $aArgs arguments.
+		Initialises a new date validator.
 
-		$mValue can be of any type compatible to string.
-		$aArgs can contain one of the following keys:
-			- invalid_error:	Error message used if the date given is not valid.
+		$mValue must be either a string, an instance of Printable or an object castable to string.
 
-		@param	$mValue	The value to be checked.
-		@param	$aArgs	Arguments to check against.
+		@param	$mValue						The value to validate.
+		@param	$aArgs						The configuration arguments of the validator.
+		@throw	DomainException				$mValue is not of a correct type.
+		@throw	DomainException				The `max` argument is invalid.
+		@throw	DomainException				The `min` argument is invalid.
+		@throw	InvalidArgumentException	The `min` and `max` arguments do not form a valid date range.
 	*/
 
 	public function __construct($mValue, array $aArgs = array())
 	{
-		$this->aArgs = $aArgs;
-
-		$aDate = explode('-', $mValue);
-		$iTime = @mktime(0, 0, 0, $aDate[1], $aDate[2], $aDate[0]);
-
-		if (strlen($mValue) != 10 || sizeof($aDate) != 3 || !checkdate($aDate[1], $aDate[2], $aDate[0]))
-			$this->setError('nad');
-		elseif (isset($aArgs['max']))
+		if (is_object($mValue))
 		{
-			if ($aArgs['max'] == 'current')
-				$iMax	= time();
-			else
-			{
-				$a		= explode('-', $mValue);
-				$iMax	= @mktime(0, 0, 0, $a[1], $a[2], $a[0]);
-			}
-
-			if ($iTime > $iMax)
-				$this->setError('max');
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
 		}
-		elseif (isset($aArgs['min']))
+
+		is_string($mValue)
+			or burn('DomainException',
+				_('$mValue is not of a correct type.'));
+
+		!isset($aArgs['min']) or is_string($aArgs['min']) and ($aArgs['min'] == 'current' or $this->isValidInput($aArgs['min']))
+			or burn('DomainException',
+				_('The `min` argument is invalid.'));
+
+		!isset($aArgs['max']) or is_string($aArgs['max']) and ($aArgs['max'] == 'current' or $this->isValidInput($aArgs['max']))
+			or burn('DomainException',
+				_('The `max` argument is invalid.'));
+
+		if (isset($aArgs['min'], $aArgs['max']))
 		{
-			if ($aArgs['min'] == 'current')
-				$iMin	= time();
-			else
-			{
-				$a		= explode('-', $mValue);
-				$iMin	= @mktime(0, 0, 0, $a[1], $a[2], $a[0]);
-			}
+			if ($aArgs['min'] == 'current' or $aArgs['max'] == 'current')
+				$sToday = date('Y-m-d');
 
-			if ($iTime < $iMin)
-				$this->setError('min');
+			$sMin = $aArgs['min'] == 'current' ? $sToday : $aArgs['min'];
+			$sMax = $aArgs['max'] == 'current' ? $sToday : $aArgs['max'];
+
+			$sMin < $sMax
+				or burn('InvalidArgumentException',
+					_('The `min` and `max` arguments do not form a valid date range.'));
 		}
+
+		parent::__construct($mValue, $aArgs);
 	}
 
 	/**
-		Get the error message, if any.
+		Returns whether a given input is a valid date.
 
-		@return	string	The error message, or null if there is no error.
+		@param	$sInput						The input.
+		@return	bool						Whether the given input is a valid date.
 	*/
 
-	public function getError()
+	protected function isValidInput($sInput)
 	{
-		return $this->sError;
+		if (strlen($sInput) != 10 || $sInput[4] != '-' || $sInput[7] != '-')
+			return false;
+
+		$aDate = array(
+			substr($sInput, 0, 4),	// year
+			substr($sInput, 5, 2),	// month
+			substr($sInput, 8, 2) 	// day
+		);
+
+		return checkdate($aDate[1], $aDate[2], $aDate[0]);
 	}
 
 	/**
-		Get the result of the check performed in the constructor.
+		Convenience function for inline validating of variables.
 
-		@return	bool	True if value checked is NOT a valid email, false if it is valid.
-	*/
-
-	public function hasError()
-	{
-		return $this->bHasError;
-	}
-
-	/**
-		Format and save the error message.
-
-		@param	$sType	The error type. Used to retrieve the error message. See the constructor documentation for details.
-	*/
-
-	protected function setError($sType)
-	{
-		$this->bHasError	= true;
-
-		$sMsg = $sType . '_error';
-		if (!empty($this->aArgs[$sMsg]))	$this->sError = $this->aArgs[$sMsg];
-		else								$this->sError = $this->aErrorList[$sType];
-
-		if ($sType != 'nad')
-			$this->sError	= str_replace('%' . $sType . '%', $this->aArgs[$sType], _($this->sError));
-	}
-
-	/**
-		Convenience function for inline checking of variables.
-
-		@param	$mValue	The value to be checked.
-		@param	$aArgs	Arguments to check against. See the constructor documentation for details.
-		@return	bool	True if $mValue IS a valid date, false otherwise.
+		@param	$mValue						The value to validate.
+		@param	$aArgs						The configuration arguments of the validator.
+		@return	bool						Whether the variable is valid.
 	*/
 
 	public static function test($mValue, array $aArgs = array())
@@ -156,6 +134,31 @@ class weeDateValidator implements weeValidator
 		$o = new self($mValue, $aArgs);
 		return !$o->hasError();
 	}
-}
 
-?>
+	/**
+		Validates a date.
+	*/
+
+	protected function validate()
+	{
+		if (!$this->isValidInput($this->mValue))
+			return $this->setError('invalid');
+
+		if (array_value($this->aArgs, 'max', array_value($this->aArgs, 'min')) == 'current')
+			$sToday = date('Y-m-d');
+
+		if (isset($this->aArgs['min']))
+		{
+			$sMin = $this->aArgs['min'] == 'current' ? $sToday : $this->aArgs['min'];
+			if ($this->mValue < $sMin)
+				return $this->setError('min');
+		}
+
+		if (isset($this->aArgs['max']))
+		{
+			$sMax = $this->aArgs['max'] == 'current' ? $sToday : $this->aArgs['max'];
+			if ($this->mValue > $sMax)
+				return $this->setError('max');
+		}
+	}
+}

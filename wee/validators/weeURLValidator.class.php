@@ -22,24 +22,24 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	A email validator.
+	An URL validator.
 
-	This validator accepts the following parameters:
-	 - invalid_error: The error message if the email is not valid.
+	This validator accepts the following arguments:
+	 - invalid_error: The error message used if the input is not a valid URL.
 */
 
-class weeEmailValidator extends weeValidator
+class weeURLValidator extends weeValidator
 {
 	/**
 		Default error messages.
 	*/
 
 	protected $aErrors = array(
-		'invalid' => 'Input must be a email address.'
+		'invalid' => 'Input must be a valid URL.'
 	);
 
 	/**
-		Initialises a new email validator.
+		Initialises a new URL validator.
 
 		$mValue must be either a string, an instance of Printable or an object castable to string.
 
@@ -66,15 +66,15 @@ class weeEmailValidator extends weeValidator
 	}
 
 	/**
-		Returns whether the given input is a valid email.
+		Returns whether the given input is a valid URL.
 
 		@param	$sInput			The input.
-		@return	bool			Whether the given input is a valid email.
+		@return	bool			Whether the input is a valid URL.
 	*/
 
 	protected function isValidInput($sInput)
 	{
-		return filter_var($sInput, FILTER_VALIDATE_EMAIL) !== false;
+		return filter_var($sInput, FILTER_VALIDATE_URL) !== false;
 	}
 
 	/**
