@@ -81,7 +81,7 @@ abstract class weeDocumentor implements Printable
 		$a['methods']	= array();
 		foreach ($aMethods as $o)
 		{
-			$aMethod	= array(
+			$aMethod = array(
 				'name'			=> $o->getName(),
 				'type'			=> $o->isStatic() ? 'static' : ($o->isAbstract() ? 'abstract' : ($o->isFinal() ? 'final' : null)),
 				'visibility'	=> $o->isPublic() ? 'public' : ($o->isPrivate() ? 'private' : 'protected'),
@@ -92,6 +92,9 @@ abstract class weeDocumentor implements Printable
 
 				'numreqparams'	=> $o->getNumberOfRequiredParameters(),
 			);
+
+			if (!$aMethod['internal'])
+				$aHints = self::getParametersTypeHints($o);
 
 			$sFilename = substr($o->getFileName(), strlen(getcwd()) + 1);
 			if (!empty($sFilename) && $sFilename != $a['filename'])
@@ -111,13 +114,21 @@ abstract class weeDocumentor implements Printable
 				$aParameter = array(
 					'name'		=> $oParameter->getName(),
 					'ref'		=> $oParameter->isPassedByReference(),
-					'array'		=> $oParameter->isArray(),
 					'null'		=> $oParameter->allowsNull(),
 					'default'	=> $oParameter->isDefaultValueAvailable() ? var_export($oParameter->getDefaultValue(), true) : null,
 				);
 
 				if (isset($aMethod['paramscomment'][$aParameter['name']]))
 					$aParameter['comment'] = $aMethod['paramscomment'][$aParameter['name']];
+
+				if ($aMethod['internal'] && $oParameter->isArray())
+					$aParameter['hint'] = 'array';
+				else
+				{
+					$aParameter['type'] = $this->getVariableType($aParameter['name']);
+					if (isset($aHints[$aParameter['name']]))
+						$aParameter['hint'] = $aHints[$aParameter['name']];
+				}
 
 				$aMethod['params'][] = $aParameter;
 			}
@@ -193,13 +204,15 @@ abstract class weeDocumentor implements Printable
 	{
 		$o = new ReflectionFunction($sFunctionName);
 
-		$aFunc	= array(
+		$aFunc = array(
 			'name'			=> $o->getName(),
 			'filename'		=> substr($o->getFileName(), strlen(getcwd()) + 1),
 			'startline'		=> $o->getStartLine(),
 			'endline'		=> $o->getEndLine(),
 			'numreqparams'	=> $o->getNumberOfRequiredParameters(),
 		);
+
+		$aHints = self::getParametersTypeHints($o);
 
 		$this->parseDocComment($this->trimDocComment($o->getDocComment()), $aParsedData);
 		$aFunc = array_merge($aFunc, $aParsedData);
@@ -212,10 +225,13 @@ abstract class weeDocumentor implements Printable
 			$aParameter = array(
 				'name'		=> $oParameter->getName(),
 				'ref'		=> $oParameter->isPassedByReference(),
-				'array'		=> $oParameter->isArray(),
 				'null'		=> $oParameter->allowsNull(),
+				'type'		=> $this->getVariableType($oParameter->getName()),
 				'default'	=> $oParameter->isDefaultValueAvailable() ? var_export($oParameter->getDefaultValue(), true) : null,
 			);
+
+			if (isset($aHints[$aParameter['name']]))
+				$aParameter['hint'] = $aHints[$aParameter['name']];
 
 			if (isset($aFunc['paramscomment'][$aParameter['name']]))
 				$aParameter['comment'] = $aFunc['paramscomment'][$aParameter['name']];
@@ -227,6 +243,110 @@ abstract class weeDocumentor implements Printable
 		$this->aFuncs[] = $aFunc;
 
 		return $this;
+	}
+
+	/**
+		Returns the type-hints of the parameters of a given function.
+
+		@param	$oFunction					The function to scan.
+		@return	array(string)				An associative array mapping parameters' names to their type-hint.
+	*/
+
+	public static function getParametersTypeHints(ReflectionFunctionAbstract $oFunction)
+	{
+		$bArg			= true;
+		$bFunctionName	= false;
+		$iLevel			= 0;
+		$bInPrototype	= false;
+		$sHint			= null;
+		$aHints			= array();
+
+		$oFile = new SplFileObject($oFunction->getFileName());
+		$oFile->seek($oFunction->getStartLine() - 1);
+		while ($oFile->valid())
+		{
+			$aTokens	= token_get_all('<?php ' . $oFile->current() . ' */');
+			$iCount		= count($aTokens);
+
+			for ($i = 0; $i < $iCount; ++$i)
+			{
+				if ($bInPrototype)
+				{
+					if (is_array($aTokens[$i]) && $bArg == true)
+						switch ($aTokens[$i][0])
+						{
+							case T_STRING:
+							case T_ARRAY:
+								$sHint = $aTokens[$i][1];
+								break;
+
+							case T_VARIABLE:
+								if ($sHint !== null)
+									$aHints[substr($aTokens[$i][1], 1)] = $sHint;
+
+								$bArg	= false;
+								$sHint	= null;
+						}
+					elseif ($aTokens[$i] == '(')
+						++$iLevel;
+					elseif ($aTokens[$i] == ')')
+					{
+						if(--$iLevel == 0)
+							break 2;
+					}
+					elseif ($iLevel == 1 && $aTokens[$i] == ',')
+						$bArg = true;
+				}
+				elseif (is_array($aTokens[$i]))
+					switch ($aTokens[$i][0])
+					{
+						case T_FUNCTION:
+							$bFunctionName = true;
+							break;
+
+						case T_STRING:
+							if ($bFunctionName)
+							{
+								if ($aTokens[$i][1] == $oFunction->getName())
+									$bInPrototype = true;
+								else
+									$bFunctioName = false;
+							}
+					}
+			}
+
+			$oFile->next();
+		}
+
+		return $aHints;
+	}
+
+	/**
+		Returns the type of a variable from its name.
+
+		@param	$sVariable					The name of the variable.
+		@return	string						The type of the variable.
+		@throw	InvalidArgumentException	$sVariable is not a valid variable name.
+	*/
+
+	protected function getVariableType($sVariable)
+	{
+		is_string($sVariable) and isset($sVariable[0])
+			or burn('InvalidArgumentException',
+				_('$sVariable is not a valid variable name.'));
+
+		switch ($sVariable[0])
+		{
+			case 'a':	return 'array';
+			case 'b':	return 'bool';
+			case 'f':	return 'float';
+			case 'i':	return 'int';
+			case 'm':	return 'mixed';
+			case 'o':	return 'object';
+			case 'r':	return 'resource';
+			case 's':	return 'string';
+			default:	return null;
+		}
 	}
 
 	/**

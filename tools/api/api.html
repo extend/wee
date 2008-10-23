@@ -67,7 +67,7 @@ formatFuncName = function(func) {
 
 	$('>params>param', func).each(function() {
 		s += '<span class="param">';
-		if ($(this).attr('array')) s += 'array ';
+		if ($(this).attr('type')) s += $(this).attr('type') + ' ';
 		if ($(this).attr('ref')) s += '&';
 		s += '$' + $(this).attr('name');
 		if ($(this).attr('default')) s += ' = ' + $(this).attr('default');
@@ -99,10 +99,15 @@ writeFuncDetails = function(func, dest, filename) {
 		$(dest + '>dl').append('<dt>Visibility</dt><dd>' + $(func).attr('visibility') + '</dd>');
 
 	if ($('>params', func).length > 0) {
-		$(dest).append('<table class="params"><caption>Parameters</caption><tr><th>Ref?</th><th>Name</th><th>Default</th><th>Comment</th></tr></table>');
+		$(dest).append('<table class="params"><caption>Parameters</caption><tr><th>Ref?</th><th>Type</th><th>Name</th><th>Default</th><th>Comment</th></tr></table>');
 		$('>params>param', func).each(function() {
 			s = '<tr><td>';
 			if ($(this).attr('ref') == undefined) s += ''; else s += '&';
+			s += '</td><td>';
+			if ($(this).attr('hint') != undefined)
+				s += $(this).attr('hint');
+			else if ($(this).attr('type') != undefined)
+				s += $(this).attr('type');
 			s += '</td><td>$' + $(this).attr('name') + '</td><td>';
 			if ($(this).attr('default') == undefined) s += ''; else s += $(this).attr('default');
 			s += '</td><td>' + $(this).text() + '</td></tr>'

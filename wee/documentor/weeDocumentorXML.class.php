@@ -250,9 +250,23 @@ class weeDocumentorXML extends weeDocumentor
 		$this->oXMLWriter->writeAttribute('name', $aParam['name']);
 
 		if (!empty($aParam['ref'])) $this->oXMLWriter->writeAttribute('ref', 'ref');
-		if (!empty($aParam['array'])) $this->oXMLWriter->writeAttribute('array', 'array');
 		if (!empty($aParam['null'])) $this->oXMLWriter->writeAttribute('null', 'null');
-		if (!empty($aParam['default'])) $this->oXMLWriter->writeAttribute('default', $aParam['default']);
+
+		if (!empty($aParam['default']))
+		{
+			$sDefault = $aParam['default'];
+			if (strlen($sDefault) >= 7 && !substr_compare($sDefault, 'array (', 0, 7))
+			{
+				if ($sDefault[8] == ')')
+					$sDefault = 'array()';
+				else
+					$sDefault = 'array(' . substr($sDefault, 7);
+			}
+			$this->oXMLWriter->writeAttribute('default', $sDefault);
+		}
+
+		if (!empty($aParam['type'])) $this->oXMLWriter->writeAttribute('type', $aParam['type']);
+		if (!empty($aParam['hint'])) $this->oXMLWriter->writeAttribute('hint', $aParam['hint']);
 		if (!empty($aParam['comment'])) $this->oXMLWriter->text($aParam['comment']);
 
 		$this->oXMLWriter->endElement();
