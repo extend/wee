@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,18 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeXHTMLOutput extends weeOutput
 {
 	/**
+		Decodes a given value.
+
+		@param	$mValue	The value to decode.
+		@return	string	The decoded value.
+	*/
+
+	public function decode($mValue)
+	{
+		return html_entity_decode($mValue, ENT_COMPAT, 'utf-8');
+	}
+
+	/**
 		Encodes data to be displayed.
 
 		@param	$mValue	Data to encode.
@@ -51,5 +63,3 @@ class weeXHTMLOutput extends weeOutput
 		return weeOutput::$oInstance;
 	}
 }
-
-?>

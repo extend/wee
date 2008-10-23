@@ -94,7 +94,7 @@ class weeTemplate implements Printable
 
 	protected function mkLink($sLink, $aArgs = array())
 	{
-		$sSeparator = (strpos($sLink, '?') === false) ? '?' : '&amp;';
+		$sLink .= (strpos($sLink, '?') === false) ? '?' : '&';
 
 		$aArgs = $aArgs + $this->aLinkArgs;
 		foreach ($aArgs as $sName => $sValue)
@@ -102,11 +102,11 @@ class weeTemplate implements Printable
 			if ($sValue instanceof Printable)
 				$sValue = $sValue->toString();
 
-			$sLink .= $sSeparator . $sName . '=' . $sValue;
-			$sSeparator = '&amp;';
+			$sLink .= $sName . '=' . urlencode(weeOutput::instance()->decode($sValue)) . '&';
 		}
+		$sLink = substr($sLink, 0, -1);
 
-		return $sLink;
+		return weeOutput::encodeValue($sLink);
 	}
 
 	/**

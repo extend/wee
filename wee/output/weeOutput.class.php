@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -54,6 +54,15 @@ abstract class weeOutput
 	final private function __clone()
 	{
 	}
+
+	/**
+		Decodes a given value.
+
+		@param	$mValue	The value to decode.
+		@return	string	The decoded value.
+	*/
+
+	public abstract function decode($mValue);
 
 	/**
 		Delete the specified cookie.

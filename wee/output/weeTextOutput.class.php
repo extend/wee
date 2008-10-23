@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2007 Dev:Extend
+	Copyright (c) 2007, 2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -28,14 +28,32 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeTextOutput extends weeOutput
 {
 	/**
+		Decodes a given value.
+
+		In this output driver, this method always return its argument.
+
+		@param	$mValue						The value to decode.
+		@return	string						The decoded value.
+		@throw	InvalidArgumentException	$mValue contain a NUL character.
+	*/
+
+	public function decode($mValue)
+	{
+		strpos($mValue, "\0") === false
+			or burn('InvalidArgumentException',
+				_('$mValue should not contain any NUL character.'));
+		return $mValue;
+	}
+
+	/**
 		Encodes data to be displayed.
 
 		Text does not need to be encoded for text output.
 		However the value given will be stripped of all its
 		NUL characters, to prevent attacks based on it.
 
-		@param	$mValue	Data to encode.
-		@return	string	Data encoded.
+		@param	$mValue						Data to encode.
+		@return	string						Data encoded.
 	*/
 
 	public function encode($mValue)
@@ -46,7 +64,7 @@ class weeTextOutput extends weeOutput
 	/**
 		Select weeTextOutput as default output and return the object.
 
-		@return weeTextOutput The weeTextOutput object selected.
+		@return weeTextOutput				The weeTextOutput object selected.
 	*/
 
 	public static function select()
@@ -55,5 +73,3 @@ class weeTextOutput extends weeOutput
 		return weeOutput::$oInstance;
 	}
 }
-
-?>
