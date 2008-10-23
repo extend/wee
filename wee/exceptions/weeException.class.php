@@ -64,6 +64,40 @@ function fire($bCondition, $sException = 'UnexpectedValueException', $sMessage =
 final class weeException extends Namespace
 {
 	/**
+		Returns the name of a error level.
+
+		@param	$iLevel				The error level.
+		@return	string				The name of the error level.
+		@throw	DomainException		The error level is invalid.
+	*/
+
+	public static function getLevelName($iLevel)
+	{
+		static $aTypes = array(
+			E_ERROR				=> 'E_ERROR',
+			E_WARNING			=> 'E_WARNING',
+			E_PARSE				=> 'E_PARSE',
+			E_NOTICE			=> 'E_NOTICE',
+			E_CORE_ERROR		=> 'E_CORE_ERROR',
+			E_CORE_WARNING		=> 'E_CORE_WARNING',
+			E_COMPILE_ERROR		=> 'E_COMPILE_ERROR',
+			E_COMPILE_WARNING	=> 'E_COMPILE_WARNING',
+			E_USER_ERROR		=> 'E_USER_ERROR',
+			E_USER_WARNING		=> 'E_USER_WARNING',
+			E_USER_NOTICE		=> 'E_USER_NOTICE',
+			E_STRICT			=> 'E_STRICT',
+			E_RECOVERABLE_ERROR	=> 'E_RECOVERABLE_ERROR',
+			E_ALL				=> 'E_ALL'
+		);
+
+		isset($aTypes[$iLevel])
+			or burn('DomainException',
+				_('The error level is invalid.'));
+
+		return $aTypes[$iLevel];
+	}
+
+	/**
 		Function called when a PHP error is triggered.
 		Gets error details in DEBUG mode, then prints the error page and log error if possible.
 		Then stops script execution.
@@ -80,27 +114,10 @@ final class weeException extends Namespace
 		// Return directly if @ was used: this error has been masked.
 		if (error_reporting() == 0) return;
 
-		$aTypes = array(
-			1 => 'E_ERROR',
-			2 => 'E_WARNING',
-			4 => 'E_PARSE',
-			8 => 'E_NOTICE',
-			16 => 'E_CORE_ERROR',
-			32 => 'E_CORE_WARNING',
-			64 => 'E_COMPILE_ERROR',
-			128 => 'E_COMPILE_WARNING',
-			256 => 'E_USER_ERROR',
-			512 => 'E_USER_WARNING',
-			1024 => 'E_USER_NOTICE',
-			2048 => 'E_STRICT',
-			4096 => 'E_RECOVERABLE_ERROR',
-			8191 => 'E_ALL',
-		);
-
 		$sDebug = null;
 
 		if (!ini_get('html_errors'))
-			$sDebug = 'Error: ' . $aTypes[$iNumber] . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
+			$sDebug = 'Error: ' . self::getLevelName($iNumber) . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
 		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="php"><h2>' . str_replace("<a href='", "<a href='http://php.net/", $sMessage) . '</h2>';
@@ -131,6 +148,7 @@ final class weeException extends Namespace
 		{
 			$sDebug .= 'Exception: ' . get_class($oException) . "\r\n";
 			$sDebug .= 'Message: ' . $oException->getMessage() . "\r\n";
+			$sDebug .= "Trace:\n" . $oException->getTraceAsString();
 		}
 		elseif (defined('DEBUG'))
 		{
