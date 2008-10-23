@@ -83,7 +83,6 @@ try
 
 	$this->isTrue($o->isTargetedSystem('$(multi "Windows NT")'),
 		_('weeFileConfig fails when the operating system name uses two words.'));
-
 }
 catch (UnexpectedValueException $e)
 {
