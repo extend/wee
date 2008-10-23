@@ -192,8 +192,8 @@ class weeForm implements Printable
 		$aWidgets	= $this->oXML->xpath('//widget/name');
 		$aNames		= array();
 
-		foreach ($aWidgets as $i => $oWidget)
-			$aNames[(string)$oWidget] = $i;
+		foreach ($aWidgets as $oWidget)
+			$aNames[(string)$oWidget] = null;
 
 		return array_intersect_key($aData, $aNames);
 	}
@@ -344,7 +344,7 @@ class weeForm implements Printable
 				// If we don't have any data we check the required flag
 				// If it's not required we skip, otherwise we note an error
 
-				if (empty($aData[(string)$oNode->name]))
+				if (!array_key_exists((string)$oNode->name, $aData) || !strlen($aData[(string)$oNode->name]))
 				{
 					if (!empty($oNode['required']))
 					{
@@ -361,11 +361,12 @@ class weeForm implements Printable
 
 				foreach ($oNode->validator as $oValidatorNode)
 				{
-					fire(!class_exists($oValidatorNode['type']), 'BadXMLException',
-						'Validator ' . $oValidatorNode['type'] . ' do not exist.');
+					$sClass = (string)$oValidatorNode['type'];
+					@is_subclass_of($sClass, 'weeValidator')
+						or burn('BadXMLException',
+							sprintf(_('Validator %s does not exist.'), $oValidatorNode['type']));
 
-					$aAttributes	= (array)$oValidatorNode->attributes();
-					$sClass			= (string)$oValidatorNode['type'];
+ 					$aAttributes	= (array)$oValidatorNode->attributes();
 					$oValidator		= new $sClass($aData[(string)$oNode->name], $aAttributes['@attributes']);
 
 					if ($oValidator instanceof weeFormValidator)
