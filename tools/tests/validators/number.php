@@ -198,6 +198,17 @@ $this->isFalse(weeNumberValidator::test(1.1, array('format' => 'float', 'max' =>
 $this->isTrue(weeNumberValidator::test(1.1, array('format' => 'float', 'max' => 1.2)),
 	'weeNumberValidator fails to validate 1.1 <= 1.2.');
 
+// The value is outside the range.
+
+$this->isFalse(weeNumberValidator::test(42, array('min' => 43, 'max' => 44)),
+	_('weeNumberValidator should return false if the value is under the range of the `min` and `max` arguments.'));
+
+$this->isFalse(weeNumberValidator::test(42, array('min' => 40, 'max' => 41)),
+	_('weeNumberValidator should return false if the value is over the range of the `min` and `max` arguments.'));
+
+$this->isTrue(weeNumberValidator::test(42, array('min' => 41, 'max' => 43)),
+	_('weeNumberValidator should return true if the value is in the range of the `min` and `max` arguments.'));
+
 // Objects
 
 $this->isTrue(weeNumberValidator::test(new PrintableInput_testNumberValidator),
