@@ -101,6 +101,10 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function fetch()
 	{
+		$this->count() == 1
+			or burn('DatabaseException',
+				_('The result set does not contain exactly one row.'));
+
 		fire(empty($this->aResults[0]), 'DatabaseException',
 			'Failed to retrieve the row because no row were returned by the query.');
 

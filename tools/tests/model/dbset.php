@@ -39,55 +39,47 @@ try {
 
 $this->isEqual($oSet->getDb(), $oDb, _('weeDbSet::getDb should return the database object we set using weeDbSet::setDb.'));
 
-$oDb->query('BEGIN');
+
+$oDb->query('CREATE TEMPORARY TABLE dbset (answer integer)');
+$oDb->query('INSERT INTO dbset VALUES (42)');
+
+// weeDbSet::queryValue
+
+$this->isEqual($oSet->queryValue('SELECT * FROM dbset'), $oSet->getDb()->queryValue('SELECT * FROM dbset'),
+	_('weeDbSet::queryValue should return the same result as weeDatabase::queryValue'));
+
+// weeDbSet::query
+
+$m = $oSet->query('SELECT * FROM dbset');
+$this->isInstanceOf($m, 'weeDatabaseResult',
+	_('weeDbSet::query should return a weeDatabaseResult when the request is a not a query returning a result.'));
+
+$this->isInstanceOf($m->fetch(), 'testSet_weeDbModel',
+	_('weeDatabaseResult instances returned by weeDbSet::query should iterates through instances of weeDbSet::sModel.'));
+
+$this->isNull($oSet->query('DELETE FROM dbset'),
+	_('weeDbSet::query should not return a value when the request is not a query returning a result.'));
+
+// weeDbSet::queryRow
 
 try {
-	$oDb->query('CREATE TABLE dbset (answer integer)');
-	$oDb->query('INSERT INTO dbset VALUES (42)');
+	$oSet->queryRow('DELETE FROM dbset');
+	$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the SQL query did not return a result set.');
+} catch (UnexpectedValueException $e) {}
 
-	// weeDbSet::queryValue
+try {
+	$oSet->queryRow('SELECT * FROM dbset');
+	$this->fail('weeDbSet::queryRow should throw a DatabaseException when the result set is empty.');
+} catch (DatabaseException $e) {}
 
-	$this->isEqual($oSet->queryValue('SELECT * FROM dbset'), $oSet->getDb()->queryValue('SELECT * FROM dbset'),
-		_('weeDbSet::queryValue should return the same result as weeDatabase::queryValue'));
+$oDb->query('INSERT INTO dbset VALUES (42)');
 
-	// weeDbSet::query
+$this->isInstanceOf($oSet->queryRow('SELECT * FROM dbset'), 'testSet_weeDbModel',
+	_('weeDbSet::queryRow should return an instance of weeDbSet::sModel.'));
 
-	$m = $oSet->query('SELECT * FROM dbset');
-	$this->isInstanceOf($m, 'weeDatabaseResult',
-		_('weeDbSet::query should return a weeDatabaseResult when the request is a not a query returning a result.'));
+$oDb->query('INSERT INTO dbset VALUES (42)');
 
-	$this->isInstanceOf($m->fetch(), 'testSet_weeDbModel',
-		_('weeDatabaseResult instances returned by weeDbSet::query should iterates through instances of weeDbSet::sModel.'));
-
-	$this->isNull($oSet->query('DELETE FROM dbset'),
-		_('weeDbSet::query should not return a value when the request is not a query returning a result.'));
-
-	// weeDbSet::queryRow
-
-	try {
-		$oSet->queryRow('DELETE FROM dbset');
-		$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the SQL query did not return a result set.');
-	} catch (UnexpectedValueException $e) {}
-
-	try {
-		$oSet->queryRow('SELECT * FROM dbset');
-		$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the result set is empty.');
-	} catch (UnexpectedValueException $e) {}
-
-	$oDb->query('INSERT INTO dbset VALUES (42)');
-
-	$this->isInstanceOf($oSet->queryRow('SELECT * FROM dbset'), 'testSet_weeDbModel',
-		_('weeDbSet::queryRow should return an instance of weeDbSet::sModel.'));
-
-	$oDb->query('INSERT INTO dbset VALUES (42)');
-
-	try {
-		$oSet->queryRow('SELECT * FROM dbset');
-		$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the result set contains more than one row.');
-	} catch (UnexpectedValueException $e) {}
-
-} catch (Exception $oException) {}
-
-$oDb->query('ROLLBACK');
-if (isset($oException))
-	throw $oException;
+try {
+	$oSet->queryRow('SELECT * FROM dbset');
+	$this->fail('weeDbSet::queryRow should throw an DatabaseException when the result set contains more than one row.');
+} catch (DatabaseException $e) {}

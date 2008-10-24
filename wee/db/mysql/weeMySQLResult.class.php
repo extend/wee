@@ -98,10 +98,12 @@ class weeMySQLResult extends weeDatabaseResult
 
 	public function fetch()
 	{
+		$this->count() == 1
+			or burn('DatabaseException',
+				_('The result set does not contain exactly one row.'));
+
 		$a = mysql_fetch_assoc($this->rResult);
-		fire($a === false, 'DatabaseException',
-			'Failed to retrieve the row. Might be because no row were returned by the query,' .
-			' or because you are incorrectly trying to loop through all the rows using this method.');
+		fire($a === false, 'DatabaseException', 'Failed to retrieve the row.');
 
 		if (!empty($this->sRowClass))
 			$a = new $this->sRowClass($a);

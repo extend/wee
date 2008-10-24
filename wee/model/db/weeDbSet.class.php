@@ -78,8 +78,7 @@ abstract class weeDbSet extends weeSet
 	/**
 		Fetches a row from the database.
 
-		This method executes a given SQL query and returns an instance of the model
-		of this set.
+		This method executes a given SQL query and returns an instance of the model of this set.
 
 		@overload	queryRow($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters.
 		@overload	queryRow($mQueryString, $aNamedParameters)		Example of query call with named parameters.
@@ -87,7 +86,7 @@ abstract class weeDbSet extends weeSet
 		@param		...												The additional arguments that will be inserted into the query.
 		@return		object											An instance of the model of this set.
 		@throw		UnexpectedValueException						The SQL query did not return a result set.
-		@throw		UnexpectedValueException						The result set does not contain exactly one row.
+		@throw		DatabaseException								The result set does not contain exactly one row.
 		@see		weeDatabase::query
 	*/
 
@@ -99,10 +98,6 @@ abstract class weeDbSet extends weeSet
 		$m instanceof weeDatabaseResult
 			or burn('UnexpectedValueException',
 				_('The SQL query did not return a result set.'));
-
-		count($m) == 1
-			or burn('UnexpectedValueException',
-				_('The result set does not contain exactly one row.'));
 
 		return $m->fetch();
 	}

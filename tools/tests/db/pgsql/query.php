@@ -98,6 +98,20 @@ $aRow = $oDb->query('SELECT q_name, q_quantity, q_price FROM query WHERE q_name=
 $this->isEqual($aInsertValues[1], $aRow,
 	_('The data of the row "Eggs" is wrong.'));
 
+// Test fetch
+
+try {
+	$oDb->query('SELECT * FROM query')->fetch();
+	$this->fail('weeDatabaseResult::fetch must throw a DatabaseException when more than one row is found.');
+} catch (DatabaseException $e) {
+}
+
+try {
+	$oDb->query('SELECT * FROM query WHERE q_quantity=462')->fetch();
+	$this->fail('weeDatabaseResult::fetch must throw a DatabaseException when 0 row is found.');
+} catch (DatabaseException $e) {
+}
+
 // Test foreach
 
 $oResults = $oDb->query('SELECT * FROM query');

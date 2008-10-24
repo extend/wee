@@ -99,6 +99,10 @@ class weePgSQLResult extends weeDatabaseResult
 
 	public function fetch()
 	{
+		$this->count() == 1
+			or burn('DatabaseException',
+				_('The result set does not contain exactly one row.'));
+
 		$a = pg_fetch_assoc($this->rResult);
 		fire($a === false, 'DatabaseException',
 			'Failed to retrieve the row. Might be because no row were returned by the query,' .
