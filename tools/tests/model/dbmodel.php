@@ -6,7 +6,12 @@ class test_weeDbModel extends weeDbModel {
 	public function query($sQueryString) {
 		return parent::query($sQueryString);
 	}
+
+	public function queryValue($sQueryString) {
+		return parent::queryValue($sQueryString);
+	}
 }
+
 $oModel = new test_weeDbModel;
 
 // weeDbModel::getDb
@@ -27,25 +32,23 @@ try {
 $this->isEqual($oDb, $oModel->getDb(),
 	_('weeDbModel::getDb should return the database object we set using weeDbModel::setDb.'));
 
-$oDb->query('BEGIN');
+$oDb->query('CREATE TEMPORARY TABLE dbmodel (answer integer)');
+$oDb->query("INSERT INTO dbmodel VALUES (42)");
 
-try {
-	$oDb->query('CREATE TABLE dbmodel (answer integer)');
-	$oDb->query("INSERT INTO dbmodel VALUES (42)");
+// weeDbModel::query
 
-	// weeDbModel::query
+$m = $oModel->query('SELECT * FROM dbmodel');
+$this->isInstanceOf($m, 'weeDatabaseResult',
+	_('weeDbModel::query should return a weeDatabaseResult when the request is a not a query returning a result.'));
 
-	$m = $oModel->query('SELECT * FROM dbmodel');
-	$this->isInstanceOf($m, 'weeDatabaseResult',
-		_('weeDbModel::query should return a weeDatabaseResult when the request is a not a query returning a result.'));
+$this->isTrue(is_array($m->fetch()),
+	_('weeDatabaseResult instances returned by weeDbModel::query should not be associated to a row model.'));
 
-	$this->isTrue(is_array($m->fetch()),
-		_('weeDatabaseResult instances returned by weeDbModel::query should not be associated to a row model.'));
+$this->isNull($oModel->query('DELETE FROM dbmodel'),
+	_('weeDbModel::query should not return a value when the request is not a query returning a result.'));
 
-	$this->isNull($oModel->query('DELETE FROM dbmodel'),
-		_('weeDbModel::query should not return a value when the request is not a query returning a result.'));
-} catch (Exception $oException) {}
+// weeDbModel::queryValue
 
-$oDb->query('ROLLBACK');
-if (isset($oException))
-	throw $oException;
+$oDb->query("INSERT INTO dbmodel VALUES (42)");
+$i = $oModel->queryValue('SELECT answer FROM dbmodel LIMIT 1');
+$this->isEqual(42, $i, 'weeDbModel::queryValue returned an incorrect value.');

@@ -37,8 +37,8 @@ abstract class weeDbModel extends weeModel
 	/**
 		Returns the database associated to this model.
 
-		@return	weeDatabase										The database associated to this model.
-		@throw	IllegalStateException							No database has been associated to this model.
+		@return	weeDatabase				The database associated to this model.
+		@throw	IllegalStateException	No database has been associated to this model.
 	*/
 
 	public function getDb()
@@ -67,12 +67,30 @@ abstract class weeDbModel extends weeModel
 		return call_user_func_array(array($this->getDb(), 'query'), $aArgs);
 	}
 
+	/**
+		Build and execute an SQL value query.
+
+		This method is a shortcut to $this->getDb()->queryValue(...).
+
+		@overload	queryValue($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters
+		@overload	queryValue($mQueryString, $aNamedParameters)	Example of query call with named parameters
+		@param		$mQueryString									The query string
+		@param		...												The additional arguments that will be inserted into the query
+		@return		mixed											The queried value.
+		@see		weeDatabase::queryValue
+	*/
+
+	protected function queryValue($mQueryString)
+	{
+		$a = func_get_args();
+		return call_user_func_array(array($this->getDb(), 'queryValue'), $a);
+	}
 
 	/**
 		Associate a database to this model.
 
-		@param	$oDb											The database instance to associate to this model.
-		@return	$this											Used to chain methods.
+		@param	$oDb	The database instance to associate to this model.
+		@return	$this	Used to chain methods.
 	*/
 
 	public function setDb(weeDatabase $oDb)

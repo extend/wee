@@ -37,7 +37,7 @@ abstract class weeDbSet extends weeSet
 	/**
 		Returns the database associated to this set.
 
-		@return		weeDatabase										The database associated to this set.
+		@return weeDatabase The database associated to this set.
 	*/
 
 	public function getDb()
@@ -57,11 +57,11 @@ abstract class weeDbSet extends weeSet
 		If the query returned a result set, it is automatically associated to the model
 		of this class.
 
-		@overload	query($mQueryString, $mArg1, $mArg2, ...)		Example of query call with multiple unnamed parameters
-		@overload	query($mQueryString, $aNamedParameters)			Example of query call with named parameters
-		@param		$mQueryString									The query string
-		@param		...												The additional arguments that will be inserted into the query
-		@return		mixed											An instance of weeDatabaseResult or null.
+		@overload	query($mQueryString, $mArg1, $mArg2, ...)	Example of query call with multiple unnamed parameters
+		@overload	query($mQueryString, $aNamedParameters)		Example of query call with named parameters
+		@param		$mQueryString								The query string
+		@param		...											The additional arguments that will be inserted into the query
+		@return		mixed										An instance of weeDatabaseResult or null.
 		@see		weeDatabase::query
 	*/
 
@@ -129,8 +129,8 @@ abstract class weeDbSet extends weeSet
 	/**
 		Associate a database to this set.
 
-		@param		$oDb											The database instance to associate to this set.
-		@return		$this											Used to chain methods.
+		@param	$oDb	The database instance to associate to this set.
+		@return	$this	Used to chain methods.
 	*/
 
 	public function setDb($oDb)
