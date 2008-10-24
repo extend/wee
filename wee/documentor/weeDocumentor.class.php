@@ -121,8 +121,11 @@ abstract class weeDocumentor implements Printable
 				if (isset($aMethod['paramscomment'][$aParameter['name']]))
 					$aParameter['comment'] = $aMethod['paramscomment'][$aParameter['name']];
 
-				if ($aMethod['internal'] && $oParameter->isArray())
-					$aParameter['hint'] = 'array';
+				if ($aMethod['internal'])
+				{
+					if ($oParameter->isArray())
+						$aParameter['hint'] = 'array';
+				}
 				else
 				{
 					$aParameter['type'] = $this->getVariableType($aParameter['name']);
