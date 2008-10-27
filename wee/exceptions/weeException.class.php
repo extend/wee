@@ -115,19 +115,20 @@ final class weeException extends Namespace
 		if (error_reporting() == 0) return;
 
 		$sDebug = null;
+		$sErrorType = self::getLevelName($iNumber);
 
 		if (!ini_get('html_errors'))
-			$sDebug = 'Error: ' . self::getLevelName($iNumber) . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
+			$sDebug = 'Error: ' . $sErrorType . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
 		elseif (defined('DEBUG'))
 		{
 			$sDebug .= '</div><div id="php"><h2>' . str_replace("<a href='", "<a href='http://php.net/", $sMessage) . '</h2>';
-			$sDebug .= '<h3>Type:</h3><span>' . $aTypes[$iNumber] . ' (' . $iNumber . ')</span><br/>';
+			$sDebug .= '<h3>Type:</h3><span>' . $sErrorType . ' (' . $iNumber . ')</span><br/>';
 			$sDebug .= '<h3>File:</h3><span>' . $sFile . '</span><br/>';
 			$sDebug .= '<h3>Line:</h3><span>' . $iLine . '</span><br/>';
 		}
 
 		self::printErrorPage($sDebug);
-		self::logError('error', $sFile, $iLine, (empty($aTypes[$iNumber])) ? $aTypes[1] : $aTypes[$iNumber], $sMessage);
+		self::logError('error', $sFile, $iLine, $sErrorType, $sMessage);
 		exit($iNumber);
 	}
 
