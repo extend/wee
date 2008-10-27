@@ -2,6 +2,9 @@
 
 class weeFileConfig_include extends weeFileConfig
 {
+	// Expose the array
+	public $aConfig;
+
 	// Let's use a dummy constructor to test getIncludeFilename() without the 
 	// need of a true configuration object.
 	public function __construct() {}
@@ -80,12 +83,12 @@ catch (UnexpectedValueException $e) {}
 try
 {
 	$o->parseFile(dirname(__FILE__) . '/include.cnf');
-	$this->isEqual('1', $o['test'],
+	$this->isEqual('1', $o->aConfig['test'],
 		'weeFileConfig fails to find entries defined in included configuration files.');
 
 	$o = new weeFileConfig_include();
 	$o->parseFile(dirname(__FILE__) . '/condinclude.cnf');
-	$this->isEqual('1', $o['test'],
+	$this->isEqual('1', $o->aConfig['test'],
 		'weeFileConfig fails to include files conditionally.');
 }
 catch(FileNotFoundException $e)

@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@see share/conf/sample.cnf for an example configuration file
 */
 
-class weeFileConfig implements ArrayAccess
+class weeFileConfig
 {
 	/**
 		Contains the configuration data.
@@ -191,55 +191,6 @@ class weeFileConfig implements ArrayAccess
 			$sEval = str_replace(':' . $i, addslashes($sArg), $sEval);
 
 		return eval('return ' . $sEval . ';') == $sWanted;
-	}
-
-	/**
-		Check if the $offset offset does exist.
-
-		@param	$offset	The offset checked.
-		@return	bool	True if it exists.
-	*/
-
-	public function offsetExists($offset)
-	{
-		return isset($this->aConfig[$offset]);
-	}
-
-	/**
-		Returns the $offset offset value, or null if it does not exist.
-
-		@param	$offset	The offset to return.
-		@return	mixed	The value of the offset.
-	*/
-
-	public function offsetGet($offset)
-	{
-		return array_value($this->aConfig, $offset);
-	}
-
-	/**
-		Throw an exception.
-		Do NOT use it.
-
-		@param	$offset	The offset to set.
-		@param	$value	The new value of the offset.
-	*/
-
-	public function offsetSet($offset, $value)
-	{
-		burn('BadMethodCallException', 'Configuration is not modifiable');
-	}
-
-	/**
-		Throw an exception.
-		Do NOT use it.
-
-		@param	$offset	The offset to unset.
-	*/
-
-	public function offsetUnset($offset)
-	{
-		burn('BadMethodCallException', 'Configuration is not modifiable');
 	}
 
 	/**

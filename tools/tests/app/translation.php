@@ -3,16 +3,16 @@
 class weeApplication_testTranslateEvent extends weeApplication
 {
 	// We need to expose the app configuration.
-	public $oConfig = array();
+	public $aConfig = array();
 
-    // We need a public constructor.
-    public function __construct() {}
+	// We need a public constructor.
+	public function __construct() {}
 
-    // We are testing this method, expose it.
-    public function translateEvent()
-    {
+	// We are testing this method, expose it.
+	public function translateEvent()
+	{
 		return parent::translateEvent();
-    }
+	}
 }
 
 $aFormerServer	= $_SERVER;
@@ -47,7 +47,7 @@ try {
 		'The default frame is not toppage.');
 
 	// Custom toppage
-	$o->oConfig['app.toppage'] = 'pikachu';
+	$o->aConfig['app.toppage'] = 'pikachu';
 	$aEvent = $o->translateEvent();
 	$this->isEqual('pikachu', $aEvent['frame'],
 		'The event frame is not the configuration toppage frame.');

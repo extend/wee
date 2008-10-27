@@ -48,7 +48,7 @@ class weeApplication implements Singleton
 		Configuration for this application.
 	*/
 
-	protected $oConfig;
+	protected $aConfig;
 
 	/**
 		The frame object that will be displayed.
@@ -80,13 +80,14 @@ class weeApplication implements Singleton
 		// and then, if cache is enabled, cache the configuration array
 
 		if (!defined('DEBUG') && !defined('NO_CACHE') && defined('WEE_CONF_CACHE') && is_readable(WEE_CONF_CACHE))
-			$this->oConfig = require(WEE_CONF_CACHE);
+			$this->aConfig = require(WEE_CONF_CACHE);
 		else try {
-			$this->oConfig = new weeFileConfig(WEE_CONF_FILE);
+			$oConfigFile = new weeFileConfig(WEE_CONF_FILE);
+			$this->aConfig = $oConfigFile->toArray();
 
 			if (!defined('DEBUG') && defined('WEE_CONF_CACHE'))
 			{
-				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->oConfig->toArray(), true) . ';');
+				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->aConfig, true) . ';');
 				chmod(WEE_CONF_CACHE, 0600);
 			}
 		} catch (FileNotFoundException $e) {
@@ -101,9 +102,9 @@ class weeApplication implements Singleton
 
 		// Load aliases file
 
-		if (!empty($this->oConfig['aliases.file']))
+		if (!empty($this->aConfig['aliases.file']))
 		{
-			$sFile = $this->oConfig['aliases.file'];
+			$sFile = $this->aConfig['aliases.file'];
 			if (substr($sFile, 0, 2) == '//')
 				$sFile = ROOT_PATH . substr($sFile, 2);
 
@@ -112,63 +113,63 @@ class weeApplication implements Singleton
 
 		// Load default timezone
 
-		if (!empty($this->oConfig['timezone']))
-			date_default_timezone_set($this->oConfig['timezone']);
+		if (!empty($this->aConfig['timezone']))
+			date_default_timezone_set($this->aConfig['timezone']);
 
 		// Add path to autoload
 		// - All path are separated by : like in PATH environment variable
 		// - A // in the path means ROOT_PATH
 
-		if (!empty($this->oConfig['autoload.path']))
+		if (!empty($this->aConfig['autoload.path']))
 		{
-			$aPath = explode(':', $this->oConfig['autoload.path']);
+			$aPath = explode(':', $this->aConfig['autoload.path']);
 			foreach ($aPath as $s)
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
 		// Load mail settings
 
-		if (!empty($this->oConfig['mail.debug.to']))
-			define('WEE_MAIL_DEBUG_TO', $this->oConfig['mail.debug.to']);
+		if (!empty($this->aConfig['mail.debug.to']))
+			define('WEE_MAIL_DEBUG_TO', $this->aConfig['mail.debug.to']);
 
-		if (!empty($this->oConfig['mail.debug.reply-to']))
-			define('WEE_MAIL_DEBUG_REPLY_TO', $this->oConfig['mail.debug.reply-to']);
+		if (!empty($this->aConfig['mail.debug.reply-to']))
+			define('WEE_MAIL_DEBUG_REPLY_TO', $this->aConfig['mail.debug.reply-to']);
 
 		// Load output driver
 
-		if (!empty($this->oConfig['start.output']))
-			call_user_func(array($this->oConfig['output.driver'], 'select'));
+		if (!empty($this->aConfig['start.output']))
+			call_user_func(array($this->aConfig['output.driver'], 'select'));
 
 		// Define cache settings
 
-		if (!empty($this->oConfig['output.cache.path']))
-			define('CACHE_PATH',	str_replace('//', ROOT_PATH, $this->oConfig['output.cache.path']) . '/');
-		if (!empty($this->oConfig['output.cache.expire']))
-			define('CACHE_EXPIRE',	$this->oConfig['output.cache.expire']);
+		if (!empty($this->aConfig['output.cache.path']))
+			define('CACHE_PATH',	str_replace('//', ROOT_PATH, $this->aConfig['output.cache.path']) . '/');
+		if (!empty($this->aConfig['output.cache.expire']))
+			define('CACHE_EXPIRE',	$this->aConfig['output.cache.expire']);
 
 		// Load database driver
 
-		if (!empty($this->oConfig['start.db']))
+		if (!empty($this->aConfig['start.db']))
 		{
-			$s = $this->oConfig['db.driver'];
+			$s = $this->aConfig['db.driver'];
 			$this->aModules['db'] = new $s(array(
-				'host'		=> $this->oConfig['db.host'],
-				'user'		=> $this->oConfig['db.user'],
-				'password'	=> $this->oConfig['db.password'],
-				'dbname'	=> $this->oConfig['db.name'],
+				'host'		=> $this->aConfig['db.host'],
+				'user'		=> $this->aConfig['db.user'],
+				'password'	=> $this->aConfig['db.password'],
+				'dbname'	=> $this->aConfig['db.name'],
 			));
 		}
 
 		// Start session
 
-		if (!defined('WEE_CLI') && !empty($this->oConfig['start.session']))
+		if (!defined('WEE_CLI') && !empty($this->aConfig['start.session']))
 		{
-			if (!empty($this->oConfig['session.check.ip']))
+			if (!empty($this->aConfig['session.check.ip']))
 				define('WEE_SESSION_CHECK_IP', 1);
-			if (!empty($this->oConfig['session.check.token']))
+			if (!empty($this->aConfig['session.check.token']))
 				define('WEE_SESSION_CHECK_TOKEN', 1);
 
-			$this->aModules['session'] = new $this->oConfig['session.driver'];
+			$this->aModules['session'] = new $this->aConfig['session.driver'];
 		}
 	}
 
@@ -265,13 +266,11 @@ class weeApplication implements Singleton
 		@return	mixed	Value of this configuration parameter
 	*/
 
-	public static function cnf($sName)
+	public function cnf($sName)
 	{
-		$aConfig = self::instance()->oConfig;
-
-		if (empty($aConfig[$sName]))
+		if (!array_key_exists($sName, $this->aConfig))
 			return null;
-		return $aConfig[$sName];
+		return $this->aConfig[$sName];
 	}
 
 	/**
@@ -514,7 +513,7 @@ class weeApplication implements Singleton
 		$sPathInfo = substr(self::getPathInfo(), 1);
 
 		if (empty($sPathInfo))
-			return array('frame' => (isset($this->oConfig['app.toppage'])) ? $this->oConfig['app.toppage'] : 'toppage') + $aEvent;
+			return array('frame' => (isset($this->aConfig['app.toppage'])) ? $this->aConfig['app.toppage'] : 'toppage') + $aEvent;
 
 		if (isset($this->oAliases))
 			$sPathInfo = $this->oAliases->resolveAlias($sPathInfo);

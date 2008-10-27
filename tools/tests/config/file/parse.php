@@ -2,6 +2,9 @@
 
 class weeFileConfig_parse extends weeFileConfig
 {
+	// Expose the array
+	public $aConfig;
+
 	// Disable the real constructor.
 	public function __construct() {}
 
@@ -33,13 +36,13 @@ try
 	$o->parseLine('# a comment');
 
 	$o->parseLine('foo = bar');
-	$this->isEqual('bar', $o['foo'],
+	$this->isEqual('bar', $o->aConfig['foo'],
 		'weeFileConfig fails to understand a setting assignment.');
 
 	try
 	{
 		$o->parseLine('include = neither_a_file_nor_an_inclusion');
-		$this->isEqual('neither_a_file_nor_an_inclusion', $o['include'],
+		$this->isEqual('neither_a_file_nor_an_inclusion', $o->aConfig['include'],
 			'weeFileConfig fails to set the value of the "include" setting.');
 	}
 	catch (FileNotFoundException $e)
