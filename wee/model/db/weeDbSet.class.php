@@ -128,7 +128,7 @@ abstract class weeDbSet extends weeSet
 		@return	$this	Used to chain methods.
 	*/
 
-	public function setDb($oDb)
+	public function setDb(weeDatabase $oDb)
 	{
 		$this->oDatabase = $oDb;
 		return $this;
