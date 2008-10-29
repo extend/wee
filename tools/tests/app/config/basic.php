@@ -1,6 +1,6 @@
 <?php
 
-class weeFileConfig_basic extends weeFileConfig
+class weeConfigFile_basic extends weeConfigFile
 {
 	// Expose the array
 	public $aConfig;
@@ -8,12 +8,12 @@ class weeFileConfig_basic extends weeFileConfig
 
 try
 {
-	$o = new weeFileConfig_basic(dirname(__FILE__) . '/file_which_does_not_exist.cnf');
-	$this->fail('weeFileConfig does not throw a FileNotFoundException when the specified file does not exist.');
+	$o = new weeConfigFile_basic(dirname(__FILE__) . '/file_which_does_not_exist.cnf');
+	$this->fail('weeConfigFile does not throw a FileNotFoundException when the specified file does not exist.');
 }
 catch (FileNotFoundException $e) {}
 
-$o = new weeFileConfig_basic(dirname(__FILE__) . '/basic.cnf');
+$o = new weeConfigFile_basic(dirname(__FILE__) . '/basic.cnf');
 
 $this->isTrue(isset($o->aConfig['test']),
 	'The configuration object does not have a "test" entry even though it has been defined in the sample configuration.');

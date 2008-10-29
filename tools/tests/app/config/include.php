@@ -1,6 +1,6 @@
 <?php
 
-class weeFileConfig_include extends weeFileConfig
+class weeConfigFile_include extends weeConfigFile
 {
 	// Expose the array
 	public $aConfig;
@@ -43,24 +43,24 @@ class weeFileConfig_include extends weeFileConfig
 	}
 }
 
-$o = new weeFileConfig_include;
+$o = new weeConfigFile_include;
 
 $this->isEqual('relative.cnf', $o->getIncludeFilename('relative.cnf'),
-	'weeFileConfig::getIncludeFilename() does not understand normal relative paths.');
+	'weeConfigFile::getIncludeFilename() does not understand normal relative paths.');
 
 $this->isEqual('/absolute.cnf', $o->getIncludeFilename('/absolute.cnf'),
-	'weeFileConfig::getIncludeFilename() does not understand normal absolute paths.');
+	'weeConfigFile::getIncludeFilename() does not understand normal absolute paths.');
 
 $this->isEqual('subdir/relative.cnf', $o->getFakeIncludeFilename('./relative.cnf'),
-	'weeFileConfig::getIncludeFilename() does not understand paths beginning with "./".');
+	'weeConfigFile::getIncludeFilename() does not understand paths beginning with "./".');
 
 $this->isEqual(ROOT_PATH . 'absolute.cnf', $o->getIncludeFilename('//absolute.cnf'),
-	'weeFileConfig::getIncludeFilename() does not understand paths beginning with "//".');
+	'weeConfigFile::getIncludeFilename() does not understand paths beginning with "//".');
 
 try
 {
 	$o->parseFile(dirname(__FILE__) . '/bad_include.cnf');
-	$this->fail('weeFileConfig does not throw a FileNotFoundException when a file which does not exist is included.');
+	$this->fail('weeConfigFile does not throw a FileNotFoundException when a file which does not exist is included.');
 }
 catch (FileNotFoundException $e) {}
 
@@ -68,7 +68,7 @@ try
 {
 	$o->parseFile(dirname(__FILE__) . '/recursive.cnf');
 	// If the exception is not thrown, the next line will not be executed because the execution stack will explode.
-	$this->fail('weeFileConfig fails to throw an UnexpectedValueException when there is a loop in the inclusions.');
+	$this->fail('weeConfigFile fails to throw an UnexpectedValueException when there is a loop in the inclusions.');
 }
 catch (UnexpectedValueException $e) {}
 
@@ -76,7 +76,7 @@ try
 {
 	$o->parseFile(dirname(__FILE__) . '/recursive1.cnf');
 	// If the exception is not thrown, the next line will not be executed because the execution stack will explode.
-	$this->fail('weeFileConfig fails to throw an UnexpectedValueException when there is a circuit in the inclusions.');
+	$this->fail('weeConfigFile fails to throw an UnexpectedValueException when there is a circuit in the inclusions.');
 }
 catch (UnexpectedValueException $e) {}
 
@@ -84,14 +84,14 @@ try
 {
 	$o->parseFile(dirname(__FILE__) . '/include.cnf');
 	$this->isEqual('1', $o->aConfig['test'],
-		'weeFileConfig fails to find entries defined in included configuration files.');
+		'weeConfigFile fails to find entries defined in included configuration files.');
 
-	$o = new weeFileConfig_include();
+	$o = new weeConfigFile_include();
 	$o->parseFile(dirname(__FILE__) . '/condinclude.cnf');
 	$this->isEqual('1', $o->aConfig['test'],
-		'weeFileConfig fails to include files conditionally.');
+		'weeConfigFile fails to include files conditionally.');
 }
 catch(FileNotFoundException $e)
 {
-	$this->fail('weeFileConfig throws an UnexpectedValueException when the chain of includes is correct.');
+	$this->fail('weeConfigFile throws an UnexpectedValueException when the chain of includes is correct.');
 }

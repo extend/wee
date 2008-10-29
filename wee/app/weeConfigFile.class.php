@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@see share/conf/sample.cnf for an example configuration file
 */
 
-class weeFileConfig
+class weeConfigFile
 {
 	/**
 		Contains the configuration data.
@@ -264,7 +264,7 @@ class weeFileConfig
 	}
 
 	/**
-		Returns the data as array, since we can't cast weeFileConfig to retrieve the array's data.
+		Returns the data as array, since we can't cast weeConfigFile to retrieve the array's data.
 
 		@return array Object's data.
 	*/

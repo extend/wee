@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Aliases file wrapper.
 */
 
-class weeAliasesFile extends weeFileConfig
+class weeAliasesFile extends weeConfigFile
 {
 	/**
 		Create an aliases file object.

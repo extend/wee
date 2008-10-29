@@ -1,6 +1,6 @@
 <?php
 
-class weeFileConfig_isTargetedSystem extends weeFileConfig
+class weeConfigFile_isTargetedSystem extends weeConfigFile
 {
 	// We need to instantiate this class without a specified configuration 
 	// file, so we create a dummy constructor.
@@ -29,33 +29,33 @@ class weeFileConfig_isTargetedSystem extends weeFileConfig
 	}
 }
 
-$o = new weeFileConfig_isTargetedSystem();
+$o = new weeConfigFile_isTargetedSystem();
 
 try
 {
 	$o->isTargetedSystem('$(invalid_instruction_without_a_closing_parenthesis');
-	$this->fail('weeFileConfig does not throw an UnexpectedValueException when the specified instruction is malformed.');
+	$this->fail('weeConfigFile does not throw an UnexpectedValueException when the specified instruction is malformed.');
 }
 catch (UnexpectedValueException $e) {}
 
 try
 {
 	$o->isTargetedSystem('$(instruction_which_does_not_exist)');
-	$this->fail('weeFileConfig does not throw an UnexpectedValueException when the function does not exist.');
+	$this->fail('weeConfigFile does not throw an UnexpectedValueException when the function does not exist.');
 }
 catch (UnexpectedValueException $e) {}
 
 try
 {
 	$o->isTargetedSystem('$(os)');
-	$this->fail('weeFileConfig does not throw an UnexpectedValueException when the target is missing.');
+	$this->fail('weeConfigFile does not throw an UnexpectedValueException when the target is missing.');
 }
 catch (UnexpectedValueException $e) {}
 
 try
 {
 	$o->isTargetedSystem('$(extver 1.0)');
-	$this->fail('weeFileConfig does not throw an UnexpectedValueException when the function lacks a parameter.');
+	$this->fail('weeConfigFile does not throw an UnexpectedValueException when the function lacks a parameter.');
 }
 catch (UnexpectedValueException $e) {}
 
@@ -70,21 +70,21 @@ foreach ($o->getTargetFunctions(true) as $sFunction => $sEval)
 	// ...and then discard it.
 	ob_end_clean();
 
-	$this->isEqual(0, $i, "Builtin weeFileConfig '$sFunction' target is not a valid PHP function call.");
+	$this->isEqual(0, $i, "Builtin weeConfigFile '$sFunction' target is not a valid PHP function call.");
 }
 
 try
 {
 	$this->isTrue($o->isTargetedSystem('$(os ' . php_uname('s') . ')'),
-		'weeFileConfig fails to see that the targeted system is the one currently used.');
+		'weeConfigFile fails to see that the targeted system is the one currently used.');
 
 	$this->isFalse($o->isTargetedSystem('$(os os_which_is_not_the_one_currently_used)'),
-		'weeFileConfig fails to see that the targeted system is not the one currently used.');
+		'weeConfigFile fails to see that the targeted system is not the one currently used.');
 
 	$this->isTrue($o->isTargetedSystem('$(multi "Windows NT")'),
-		_('weeFileConfig fails when the operating system name uses two words.'));
+		_('weeConfigFile fails when the operating system name uses two words.'));
 }
 catch (UnexpectedValueException $e)
 {
-	$this->fail('weeFileConfig throws an UnexpectedValueException when the given instruction is valid.');
+	$this->fail('weeConfigFile throws an UnexpectedValueException when the given instruction is valid.');
 }

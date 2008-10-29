@@ -82,7 +82,7 @@ class weeApplication implements Singleton
 		if (!defined('DEBUG') && !defined('NO_CACHE') && defined('WEE_CONF_CACHE') && is_readable(WEE_CONF_CACHE))
 			$this->aConfig = require(WEE_CONF_CACHE);
 		else try {
-			$oConfigFile = new weeFileConfig(WEE_CONF_FILE);
+			$oConfigFile = new weeConfigFile(WEE_CONF_FILE);
 			$this->aConfig = $oConfigFile->toArray();
 
 			if (!defined('DEBUG') && defined('WEE_CONF_CACHE'))
