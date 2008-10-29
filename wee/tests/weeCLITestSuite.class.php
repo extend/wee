@@ -147,6 +147,20 @@ class weeCLITestSuite extends weeTestSuite
 				$this->printFileCoverage($aLines, -1);
 			}
 
+			// Dead-code handling is tricky. XDebug returns dead code for empty
+			// lines with only a "}", often after a return. While it's technically
+			// true, it is of no use to us and thus all these lines are removed
+			// from our results (if possible). In short, first we remove them,
+			// and if there's any dead code remaining, we output it.
+
+			if (in_array(-2, $aLines)) {
+				$aFile = @file($sFilename, FILE_IGNORE_NEW_LINES);
+				if ($aFile !== false)
+					foreach ($aLines as $iLine => $iValue)
+						if (isset($aFile[$iLine - 1]) && trim($aFile[$iLine - 1]) == '}')
+							unset($aLines[$iLine]);
+			}
+
 			if (in_array(-2, $aLines)) {
 				echo "\nDead code: ";
 				$this->printFileCoverage($aLines, -2);
