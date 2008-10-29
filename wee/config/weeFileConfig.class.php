@@ -67,16 +67,13 @@ class weeFileConfig
 
 	protected function getIncludeFilename($sPath)
 	{
-		switch (substr($sPath, 0, 2))
-		{
-			case '//':
-				return ROOT_PATH . substr($sPath, 2);
-				break;
+		$sPrefix = substr($sPath, 0, 2);
 
-			case './':
-				return dirname($this->aFilesStack[sizeof($this->aFilesStack) - 1]) . '/' . substr($sPath, 2);
-				break;
-		}
+		if ($sPrefix == '//')
+			return ROOT_PATH . substr($sPath, 2);
+
+		if ($sPrefix == './')
+			return dirname($this->aFilesStack[sizeof($this->aFilesStack) - 1]) . '/' . substr($sPath, 2);
 
 		return $sPath;
 	}
