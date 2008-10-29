@@ -32,7 +32,7 @@ api: tools/api/api.xml
 tools/api/api.xml:
 
 test: clean
-	@@php tools/tests/maketests.php tools/tests/
+	@@php tools/tests/maketests.php -f tools/tests/
 
 clean:
 	@@-rm -rf app/tmp/*

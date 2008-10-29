@@ -19,16 +19,21 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if ($argc != 2)
-{
-	echo "usage: php maketests.php tests_path\n";
+$aOptions = getopt('cf:');
+$aOptions === false and burn('UnexpectedValueException', _('getopt fails to get options from the command line argument list.'));
+
+if (!isset($aOptions['f'])) {
+	echo "usage: php maketests.php [-c] -f tests_path\n";
 	return -1;
 }
+
+if (isset($aOptions['c']))
+	define('WEE_CODE_COVERAGE', 1);
 
 define('DEBUG', 1);
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 
-$o = new weeCLITestSuite($argv[1]);
+$o = new weeCLITestSuite($aOptions['f']);
 $o->run();
 echo $o->toString();
