@@ -236,11 +236,13 @@ abstract class weeOutput
 	/**
 		Start the output.
 		Checks if gzip compression is supported and initialize output buffering.
+
+		@param $bGzipOutput Whether to gzip the output before sending it to the browser (if available).
 	*/
 
-	public function start()
+	public function start($bGzipOutput = true)
 	{
-		if (empty($_SERVER['HTTP_ACCEPT_ENCODING']))
+		if (!$bGzipOutput || empty($_SERVER['HTTP_ACCEPT_ENCODING']))
 			$this->bGzipped		= false;
 		else
 		{

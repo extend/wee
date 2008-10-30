@@ -468,7 +468,7 @@ class weeApplication implements Singleton
 				exit;
 			}
 
-			weeOutput::instance()->start();
+			weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
 			$sOutput = $this->oFrame->toString();
 
 			if (!empty($this->aCacheParams) && defined('CACHE_PATH'))
