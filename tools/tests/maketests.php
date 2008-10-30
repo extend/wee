@@ -34,6 +34,6 @@ define('DEBUG', 1);
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 
-$o = new weeCLITestSuite($aOptions['f']);
+$o = new weeTestSuite($aOptions['f']);
 $o->run();
 echo $o->toString();
