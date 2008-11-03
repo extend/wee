@@ -161,7 +161,7 @@ final class weeException extends Namespace
 				'type'		=> 'error',
 				'name'		=> $sName,
 				'number'	=> $iNumber,
-				'message'	=> str_replace("<a href='", "<a href='http://php.net/", $sMessage),
+				'message'	=> $sMessage,
 				'trace'		=> self::formatTrace(debug_backtrace()),
 				'file'		=> $sFile,
 				'line'		=> $iLine,
