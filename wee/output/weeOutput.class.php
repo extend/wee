@@ -257,6 +257,9 @@ abstract class weeOutput
 		{
 			$this->header('Content-Encoding: gzip');
 			ob_start('ob_gzhandler');
+
+			// Flag indicating we sent a gzip header
+			define('WEE_GZIP', 1);
 		}
 	}
 }

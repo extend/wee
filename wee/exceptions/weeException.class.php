@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -43,8 +43,9 @@ function burn($sException, $sMessage = null)
 	you should just stop the script and print an error page telling the user that the URL wasn't entered correctly.
 	This also apply for database errors, where you die with an error page if the database is down.
 	This function allows you to throw exception when this happens, and if you don't catch the exception
-	the class weeException will print the standard error page. You can define your error handler by using set_error_handler and set_exception_handler.
+	the class weeException will print an error page.
 
+	@deprecated Use "condition or burn()" or "condition and burn()" instead of fire.
 	@param $bCondition The condition to check
 	@param $sException The exception class to throw if the condition SUCCEED.
 	@param $sMessage Description of the error and, when applicable, how to resolve it.
@@ -64,11 +65,49 @@ function fire($bCondition, $sException = 'UnexpectedValueException', $sMessage =
 final class weeException extends Namespace
 {
 	/**
-		Returns the name of a error level.
+		Path to a custom error page.
+	*/
+
+	protected static $sErrorPagePath;
+
+	/**
+		Format the trace in a way similar to Exception::getTraceAsString but compatible
+		with both Exception::getTrace and debug_backtrace. Extraneous information is
+		automatically removed making the resulting string identical for both types of errors.
+
+		@param $aTrace The trace array returned by either Exception::getTrace or debug_backtrace.
+		@return string The trace formatted as string.
+	*/
+
+	public static function formatTrace($aTrace)
+	{
+		$sTraceAsString = '';
+
+		$iFrom = 0 + (int)(empty($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
+			+ 2 * (array_value($aTrace[0], 'class') == 'weeException' && array_value($aTrace[0], 'function') == 'handleError');
+
+		for ($i = $iFrom; $i < count($aTrace); $i++) {
+			$sTraceAsString .= '#' . ($i - $iFrom) . ' ' . $aTrace[$i]['file'] . '(' . $aTrace[$i]['line'] . '): '
+				. array_value($aTrace[$i], 'class') . array_value($aTrace[$i], 'type') . $aTrace[$i]['function'] . '(';
+
+			if (!empty($aTrace[$i]['args'])) {
+				foreach ($aTrace[$i]['args'] as $mArg)
+					$sTraceAsString .= getType($mArg) . ', ';
+
+				$sTraceAsString = substr($sTraceAsString, 0, -2);
+			}
+
+			$sTraceAsString .= ")\n";
+		}
+
+		return substr($sTraceAsString, 0, -1);
+	}
+
+	/**
+		Returns the name of a error level, or "Unknown PHP Error" if the error is not known.
 
 		@param	$iLevel				The error level.
 		@return	string				The name of the error level.
-		@throw	DomainException		The error level is invalid.
 	*/
 
 	public static function getLevelName($iLevel)
@@ -90,17 +129,13 @@ final class weeException extends Namespace
 			E_ALL				=> 'E_ALL'
 		);
 
-		isset($aTypes[$iLevel])
-			or burn('DomainException',
-				_('The error level is invalid.'));
-
-		return $aTypes[$iLevel];
+		return isset($aTypes[$iLevel]) ? $aTypes[$iLevel] : 'Unknown PHP Error';
 	}
 
 	/**
 		Function called when a PHP error is triggered.
-		Gets error details in DEBUG mode, then prints the error page and log error if possible.
-		Then stops script execution.
+
+		It gets the error's details and send them to the error page, then stops the execution.
 
 		@param	$iNumber	Contains the level of the error raised, as an integer.
 		@param	$sMessage	Contains the error message, as a string.
@@ -112,29 +147,33 @@ final class weeException extends Namespace
 	public static function handleError($iNumber, $sMessage, $sFile, $iLine)
 	{
 		// Return directly if @ was used: this error has been masked.
-		if (error_reporting() == 0) return;
+		if (error_reporting() == 0)
+			return;
 
-		$sDebug = null;
-		$sErrorType = self::getLevelName($iNumber);
+		$sName = self::getLevelName($iNumber);
 
-		if (!ini_get('html_errors'))
-			$sDebug = 'Error: ' . $sErrorType . ' (' . $iNumber . ') in ' . $sFile . ' (line ' . $iLine . '): ' . $sMessage;
-		elseif (defined('DEBUG'))
-		{
-			$sDebug .= '</div><div id="php"><h2>' . str_replace("<a href='", "<a href='http://php.net/", $sMessage) . '</h2>';
-			$sDebug .= '<h3>Type:</h3><span>' . $sErrorType . ' (' . $iNumber . ')</span><br/>';
-			$sDebug .= '<h3>File:</h3><span>' . $sFile . '</span><br/>';
-			$sDebug .= '<h3>Line:</h3><span>' . $iLine . '</span><br/>';
-		}
+		if (defined('WEE_CLI'))
+			self::printError('Error: ' . $sName . "\n"
+				. 'Message: ' . $sMessage . "\n"
+				. "Trace:\n" . self::formatTrace(debug_backtrace()));
+		else
+			self::printErrorPage(array(
+				'type'		=> 'error',
+				'name'		=> $sName,
+				'number'	=> $iNumber,
+				'message'	=> str_replace("<a href='", "<a href='http://php.net/", $sMessage),
+				'trace'		=> self::formatTrace(debug_backtrace()),
+				'file'		=> $sFile,
+				'line'		=> $iLine,
+			));
 
-		self::printErrorPage($sDebug);
-		self::logError('error', $sFile, $iLine, $sErrorType, $sMessage);
 		exit($iNumber);
 	}
 
 	/**
 		Function called when an exception is thrown and isn't catched by the script.
-		Gets exception details in DEBUG mode, then prints the error page and log error if possible.
+
+		It gets the exception's details and send them to the error page.
 		It does not stop the script execution, since PHP does it itself after calling this function.
 
 		@param $oException The exception object.
@@ -143,123 +182,95 @@ final class weeException extends Namespace
 
 	public static function handleException($oException)
 	{
-		$sDebug = null;
+		if (defined('WEE_CLI'))
+			self::printError('Exception: ' . get_class($oException) . "\n"
+				. 'Message: ' . $oException->getMessage() . "\n"
+				. "Trace:\n" . self::formatTrace($oException->getTrace()));
+		else {
+			$aTrace = $oException->getTrace();
 
-		if (!ini_get('html_errors'))
-		{
-			$sDebug .= 'Exception: ' . get_class($oException) . "\r\n";
-			$sDebug .= 'Message: ' . $oException->getMessage() . "\r\n";
-			$sDebug .= "Trace:\n" . $oException->getTraceAsString();
-		}
-		elseif (defined('DEBUG'))
-		{
-			$sDebug .= '</div><div id="exception"><h2>' . get_class($oException) . '</h2>';
-			$sDebug .= '<h3>Message:</h3><p>' . nl2br($oException->getMessage()) . '</p>';
-			$sDebug .= '<h3>Trace:</h3><p>' . nl2br($oException->getTraceAsString()) . '</p>';
-		}
+			// If burn was used, take the file and line where the burn call occurred
+			if (empty($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
+				$aFileAndLine = array(
+					'file'	=> $aTrace[0]['file'],
+					'line'	=> $aTrace[0]['line'],
+				);
+			else
+				$aFileAndLine = array(
+					'file'	=> $oException->getFile(),
+					'line'	=> $oException->getLine(),
+				);
 
-		self::printErrorPage($sDebug);
-		self::logError('exception', $oException->getFile(), $oException->getLine(), get_class($oException), $oException->getTraceAsString());
-	}
-
-	/**
-		Logs the specified error to a file in the LOG_PATH path, if defined.
-
-		The filename is randomly created, thus the filename order isn't the same as the creation order.
-
-		@param	$sClass		Contains either 'error' or 'exception'.
-		@param	$sFile		Contains the filename that the error was raised in, as a string.
-		@param	$iLine		Contains the line number the error was raised at, as an integer.
-		@param	$sType		Contains either the level of the error raised, or the exception class name, both as strings.
-		@param	$sMessage	Contains the error message, as a string.
-	*/
-
-	public static function logError($sClass, $sFile, $iLine, $sType, $sMessage)
-	{
-		if (!defined('LOG_PATH')) return;
-
-		$r = @fopen(@tempnam(LOG_PATH, 'error-'), 'w');
-		if ($r)
-		{
-			@fwrite($r, @time() . "\n");
-			foreach (@func_get_args() as $s)
-				@fwrite($r, $s . "\n");
-			@fclose($r);
+			self::printErrorPage(array(
+				'type'		=> 'exception',
+				'name'		=> get_class($oException),
+				'message'	=> $oException->getMessage(),
+				'trace'		=> self::formatTrace($oException->getTrace()),
+			) + $aFileAndLine);
 		}
 	}
 
 	/**
-		Prints a default error page, containing some instructions for the user, and some debug information in DEBUG mode.
+		Delete all buffers and print the given error.
+
+		@param $sError The error to print.
 	*/
 
-	public static function printErrorPage($sDebug)
+	protected static function printError($sError)
 	{
 		while (@ob_end_clean()) ;
 
-		if (!ini_get('html_errors'))
-			echo $sDebug, "\n";
-		else
-		{
-			@header('Content-Encoding: identity');
-			echo 
-
-'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' . _('Fatal error') . '</title>
-<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/><style type="text/css">
-*{font-family:Verdana,sans-serif}
-html{background-color:#ccdbfa;font-size:0.8em}
-h1{font-size:1.5em;height:2em;width:100%;text-align:right}
-h2{font-size:1.3em}
-ul{padding-top:1em}
-li{padding-bottom:1em}
-a{color:#0000e0}
-a:hover{color:#4444e0}
-body>div{width:40em;background-color:#fff;padding:0em 2em;padding-bottom:1em;margin:2em auto;border:1px solid #7d8cb9}
-#footer{padding:1em 2em;text-align:center;background:#f3f3fd}
-#error{background:#fdf3f3;text-align:justify}
-#exception,#php{background:#f3fdf3}
-h3{width:5em;font-size:1em}
-#php h2{font-size:1em}
-#php h3,#php span{float:left;margin:0 0 1em 0}
-#php br{clear:left}
-</style></head><body><div id="error"><h1>' . _('Oops! An error occurred.') . '</h1><p>' .
-_('The page you tried to access is currently unavailable. This can happen for one of the following reason:') . '</p><ul><li>' .
-_('The Web address you entered is invalid or incomplete. Please check that you typed it correctly.') . '</li><li>' .
-_('The server is too busy. Please wait a moment and try to reload the page later.') . '</li><li>' .
-_('The page you try to access may have been removed and doesn\'t exist anymore. Please try to <a href="/">browse</a> for it.') . '</li></ul><p>' .
-_('You can also try to <a href="javascript:history.back()">go back</a> where you came from.') . '</p>' . $sDebug . '</div></body></html>';
-
-		}
+		echo $sError . "\n";
 	}
-}
 
-/**
-	Default error handler.
-	Defined because passing an array (class, method) to set_error_handler didn't work.
+	/**
+		Delete all buffers and print the error page.
+		If no page was defined using weeException::setErrorPage, the default error page is shown.
 
-	@see http://php.net/set_error_handler
-*/
+		@param $aDebug An array containing debugging information about the error or the exception.
+	*/
 
-function weeErrorHandler($iNumber, $sMessage, $sFile, $iLine)
-{
-	weeException::handleError($iNumber, $sMessage, $sFile, $iLine);
-}
+	public static function printErrorPage($aDebug)
+	{
+		while (@ob_end_clean()) ;
 
-/**
-	Default exception handler.
-	Defined because passing an array (class, method) to set_error_handler didn't work.
+		if (empty(self::$sErrorPagePath))
+			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';
 
-	@see http://php.net/set_exception_handler
-*/
+		if (defined('WEE_GZIP'))
+			ob_start('ob_gzhandler');
 
-function weeExceptionHandler($oException)
-{
-	weeException::handleException($oException);
+		require(self::$sErrorPagePath);
+	}
+
+	/**
+		Defines a custom error page to be shown when an error or an exception occur.
+		The page can be a PHP script, an HTML page or a plain-text file.
+
+		The $aDebug array is available in the code of this page. You can check if
+		DEBUG is defined and print the debug information if needed.
+
+		The $aDebug array contains the following values:
+			* type: either 'error' or 'exception'
+			* name: name of the error/exception
+			* message: message associated with it
+			* trace: complete trace leading to the uncatched exception
+			* file: the file where the error occurred
+			* line: the line where the error occurred
+
+		An error also has this value:
+			* number: error's number
+
+		@param $sPath The path to the new error page.
+	*/
+
+	public static function setErrorPage($sPath)
+	{
+		self::$sErrorPagePath = $sPath;
+	}
 }
 
 // Set handlers
 
-set_error_handler('weeErrorHandler');
-set_exception_handler('weeExceptionHandler');
-
-?>
+set_error_handler(array('weeException', 'handleError'));
+set_exception_handler(array('weeException', 'handleException'));
