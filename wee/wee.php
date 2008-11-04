@@ -99,11 +99,6 @@ require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
 
 weeAutoload::addPath(WEE_PATH);
 
-// PHP Functions/Extensions emulation
-
-if (!function_exists('ctype_alnum'))
-	require(WEE_PATH . 'emul_ctype' . PHP_EXT);
-
 // Dummy _() if it doesn't exist
 
 if (!function_exists('_'))
