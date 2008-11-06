@@ -95,6 +95,7 @@ class weeDocumentorXML extends weeDocumentor
 		if (!empty($aClass['implements'])) $this->writeList($aClass['implements'], 'implements', 'implement');
 
 		if (!empty($aClass['bugs'])) $this->writeList($aClass['bugs'], 'bugs', 'bug');
+		if (!empty($aClass['deprecated'])) $this->oXMLWriter->writeAttribute('deprecated', $aClass['deprecated']);
 		if (!empty($aClass['sees'])) $this->writeList($aClass['sees'], 'sees', 'see');
 		if (!empty($aClass['todos'])) $this->writeList($aClass['todos'], 'todos', 'todo');
 		if (!empty($aClass['warnings'])) $this->writeList($aClass['warnings'], 'warnings', 'warning');
@@ -182,6 +183,7 @@ class weeDocumentorXML extends weeDocumentor
 		}
 
 		if (!empty($aFunc['bugs'])) $this->writeList($aFunc['bugs'], 'bugs', 'bug');
+		if (!empty($aFunc['deprecated'])) $this->oXMLWriter->writeAttribute('deprecated', $aFunc['deprecated']);
 		if (!empty($aFunc['overloads'])) $this->writeOverloads($aFunc['overloads']);
 		if (!empty($aFunc['return'])) $this->writeReturn($aFunc['return']);
 		if (!empty($aFunc['sees'])) $this->writeList($aFunc['sees'], 'sees', 'see');
@@ -287,6 +289,7 @@ class weeDocumentorXML extends weeDocumentor
 		if (!empty($aProperty['static'])) $this->oXMLWriter->writeAttribute('static', 'static');
 
 		if (!empty($aProperty['bugs'])) $this->writeList($aProperty['bugs'], 'bugs', 'bug');
+		if (!empty($aProperty['deprecated'])) $this->oXMLWriter->writeAttribute('deprecated', $aProperty['deprecated']);
 		if (!empty($aProperty['sees'])) $this->writeList($aProperty['sees'], 'sees', 'see');
 		if (!empty($aProperty['todos'])) $this->writeList($aProperty['todos'], 'todos', 'todo');
 		if (!empty($aProperty['warnings'])) $this->writeList($aProperty['warnings'], 'warnings', 'warning');

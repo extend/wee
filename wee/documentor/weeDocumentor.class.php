@@ -413,6 +413,18 @@ abstract class weeDocumentor implements Printable
 	}
 
 	/**
+		Parse a @deprecated line from the docComment.
+
+		@param $sLine The @overload line.
+		@param aParsedData Array where the parsed data is saved.
+	*/
+
+	protected function parseDocCommentDeprecated($sLine, &$aParsedData)
+	{
+		$aParsedData['deprecated'] = $sLine;
+	}
+
+	/**
 		Parse a @overload line from the docComment.
 
 		@param $sLine The @overload line.
