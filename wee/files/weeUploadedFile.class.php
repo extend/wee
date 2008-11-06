@@ -118,9 +118,9 @@ class weeUploadedFile
 		);
 
 		if (!empty($aErrorMessages[$this->iErrorCode]))
-			return _($aErrorMessages[$this->iErrorCode]);
+			return _WT($aErrorMessages[$this->iErrorCode]);
 
-		return _('Unknown error.');
+		return _WT('Unknown error.');
 	}
 
 	/**

@@ -17,106 +17,106 @@ class CastableInput_testBigNumberValidator {
 
 try {
 	new weeBigNumberValidator(new stdClass);
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator(true);
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the value is a boolean.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the value is a boolean.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator(null);
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the value is null.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the value is null.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator(array());
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the value is an array.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the value is an array.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator(42);
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the value is an integer.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the value is an integer.'));
 } catch (DomainException $e) {
 }
 
 try {
 	new weeBigNumberValidator(42.42);
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the value is a float.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the value is a float.'));
 } catch (DomainException $e) {
 }
 
 try {
 	new weeBigNumberValidator('42');
 } catch (DomainException $e) {
-	$this->fail(_('weeBigNumberValidator should not throw a DomainException when the value is a string.'));
+	$this->fail(_WT('weeBigNumberValidator should not throw a DomainException when the value is a string.'));
 }
 
 try {
 	new weeBigNumberValidator(new PrintableInput_testBigNumberValidator);
 } catch (DomainException $e) {
-	$this->fail(_('weeBigNumberValidator should not throw a DomainException when the value is an instance of Printable.'));
+	$this->fail(_WT('weeBigNumberValidator should not throw a DomainException when the value is an instance of Printable.'));
 }
 
 try {
 	new weeBigNumberValidator(new CastableInput_testBigNumberValidator);
 } catch (DomainException $e) {
-	$this->fail(_('weeBigNumberValidator should not throw a DomainException when the value is an object castable to string.'));
+	$this->fail(_WT('weeBigNumberValidator should not throw a DomainException when the value is an object castable to string.'));
 }
 
 // weeBigNumberValidator should throw a DomainException when the `min` argument is not a valid number.
 
 try {
 	new weeBigNumberValidator('42', array('min' => 'not_a_number'));
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the `min` argument is not a valid number.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the `min` argument is not a valid number.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator('42', array('min' => 42));
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the `min` argument is not given as a string.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the `min` argument is not given as a string.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator('42', array('min' => '42'));
 } catch (DomainException $e) {
-	$this->fail(_('weeBigNumberValidator should not throw a DomainException when the `min` argument is a valid number.'));
+	$this->fail(_WT('weeBigNumberValidator should not throw a DomainException when the `min` argument is a valid number.'));
 }
 
 // weeBigNumberValidator should throw a DomainException when the `max` argument is not a valid number.
 
 try {
 	new weeBigNumberValidator('42', array('max' => 'not_a_number'));
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the `max` argument is not a number.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the `max` argument is not a number.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator('42', array('max' => 42));
-	$this->fail(_('weeBigNumberValidator should throw a DomainException when the `max` argument is not given as a string.'));
+	$this->fail(_WT('weeBigNumberValidator should throw a DomainException when the `max` argument is not given as a string.'));
 } catch (DomainException $e) {}
 
 try {
 	new weeBigNumberValidator('42', array('max' => '42'));
 } catch (DomainException $e) {
-	$this->fail(_('weeBigNumberValidator should not throw a DomainException when the `max` argument is a valid number.'));
+	$this->fail(_WT('weeBigNumberValidator should not throw a DomainException when the `max` argument is a valid number.'));
 }
 
 // weeBigNumberValidator should throw an InvalidArgumentException when the `min` and `max` arguments do not form a valid number range.
 
 try {
 	new weeBigNumberValidator('42', array('min' => '43', 'max' => '41'));
-	$this->fail(_('weeBigNumberValidator should throw an InvalidArgumentException when the `min` argument is greater than the `max` one.'));
+	$this->fail(_WT('weeBigNumberValidator should throw an InvalidArgumentException when the `min` argument is greater than the `max` one.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
 	new weeBigNumberValidator('42', array('min' => '42', 'max' => '42'));
-	$this->fail(_('weeBigNumberValidator should throw an InvalidArgumentException when the `min` and `max` arguments are equal.'));
+	$this->fail(_WT('weeBigNumberValidator should throw an InvalidArgumentException when the `min` and `max` arguments are equal.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
 	new weeBigNumberValidator('42', array('min' => '41', 'max' => '43'));
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeBigNumberValidator should not throw an InvalidArgumentException when the `min` argument is smaller than the `max` one.'));
+	$this->fail(_WT('weeBigNumberValidator should not throw an InvalidArgumentException when the `min` argument is smaller than the `max` one.'));
 }
 
 // Integer (string)
@@ -183,33 +183,33 @@ $this->isTrue(weeBigNumberValidator::test('1.1', array('format' => 'float', 'max
 // Big Numbers
 
 $this->isTrue(weeBigNumberValidator::test('12345678901234567890'),
-	_('weeBigNumberValidator::test should return true for a valid big number'));
+	_WT('weeBigNumberValidator::test should return true for a valid big number'));
 $this->isTrue(weeBigNumberValidator::test('-12345678901234567890'),
-	_('weeBigNumberValidator::test should return true for a valid negative big number'));
+	_WT('weeBigNumberValidator::test should return true for a valid negative big number'));
 $this->isTrue(weeBigNumberValidator::test('12345678901234567890.000042', array('format' => 'float')),
-	_('weeBigNumberValidator::test should return true for a valid float big number'));
+	_WT('weeBigNumberValidator::test should return true for a valid float big number'));
 $this->isTrue(weeBigNumberValidator::test('12345678901234567890.000042', array('format' => 'float', 'min' => '12345678901234567890')),
-	_('weeBigNumberValidator::test should return true for a valid float big number greater than the `min` argument.'));
+	_WT('weeBigNumberValidator::test should return true for a valid float big number greater than the `min` argument.'));
 $this->isFalse(weeBigNumberValidator::test('12345678901234567890.000042', array('format' => 'float', 'max' => '12345678901234567890')),
-	_('weeBigNumberValidator::test should return false for a valid float big number less than the `max` argument.'));
+	_WT('weeBigNumberValidator::test should return false for a valid float big number less than the `max` argument.'));
 $this->isTrue(weeBigNumberValidator::test('-0.000000000000000000001', array('format' => 'float', 'min' => '-0.000000000000000000002')),
-	_('weeBigNumberValidator::test should return true for a valid negative float big number greater than the `min` argument.'));
+	_WT('weeBigNumberValidator::test should return true for a valid negative float big number greater than the `min` argument.'));
 
 // The value is outside the range.
 
 $this->isFalse(weeBigNumberValidator::test('42', array('min' => '43', 'max' => '44')),
-	_('weeBigNumberValidator should return false if the value is under the range of the `min` and `max` arguments.'));
+	_WT('weeBigNumberValidator should return false if the value is under the range of the `min` and `max` arguments.'));
 
 $this->isFalse(weeBigNumberValidator::test('42', array('min' => '40', 'max' => '41')),
-	_('weeBigNumberValidator should return false if the value is over the range of the `min` and `max` arguments.'));
+	_WT('weeBigNumberValidator should return false if the value is over the range of the `min` and `max` arguments.'));
 
 $this->isTrue(weeBigNumberValidator::test('42', array('min' => '41', 'max' => '43')),
-	_('weeBigNumberValidator should return true if the value is in the range of the `min` and `max` arguments.'));
+	_WT('weeBigNumberValidator should return true if the value is in the range of the `min` and `max` arguments.'));
 
 // Objects
 
 $this->isTrue(weeBigNumberValidator::test(new PrintableInput_testBigNumberValidator),
-	_('weeBigNumberValidator::test should return true when the value is an instance of Printable which returns a valid number.'));
+	_WT('weeBigNumberValidator::test should return true when the value is an instance of Printable which returns a valid number.'));
 
 $this->isTrue(weeBigNumberValidator::test(new CastableInput_testBigNumberValidator),
-	_('weeBigNumberValidator::test should return true when the value is an object castable to string which casts to a valid number.'));
+	_WT('weeBigNumberValidator::test should return true when the value is an object castable to string which casts to a valid number.'));

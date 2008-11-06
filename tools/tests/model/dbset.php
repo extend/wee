@@ -26,7 +26,7 @@ $oSet = new testSet_weeDbSet;
 
 try {
 	$oSet->getDb();
-	$this->fail(_('weeDbSet::getDb should throw an IllegalStateException when trying to get the database associated to this model.'));
+	$this->fail(_WT('weeDbSet::getDb should throw an IllegalStateException when trying to get the database associated to this model.'));
 } catch (IllegalStateException $e) {}
 
 $oSet->setDb($oDb);
@@ -34,10 +34,10 @@ $oSet->setDb($oDb);
 try {
 	$oSet->getDb();
 } catch (IllegalStateException $e) {
-	$this->fail(_('weeDbSet::getDb should not throw an IllegalStateException when trying to get the database associated to this model.'));
+	$this->fail(_WT('weeDbSet::getDb should not throw an IllegalStateException when trying to get the database associated to this model.'));
 }
 
-$this->isEqual($oSet->getDb(), $oDb, _('weeDbSet::getDb should return the database object we set using weeDbSet::setDb.'));
+$this->isEqual($oSet->getDb(), $oDb, _WT('weeDbSet::getDb should return the database object we set using weeDbSet::setDb.'));
 
 
 $oDb->query('CREATE TEMPORARY TABLE dbset (answer integer)');
@@ -46,19 +46,19 @@ $oDb->query('INSERT INTO dbset VALUES (42)');
 // weeDbSet::queryValue
 
 $this->isEqual($oSet->queryValue('SELECT * FROM dbset'), $oSet->getDb()->queryValue('SELECT * FROM dbset'),
-	_('weeDbSet::queryValue should return the same result as weeDatabase::queryValue'));
+	_WT('weeDbSet::queryValue should return the same result as weeDatabase::queryValue'));
 
 // weeDbSet::query
 
 $m = $oSet->query('SELECT * FROM dbset');
 $this->isInstanceOf($m, 'weeDatabaseResult',
-	_('weeDbSet::query should return a weeDatabaseResult when the request is a not a query returning a result.'));
+	_WT('weeDbSet::query should return a weeDatabaseResult when the request is a not a query returning a result.'));
 
 $this->isInstanceOf($m->fetch(), 'testSet_weeDbModel',
-	_('weeDatabaseResult instances returned by weeDbSet::query should iterates through instances of weeDbSet::sModel.'));
+	_WT('weeDatabaseResult instances returned by weeDbSet::query should iterates through instances of weeDbSet::sModel.'));
 
 $this->isNull($oSet->query('DELETE FROM dbset'),
-	_('weeDbSet::query should not return a value when the request is not a query returning a result.'));
+	_WT('weeDbSet::query should not return a value when the request is not a query returning a result.'));
 
 // weeDbSet::queryRow
 
@@ -75,7 +75,7 @@ try {
 $oDb->query('INSERT INTO dbset VALUES (42)');
 
 $this->isInstanceOf($oSet->queryRow('SELECT * FROM dbset'), 'testSet_weeDbModel',
-	_('weeDbSet::queryRow should return an instance of weeDbSet::sModel.'));
+	_WT('weeDbSet::queryRow should return an instance of weeDbSet::sModel.'));
 
 $oDb->query('INSERT INTO dbset VALUES (42)');
 

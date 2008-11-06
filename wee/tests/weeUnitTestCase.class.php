@@ -144,7 +144,7 @@ class weeUnitTestCase
 	{
 		is_object($oObject)
 			or burn('DomainException',
-				_('$oObject is not an object.'));
+				_WT('$oObject is not an object.'));
 
 		if (!($oObject instanceof $sClass))
 			throw new ComparisonTestException($sClass, get_class($oObject), $sMessage);

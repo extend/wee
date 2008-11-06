@@ -336,7 +336,7 @@ abstract class weeDocumentor implements Printable
 	{
 		is_string($sVariable) and isset($sVariable[0])
 			or burn('InvalidArgumentException',
-				_('$sVariable is not a valid variable name.'));
+				_WT('$sVariable is not a valid variable name.'));
 
 		switch ($sVariable[0])
 		{

@@ -66,11 +66,11 @@ class weeConfirmValidator extends weeFormValidator
 
 		is_scalar($mValue)
 			or burn('DomainException',
-				_('$mValue is not of a correct type.'));
+				_WT('$mValue is not of a correct type.'));
 
 		!empty($aArgs['with'])
 			or burn('InvalidArgumentException',
-				_('The argument `with` is mandatory.'));
+				_WT('The argument `with` is mandatory.'));
 
 		parent::__construct($mValue, $aArgs);
 	}

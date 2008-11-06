@@ -103,7 +103,7 @@ class weePgSQLDbMeta extends weeDbMeta
 
 		count($oQuery) == 1
 			or burn('UnexpectedValueException',
-				sprintf(_('Schema "%s" does not exist in the database.'), $sName));
+				sprintf(_WT('Schema "%s" does not exist in the database.'), $sName));
 
 		$sClass = $this->getSchemaClass();
 		return new $sClass($this, $oQuery->fetch());
@@ -173,7 +173,7 @@ class weePgSQLDbMeta extends weeDbMeta
 
 		count($oQuery) == 1
 			or burn('UnexpectedValueException',
-				sprintf(_('Table "%s" does not exist in the database.'), $sName));
+				sprintf(_WT('Table "%s" does not exist in the database.'), $sName));
 
 		$sClass = $this->getTableClass();
 		return new $sClass($this, $oQuery->fetch());

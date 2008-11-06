@@ -202,7 +202,7 @@ class weeSession implements ArrayAccess
 	{
 		is_array($aData)
 			or burn('InvalidArgumentException',
-				_('$aData is not an array.'));
+				_WT('$aData is not an array.'));
 
 		foreach ($aData as $sKey => $mValue)
 			$_SESSION[$sKey] = $mValue;

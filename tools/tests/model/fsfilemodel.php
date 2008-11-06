@@ -8,13 +8,13 @@ $aData 				= array('filename' => $sFilename);
 touch($sFilename);
 
 $iSize = file_put_contents($sFilename, $sContents);
-$iSize === false and burn('UnexpectedValueException', sprintf(_('The %s contents could not be appended'), $sFilename));
+$iSize === false and burn('UnexpectedValueException', sprintf(_WT('The %s contents could not be appended'), $sFilename));
 
 chmod($sFilename, 0400);
 try {
 	$o = new weeFsFileModel($aData);
 	$o->appendContents('contents');
-	$this->fail(sprintf(_('weeFsFileModel::appendContents should throw an UnexpectedValueException, the file %s could not be appended.'), $sFilename));
+	$this->fail(sprintf(_WT('weeFsFileModel::appendContents should throw an UnexpectedValueException, the file %s could not be appended.'), $sFilename));
 } catch (UnexpectedValueException $e) {}
 
 if (!defined('WEE_ON_WINDOWS')) {
@@ -24,7 +24,7 @@ if (!defined('WEE_ON_WINDOWS')) {
 	try {
 		$o = new weeFsFileModel($aData);
 		$o->getContents();
-		$this->fail(sprintf(_('weeFsFileModel::appendContents should throw an UnexpectedValueException, the contents of %s could not be get.'), $sFilename));
+		$this->fail(sprintf(_WT('weeFsFileModel::appendContents should throw an UnexpectedValueException, the contents of %s could not be get.'), $sFilename));
 	} catch (UnexpectedValueException $e) {}
 }
 
@@ -34,8 +34,8 @@ try {
 	$o = new weeFsFileModel($aData);
 	$o->appendContents('words');
 	$this->isEqual($sExpectedContents, $o->getContents(),
-		_('weeFsFileModel::getContents should return the contents of the file.'));
+		_WT('weeFsFileModel::getContents should return the contents of the file.'));
 } catch (UnexpectedValueException $e) {
-	$this->fail(sprintf(_('weeFsFileModel should not throw an UnexpectedValueException, 
+	$this->fail(sprintf(_WT('weeFsFileModel should not throw an UnexpectedValueException, 
 		the file %s could be appended and the contents could be get.'), $sFilename));
 }

@@ -79,7 +79,7 @@ class weePgSQLDbMetaSchema extends weeDbMetaSchema
 
 		count($oQuery) == 1
 			or burn('UnexpectedValueException',
-				sprintf(_('Table "%s" does not exist in the schema.'), $sName));
+				sprintf(_WT('Table "%s" does not exist in the schema.'), $sName));
 
 		$sClass = $this->meta()->getTableClass();
 		return new $sClass($this->meta(), $oQuery->fetch());

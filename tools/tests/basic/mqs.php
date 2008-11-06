@@ -35,4 +35,4 @@ $aWanted = array(
 
 mqs($aTest);
 
-$this->isIdentical($aWanted, $aTest, _('mqs is not stripping slashes properly.'));
+$this->isIdentical($aWanted, $aTest, _WT('mqs is not stripping slashes properly.'));

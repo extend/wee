@@ -10,10 +10,10 @@ try
 	// weeMySQLDbMeta::tableExists
 
 	$this->isTrue($oMeta->tableExists('dbmeta'),
-		_('weeMySQLDbMeta::tableExists should return true when the given table name is found in the database.'));
+		_WT('weeMySQLDbMeta::tableExists should return true when the given table name is found in the database.'));
 
 	$this->isFalse($oMeta->tableExists('not_found'),
-		_('weeMySQLDbMeta::tableExists should return false when the given table name is not found in the database.'));
+		_WT('weeMySQLDbMeta::tableExists should return false when the given table name is not found in the database.'));
 
 	// weeMySQLDbMeta::table
 
@@ -27,12 +27,12 @@ try
 	// weeMySQLDbMetaTable::name
 
 	$this->isEqual('dbmeta', $oTable->name(),
-		_('weeMySQLDbMeta::table does not return the requested table.'));
+		_WT('weeMySQLDbMeta::table does not return the requested table.'));
 
 	// weeMySQLDbMetaTable::comment
 
 	$this->isEqual('Tests are marvelous.', $oTable->comment(),
-		_('weeMySQLDbMetaTable::comment does not correctly return the comment of the table.'));
+		_WT('weeMySQLDbMetaTable::comment does not correctly return the comment of the table.'));
 }
 catch (Exception $oException) {}
 

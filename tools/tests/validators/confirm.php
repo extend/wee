@@ -4,13 +4,13 @@
 
 try {
 	new weeConfirmValidator('42');
-	$this->fail(_('weeConfirmValidator should throw an InvalidArgumentException when the `with` argument is missing.'));
+	$this->fail(_WT('weeConfirmValidator should throw an InvalidArgumentException when the `with` argument is missing.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
 	new weeConfirmValidator('42', array('with' => 'confirm'));
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeConfirmValidator should not throw an InvalidArgumentException when the `with` argument is present.'));
+	$this->fail(_WT('weeConfirmValidator should not throw an InvalidArgumentException when the `with` argument is present.'));
 }
 
 // The following validation should succeed.
@@ -19,7 +19,7 @@ $o = new weeConfirmValidator('42', array('with' => 'confirm'));
 $o->setFormData(simplexml_load_string('<widget/>'), array('confirm' => 42));
 
 $this->isFalse($o->hasError(),
-	_('weeConfirmValidator::hasError should return false when the value is confirmed in the form data.'));
+	_WT('weeConfirmValidator::hasError should return false when the value is confirmed in the form data.'));
 
 // The following validations should fail.
 
@@ -27,10 +27,10 @@ $o = new weeConfirmValidator('42', array('with' => 'confirm'));
 $o->setFormData(simplexml_load_string('<widget/>'), array('confirm' => 43));
 
 $this->isTrue($o->hasError(),
-	_('weeConfirmValidator::hasError should return true when the value is not confirmed in the form data.'));
+	_WT('weeConfirmValidator::hasError should return true when the value is not confirmed in the form data.'));
 
 $o = new weeConfirmValidator('42', array('with' => 'confirm'));
 $o->setFormData(simplexml_load_string('<widget/>'), array());
 
 $this->isTrue($o->hasError(),
-	_('weeConfirmValidator::hasError should return true when the confirmation value is missing from the form data.'));
+	_WT('weeConfirmValidator::hasError should return true when the confirmation value is missing from the form data.'));

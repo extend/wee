@@ -135,7 +135,7 @@ foreach ($oResults as $aRow)
 
 try {
 	$this->isEqual(count($aInsertValues), $oDb->queryValue('SELECT COUNT(*) FROM query'),
-		_('queryValue does not return the value expected.'));
+		_WT('queryValue does not return the value expected.'));
 } catch (UnexpectedValueException $e) {
 	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
 }

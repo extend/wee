@@ -69,7 +69,7 @@ class weeMySQLDbMeta extends weeDbMeta
 
 		count($oQuery) == 1
 			or burn('UnexpectedValueException',
-				sprintf(_('Table "%s" does not exist.'), $sName));
+				sprintf(_WT('Table "%s" does not exist.'), $sName));
 
 		$sClass = $this->getTableClass();
 		return new $sClass($this, $oQuery->fetch());

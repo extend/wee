@@ -66,7 +66,7 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	{
 		$this->hasDefault()
 			or burn('IllegalStateException',
-				_('The column does not have a default value.'));
+				_WT('The column does not have a default value.'));
 
 		return $this->db()->queryValue('
 			SELECT		pg_catalog.pg_get_expr(adbin, adrelid)

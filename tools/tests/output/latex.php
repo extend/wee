@@ -21,15 +21,15 @@ $aTable = array(
 );
 
 $this->isEqual('win', $o->encode('win'),
-	_('weeLaTeXOutput::encode should return its argument untouched if it does not contain any special character.'));
+	_WT('weeLaTeXOutput::encode should return its argument untouched if it does not contain any special character.'));
 
 $this->isEqual('win', $o->decode('win'),
-	_('weeLaTeXOutput::decode should return its argument untouched if it does not contain any LaTeX entity.'));
+	_WT('weeLaTeXOutput::decode should return its argument untouched if it does not contain any LaTeX entity.'));
 
 foreach ($aTable as $sDecoded => $sEncoded) {
 	$this->isEqual($sEncoded, $o->encode($sDecoded),
-		_('weeLateXOutput::encode should return the expected encoded value.'));
+		_WT('weeLateXOutput::encode should return the expected encoded value.'));
 
 	$this->isEqual($sDecoded, $o->decode($sEncoded),
-		_('weeLaTeXOutput::decode should return the expected decoded value.'));
+		_WT('weeLaTeXOutput::decode should return the expected decoded value.'));
 }

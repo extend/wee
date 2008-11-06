@@ -5,15 +5,15 @@ $sValueIfNotSet = 'valueifnotset';
 
 $sValue = array_value($aData, 'key');
 $this->isEqual($sValue, $aData['key'],
-		sprintf(_('array_value should return "%s" got "%s" instead.'), $aData['key'], $sValue));
+		sprintf(_WT('array_value should return "%s" got "%s" instead.'), $aData['key'], $sValue));
 
 $sValue = array_value($aData, 'key', $sValueIfNotSet);
 $this->isEqual($sValue, $aData['key'],
-		sprintf(_('array_value should return "%s" got "%s" instead.'), $aData['key'], $sValue));
+		sprintf(_WT('array_value should return "%s" got "%s" instead.'), $aData['key'], $sValue));
 
 $sValue = array_value($aData, 'badkey');
-$this->isNull($sValue, sprintf(_('array_value should return null got "%s" instead.'), $sValue));
+$this->isNull($sValue, sprintf(_WT('array_value should return null got "%s" instead.'), $sValue));
 
 $sValue = array_value($aData, 'badkey', $sValueIfNotSet);
 $this->isEqual($sValue, $sValueIfNotSet,
-		sprintf(_('array_value should return "%s" got "%s" instead.'), $sValueIfNotSet, $sValue));
+		sprintf(_WT('array_value should return "%s" got "%s" instead.'), $sValueIfNotSet, $sValue));

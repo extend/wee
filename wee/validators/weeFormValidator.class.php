@@ -49,7 +49,7 @@ abstract class weeFormValidator extends weeValidator
 	{
 		$this->oWidget !== null
 			or burn('IllegalStateException',
-				_('The validator is not attached to a form widget.'));
+				_WT('The validator is not attached to a form widget.'));
 
 		return parent::validate();
 	}
@@ -68,7 +68,7 @@ abstract class weeFormValidator extends weeValidator
 	{
 		$this->oWidget === null
 			or burn('IllegalStateException',
-				_('The validator has already been attached to a form widget.'));
+				_WT('The validator has already been attached to a form widget.'));
 
 		$this->aData	= $aData;
 		$this->oWidget	= $oWidget;

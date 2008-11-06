@@ -88,7 +88,7 @@ class weeTestSuite implements Printable
 	protected function addResult($sFile, $mResult)
 	{
 		$mResult == 'success' or $mResult == 'skip' or is_object($mResult) and $mResult instanceof Exception
-			or burn('DomainException', _('$mResult is not a valid result.'));
+			or burn('DomainException', _WT('$mResult is not a valid result.'));
 
 		$this->aResults[$sFile] = $mResult;
 
@@ -97,27 +97,27 @@ class weeTestSuite implements Printable
 		echo $sFile, ': ';
 
 		if ($mResult === 'success' || $mResult === 'skip')
-			echo _($mResult), "\n";
+			echo _WT($mResult), "\n";
 		elseif ($mResult instanceof ErrorTestException) {
-			echo _('error'), "\n",
-				_('Message: '), $mResult->getMessage(), "\n",
-				_('Level: '), weeException::getLevelName($mResult->getCode()), "\n",
-				_('File: '), $mResult->getFile(), "\n",
-				_('Line: '), $mResult->getLine(), "\n";
+			echo _WT('error'), "\n",
+				_WT('Message: '), $mResult->getMessage(), "\n",
+				_WT('Level: '), weeException::getLevelName($mResult->getCode()), "\n",
+				_WT('File: '), $mResult->getFile(), "\n",
+				_WT('Line: '), $mResult->getLine(), "\n";
 		} elseif ($mResult instanceof UnitTestException) {
-			echo _('failure'), "\n", _('Message: '), $mResult->getMessage(), "\n";
+			echo _WT('failure'), "\n", _WT('Message: '), $mResult->getMessage(), "\n";
 
 			if ($mResult instanceof ComparisonTestException) {
-				echo _('Expected: ');
+				echo _WT('Expected: ');
 				var_export($mResult->getExpected());
-				echo "\n", _('Actual: ');
+				echo "\n", _WT('Actual: ');
 				var_export($mResult->getActual());
 				echo "\n";
 			}
 		} else {
 			echo get_class($mResult), "\n",
-				_('Message: '), $mResult->getMessage(), "\n",
-				_('Trace:'), "\n", $mResult->getTraceAsString(), "\n";
+				_WT('Message: '), $mResult->getMessage(), "\n",
+				_WT('Trace:'), "\n", $mResult->getTraceAsString(), "\n";
 		}
 
 		$this->mLastResult = $mResult;
@@ -313,7 +313,7 @@ class weeTestSuite implements Printable
 	public function toString()
 	{
 		$this->aResults !== null
-			or burn('IllegalStateException', _('Please run the suite before trying to output its results.'));
+			or burn('IllegalStateException', _WT('Please run the suite before trying to output its results.'));
 
 		// Analyze and output the code coverage results
 
@@ -352,12 +352,12 @@ class weeTestSuite implements Printable
 		$iTestsCount				= count($this->aResults);
 
 		if ($iSkippedAndSucceededCount == $iTestsCount)
-			$s .= sprintf(_('All %d tests succeeded!'), $aCounts['success']);
+			$s .= sprintf(_WT('All %d tests succeeded!'), $aCounts['success']);
 		else
-			$s .= sprintf(_('%d of %d tests failed.'), $iTestsCount - $iSkippedAndSucceededCount, $iTestsCount - $aCounts['skip']);
+			$s .= sprintf(_WT('%d of %d tests failed.'), $iTestsCount - $iSkippedAndSucceededCount, $iTestsCount - $aCounts['skip']);
 
 		if ($aCounts['skip'] != 0)
-			$s .= sprintf(_(' (%d skipped)'), $aCounts['skip']);
+			$s .= sprintf(_WT(' (%d skipped)'), $aCounts['skip']);
 
 		return $s . "\n";
 	}

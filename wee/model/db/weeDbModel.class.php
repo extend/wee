@@ -45,7 +45,7 @@ abstract class weeDbModel extends weeModel
 	{
 		$this->oDatabase !== null or is_callable('weeApp')
 			or burn('IllegalStateException',
-				_('No database has been associated to this model.'));
+				_WT('No database has been associated to this model.'));
 
 		return $this->oDatabase === null ? weeApp()->db : $this->oDatabase;
 	}

@@ -15,13 +15,13 @@ try
 	// weePgSQLDbMeta::tableExists
 
 	$this->isTrue($oMeta->tableExists('test1'),
-		_('weePgSQLDbMeta::tableExists should return true when the given table name is found in the database and the table is visible.'));
+		_WT('weePgSQLDbMeta::tableExists should return true when the given table name is found in the database and the table is visible.'));
 
 	$this->isFalse($oMeta->tableExists('not_found'),
-		_('weePgSQLDbMeta::tableExists should return false when the given table name is not found in the database.'));
+		_WT('weePgSQLDbMeta::tableExists should return false when the given table name is not found in the database.'));
 
 	$this->isFalse($oMeta->tableExists('test2'),
-		_('weePgSQLDbMeta::tableExists should return false when the given table name is found in the database but the table is invisible.'));
+		_WT('weePgSQLDbMeta::tableExists should return false when the given table name is found in the database but the table is invisible.'));
 
 	// weePgSQLDbMeta::table
 
@@ -32,13 +32,13 @@ try
 
 	try {
 		$oMeta->table('test2');
-		$this->fail(_('weePgSQLDbMeta::table should throw an UnexpectedValueException when requesting an invisible table.'));
+		$this->fail(_WT('weePgSQLDbMeta::table should throw an UnexpectedValueException when requesting an invisible table.'));
 	} catch (UnexpectedValueException $e) {}
 
 	try {
 		$oMeta->table('pg_namespace');
 	} catch (Exception $e) {
-		$this->fail(sprintf(_('weePgSQLDbMeta::table throw a %s when requesting a visible table from a system catalog.'),
+		$this->fail(sprintf(_WT('weePgSQLDbMeta::table throw a %s when requesting a visible table from a system catalog.'),
 			get_class($e)));
 	}
 
@@ -47,17 +47,17 @@ try
 	// weePgSQLDbMetaTable::schemaName
 
 	$this->isEqual($oCurrent->name(), $oTable->schemaName(),
-		_('weePgSQLDbMeta::table does not return table from the correct schema.'));
+		_WT('weePgSQLDbMeta::table does not return table from the correct schema.'));
 
 	// weePgSQLDbMetaTable::name
 
 	$this->isEqual('test1', $oTable->name(),
-		_('weePgSQLDbMeta::table does not return the requested table.'));
+		_WT('weePgSQLDbMeta::table does not return the requested table.'));
 
 	// weePgSQLDbMetaTable::comment
 
 	$this->isEqual('Tests are marvelous.', $oTable->comment(),
-		_('weePgSQLDbMetaTable::comment does not correctly return the comment of the table.'));
+		_WT('weePgSQLDbMetaTable::comment does not correctly return the comment of the table.'));
 }
 catch (Exception $oException) {}
 

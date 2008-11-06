@@ -76,27 +76,27 @@ foreach ($aInsertValues as $aRow)
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query')->fetch();
 $this->isEqual(count($aInsertValues), $aRow['c'],
-	_("The total number of rows in the table isn't matching the number of rows inserted."));
+	_WT("The total number of rows in the table isn't matching the number of rows inserted."));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_quantity>=?', 10)->fetch();
 $this->isEqual(5, $aRow['c'],
-	_('The number of rows with q_quantity>=10 is wrong.'));
+	_WT('The number of rows with q_quantity>=10 is wrong.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_price<?', 13.55)->fetch();
 $this->isEqual(5, $aRow['c'],
-	_('The number of rows with q_price<13.55 is wrong.'));
+	_WT('The number of rows with q_price<13.55 is wrong.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_name=? LIMIT 1', 'Cute Girls')->fetch();
 $this->isEqual(0, $aRow['c'],
-	_('There is no cute girl in this table.'));
+	_WT('There is no cute girl in this table.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS c FROM query WHERE q_quantity>=? AND q_price<?', 10, 13.55)->fetch();
 $this->isEqual(4, $aRow['c'],
-	_('The number of rows with q_quantity>=10 AND q_price<13.55 is wrong.'));
+	_WT('The number of rows with q_quantity>=10 AND q_price<13.55 is wrong.'));
 
 $aRow = $oDb->query('SELECT q_name, q_quantity, q_price FROM query WHERE q_name=? LIMIT 1', 'Eggs')->fetch();
 $this->isEqual($aInsertValues[1], $aRow,
-	_('The data of the row "Eggs" is wrong.'));
+	_WT('The data of the row "Eggs" is wrong.'));
 
 // Test fetch
 
@@ -135,7 +135,7 @@ foreach ($oResults as $aRow)
 
 try {
 	$this->isEqual(count($aInsertValues), $oDb->queryValue('SELECT count(*) FROM query'),
-		_('queryValue does not return the value expected.'));
+		_WT('queryValue does not return the value expected.'));
 } catch (UnexpectedValueException $e) {
 	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
 }

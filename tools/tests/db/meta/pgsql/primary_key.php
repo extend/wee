@@ -17,16 +17,16 @@ try
 	// weePgSQLDbMetaTable::hasPrimaryKey
 
 	$this->isTrue($oTable1->hasPrimaryKey(),
-		_('weePgSQLDbMetaTable::hasPrimaryKey should return true when the table has a primary key.'));
+		_WT('weePgSQLDbMetaTable::hasPrimaryKey should return true when the table has a primary key.'));
 
 	$this->isFalse($oTable2->hasPrimaryKey(),
-		_('weePgSQLDbMetaTable::hasPrimaryKey should return false when the table does not have a primary key.'));
+		_WT('weePgSQLDbMetaTable::hasPrimaryKey should return false when the table does not have a primary key.'));
 
 	// weePgSQLDbMetaTable::primaryKey
 
 	try {
 		$oTable2->primaryKey();
-		$this->fail(_('weePgSQLDbMetaTable::primaryKey should throw an IllegalStateException when the table does not have a primary key.'));
+		$this->fail(_WT('weePgSQLDbMetaTable::primaryKey should throw an IllegalStateException when the table does not have a primary key.'));
 	} catch (IllegalStateException $e) {}
 
 	$oPrimaryKey = $oTable1->primaryKey();
@@ -34,17 +34,17 @@ try
 	// weePgSQLDbMetaPrimaryKey::name
 
 	$this->isEqual('i_am_a_pk', $oPrimaryKey->name(),
-		_('weePgSQLDbMetaPrimaryKey::name does not correctly return the name of the primary key.'));
+		_WT('weePgSQLDbMetaPrimaryKey::name does not correctly return the name of the primary key.'));
 
 	// weePgSQLDbMetaPrimaryKey::comment
 
 	$this->isEqual('not a player killer!', $oPrimaryKey->comment(),
-		_('weePgSQLDbMetaPrimaryKey::comment does not correctly return the comment of the primary key.'));
+		_WT('weePgSQLDbMetaPrimaryKey::comment does not correctly return the comment of the primary key.'));
 
 	// weePgSQLDbMetaPrimaryKey::columns
 
 	$this->isEqual(array('c', 'a'), $oPrimaryKey->columns(),
-		_('weePgSQLDbMetaPrimaryKey::columns does not correctly return all the columns of the primary key.'));
+		_WT('weePgSQLDbMetaPrimaryKey::columns does not correctly return all the columns of the primary key.'));
 }
 catch (Exception $oException) {}
 

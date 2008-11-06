@@ -374,9 +374,9 @@ class weeApplication
 			static $iInstance = 0;
 			$iInstance++ == 0 or
 				burn('IllegalStateException',
-					_('Trying to instanciate weeApplication within its own constructor. ') .
-					_('This error can happen if you inherited a class created in the constructor ') .
-					_('and put logic that uses weeApplication in it (models, for example).'));
+					_WT('Trying to instanciate weeApplication within its own constructor. ') .
+					_WT('This error can happen if you inherited a class created in the constructor ') .
+					_WT('and put logic that uses weeApplication in it (models, for example).'));
 
 			function weeApp() { return weeApplication::instance(); }
 			self::$oSingleton = new self;
@@ -429,7 +429,7 @@ class weeApplication
 	protected function loadFrame($sFrame)
 	{
 		fire(!@is_subclass_of($sFrame, 'weeFrame'), 'UnexpectedValueException',
-			sprintf(_('The frame %s does not exist.'), $sFrame));
+			sprintf(_WT('The frame %s does not exist.'), $sFrame));
 
 		$oFrame = new $sFrame;
 		$oFrame->setController($this);
@@ -462,7 +462,7 @@ class weeApplication
 			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS)
 			{
 				if (defined('WEE_CLI'))
-					echo _('You are not allowed to access the specified frame/event.'), "\n";
+					echo _WT('You are not allowed to access the specified frame/event.'), "\n";
 				else
 					require(ROOT_PATH . 'res/wee/unauthorized.htm');
 				exit;

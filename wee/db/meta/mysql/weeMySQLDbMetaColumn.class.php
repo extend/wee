@@ -64,7 +64,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 	{
 		$this->hasDefault()
 			or burn('IllegalStateException',
-			_('The column does not have any default value.'));
+			_WT('The column does not have any default value.'));
 
 		return $this->aData['default'];
 	}

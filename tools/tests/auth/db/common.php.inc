@@ -87,7 +87,7 @@ try {
 
 	unset($aData['user_id'], $aInsertValues[3]['user_passwd']);
 	$this->isEqual($aInsertValues[3], $aData,
-		_('The data returned by the authentication is incorrect.'));
+		_WT('The data returned by the authentication is incorrect.'));
 } catch (AuthenticationException $e) {
 	$this->fail('The credentials provided were correct and yet the authentication failed.');
 }
@@ -114,7 +114,7 @@ try {
 
 	unset($aData['user_id'], $aInsertValues[5]['user_passwd']);
 	$this->isEqual($aInsertValues[5], $aData,
-		_('The data returned by the authentication is incorrect.'));
+		_WT('The data returned by the authentication is incorrect.'));
 } catch (AuthenticationException $e) {
 	$this->fail('The hashed credentials provided were correct and yet the authentication failed.');
 }

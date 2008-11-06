@@ -16,7 +16,7 @@ $o = new weeFormValidator_test(42);
 
 try {
 	$o->validate();
-	$this->fail(_('weeFormValidator::validate should throw an IllegalStateException when the validator has not been associated with a form widget.'));
+	$this->fail(_WT('weeFormValidator::validate should throw an IllegalStateException when the validator has not been associated with a form widget.'));
 } catch (IllegalStateException $e) {}
 
 $o->setFormData(simplexml_load_string('<widget/>'), array());
@@ -24,12 +24,12 @@ $o->setFormData(simplexml_load_string('<widget/>'), array());
 try {
 	$o->validate();
 } catch (IllegalStateException $e) {
-	$this->fail(_('weeFormValidator::validate should not throw an IllegalStateException when the validator has been associated with a form widget.'));
+	$this->fail(_WT('weeFormValidator::validate should not throw an IllegalStateException when the validator has been associated with a form widget.'));
 }
 
 // weeFormValidator::setFormData should throw an IllegalStateException when the validator has already been associated with a form widget.
 
 try {
 	$o->setFormData(simplexml_load_string('<widget/>'), array());
-	$this->fail(_('weeFormValidator::setFormData should throw an IllegalStateException when the validator has already been associated with a form widget.'));
+	$this->fail(_WT('weeFormValidator::setFormData should throw an IllegalStateException when the validator has already been associated with a form widget.'));
 } catch (IllegalStateException $e) {}

@@ -62,7 +62,7 @@ class weeTimeValidator extends weeValidator
 
 		is_string($mValue)
 			or burn('DomainException',
-				_('$mValue is not of a correct type.'));
+				_WT('$mValue is not of a correct type.'));
 
 		parent::__construct($mValue, $aArgs);
 	}

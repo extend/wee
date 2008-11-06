@@ -36,6 +36,8 @@ file_put_contents(
 		->docClass('Printable')
 		->docFunc('fire')
 		->docFunc('burn')
+		->docFunc('_T')
+		->docFunc('_WT')
 		->docFunc('array_value')
 		->docFunc('rmdir_recursive')
 		->docFunc('xmlspecialchars')

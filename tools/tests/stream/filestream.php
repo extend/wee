@@ -7,11 +7,11 @@ touch($sFilenameExist);
 chmod($sFilenameExist, 0644);
 
 $iWrote = file_put_contents($sFilenameExist, 'some words');
-$iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot write the file %s.'), $sFilenameExist));
+$iWrote === false and burn('UnexpectedValueException', sprintf(_WT('Cannot write the file %s.'), $sFilenameExist));
 
 try {
 	$oFileStream = new weeFileStream($sFilenameNotExist);
-	$this->fail(sprintf(_('weeFileStream should throw a FileNotFoundException when trying to access %s.'), $sFilenameNotExist));
+	$this->fail(sprintf(_WT('weeFileStream should throw a FileNotFoundException when trying to access %s.'), $sFilenameNotExist));
 } catch (FileNotFoundException $e) {}
 
 if (!defined('WEE_ON_WINDOWS')) {
@@ -21,7 +21,7 @@ if (!defined('WEE_ON_WINDOWS')) {
 	chmod($sFilenameExist, 0000);
 	try {
 		$oFileStream = new weeFileStream($sFilenameExist);
-		$this->fail(sprintf(_('weeFileStream should throw a NotPermittedException when trying to access %s.'), $sFilenameExist));
+		$this->fail(sprintf(_WT('weeFileStream should throw a NotPermittedException when trying to access %s.'), $sFilenameExist));
 	} catch (NotPermittedException $e) {}
 	chmod($sFilenameExist, 0644);
 }
@@ -30,7 +30,7 @@ try {
 	$oFileStream = new weeFileStream($sFilenameExist);
 
 	$oFileStream->read(filesize($sFilenameExist) + 32);
-	$this->fail(sprintf(_('read should throw an EndOfFileException when trying to read more than the size of %s.'), $sFilenameExist));
+	$this->fail(sprintf(_WT('read should throw an EndOfFileException when trying to read more than the size of %s.'), $sFilenameExist));
 } catch (EndOfFileException $e) {}
 
 // Seeking past EOF is not considered an error.
@@ -38,7 +38,7 @@ try {
 	$oFileStream = new weeFileStream($sFilenameExist);
 
 	$oFileStream->seek(-1);
-	$this->fail(sprintf(_('seek should throw an EndOfFileException when trying to seek before the beginning of the file %s.'), $sFilenameExist));
+	$this->fail(sprintf(_WT('seek should throw an EndOfFileException when trying to seek before the beginning of the file %s.'), $sFilenameExist));
 } catch (EndOfFileException $e) {}
 
 try {
@@ -46,7 +46,7 @@ try {
 
 	$oFileStream->seek(5);
 	$this->isEqual('words', $oFileStream->read(5),
-		_('weeFileStream failed to read 5 bytes from the file.'));
+		_WT('weeFileStream failed to read 5 bytes from the file.'));
 } catch (EndOfFileException $e) {
-	$this->fail(sprintf(_('read should not throw an EndOfFileException when trying to seek/read the file %s.'), $sFilenameExist));
+	$this->fail(sprintf(_WT('read should not throw an EndOfFileException when trying to seek/read the file %s.'), $sFilenameExist));
 }

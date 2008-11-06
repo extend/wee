@@ -9,13 +9,13 @@ $sFilename3	= $sDirname3 . '/file.txt';
 $aData 		= array ('filename' => $sDirname);
 
 $iRet = @mkdir($sDirname, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create (or recreate) the directory %s.'), $sDirname));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create (or recreate) the directory %s.'), $sDirname));
 
 $iRet = @mkdir($sDirname2, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), $sDirname2));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname2));
 
 $iRet = @mkdir($sDirname3, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), $sDirname3));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname3));
 
 touch($sFilename);
 touch($sFilename2);
@@ -31,9 +31,9 @@ if (!defined('WEE_ON_WINDOWS')) {
 
 		$o->deleteContents();
 		$this->isTrue(file_exists($sFilename), 
-			sprintf(_('weeFsDirectoryModel::deleteContents(), the contents in %s should not be deleted.'), $sDirname));
+			sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should not be deleted.'), $sDirname));
 
-		$this->fail(sprintf(_('weeFsDirectoryModel should throw an NotPermittedException when trying to delete the contents of %'), $sDirname));
+		$this->fail(sprintf(_WT('weeFsDirectoryModel should throw an NotPermittedException when trying to delete the contents of %'), $sDirname));
 	} catch (NotPermittedException $e) {}
 
 	try {
@@ -41,9 +41,9 @@ if (!defined('WEE_ON_WINDOWS')) {
 
 		$o->delete();
 		$this->isTrue(file_exists($sDirname),
-			sprintf(_('weeFsDirectoryModel::delete(), the directory %s should not be deleted.'), $sDirname));
+			sprintf(_WT('weeFsDirectoryModel::delete(), the directory %s should not be deleted.'), $sDirname));
 
-		$this->fail(sprintf(_('weeFsDirectoryModel should throw an NotPermittedException when trying to delete %'), $sDirname));
+		$this->fail(sprintf(_WT('weeFsDirectoryModel should throw an NotPermittedException when trying to delete %'), $sDirname));
 	} catch (NotPermittedException $e) {}
 
 	exec(sprintf('chmod -R 755 %s', $sDirname));
@@ -54,16 +54,16 @@ try {
 
 	$o->deleteContents();
 	$this->isFalse(file_exists($sFilename), 
-		sprintf(_('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname));
+		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname));
 	$this->isFalse(file_exists($sFilename2),
-		sprintf(_('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname2));
+		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname2));
 	$this->isFalse(file_exists($sFilename3),
-		sprintf(_('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname3));
+		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname3));
 
 	$o->delete();
 	$this->isFalse(file_exists($sDirname),
-		sprintf(_('weeFsDirectoryModel::deleteContents(), the directory %s should be deleted.'), $sDirname));
+		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the directory %s should be deleted.'), $sDirname));
 
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsDirectoryModel should not throw an InvalidArgumentException because the Filename was specified'));
+	$this->fail(_WT('weeFsDirectoryModel should not throw an InvalidArgumentException because the Filename was specified'));
 }

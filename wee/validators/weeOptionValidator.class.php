@@ -62,7 +62,7 @@ class weeOptionValidator extends weeFormValidator
 
 		is_scalar($mValue)
 			or burn('InvalidArgumentException',
-				_('$mValue is not of a correct type.'));
+				_WT('$mValue is not of a correct type.'));
 
 		parent::__construct($mValue, $aArgs);
 	}

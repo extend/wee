@@ -69,7 +69,7 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 
 		count($oQuery) == 1
 			or burn('UnexpectedValueException',
-				sprintf(_('Column "%s" does not exist.'), $sName));
+				sprintf(_WT('Column "%s" does not exist.'), $sName));
 
 		return $this->instantiateObject($this->getColumnClass(), $oQuery->fetch());
 	}
@@ -203,7 +203,7 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 
 		count($oQuery) == 1
 			or burn('IllegalStateException',
-				_('The table does not have a primary key.'));
+				_WT('The table does not have a primary key.'));
 
 		return $this->instantiateObject($this->getPrimaryKeyClass(), $oQuery->fetch());
 	}

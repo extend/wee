@@ -80,23 +80,23 @@ foreach ($aInsertValues as $i => $aRow)
 
 $aRow = $oDb->query('SELECT COUNT(*) AS C FROM QUERY')->fetch();
 $this->isEqual(count($aInsertValues), $aRow['C'],
-	_("The total number of rows in the table isn't matching the number of rows inserted."));
+	_WT("The total number of rows in the table isn't matching the number of rows inserted."));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS C FROM QUERY WHERE Q_QUANTITY>=?', 10)->fetch();
 $this->isEqual(5, $aRow['C'],
-	_('The number of rows with Q_QUANTITY>=10 is wrong.'));
+	_WT('The number of rows with Q_QUANTITY>=10 is wrong.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS C FROM QUERY WHERE Q_PRICE<?', 13.55)->fetch();
 $this->isEqual(5, $aRow['C'],
-	_('The number of rows with Q_PRICE<13.55 is wrong.'));
+	_WT('The number of rows with Q_PRICE<13.55 is wrong.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS C FROM QUERY WHERE Q_NAME=?', 'Cute Girls')->fetch();
 $this->isEqual(0, $aRow['C'],
-	_('There is no cute girl in this table.'));
+	_WT('There is no cute girl in this table.'));
 
 $aRow = $oDb->query('SELECT COUNT(*) AS C FROM QUERY WHERE Q_QUANTITY>=? AND Q_PRICE<?', 10, 13.55)->fetch();
 $this->isEqual(4, $aRow['C'],
-	_('The number of rows with Q_QUANTITY>=10 AND Q_PRICE<13.55 is wrong.'));
+	_WT('The number of rows with Q_QUANTITY>=10 AND Q_PRICE<13.55 is wrong.'));
 
 $aRow = $oDb->query('SELECT Q_NAME, Q_QUANTITY, Q_PRICE FROM QUERY WHERE Q_NAME=?', 'Eggs')->fetch();
 $this->isEqual($aInsertValues[1], $aRow,
@@ -139,7 +139,7 @@ foreach ($oResults as $aRow)
 
 try {
 	$this->isEqual(count($aInsertValues), $oDb->queryValue('SELECT COUNT(*) FROM QUERY'),
-		_('queryValue does not return the value expected.'));
+		_WT('queryValue does not return the value expected.'));
 } catch (UnexpectedValueException $e) {
 	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
 }

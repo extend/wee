@@ -20,7 +20,7 @@
 */
 
 $aOptions = getopt('cf:');
-$aOptions === false and burn('UnexpectedValueException', _('getopt fails to get options from the command line argument list.'));
+$aOptions === false and die("getopt fails to get options from the command line.\n");
 
 if (!isset($aOptions['f'])) {
 	echo "usage: php maketests.php [-c] -f tests_path\n";

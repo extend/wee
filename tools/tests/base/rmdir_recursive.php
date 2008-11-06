@@ -8,17 +8,17 @@ $sFilename2	= $sDirname2 . '/file.txt';
 $sFilename3	= $sDirname3 . '/file.txt';
 
 $iRet = @mkdir($sDirname, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), $sDirname));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname));
 
 $iRet = @mkdir($sDirname2, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), $sDirname2));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname2));
 
 $iRet = @mkdir($sDirname3, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), $sDirname3));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname3));
 
 try {
 	rmdir_recursive($sFilename);
-	$this->fail(sprintf(_('rmdir_recursive should throw a FileNotFoundException when trying to delete %s'), $sFilename));
+	$this->fail(sprintf(_WT('rmdir_recursive should throw a FileNotFoundException when trying to delete %s'), $sFilename));
 } catch (FileNotFoundException $e) {}
 
 touch($sFilename);
@@ -31,7 +31,7 @@ if (!defined('WEE_ON_WINDOWS')) {
 	chmod($sDirname, 0000);
 	try {
 		rmdir_recursive($sDirname);
-		$this->fail(sprintf(_('rmdir_recursive should throw a NotPermittedException when trying to open %s.'), $sDirname));
+		$this->fail(sprintf(_WT('rmdir_recursive should throw a NotPermittedException when trying to open %s.'), $sDirname));
 	} catch (NotPermittedException $e) {}
 	chmod($sDirname, 0755);
 }
@@ -39,11 +39,11 @@ if (!defined('WEE_ON_WINDOWS')) {
 try {
 	rmdir_recursive($sDirname, true);
 } catch (NotPermittedException $e) {
-	$this->fail(sprintf(_('rmdir_recursive should not throw a NotPermittedException when trying to delete the contents of %s.'), $sDirname));
+	$this->fail(sprintf(_WT('rmdir_recursive should not throw a NotPermittedException when trying to delete the contents of %s.'), $sDirname));
 }
 
 try {
 	rmdir_recursive($sDirname);
 } catch (NotPermittedException $e) {
-	$this->fail(sprintf(_('rmdir_recursive should not throw a NotPermittedException when trying to delete %s.'), $sDirname));
+	$this->fail(sprintf(_WT('rmdir_recursive should not throw a NotPermittedException when trying to delete %s.'), $sDirname));
 }

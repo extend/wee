@@ -24,14 +24,14 @@ for ($i = 0; $i < 100; $i++)
 // Check weeOracleDatabase::numAffectedRows by checking our INSERT
 
 $this->isEqual(1, $oDb->numAffectedRows(),
-	_('The number of rows affected by our INSERT is wrong.'));
+	_WT('The number of rows affected by our INSERT is wrong.'));
 
 // Then do UPDATE and DELETE queries while doing more tests
 
 $oDb->query('UPDATE NUMAFFECTEDROWS SET NAR_VALUE=? WHERE NAR_VALUE>=80', -1);
 $this->isEqual(20, $oDb->numAffectedRows(),
-	_('The number of rows affected by our UPDATE of the nar_value field is wrong.'));
+	_WT('The number of rows affected by our UPDATE of the nar_value field is wrong.'));
 
 $oDb->query('DELETE FROM NUMAFFECTEDROWS WHERE NAR_VALUE!=?', -1);
 $this->isEqual(80, $oDb->numAffectedRows(),
-	_('The number of rows affected by our DELETE of the rows with nar_value!=-1 is wrong.'));
+	_WT('The number of rows affected by our DELETE of the rows with nar_value!=-1 is wrong.'));

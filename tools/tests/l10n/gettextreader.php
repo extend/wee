@@ -11,18 +11,18 @@ touch($sFilename);
 chmod($sFilename, 0644);
 
 $iWrote = file_put_contents($sFilename, 'word');
-$iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot write the file %s.'), $sFilename));
+$iWrote === false and burn('UnexpectedValueException', sprintf(_WT('Cannot write the file %s.'), $sFilename));
 
 try {
 	$o = new weeGetTextReader($sFilename);
-	$this->fail(sprintf(_('weeGetTextReader should throw an UnexpectedValueException when reading %s.'), $sFilename));
+	$this->fail(sprintf(_WT('weeGetTextReader should throw an UnexpectedValueException when reading %s.'), $sFilename));
 } catch (UnexpectedValueException $e) {}
 
 touch($sPoFilename);
 chmod($sPoFilename, 0655);
 
 $iWrote = file_put_contents($sPoFilename, $sPoContents);
-$iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot write the file %s.'), $sPoFilename));
+$iWrote === false and burn('UnexpectedValueException', sprintf(_WT('Cannot write the file %s.'), $sPoFilename));
 
 exec(sprintf('msgfmt -o %s %s', $sMoFilename, $sPoFilename));
 if (!is_file($sMoFilename))
@@ -32,4 +32,4 @@ $o = new weeGetTextReader($sMoFilename);
 
 $aExpectedResult = array('message : ad vitam aeternam' => 'translation : forever');
 $this->isEqual($aExpectedResult, $o->getStrings(),
-	_('weeGetTextReader::getStrings does not return the expected strings.'));
+	_WT('weeGetTextReader::getStrings does not return the expected strings.'));

@@ -312,20 +312,20 @@ class weeForm implements Printable
 				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
-				$oException->addError('', _('Form key not found.'));
+				$oException->addError('', _WT('Form key not found.'));
 			else
 			{
 				// Recalculate form key to check validity
 
 				if ($aData['wee_formkey'] != md5($_SERVER['HTTP_HOST'] . $_SESSION['session_formkeys'][$aData['wee_formkey']] . MAGIC_STRING))
-					$oException->addError('', _('Invalid form key.'));
+					$oException->addError('', _WT('Invalid form key.'));
 				else
 				{
 					// If form key was generated more than 6 hours ago, it is considered invalid
 
 					$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
 					if (time() > $aTime[1] + 3600 * 6)
-						$oException->addError('', _('Form key out of date.'));
+						$oException->addError('', _WT('Form key out of date.'));
 				}
 			}
 
@@ -349,9 +349,9 @@ class weeForm implements Printable
 					if (!empty($oNode['required']))
 					{
 						if (!empty($oNode['required_error']))
-							$oException->addError((string)$oNode->name, _($oNode['required_error']));
+							$oException->addError((string)$oNode->name, _T($oNode['required_error']));
 						else
-							$oException->addError((string)$oNode->name, sprintf(_('Input is required for %s'), (string)$oNode->label));
+							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for %s'), (string)$oNode->label));
 					}
 
 					continue;
@@ -364,7 +364,7 @@ class weeForm implements Printable
 					$sClass = (string)$oValidatorNode['type'];
 					@is_subclass_of($sClass, 'weeValidator')
 						or burn('BadXMLException',
-							sprintf(_('Validator %s does not exist.'), $oValidatorNode['type']));
+							sprintf(_WT('Validator %s does not exist.'), $oValidatorNode['type']));
 
  					$aAttributes	= (array)$oValidatorNode->attributes();
 					$oValidator		= new $sClass($aData[(string)$oNode->name], $aAttributes['@attributes']);

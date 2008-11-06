@@ -100,7 +100,7 @@ class weeMySQLResult extends weeDatabaseResult
 	{
 		$this->count() == 1
 			or burn('DatabaseException',
-				_('The result set does not contain exactly one row.'));
+				_WT('The result set does not contain exactly one row.'));
 
 		$a = mysql_fetch_assoc($this->rResult);
 		fire($a === false, 'DatabaseException', 'Failed to retrieve the row.');

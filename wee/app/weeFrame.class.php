@@ -98,12 +98,12 @@ abstract class weeFrame implements Printable
 	public function dispatchEvent($aEvent)
 	{
 		fire($this->iStatus != 0, 'IllegalStateException',
-			_('An attempt to dispatch an event already occured.'));
+			_WT('An attempt to dispatch an event already occured.'));
 
 		$this->sContext		= array_value($aEvent, 'context');
 		$sFunc				= empty($aEvent['name']) ? 'defaultEvent' : 'event' . $aEvent['name'];
 		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
-			(empty($aEvent['name']) ? _('The default event does not exist.') : sprintf(_('The event "%s" does not exist.'), $aEvent['name'])));
+			(empty($aEvent['name']) ? _WT('The default event does not exist.') : sprintf(_WT('The event "%s" does not exist.'), $aEvent['name'])));
 
 		try
 		{
@@ -171,7 +171,7 @@ abstract class weeFrame implements Printable
 			$this->dispatchEvent($aEvent);
 			$this->iStatus == self::UNAUTHORIZED_ACCESS
 				and burn('IllegalStateException',
-					_('An UnauthorizedAccessException was thrown while trying to send an event from within the frame. All events sent using sendEvent must be authorized.'));
+					_WT('An UnauthorizedAccessException was thrown while trying to send an event from within the frame. All events sent using sendEvent must be authorized.'));
 			$this->iStatus = 0;
 		}
 		else
@@ -207,7 +207,7 @@ abstract class weeFrame implements Printable
 
 	public function setController($oController)
 	{
-		fire(!empty($this->oController), 'UnexpectedValueException', _('$oController must not be empty.'));
+		fire(!empty($this->oController), 'UnexpectedValueException', _WT('$oController must not be empty.'));
 		$this->oController = $oController;
 	}
 
@@ -231,7 +231,7 @@ abstract class weeFrame implements Printable
 	public function toString()
 	{
 		fire($this->iStatus != self::EVENT_DISPATCHED, 'IllegalStateException',
-			_('An event must be dispatched before calling toString().'));
+			_WT('An event must be dispatched before calling toString().'));
 
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
 		{

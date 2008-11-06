@@ -13,16 +13,16 @@ class weeTemplate_test extends weeTemplate {
 $o = new weeTemplate_test;
 
 $this->isEqual('/foo&amp;/bar?&lt;=blah&amp;answer=42', $o->mkLink('/foo&/bar', array('<' => 'blah', 'answer' => 42)),
-	_('weeTemplate::mkLink should encode the link with the weeOutput::encodeValue method.'));
+	_WT('weeTemplate::mkLink should encode the link with the weeOutput::encodeValue method.'));
 
 $this->isEqual('/foo/bar?a=1&amp;b=2', $o->mkLink('/foo/bar?a=1', array('b' => '2')),
-	_('weeTemplate::mkLink should append the given parameters if the base link already contain a query string.'));
+	_WT('weeTemplate::mkLink should append the given parameters if the base link already contain a query string.'));
 
 $this->isEqual('/foo/bar?space=a+b', $o->mkLink('/foo/bar', array('space' => 'a b')),
-	_('weeTemplate::mkLink should encode any URL parameter with the urlencode function.'));
+	_WT('weeTemplate::mkLink should encode any URL parameter with the urlencode function.'));
 
 $this->isEqual('/foo/bar?entity=%26', $o->mkLink('/foo/bar', array('entity' => '&')),
-	_('weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::decode method before encoding them with the urlencode function.'));
+	_WT('weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::decode method before encoding them with the urlencode function.'));
 
 /*
 <?php
@@ -69,20 +69,20 @@ $aExpectedArray		= array('k1' => 'dynamite', 'k2' => 'v2');
 $sExpectedLink 		= 'http://www.example.com/?arg1=val1&amp;arg2=val2';
 
 $iRet = @mkdir(TPL_PATH, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), TPL_PATH));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), TPL_PATH));
 
 $iRet = @mkdir(FORM_PATH, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_('Cannot create the directory %s.'), FORM_PATH));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), FORM_PATH));
 
 $iWrote = file_put_contents(FORM_PATH . $sFormName . FORM_EXT, $sFormContents);
-$iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot create/write %s.'), FORM_PATH . $sFormName . FORM_EXT));
+$iWrote === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create/write %s.'), FORM_PATH . $sFormName . FORM_EXT));
 
 $iWrote = file_put_contents(TPL_PATH . $sTemplateName . TPL_EXT, $sTemplateContents);
-$iWrote === false and burn('UnexpectedValueException', sprintf(_('Cannot create/write %s.'), TPL_PATH . $sTemplateName . TPL_EXT));
+$iWrote === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create/write %s.'), TPL_PATH . $sTemplateName . TPL_EXT));
 
 try {
 	$o = new test_weeTemplate('bad');
-	$this->fail(sprintf(_('weeTemplate should throw a FileNotFoundException when trying to access %s.'), $sTemplateName));
+	$this->fail(sprintf(_WT('weeTemplate should throw a FileNotFoundException when trying to access %s.'), $sTemplateName));
 } catch (FileNotFoundException $e) {}
 
 try {
@@ -92,25 +92,25 @@ try {
 	$o	= new test_weeTemplate($sTemplateName, array('pastebin' => $oForm));
 
 	$this->isEqual($o->aData, array('pastebin' => $oForm),
-		sprintf(_('weeTemplate::set the expected result was not found.')));
+		sprintf(_WT('weeTemplate::set the expected result was not found.')));
 
 	$o->addLinkArgs($aArgs);
 	$this->isEqual($o->aLinkArgs, $aArgs, 
-		sprintf(_('weeTemplate::addLinkArgs the expected result was not found.')));
+		sprintf(_WT('weeTemplate::addLinkArgs the expected result was not found.')));
 
 	$sNewLink = $o->mklink($sLink, $aArgs);
 	$this->isEqual($sNewLink, $sExpectedLink, 
-		sprintf(_('weeTemplate::mklink should return "%s" got "%s" instead.'), $sExpectedLink, $sNewLink));
+		sprintf(_WT('weeTemplate::mklink should return "%s" got "%s" instead.'), $sExpectedLink, $sNewLink));
 
 	$o->set($aExpectedArray);
 	$this->isEqual($o->aData, $aExpectedArray + $o->aData,
-			sprintf(_('weeTemplate::set the expected result was not found.')));
+			sprintf(_WT('weeTemplate::set the expected result was not found.')));
 
 	$o->toString();
 	//~ echo $o->template($sTemplateName2);
 
 } catch (FileNotFoundException $e) {
-	$this->fail(sprintf(_('weeTemplate should not throw a FileNotFoundException when trying to access %s.'), TPL_PATH . $sTemplateName . TPL_EXT));
+	$this->fail(sprintf(_WT('weeTemplate should not throw a FileNotFoundException when trying to access %s.'), TPL_PATH . $sTemplateName . TPL_EXT));
 }
 
 */

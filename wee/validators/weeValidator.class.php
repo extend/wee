@@ -83,7 +83,7 @@ abstract class weeValidator
 	{
 		$this->hasError()
 			or burn('IllegalStateException',
-				_('The validator does not have an error message because the validation succeeded.'));
+				_WT('The validator does not have an error message because the validation succeeded.'));
 		return $this->sError;
 	}
 
@@ -136,8 +136,8 @@ abstract class weeValidator
 	protected function setError($sType)
 	{
 		$sMsg = $sType . '_error';
-		if (!empty($this->aArgs[$sMsg]))	$this->sError = _($this->aArgs[$sMsg]);
-		else								$this->sError = _($this->aErrors[$sType]);
+		if (!empty($this->aArgs[$sMsg]))	$this->sError = _T($this->aArgs[$sMsg]);
+		else								$this->sError = _T($this->aErrors[$sType]);
 
 		if (isset($this->aArgs[$sType]))
 			$this->sError = str_replace('%' . $sType . '%', $this->aArgs[$sType], $this->sError);

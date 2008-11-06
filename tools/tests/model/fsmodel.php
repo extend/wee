@@ -18,14 +18,14 @@ $sLinkFilename 	= ROOT_PATH . 'app/tmp/fsmodellink.txt';
 $aData = array();
 try {
 	$o = new weeFsModel_testFsModel($aData);
-	$this->fail(_('weeFsModel should throw an InvalidArgumentException because no filename was specified.'));
+	$this->fail(_WT('weeFsModel should throw an InvalidArgumentException because no filename was specified.'));
 } catch (InvalidArgumentException $e) {}
 
 $aData = array('filename' => $sFilename);
 try {
 	$o = new weeFsModel_testFsModel($aData);
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
+	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
 }
 
 $aData = array('filename' => $sFilename);
@@ -36,48 +36,48 @@ try {
 	chmod($aData['filename'], 0666);
 
 	$this->isTrue($o->exists(), 
-		sprintf(_("The file %s should exists."), $sFilename));
+		sprintf(_WT("The file %s should exists."), $sFilename));
 
 	$this->isTrue($o->isReadable(), 
-		sprintf(_("The file %s should be readable."), $sFilename));
+		sprintf(_WT("The file %s should be readable."), $sFilename));
 
 	$this->isTrue($o->isWritable(), 
-		sprintf(_("The file %s should be writable."), $sFilename));
+		sprintf(_WT("The file %s should be writable."), $sFilename));
 
 	if (!defined('WEE_ON_WINDOWS')) {
 		$o->makeLink($sLinkFilename);
 		$this->isTrue(is_link($sLinkFilename), 
-			sprintf(_("The file %s should be a symbolic link."), $sLinkFilename));
+			sprintf(_WT("The file %s should be a symbolic link."), $sLinkFilename));
 		unlink($sLinkFilename);
 	}
 
 	$o->delete();
 	$this->isFalse(file_exists($sFilename),
-		sprintf(_("weeFsModel::delete() the file %s should be deleted."), $sFilename));
+		sprintf(_WT("weeFsModel::delete() the file %s should be deleted."), $sFilename));
 
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename exists and was specified'));
+	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename exists and was specified'));
 }
 
 try {
 	$o = new weeFsModel_testFsModel($aData);
 
 	$this->isFalse($o->exists(), 
-		sprintf(_("The file %s should not exists."), $sFilename));
+		sprintf(_WT("The file %s should not exists."), $sFilename));
 
 	$this->isFalse($o->isReadable(), 
-		sprintf(_("The file %s should not be readable."), $sFilename));
+		sprintf(_WT("The file %s should not be readable."), $sFilename));
 
 	$this->isFalse($o->isWritable(), 
-		sprintf(_("The file %s should not be writable."), $sFilename));
+		sprintf(_WT("The file %s should not be writable."), $sFilename));
 
 	if (!defined('WEE_ON_WINDOWS')) {
 		$o->makeLink('');
-		$this->isFalse(is_link(''), _('The symbolic link "" (empty) should not exists'));
+		$this->isFalse(is_link(''), _WT('The symbolic link "" (empty) should not exists'));
 	}
 
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
+	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
 }
 
 try {
@@ -86,22 +86,22 @@ try {
 	$o->save();
 
 	$o->moveTo($sNewFilename);
-	$this->isFalse(file_exists($aData['filename']), sprintf(_("The file %s should not exists"), $sFilename));
+	$this->isFalse(file_exists($aData['filename']), sprintf(_WT("The file %s should not exists"), $sFilename));
 
 	$o->delete();
-	$this->isFalse(file_exists($sNewFilename), sprintf(_("The file %s should not exists"), $sNewFilename));
+	$this->isFalse(file_exists($sNewFilename), sprintf(_WT("The file %s should not exists"), $sNewFilename));
 } catch (UnexpectedValueException $e) {
-	$this->fail(sprintf(_('weeFsModel should not throw an UnexpectedValueException when trying to rename %s.'), $aData['filename']));
+	$this->fail(sprintf(_WT('weeFsModel should not throw an UnexpectedValueException when trying to rename %s.'), $aData['filename']));
 }
 
 try {
 	$o = new weeFsModel_testFsModel($aData);
 
 	@$o->delete();
-	$this->isFalse(file_exists($aData['filename']), sprintf(_("The file %s should not exists"), $sFilename));
+	$this->isFalse(file_exists($aData['filename']), sprintf(_WT("The file %s should not exists"), $sFilename));
 
 	@$o->moveTo($sNewFilename);
-	$this->fail(sprintf(_('weeFsModel should throw an UnexpectedValueException when trying to rename %s.'), $aData['filename']));
+	$this->fail(sprintf(_WT('weeFsModel should throw an UnexpectedValueException when trying to rename %s.'), $aData['filename']));
 } catch (UnexpectedValueException $e) {}
 
 try {
@@ -109,13 +109,13 @@ try {
 	$o->updateName();
 
 	$this->isEqual('fsmodel.txt', $o->aData['name'],
-		_('The filename is not the one expected.'));
+		_WT('The filename is not the one expected.'));
 
 	$this->isEqual('txt', $o->aData['extension'],
-		_('The file extension is not the one expected.'));
+		_WT('The file extension is not the one expected.'));
 
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
+	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
 }
 
 try {
@@ -124,13 +124,13 @@ try {
 	$o->updateName();
 
 	$this->isEqual('file.with.dots.tar.gz', $o->aData['name'],
-		_('The filename is not the one expected.'));
+		_WT('The filename is not the one expected.'));
 
 	$this->isEqual('gz', $o->aData['extension'],
-		_('The file extension is not the one expected.'));
+		_WT('The file extension is not the one expected.'));
 
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
+	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
 }
 
 try {
@@ -139,11 +139,11 @@ try {
 	$o->updateName();
 
 	$this->isEqual('file_without_extension_and_slash', $o->aData['name'],
-		_('The filename is not the one expected.'));
+		_WT('The filename is not the one expected.'));
 
 	$this->isEqual('', $o->aData['extension'],
-		_('The file extension is not the one expected.'));
+		_WT('The file extension is not the one expected.'));
 
 } catch (InvalidArgumentException $e) {
-	$this->fail(_('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
+	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
 }

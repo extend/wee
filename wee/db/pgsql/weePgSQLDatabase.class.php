@@ -122,7 +122,7 @@ class weePgSQLDatabase extends weeDatabase
 		if ($sValue instanceof Printable)
 			$sValue = $sValue->toString();
 		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
-			_('$sValue is not a valid pgsql identifier.'));
+			_WT('$sValue is not a valid pgsql identifier.'));
 
 		return '"' . str_replace('"', '""', $sValue) . '"';
 	}

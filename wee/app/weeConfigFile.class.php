@@ -129,7 +129,7 @@ class weeConfigFile
 
 		$i !== false
 			or burn('UnexpectedValueException',
-				_('The targeted system instruction is missing the closing parenthese.'));
+				_WT('The targeted system instruction is missing the closing parenthese.'));
 
 		$sInstruction	= trim(substr($sInstruction, 0, $i));
 		$aFuncs			= $this->getTargetFunctions();
@@ -137,16 +137,16 @@ class weeConfigFile
 
 		$i !== false
 			or burn('UnexpectedValueException',
-				_('The instruction does not have a wanted value.'));
+				_WT('The instruction does not have a wanted value.'));
 
 		$i != 0
 			or burn('UnexpectedValueException',
-				_('The instruction does not have a target function.'));
+				_WT('The instruction does not have a target function.'));
 
 		$sFunction = substr($sInstruction, 0, $i);
 		isset($aFuncs[$sFunction])
 			or burn('UnexpectedValueException',
-				sprintf(_('The target function "%s" does not exist.'), $sFunction));
+				sprintf(_WT('The target function "%s" does not exist.'), $sFunction));
 
 		$sInstruction	= substr($sInstruction, $i + 1);
 		$aArgs			= array();
@@ -159,7 +159,7 @@ class weeConfigFile
 
 				$i !== false
 					or burn('UnexpectedValueException',
-						_('A closing double quote is missing.'));
+						_WT('A closing double quote is missing.'));
 			}
 			else
 			{
@@ -182,7 +182,7 @@ class weeConfigFile
 
 		$iExpectedArgs == $iActualArgs
 			or burn('UnexpectedValueException',
-				sprintf(_('The target function expects %d arguments but %d were given.'), $iExpectedArgs, $iActualArgs));
+				sprintf(_WT('The target function expects %d arguments but %d were given.'), $iExpectedArgs, $iActualArgs));
 
 		foreach ($aArgs as $i => $sArg)
 			$sEval = str_replace(':' . $i, addslashes($sArg), $sEval);

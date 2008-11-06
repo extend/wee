@@ -41,7 +41,7 @@ class weeTextOutput extends weeOutput
 	{
 		strpos($mValue, "\0") === false
 			or burn('InvalidArgumentException',
-				_('$mValue should not contain any NUL character.'));
+				_WT('$mValue should not contain any NUL character.'));
 		return $mValue;
 	}
 

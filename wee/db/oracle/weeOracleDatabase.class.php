@@ -129,7 +129,7 @@ class weeOracleDatabase extends weeDatabase
 	public function escapeIdent($sValue)
 	{
 		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
-			_('$sValue is not a valid pgsql identifier.'));
+			_WT('$sValue is not a valid pgsql identifier.'));
 
 		return '"' . str_replace('"', '""', $sValue) . '"';
 	}

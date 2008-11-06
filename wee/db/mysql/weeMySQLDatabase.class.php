@@ -116,7 +116,7 @@ class weeMySQLDatabase extends weeDatabase
 		fire(
 			empty($sValue) || strpos($sValue, "\0") !== false || strpos($sValue, chr(255)) !== false || !substr_compare($sValue, ' ', -1) || strlen($sValue) > 64,
 			'InvalidArgumentException',
-			_('$sValue is not a valid mysql identifier.')
+			_WT('$sValue is not a valid mysql identifier.')
 		);
 
 		return '`' . str_replace('`', '``', $sValue) . '`';

@@ -25,9 +25,9 @@ else
 	{
 		setlocale(LC_NUMERIC, $sLocale);
 		$this->isEqual("'7.5'", $oDb->escape(7.5),
-			sprintf(_('Escaping of the float 7.5 is wrong with locale %s.'), $sLocale));
+			sprintf(_WT('Escaping of the float 7.5 is wrong with locale %s.'), $sLocale));
 		$this->isEqual("'7.5'", $oDb->escape(7.50),
-			sprintf(_('Escaping of the float 7.50 is wrong with locale %s.'), $sLocale));
+			sprintf(_WT('Escaping of the float 7.50 is wrong with locale %s.'), $sLocale));
 	}
 	setlocale(LC_NUMERIC, $sFormerLocale);
 }

@@ -97,7 +97,7 @@ abstract class weeDbSet extends weeSet
 
 		$m instanceof weeDatabaseResult
 			or burn('UnexpectedValueException',
-				_('The SQL query did not return a result set.'));
+				_WT('The SQL query did not return a result set.'));
 
 		return $m->fetch();
 	}

@@ -296,10 +296,3 @@ require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
 weeAutoload::addPath(WEE_PATH);
 
 require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
-
-// Dummy _() if it doesn't exist - TODO:deprecated, remove
-
-if (!function_exists('_'))
-{
-	function _($s) { return $s; }
-}
