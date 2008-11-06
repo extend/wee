@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2007, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ if (!defined('WEE_CONF_FILE'))
 	for various application components, like database and session.
 */
 
-class weeApplication implements Singleton
+class weeApplication
 {
 	/**
 		Aliases for weeFrame objects.

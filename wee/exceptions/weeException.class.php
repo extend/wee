@@ -62,13 +62,21 @@ function fire($bCondition, $sException = 'UnexpectedValueException', $sMessage =
 	You should never need to call these functions yourself.
 */
 
-final class weeException extends Namespace
+final class weeException
 {
 	/**
 		Path to a custom error page.
 	*/
 
 	protected static $sErrorPagePath;
+
+	/**
+		Namespace.
+	*/
+
+	private function __construct()
+	{
+	}
 
 	/**
 		Format the trace in a way similar to Exception::getTraceAsString but compatible

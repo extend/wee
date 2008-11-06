@@ -122,9 +122,9 @@ class weePDFOutput extends weeLaTeXOutput
 		Add an additional layer of output buffering for later PDF conversion.
 	*/
 
-	public function start()
+	public function start($bGzipOutput = true)
 	{
-		parent::start();
+		parent::start($bGzipOutput);
 		ob_start();
 	}
 }

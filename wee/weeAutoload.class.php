@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	The cache file is disabled in DEBUG mode.
 */
 
-final class weeAutoload extends Namespace
+final class weeAutoload
 {
 	/**
 		Maps all the classes to their filenames.
@@ -50,6 +50,14 @@ final class weeAutoload extends Namespace
 	*/
 
 	protected static $aPathsLoaded = array();
+
+	/**
+		Namespace.
+	*/
+
+	private function __construct()
+	{
+	}
 
 	/**
 		Adds a path to autoload from.

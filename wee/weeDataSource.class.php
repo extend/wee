@@ -19,27 +19,32 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if ($argc != 2)
+if (!defined('ALLOW_INCLUSION')) die;
+
+/**
+	Base class for data source objects.
+	These object are required to encode the data when needed.
+
+	Use weeOutput::encodeValue or weeOutput::encodeArray to encode it.
+*/
+
+abstract class weeDataSource
 {
-	echo "usage: php makeapi.php output_path\n";
-	return -1;
+	/**
+		Whether to automatically encode the data before returning it.
+	*/
+
+	protected $bMustEncodeData = false;
+
+	/**
+		Tells the object to automatically encode the data before returning it.
+
+		@return $this
+	*/
+
+	public function encodeData()
+	{
+		$this->bMustEncodeData = true;
+		return $this;
+	}
 }
-
-define('NO_CACHE', 1);
-define('ALLOW_INCLUSION', 1);
-require('wee/wee.php');
-
-$o = new weeDocumentorXML;
-file_put_contents(
-	$argv[1] . 'api.xml',
-	$o	->docClassFromPath('wee')
-		->docClass('Printable')
-		->docFunc('fire')
-		->docFunc('burn')
-		->docFunc('array_value')
-		->docFunc('rmdir_recursive')
-		->docFunc('xmlspecialchars')
-		->toString()
-);
-
-echo $argv[1] . "api.xml created successfully.\n";

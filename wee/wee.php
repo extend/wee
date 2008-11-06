@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,13 +29,10 @@ if (version_compare(phpversion(), '5.0.0', '<')) die;
 
 // Enable/disable error reporting depending on DEBUG
 
-if (defined('DEBUG'))
-{
+if (defined('DEBUG')) {
 	error_reporting(E_ALL | E_STRICT);
 	ini_set('display_errors', 1);
-}
-else
-{
+} else {
 	error_reporting(0);
 	ini_set('display_errors', 0);
 }
@@ -52,8 +49,7 @@ if (PHP_SAPI == 'cli')
 
 // Paths and files extensions
 
-if (!defined('BASE_PATH'))
-{
+if (!defined('BASE_PATH')) {
 	$i = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
 		- (int)(isset($_SERVER['REDIRECT_URL']));
 
@@ -63,8 +59,7 @@ if (!defined('BASE_PATH'))
 	define('BASE_PATH', $s);
 }
 if (!defined('ROOT_PATH'))	define('ROOT_PATH',	'./');
-if (!defined('APP_PATH'))
-{
+if (!defined('APP_PATH')) {
 	if (ROOT_PATH == './')	define('APP_PATH', BASE_PATH);
 	else					define('APP_PATH', BASE_PATH . ROOT_PATH);
 }
@@ -91,15 +86,218 @@ if (get_magic_quotes_gpc())
 	ini_set('magic_quotes_sybase',	0);
 }
 
+// Translation functions
+
+if (!defined('APP_LOCALE_DOMAIN'))	define('APP_LOCALE_DOMAIN', 'app');
+if (!defined('APP_LOCALE_PATH'))	define('APP_LOCALE_PATH', ROOT_PATH . 'app/locale');
+
+if (function_exists('gettext') && !defined('WEE_TRANSLATE')) {
+	/**
+		Translate the given string in the current locale using the current domain.
+		This function do both gettext and ngettext depending on the number of arguments given.
+
+		@overload _T($sText) Translate the given text.
+		@overload _T($sText, $sPlural, $iCount) Plural version of text translation.
+		@return string The translated text.
+	*/
+
+	function _T()
+	{
+		$aArgs = func_get_args();
+
+		if (count($aArgs) == 1)
+			return gettext($aArgs[0]);
+
+		count($aArgs) == 3 or burn('InvalidArgumentException',
+			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_T'));
+
+		return ngettext($aArgs[0], $aArgs[1], $aArgs[2]);
+	}
+
+	/**
+		Translate the given string in the current locale using the framework's domain (wee).
+		This function do both gettext and ngettext depending on the number of arguments given.
+		This function is reserved for internal use.
+
+		@overload _T($sText) Translate the given text.
+		@overload _T($sText, $sPlural, $iCount) Plural version of text translation.
+		@return string The translated text.
+	*/
+
+	function _WT()
+	{
+		$aArgs = func_get_args();
+
+		if (count($aArgs) == 1)
+			return dgettext('wee', $aArgs[0]);
+
+		count($aArgs) == 3 or burn('InvalidArgumentException',
+			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_WT'));
+
+		return dngettext('wee', $aArgs[0], $aArgs[1], $aArgs[2]);
+	}
+
+	// Create the domains and choose the application's domain as default
+
+	bindtextdomain(APP_LOCALE_DOMAIN, APP_LOCALE_PATH);
+	bindtextdomain('wee', ROOT_PATH . 'share/locale');
+	textdomain(APP_LOCALE_DOMAIN);
+} else {
+	/**
+		Translate the given string in the current locale using the current domain.
+		This function do both gettext and ngettext depending on the number of arguments given.
+
+		@overload _T($sText) Translate the given text.
+		@overload _T($sText, $sPlural, $iCount) Plural version of text translation.
+		@return string The translated text.
+	*/
+
+	function _T()
+	{
+		static $sLocale = null;
+		static $oDictionary = null;
+
+		$sCurrentLocale = setlocale(LC_MESSAGES, 0);
+		if ($sLocale != $sCurrentLocale) {
+			$sLocale = $sCurrentLocale;
+
+			$a = explode('.', $sLocale);
+			$oDictionary = new weeGetTextDictionary(APP_LOCALE_PATH . '/' . $a[0] . '/LC_MESSAGES/' . APP_LOCALE_DOMAIN . '.mo');
+		}
+
+		$aArgs = func_get_args();
+
+		if (count($aArgs) == 1)
+			return $oDictionary->getTranslation($aArgs[0]);
+
+		count($aArgs) == 3 or burn('InvalidArgumentException',
+			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_T'));
+
+		return $oDictionary->getPluralTranslation($aArgs[0], $aArgs[1], $aArgs[2]);
+	}
+
+	/**
+		Translate the given string in the current locale using the framework's domain (wee).
+		This function do both gettext and ngettext depending on the number of arguments given.
+		This function is reserved for internal use.
+
+		@overload _T($sText) Translate the given text.
+		@overload _T($sText, $sPlural, $iCount) Plural version of text translation.
+		@return string The translated text.
+	*/
+
+	function _WT()
+	{
+		static $sLocale = null;
+		static $oDictionary = null;
+
+		$sCurrentLocale = setlocale(LC_MESSAGES, 0);
+		if ($sLocale != $sCurrentLocale) {
+			$sLocale = $sCurrentLocale;
+
+			$a = explode('.', $sLocale);
+			$oDictionary = new weeGetTextDictionary(ROOT_PATH . 'share/locale/' . $a[0] . '/LC_MESSAGES/wee.mo');
+		}
+
+		$aArgs = func_get_args();
+
+		if (count($aArgs) == 1)
+			return $oDictionary->getTranslation($aArgs[0]);
+
+		count($aArgs) == 3 or burn('InvalidArgumentException',
+			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_WT'));
+
+		return $oDictionary->getPluralTranslation($aArgs[0], $aArgs[1], $aArgs[2]);
+	}
+}
+
+// Useful functions
+
+/**
+	Returns the array value if it exists, else a default value.
+	Simpler form than using the conditional operators, and returns null by default, which we usually want.
+
+	@param	$aArray		The array.
+	@param	$sKey		The key to look for in the array.
+	@param	$mIfNotSet	The default value.
+	@return	mixed
+*/
+
+function array_value($aArray, $sKey, $mIfNotSet = null)
+{
+	if (isset($aArray[$sKey]))
+		return $aArray[$sKey];
+	return $mIfNotSet;
+}
+
+/**
+	Remove a directory and all its contents.
+
+	@param	$sPath					Path to the directory to remove.
+	@param	$bOnlyContents			Boolean to check if the directory is to be left in place.
+	@throw	FileNotFoundException	$sPath is not a directory.
+	@throw	NotPermittedException	$sPath cannot be removed because of insufficient file permissions.
+*/
+
+function rmdir_recursive($sPath, $bOnlyContents = false)
+{
+	is_dir($sPath) or burn('FileNotFoundException', "'$sPath' is not a directory.");
+
+	$r = @opendir($sPath)
+		or burn('NotPermittedException', "'$sPath' directory cannot be opened.");
+
+	while (($s = readdir($r)) !== false)
+		if ($s != '.' && $s !== '..') {
+			$s = $sPath . '/' . $s;
+			if (is_dir($s) && !is_link($s))
+				rmdir_recursive($s);
+			else {
+				@unlink($s)
+					or burn('NotPermittedException', "'$s' file cannot be deleted.");
+			}
+		}
+
+	closedir($r);
+
+	if (!$bOnlyContents) {
+		@rmdir($sPath)
+			or burn('NotPermittedException', "'$sPath' directory cannot be deleted.");
+	}
+}
+
+/**
+	Convert special characters to HTML entities.
+
+	Original author: treyh on PHP comments for htmlspecialchars.
+
+	@param $sText The string being converted.
+	@return string The converted string.
+*/
+
+function xmlspecialchars($sText)
+{
+	return str_replace('&#039;', '&apos;', htmlspecialchars($sText, ENT_QUOTES, 'utf-8'));
+}
+
 // Core components
 
-require(WEE_PATH . 'wee_base' . PHP_EXT);
-require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
-require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
+/**
+	Interface for printable objects.
 
+	We have to use this instead of __toString since we can't throw any exception in __toString...
+*/
+
+interface Printable
+{
+	public function toString();
+}
+
+require(WEE_PATH . 'weeAutoload' . CLASS_EXT);
 weeAutoload::addPath(WEE_PATH);
 
-// Dummy _() if it doesn't exist
+require(WEE_PATH . 'exceptions/weeException' . CLASS_EXT);
+
+// Dummy _() if it doesn't exist - TODO:deprecated, remove
 
 if (!function_exists('_'))
 {

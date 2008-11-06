@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,19 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Experimental namespace for locale handling.
+	@deprecated and ugly
 */
 
-final class weeLocale extends Namespace
+final class weeLocale
 {
+	/**
+		Namespace.
+	*/
+
+	private function __construct()
+	{
+	}
+
 	/**
 		Obtains the current locale.
 
