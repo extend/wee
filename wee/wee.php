@@ -211,7 +211,38 @@ if (function_exists('gettext') && !defined('WEE_TRANSLATE')) {
 	}
 }
 
-// Useful functions
+// Logging functions
+
+if (!defined('WEE_LOG_FORMAT'))
+	define('WEE_LOG_FORMAT', '[%c] [%2$s] [wee] %1$s');
+
+/**
+	Send a message to STDERR.
+
+	The message is formatted using the WEE_LOG_FORMAT constant.
+	The constant is first passed through strftime, and then sprintf with the 2 parameters.
+
+	When using CLI, the error will show up in STDERR.
+	When using Apache, the error will show up in Apache's error_log file.
+
+	There is absolutely no performance impact for using this function.
+	You can basically log anything you want without having to worry about performance.
+
+	@param $sMessage The log message.
+	@param $sType The message type. Preferrably one of the Apache error level.
+	@see http://php.net/strftime
+	@see http://httpd.apache.org/docs/2.0/mod/core.html#loglevel
+*/
+
+function weeLog($sMessage, $sType = 'notice')
+{
+	$sLog = strftime(WEE_LOG_FORMAT);
+	$sLog = sprintf($sLog, $sMessage, $sType);
+
+	file_put_contents('php://stderr', $sLog . "\n");
+}
+
+// Other useful functions
 
 /**
 	Returns the array value if it exists, else a default value.
