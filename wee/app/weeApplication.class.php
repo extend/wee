@@ -51,16 +51,16 @@ class weeApplication
 	protected $aConfig;
 
 	/**
+		Drivers loaded by the application.
+	*/
+
+	protected $aDrivers = array();
+
+	/**
 		The frame object that will be displayed.
 	*/
 
 	protected $oFrame;
-
-	/**
-		Modules loaded by the application.
-	*/
-
-	protected $aModules = array();
 
 	/**
 		Instance of the current singleton.
@@ -102,8 +102,7 @@ class weeApplication
 
 		// Load aliases file
 
-		if (!empty($this->aConfig['aliases.file']))
-		{
+		if (!empty($this->aConfig['aliases.file'])) {
 			$sFile = $this->aConfig['aliases.file'];
 			if (substr($sFile, 0, 2) == '//')
 				$sFile = ROOT_PATH . substr($sFile, 2);
@@ -111,23 +110,24 @@ class weeApplication
 			$this->oAliases = new weeAliasesFile($sFile);
 		}
 
-		// Load default timezone
-
-		if (!empty($this->aConfig['timezone']))
-			date_default_timezone_set($this->aConfig['timezone']);
-
 		// Add path to autoload
 		// - All path are separated by : like in PATH environment variable
 		// - A // in the path means ROOT_PATH
 
-		if (!empty($this->aConfig['autoload.path']))
-		{
+		if (!empty($this->aConfig['autoload.path'])) {
 			$aPath = explode(':', $this->aConfig['autoload.path']);
 			foreach ($aPath as $s)
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
-		// Load mail settings
+		// Cache settings
+
+		if (!empty($this->aConfig['output.cache.path']))
+			define('CACHE_PATH',	str_replace('//', ROOT_PATH, $this->aConfig['output.cache.path']) . '/');
+		if (!empty($this->aConfig['output.cache.expire']))
+			define('CACHE_EXPIRE',	$this->aConfig['output.cache.expire']);
+
+		// Mail settings
 
 		if (!empty($this->aConfig['mail.debug.to']))
 			define('WEE_MAIL_DEBUG_TO', $this->aConfig['mail.debug.to']);
@@ -135,42 +135,21 @@ class weeApplication
 		if (!empty($this->aConfig['mail.debug.reply-to']))
 			define('WEE_MAIL_DEBUG_REPLY_TO', $this->aConfig['mail.debug.reply-to']);
 
-		// Load output driver
+		// Session settings
 
-		if (!empty($this->aConfig['start.output']))
-			call_user_func(array($this->aConfig['output.driver'], 'select'));
+		if (!empty($this->aConfig['session.check.ip']))
+			define('WEE_SESSION_CHECK_IP', 1);
+		if (!empty($this->aConfig['session.check.token']))
+			define('WEE_SESSION_CHECK_TOKEN', 1);
 
-		// Define cache settings
+		// Timezone settings
 
-		if (!empty($this->aConfig['output.cache.path']))
-			define('CACHE_PATH',	str_replace('//', ROOT_PATH, $this->aConfig['output.cache.path']) . '/');
-		if (!empty($this->aConfig['output.cache.expire']))
-			define('CACHE_EXPIRE',	$this->aConfig['output.cache.expire']);
+		if (!empty($this->aConfig['timezone']))
+			date_default_timezone_set($this->aConfig['timezone']);
 
-		// Load database driver
+		// Select output driver
 
-		if (!empty($this->aConfig['start.db']))
-		{
-			$s = $this->aConfig['db.driver'];
-			$this->aModules['db'] = new $s(array(
-				'host'		=> $this->aConfig['db.host'],
-				'user'		=> $this->aConfig['db.user'],
-				'password'	=> $this->aConfig['db.password'],
-				'dbname'	=> $this->aConfig['db.name'],
-			));
-		}
-
-		// Start session
-
-		if (!defined('WEE_CLI') && !empty($this->aConfig['start.session']))
-		{
-			if (!empty($this->aConfig['session.check.ip']))
-				define('WEE_SESSION_CHECK_IP', 1);
-			if (!empty($this->aConfig['session.check.token']))
-				define('WEE_SESSION_CHECK_TOKEN', 1);
-
-			$this->aModules['session'] = new $this->aConfig['session.driver'];
-		}
+		call_user_func(array($this->aConfig['output.driver'], 'select'));
 	}
 
 	/**
@@ -182,28 +161,22 @@ class weeApplication
 	}
 
 	/**
-		Return the module given in parameter.
+		Return the given driver. The driver will first be loaded if it wasn't yet.
 
-		@param	$name	Name of the module
-		@return	object	The module object
+		@param	$name	Name of the driver
+		@return	object	The driver object
 	*/
 
-	public function __get($name)
+	public function __get($sName)
 	{
-		fire(empty($this->aModules[$name]), 'UnexpectedValueException', 'The module ' .$name . ' do not exist.');
-		return $this->aModules[$name];
-	}
+		if (empty($this->aDrivers[$sName])) {
+			empty($this->aConfig[$sName . '.driver']) and burn('InvalidArgumentException',
+				sprintf('The driver %s was not found in the configuration.', $sName));
 
-	/**
-		Return whether the given module is loaded.
+			$this->aDrivers[$sName] = new $this->aConfig[$sName . '.driver']($this->cnfArray($sName));
+		}
 
-		@param	$name	Name of the module
-		@return	bool	Whether the module is loaded
-	*/
-
-	public function __isset($name)
-	{
-		return !empty($this->aModules[$name]);
+		return $this->aDrivers[$sName];
 	}
 
 	/**
@@ -241,12 +214,11 @@ class weeApplication
 
 	public function clearCache($aEvent)
 	{
-		fire(empty($aEvent['frame']), 'InvalidArgumentException', 'The frame name must be given to clear its cache.');
+		empty($aEvent['frame']) and burn('InvalidArgumentException', 'The frame name must be given to clear its cache.');
 		$aEvent = array('name' => null, 'pathinfo' => null, 'query_string' => null) + $aEvent;
 
 		$sCache = CACHE_PATH . $aEvent['frame'];
-		if (!empty($aEvent['name']))
-		{
+		if (!empty($aEvent['name'])) {
 			$sCache .= '/' . $aEvent['name'];
 			if (!empty($aEvent['pathinfo']))
 				$sCache .= $aEvent['pathinfo'];
@@ -271,6 +243,30 @@ class weeApplication
 		if (!array_key_exists($sName, $this->aConfig))
 			return null;
 		return $this->aConfig[$sName];
+	}
+
+	/**
+		Get all matching configuration values.
+
+		This method lets you get an array from the configuration file.
+		The match is done on the beginning of the name path. As an example,
+		if you need to retrieve all db.* values, you would pass 'db' as parameter.
+
+		@param	$sPattern	Pattern to look for.
+		@return	array		Array containing the resulting matches.
+	*/
+
+	public function cnfArray($sPattern)
+	{
+		$sPattern .= '.';
+		$iLen = strlen($sPattern);
+		$aMatch = array();
+
+		foreach ($this->aConfig as $sName => $mValue)
+			if (substr($sName, 0, $iLen) == $sPattern)
+				$aMatch[substr($sName, $iLen)] = $mValue;
+
+		return $aMatch;
 	}
 
 	/**
@@ -326,8 +322,7 @@ class weeApplication
 		elseif (isset($_SERVER['REDIRECT_URL']))
 			$sPathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
 
-		if ($sPathInfo !== null)
-		{
+		if ($sPathInfo !== null) {
 			// We found the path info from either PATH_INFO or PHP_SELF server variables.
 
 			if (empty($_SERVER['QUERY_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
@@ -348,8 +343,7 @@ class weeApplication
 		if (substr($sPathInfo, 0, $iNameLength) == $sName)
 			$sPathInfo	= substr($sPathInfo, $iNameLength);
 
-		if (!empty($_SERVER['QUERY_STRING']))
-		{
+		if (!empty($_SERVER['QUERY_STRING'])) {
 			// We need to remove the query string from the path info.
 			$i = strlen($_SERVER['QUERY_STRING']);
 			if (substr($sPathInfo, -$i) == $_SERVER['QUERY_STRING'])
@@ -369,8 +363,7 @@ class weeApplication
 
 	public static function instance()
 	{
-		if (self::$oSingleton === null)
-		{
+		if (self::$oSingleton === null) {
 			static $iInstance = 0;
 			$iInstance++ == 0 or
 				burn('IllegalStateException',
@@ -428,7 +421,7 @@ class weeApplication
 
 	protected function loadFrame($sFrame)
 	{
-		fire(!@is_subclass_of($sFrame, 'weeFrame'), 'UnexpectedValueException',
+		@is_subclass_of($sFrame, 'weeFrame') or burn('UnexpectedValueException',
 			sprintf(_WT('The frame %s does not exist.'), $sFrame));
 
 		$oFrame = new $sFrame;
@@ -455,12 +448,10 @@ class weeApplication
 
 		if ($this->isEventCached($aEvent))
 			readfile($aEvent['cache']);
-		else
-		{
+		else {
 			$this->dispatchEvent($aEvent);
 
-			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS)
-			{
+			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
 				if (defined('WEE_CLI'))
 					echo _WT('You are not allowed to access the specified frame/event.'), "\n";
 				else
@@ -471,8 +462,7 @@ class weeApplication
 			weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
 			$sOutput = $this->oFrame->toString();
 
-			if (!empty($this->aCacheParams) && defined('CACHE_PATH'))
-			{
+			if (!empty($this->aCacheParams) && defined('CACHE_PATH')) {
 				$sCachePath = CACHE_PATH . $aEvent['frame'] . '/' . $aEvent['name'] . $aEvent['pathinfo'] . '/';
 				$sCacheFilename = $sCachePath . '?' . urldecode($_SERVER['QUERY_STRING']);
 

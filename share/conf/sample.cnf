@@ -7,13 +7,6 @@ autoload.path	= //app/php
 aliases.file	=
 timezone		= UTC
 
-# Startup settings
-# List of modules to load automatically at startup
-
-start.db		= 0
-start.output	= 1
-start.session	= 0
-
 # Application settings
 
 app.toppage = toppage
@@ -24,7 +17,7 @@ db.driver	= weePgSQLDatabase
 db.host		= localhost
 db.user		= username
 db.password	= password
-db.name		= dbname
+db.dbname	= dbname
 
 # Mail settings
 
