@@ -26,6 +26,11 @@ try
 	$oColumnA = $oTable->column('a');
 	$oColumnB = $oTable->column('b');
 
+	// weeMySQLDbMetaTable::columnsNames
+
+	$this->isEqual(array('a', 'b'), $oTable->columnsNames(),
+		_WT('weeMySQLDbMetaColumn::columnsNames does not correctly return the names of all the columns.'));
+
 	// weeMySQLDbMetaColumn::comment
 
 	$this->isEqual('Column a', $oColumnA->comment(),

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -87,29 +87,6 @@ class weeMySQLDbMetaTable extends weeDbMetaTable implements weeDbMetaCommentable
 	}
 
 	/**
-		Returns all the columns of the table.
-
-		@return	array(weeMySQLDbMetaColumn)	The array of tables.
-	*/
-
-	public function columns()
-	{
-		$oQuery = $this->meta()->db()->query('
-			SELECT			TABLE_NAME AS `table`, COLUMN_NAME AS name, ORDINAL_POSITION AS num,
-							COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment
-				FROM		information_schema.columns
-				WHERE		TABLE_NAME		= :name
-						AND	TABLE_SCHEMA	= DATABASE()
-				ORDER BY	ORDINAL_POSITION
-		', $this->aData);
-
-		$aColumns = array();
-		foreach ($oQuery as $aColumn)
-			$aColumns[] = $this->instantiateObject($this->getColumnClass(), $aColumn);
-		return $aColumns;
-	}
-
-	/**
 		Returns the comment of the table.
 
 		@return	string						The comment of the table.
@@ -182,5 +159,23 @@ class weeMySQLDbMetaTable extends weeDbMetaTable implements weeDbMetaCommentable
 				_WT('The table does not have a primary key.'));
 
 		return $this->instantiateObject($this->getPrimaryKeyClass(), $oQuery->fetch());
+	}
+
+	/**
+		Queries all the columns of the table.
+
+		@return	weeMySQLResult				The data of all the columns of the table.
+	*/
+
+	protected function queryColumns()
+	{
+		return $this->meta()->db()->query('
+			SELECT			TABLE_NAME AS `table`, COLUMN_NAME AS name, ORDINAL_POSITION AS num,
+							COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment
+				FROM		information_schema.columns
+				WHERE		TABLE_NAME		= :name
+						AND	TABLE_SCHEMA	= DATABASE()
+				ORDER BY	ORDINAL_POSITION
+		', $this->aData);
 	}
 }

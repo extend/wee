@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -64,10 +64,32 @@ abstract class weeDbMetaTable extends weeDbMetaObject
 	/**
 		Returns all the columns of the table.
 
-		@return	array(weeDbMetaColumn)	The array of tables.
+		@return	array(weeDbMetaColumn)	The array of columns.
 	*/
 
-	abstract public function columns();
+	public function columns()
+	{
+		$aColumns	= array();
+		$sClass		= $this->getColumnClass();
+		foreach ($this->queryColumns() as $aColumn)
+			$aColumns[] = $this->instantiateObject($sClass, $aColumn);
+		return $aColumns;
+	}
+
+	/**
+		Returns the names of all the columns of the table.
+
+		@return	array(string)			The names of all the columns.
+	*/
+
+	public function columnsNames()
+	{
+		$aColumns	= array();
+		$sClass		= $this->getColumnClass();
+		foreach ($this->queryColumns() as $aColumn)
+			$aColumns[] = $aColumn['name'];
+		return $aColumns;
+	}
 
 	/**
 		Returns whether the table has a primary key.
@@ -103,4 +125,12 @@ abstract class weeDbMetaTable extends weeDbMetaObject
 	*/
 
 	abstract public function primaryKey();
+
+	/**
+		Queries all the columns of the table.
+
+		@return	weeDatabaseResult			The data of all the columns of the table.
+	*/
+
+	abstract protected function queryColumns();
 }

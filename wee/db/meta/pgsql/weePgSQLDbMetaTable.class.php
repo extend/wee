@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -94,33 +94,6 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 	}
 
 	/**
-		Returns all the columns of the table.
-
-		@return	array(weePgSQLDbMetaColumn)	The array of tables.
-	*/
-
-	public function columns($aFilters = array())
-	{
-		$oQuery = $this->meta()->db()->query('
-			SELECT			n.nspname AS schema, c.relname AS table, a.attname AS name, a.attnum AS num,
-							NOT a.attnotnull AS nullable, a.atthasdef AS has_default,
-							pg_catalog.col_description(a.attrelid, a.attnum) AS comment
-				FROM		pg_catalog.pg_attribute a
-								JOIN pg_catalog.pg_class		c ON c.oid = a.attrelid
-								JOIN pg_catalog.pg_namespace	n ON n.oid = c.relnamespace
-				WHERE		a.attrelid		= CAST(? AS regclass)
-						AND a.attnum		> 0
-						AND	a.attisdropped	= false
-				ORDER BY	a.attnum
-		', $this->quotedName())->fetchAll();
-
-		$aColumns = array();
-		foreach ($oQuery as $aColumn)
-			$aColumns[] = $this->instantiateObject($this->getColumnClass(), $aColumn);
-		return $aColumns;
-	}
-
-	/**
 		Returns the comment of the table.
 
 		@return	string						The comment of the table.
@@ -206,6 +179,28 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 				_WT('The table does not have a primary key.'));
 
 		return $this->instantiateObject($this->getPrimaryKeyClass(), $oQuery->fetch());
+	}
+
+	/**
+		Queries all the columns of the table.
+
+		@return	weePgSQLResult				The data of all the columns of the table.
+	*/
+
+	protected function queryColumns()
+	{
+		return $this->meta()->db()->query('
+			SELECT			n.nspname AS schema, c.relname AS table, a.attname AS name, a.attnum AS num,
+							NOT a.attnotnull AS nullable, a.atthasdef AS has_default,
+							pg_catalog.col_description(a.attrelid, a.attnum) AS comment
+				FROM		pg_catalog.pg_attribute a
+								JOIN pg_catalog.pg_class		c ON c.oid = a.attrelid
+								JOIN pg_catalog.pg_namespace	n ON n.oid = c.relnamespace
+				WHERE		a.attrelid		= CAST(? AS regclass)
+						AND a.attnum		> 0
+						AND	a.attisdropped	= false
+				ORDER BY	a.attnum
+		', $this->quotedName());
 	}
 
 	/**
