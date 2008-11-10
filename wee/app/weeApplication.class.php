@@ -150,6 +150,13 @@ class weeApplication
 		// Select output driver
 
 		call_user_func(array($this->aConfig['output.driver'], 'select'));
+
+		// Force selected drivers to start
+
+		$aStart = $this->cnfArray('start');
+		foreach ($aStart as $sName => $b)
+			if (!empty($b))
+				$this->__get($sName);
 	}
 
 	/**

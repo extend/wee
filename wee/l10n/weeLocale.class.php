@@ -22,54 +22,57 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Experimental namespace for locale handling.
-	@deprecated and ugly
+	Extends intl Locale class and adds a constructor useful when used
+	as a driver of the application module, allowing the auto-selection
+	of a locale based on the HTTP_ACCEPT_LANGUAGE header.
 */
 
-final class weeLocale
+class weeLocale extends Locale
 {
 	/**
-		Namespace.
+		Initialize the locale.
+
+		The parameters array can contain:
+		- default:	The default locale to use when others aren't available.
+		- auto:		Whether to automatically try to select the best locale based on the HTTP_ACCEPT_LANGUAGE header.
+
+		@param $aParams The parameters listed above.
 	*/
 
-	private function __construct()
+	public function __construct($aParams)
 	{
+		if (!empty($aParams['default']))
+			locale_set_default($aParams['default'])
+				or burn('InvalidArgumentException', 'Setting the default locale failed.');
+
+		if (!empty($aParams['auto']) && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+			$this->set(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 	}
 
 	/**
-		Obtains the current locale.
+		Return the locale used currently by the application.
 
-		@return string The current locale.
-		@see http://php.net/setlocale for more information.
+		@return The current locale.
 	*/
 
-	public static function getCurrent()
+	public function get()
 	{
 		return setlocale(LC_ALL, 0);
 	}
 
 	/**
-		Changes locale.
+		Change the locale used by the application.
 
-		@param $sLang		Language of the locale.
-		@param $sEncoding	Encoding of the locale file.
-		@param $sLocalePath	Path to the locale directory.
-		@param $sTextDomain	Name of the domain in which locales are stored. Usually the name of the .mo file.
+		@param $sLocale The new locale.
 	*/
 
-	public static function set($sLang, $sEncoding, $sLocalePath = './', $sTextDomain = 'messages')
+	public function set($sLocale)
 	{
-		fire(!function_exists('gettext'), 'ConfigurationException',
-			'The gettext PHP extension is required by the localization module.');
+		// We need the complete locale name
+		if (strpos($sLocale, '_') === false)
+			$sLocale .= '_' . strtoupper($sLocale);
 
-		//TODO:check values
-
-		putenv('LANG=' . $sLang);
-		setlocale(LC_MESSAGES, $sLang . '.' . strtoupper($sEncoding));
-		bindtextdomain($sTextDomain, $sLocalePath);
-		bind_textdomain_codeset($sTextDomain, $sEncoding);
-		textdomain($sTextDomain);
+		setlocale(LC_ALL, $sLocale . '.UTF-8')
+			or burn('UnexpectedValueException', 'An error occurred while trying to set the locale.');
 	}
 }
-
-?>

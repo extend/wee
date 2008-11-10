@@ -7,6 +7,11 @@ autoload.path	= //app/php
 aliases.file	=
 timezone		= UTC
 
+# Force drivers to start before running the application
+
+start.locale	= 0
+start.session	= 0
+
 # Application settings
 
 app.toppage = toppage
@@ -18,6 +23,12 @@ db.host		= localhost
 db.user		= username
 db.password	= password
 db.dbname	= dbname
+
+# Locale settings
+
+locale.driver	= weeLocale
+locale.auto		= 1
+locale.default	=
 
 # Mail settings
 
