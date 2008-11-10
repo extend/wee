@@ -45,8 +45,13 @@ class weeLocale extends Locale
 			locale_set_default($aParams['default'])
 				or burn('InvalidArgumentException', 'Setting the default locale failed.');
 
-		if (!empty($aParams['auto']) && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-			$this->set(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+		if (!empty($aParams['auto']) && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+			try {
+				$this->set(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+			} catch (UnexpectedValueException $e) {
+				//TODO:maybe try the default locale here and otherwise go back to 'C'?
+			}
+		}
 	}
 
 	/**
