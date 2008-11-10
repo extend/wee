@@ -236,7 +236,10 @@ if (!defined('WEE_LOG_FORMAT'))
 
 function weeLog($sMessage, $sType = 'notice')
 {
+	$sPreviousLocale = setlocale(LC_TIME, 'C');
 	$sLog = strftime(WEE_LOG_FORMAT);
+	setlocale(LC_TIME, $sPreviousLocale);
+
 	$sLog = sprintf($sLog, $sMessage, $sType);
 
 	file_put_contents('php://stderr', $sLog . "\n");
