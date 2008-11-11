@@ -95,8 +95,12 @@ final class weeException
 			+ 2 * (array_value($aTrace[0], 'class') == 'weeException' && array_value($aTrace[0], 'function') == 'handleError');
 
 		for ($i = $iFrom; $i < count($aTrace); $i++) {
-			$sTraceAsString .= '#' . ($i - $iFrom) . ' ' . $aTrace[$i]['file'] . '(' . $aTrace[$i]['line'] . '): '
-				. array_value($aTrace[$i], 'class') . array_value($aTrace[$i], 'type') . $aTrace[$i]['function'] . '(';
+			$sTraceAsString .= '#' . ($i - $iFrom) . ' ';
+			if (empty($aTrace[$i]['file']))
+				$sTraceAsString .= '(PHP internals): ';
+			else
+				$sTraceAsString .= array_value($aTrace[$i], 'file', '?') . '(' . array_value($aTrace[$i], 'line', '?') . '): ';
+			$sTraceAsString .= array_value($aTrace[$i], 'class') . array_value($aTrace[$i], 'type') . $aTrace[$i]['function'] . '(';
 
 			if (!empty($aTrace[$i]['args'])) {
 				foreach ($aTrace[$i]['args'] as $mArg)
