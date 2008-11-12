@@ -301,8 +301,6 @@ class weeForm implements Printable
 
 	public function validate($aData)
 	{
-		fire(empty($aData), 'InvalidArgumentException', '$aData must not be empty.');
-
 		$oException = new FormValidationException('The validation of the form failed. See FormValidationException::getErrors to retrieve error messages.');
 
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
