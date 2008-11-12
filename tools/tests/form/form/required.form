@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<method>post</method>
+	<formkey>0</formkey>
+
+	<widgets>
+		<widget type="textbox" required="required">
+			<name>textbox</name>
+			<label>textbox:</label>
+		</widget>
+
+		<widget type="checklist" required="required">
+			<name>checklist</name>
+			<label>checklist:</label>
+			<options>
+				<item value="1" label="option 1"/>
+				<item value="2" label="option 2"/>
+				<item value="3" label="option 3"/>
+			</options>
+		</widget>
+
+		<widget type="submitbutton"/>
+	</widgets>
+</form>
