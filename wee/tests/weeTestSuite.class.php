@@ -105,7 +105,10 @@ class weeTestSuite implements Printable
 				_WT('File: '), $mResult->getFile(), "\n",
 				_WT('Line: '), $mResult->getLine(), "\n";
 		} elseif ($mResult instanceof UnitTestException) {
-			echo _WT('failure'), "\n", _WT('Message: '), $mResult->getMessage(), "\n";
+			$aTrace = $mResult->getTrace();
+
+			echo _WT('failure'), "\n", _WT('Message: '), $mResult->getMessage(), "\n",
+				_WT('Line: '), array_value($aTrace[0], 'line', '?'), "\n";
 
 			if ($mResult instanceof ComparisonTestException) {
 				echo _WT('Expected: ');
