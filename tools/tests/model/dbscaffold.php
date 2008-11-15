@@ -38,6 +38,12 @@ try {
 	$this->isEqual(42, $oSet->count(),
 		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
 
+	// This one do not delete anything
+	$oSet->delete(0);
+
+	$this->isEqual(42, $oSet->count(),
+		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+
 	$oSet->delete(33);
 
 	$this->isEqual(41, $oSet->count(),
@@ -47,6 +53,12 @@ try {
 
 	$this->isEqual(40, $oSet->count(),
 		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+
+	try {
+		$oSet->delete(null);
+		$this->fail(_WT('weeDbSetScaffold::delete should throw an InvalidArgumentException when the primary key is null.'));
+	} catch (InvalidArgumentException $e) {
+	}
 
 	try {
 		$oSet->delete(array());

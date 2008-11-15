@@ -169,7 +169,8 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 	protected function filterPrimaryKey($mPrimaryKey, $aMeta)
 	{
-		empty($mPrimaryKey) and burn('InvalidArgumentException', _WT('The primary key value must not be empty.'));
+		(null === $mPrimaryKey || (is_array($mPrimaryKey) && empty($mPrimaryKey)))
+			and burn('InvalidArgumentException', _WT('The primary key value must not be empty.'));
 
 		if (!is_array($mPrimaryKey))
 			$mPrimaryKey = array($aMeta['primary'][0] => $mPrimaryKey);
@@ -251,7 +252,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 		@param $mOrderBy The order in which the rows should be sorted.
 		@return $this
-		@throw The ORDER BY modifier is not in the list of valid modifiers.
+		@throw InvalidArgumentException The ORDER BY modifier is not in the list of valid modifiers.
 	*/
 
 	public function orderBy($mOrderBy = array())
