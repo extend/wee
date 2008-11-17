@@ -33,11 +33,23 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDbSetScaffold extends weeDbSet implements Countable
 {
 	/**
+		Defines the type of JOIN to do when joining reference tables.
+	*/
+
+	protected $sJoinType = 'LEFT OUTER JOIN';
+
+	/**
 		ORDER BY part of the SELECT queries.
 		Can be defined here or by using the orderBy method.
 	*/
 
 	protected $sOrderBy;
+
+	/**
+		Reference tables to fetch by doing a JOIN in SELECT queries.
+	*/
+
+	protected $aRefSets = array();
 
 	/**
 		Name of the table in the database represented by this set.
@@ -68,7 +80,57 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	);
 
 	/**
-		Count the number of rows in the table.
+		Build various JOINs defined using the $aRefSets property.
+		To change the type of the JOIN, change the value of the $sJoinType property.
+
+		@param $aMeta The metadata for the table associated with this set.
+		@return The JOINs built according to the $aRefSets property.
+		@throw InvalidArgumentException No set was given or the set's table doesn't have a primary key.
+	*/
+
+	protected function buildJoin($aMeta)
+	{
+		$oDb = $this->getDb();
+		$sJoin = '';
+
+		foreach ($this->aRefSets as $aRef) {
+			if (!is_array($aRef))
+				$aRef = array('set' => $aRef);
+
+			empty($aRef['set']) and burn('InvalidArgumentException', _WT('No set was given.'));
+
+			$oRefSet = new $aRef['set'];
+			$aRefMeta = $oRefSet->getMeta();
+
+			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
+				_WT(sprintf('The reference table %s do not have a primary key.', $aRefMeta['table'])));
+
+			$sJoin .= ' ' . $this->sJoinType . ' ' . $aRefMeta['table'] . ' ON (TRUE';
+
+			if (empty($aRef['key'])) {
+				// Use the linked set's primary key columns names
+
+				foreach ($aRefMeta['primary'] as $sColumn) {
+					$sColumn = $oDb->escapeIdent($sColumn);
+					$sJoin .= ' AND ' . $aMeta['table'] . '.' . $sColumn . '=' . $aRefMeta['table'] . '.' . $sColumn;
+				}
+			} else {
+				// Use the given column names association
+
+				foreach ($aRef['key'] as $sColumn => $sRefColumn)
+					$sJoin .= ' AND ' . $aMeta['table'] . '.' . $oDb->escapeIdent($sColumn)
+						. '=' . $aRefMeta['table'] . '.' . $oDb->escapeIdent($sRefColumn);
+			}
+
+			$sJoin .= ')';
+		}
+
+		return $sJoin;
+	}
+
+	/**
+		Count the number of rows that would be returned by a fetchAll query.
+		A JOIN is performed on the reference tables if any are provided.
 
 		@return integer The number of rows in the table.
 	*/
@@ -76,7 +138,12 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	public function count()
 	{
 		$aMeta = $this->getMeta();
-		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table']);
+
+		// Faster equivalent
+		if ($this->sJoinType == 'LEFT OUTER JOIN')
+			return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table']);
+
+		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table'] . $this->buildJoin($aMeta));
 	}
 
 	/**
@@ -117,7 +184,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$aMeta = $this->getMeta();
 		$mPrimaryKey = $this->filterPrimaryKey($mPrimaryKey, $aMeta);
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . ' WHERE TRUE';
+		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE TRUE';
 		foreach ($aMeta['primary'] as $sName)
 			$sQuery .= ' AND ' . $oDb->escapeIdent($sName) . '=' . $oDb->escape($mPrimaryKey[$sName]);
 
@@ -149,7 +216,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 		$aMeta = $this->getMeta();
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . ' WHERE TRUE';
+		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE TRUE';
 		if (!empty($this->sOrderBy))
 			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
 		$sQuery .= empty($iCount) ? '' : ' LIMIT ' . $iCount;
@@ -189,7 +256,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		- columns:	An array of all the columns names.
 		- primary:	An array of all the primary key columns names.
 
-		@return array The metadata for the table associated with the set.
+		@return array The metadata for the table associated with this set.
 	*/
 
 	public function getMeta()
@@ -311,7 +378,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 		$aMeta = $this->getMeta();
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . ' WHERE ' . $this->searchBuildWhere($aCriteria);
+		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE ' . $this->searchBuildWhere($aCriteria);
 		if (!empty($this->sOrderBy))
 			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
 		$sQuery .= empty($iCount) ? '' : ' LIMIT ' . $iCount;
@@ -398,6 +465,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	public function searchCount($aCriteria)
 	{
 		$aMeta = $this->getMeta();
-		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table'] . ' WHERE ' . $this->searchBuildWhere($aCriteria));
+		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table']
+			. $this->buildJoin($aMeta) . ' WHERE ' . $this->searchBuildWhere($aCriteria));
 	}
 }
