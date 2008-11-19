@@ -86,6 +86,8 @@
 			</xsl:attribute>
 		</xsl:if>
 
+		<xsl:comment/>
+
 		<xsl:for-each select="options/*">
 			<xsl:choose>
 				<xsl:when test="self::group">
