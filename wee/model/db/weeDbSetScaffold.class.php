@@ -268,7 +268,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			$aMeta = array(
 				'table'		=> $oTable->quotedName(),
 				'columns'	=> $oTable->columnsNames(),
-				'primary'	=> $oTable->primaryKey()->columns(),
+				'primary'	=> $oTable->primaryKey()->columnsNames(),
 			);
 		}
 

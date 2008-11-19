@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -28,10 +28,10 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDbMetaPrimaryKey extends weeDbMetaTableObject
 {
 	/**
-		Returns the columns of the table constraint.
+		Returns the names of the columns of the primary key.
 
-		@return	array(string)				The names of the columns of the constraint.
+		@return	array(string)	The names of the columns of the primary key.
 	*/
 
-	abstract public function columns();
+	abstract public function columnsNames();
 }

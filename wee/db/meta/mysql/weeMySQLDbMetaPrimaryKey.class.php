@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,14 +30,30 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeMySQLDbMetaPrimaryKey extends weeDbMetaPrimaryKey
 {
 	/**
-		Returns the columns of the table constraint.
+		Initializes a new mysql primary key object.
+
+		This class should NEVER be instantiated manually.
+		Instances of this class should be returned by weeMySQLDbMetaTable.
+
+		@param	$oMeta			The mysql dbmeta object.
+		@param	$aData			The primary key data.
+		@param	$oTable			The mysql table of the primary key.
+	*/
+
+	public function __construct(weeMySQLDbMeta $oMeta, array $aData, weeMySQLDbMetaTable $oTable)
+	{
+		parent::__construct($oMeta, $aData, $oTable);
+	}
+
+	/**
+		Returns the names of the columns of the primary key.
 
 		The columns are ordered as specified in the definition of the table.
 
-		@return	array(string)	The names of the columns of the constraint.
+		@return	array(string)	The names of the columns of the primary key.
 	*/
 
-	public function columns()
+	public function columnsNames()
 	{
 		$oQuery = $this->db()->query("
 			SELECT			COLUMN_NAME

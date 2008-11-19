@@ -41,10 +41,10 @@ try
 	$this->isEqual('not a player killer!', $oPrimaryKey->comment(),
 		_WT('weePgSQLDbMetaPrimaryKey::comment does not correctly return the comment of the primary key.'));
 
-	// weePgSQLDbMetaPrimaryKey::columns
+	// weePgSQLDbMetaPrimaryKey::columnsNames
 
-	$this->isEqual(array('c', 'a'), $oPrimaryKey->columns(),
-		_WT('weePgSQLDbMetaPrimaryKey::columns does not correctly return all the columns of the primary key.'));
+	$this->isEqual(array('c', 'a'), $oPrimaryKey->columnsNames(),
+		_WT('weePgSQLDbMetaPrimaryKey::columnsNames does not correctly return all the columns of the primary key.'));
 }
 catch (Exception $oException) {}
 

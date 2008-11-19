@@ -33,10 +33,10 @@ try
 	$this->isEqual('PRIMARY', $oPrimaryKey->name(),
 		_WT('weePgSQLDbMetaPrimaryKey::name should return "PRIMARY".'));
 
-	// weePgSQLDbMetaPrimaryKey::columns
+	// weePgSQLDbMetaPrimaryKey::columnsNames
 
-	$this->isEqual(array('a', 'c'), $oPrimaryKey->columns(),
-		_WT('weePgSQLDbMetaPrimaryKey::columns does not correctly return all the columns of the primary key.'));
+	$this->isEqual(array('a', 'c'), $oPrimaryKey->columnsNames(),
+		_WT('weePgSQLDbMetaPrimaryKey::columnsNames does not correctly return all the columns of the primary key.'));
 }
 catch (Exception $oException) {}
 
