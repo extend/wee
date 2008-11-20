@@ -25,7 +25,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 	MySQL specialization of weeDbMetaTable.
 */
 
-class weeMySQLDbMetaTable extends weeDbMetaTable implements weeDbMetaCommentable
+class weeMySQLDbMetaTable extends weeDbMetaTable
+	implements weeDbMetaCommentable, weeDbMetaForeignKeyProvider
 {
 	/**
 		Initializes a new mysql table object.
@@ -98,6 +99,77 @@ class weeMySQLDbMetaTable extends weeDbMetaTable implements weeDbMetaCommentable
 	}
 
 	/**
+		Returns a foreign key of a given name.
+
+		@param	$sName						The name of the foreign key.
+		@return	weeMySQLDbMetaPrimaryKey	The foreign key.
+		@throw	UnexpectedValueException	The foreign key does not exist.
+	*/
+
+	public function foreignKey($sName)
+	{
+		$oQuery = $this->db()->query("
+			SELECT		TABLE_NAME AS `table`, CONSTRAINT_NAME AS name
+				FROM	information_schema.TABLE_CONSTRAINTS
+				WHERE	CONSTRAINT_NAME		= ?
+					AND	TABLE_NAME			= ?
+					AND	CONSTRAINT_TYPE		= 'FOREIGN KEY'
+					AND	CONSTRAINT_SCHEMA	= DATABASE()
+				LIMIT	1
+		", $sName, $this->name());
+
+		count($oQuery) == 1
+			or burn('UnexpectedValueException',
+				sprintf(_WT('Foreign key "%s" does not exist.'), $sName));
+
+		return $this->instantiateObject($this->getForeignKeyClass(), $oQuery->fetch());
+	}
+
+	/**
+		Returns whether a foreign key of a given name exists.
+
+		@param	$sName						The name of the table.
+		@return	bool						Whether the foreign key exists.
+	*/
+
+	public function foreignKeyExists($sName)
+	{
+		return (bool)$this->db()->queryValue("SELECT EXISTS(
+			SELECT 1
+				FROM	information_schema.TABLE_CONSTRAINTS
+				WHERE	CONSTRAINT_NAME		= ?
+					AND	TABLE_NAME			= ?
+					AND	CONSTRAINT_TYPE		= 'FOREIGN KEY'
+					AND	CONSTRAINT_SCHEMA	= DATABASE()
+		)", $sName, $this->name());
+	}
+
+	/**
+		Returns all the foreign keys.
+
+		@return	array(weeMySQLDbMetaPrimaryKey)	The array of foreign keys.
+	*/
+
+	public function foreignKeys()
+	{
+		$oQuery = $this->db()->query('
+			SELECT			TABLE_NAME AS table, CONSTRAINT_NAME AS name,
+							REFERENCED_TABLE_NAME AS referenced_table,
+							UNIQUE_CONSTRAINT_NAME AS referenced_constraint
+				FROM		information_schema.REFERENTIAL_CONSTRAINTS
+				WHERE		TABLE_NAME			= ?
+						AND	CONSTRAINT_SCHEMA	= DATABASE()
+				ORDER BY	CONSTRAINT_NAME
+		', $this->name());
+
+		$aForeignKeys	= array();
+		$sClass			= $this->getForeignKeyClass();
+		foreach ($oQuery as $aForeignKey)
+			$aForeignKeys[] = $this->instantiateObject($sClass, $aForeignKey);
+		return $aForeignKeys;
+	}
+
+	/**
 		Returns the name of the column class.
 
 		@return	string						The name of the column class.
@@ -109,9 +181,20 @@ class weeMySQLDbMetaTable extends weeDbMetaTable implements weeDbMetaCommentable
 	}
 
 	/**
+		Returns the name of the foreign key class.
+
+		@return	string						The name of the foreign key class.
+	*/
+
+	public function getForeignKeyClass()
+	{
+		return 'weeMySQLDbMetaForeignKey';
+	}
+
+	/**
 		Returns the name of the primary key class.
 
-		@return	string					The name of the primary key class.
+		@return	string						The name of the primary key class.
 	*/
 
 	public function getPrimaryKeyClass()

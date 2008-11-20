@@ -26,7 +26,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 */
 
 class weePgSQLDbMetaTable extends weeDbMetaTable
-	implements weeDbMetaCommentable, weeDbMetaSchemaObject
+	implements weeDbMetaCommentable, weeDbMetaForeignKeyProvider, weeDbMetaSchemaObject
 {
 	/**
 		Initializes a new pgsql table object.
@@ -105,6 +105,92 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 	}
 
 	/**
+		Returns a foreign key of a given name.
+
+		@param	$sName						The name of the foreign key.
+		@return	weePgSQLDbMetaPrimaryKey	The foreign key.
+		@throw	UnexpectedValueException	The foreign key does not exist.
+	*/
+
+	public function foreignKey($sName)
+	{
+		$oQuery = $this->db()->query("
+			SELECT		n.nspname AS schema, cl.relname AS table, co.conname AS name,
+						pg_catalog.obj_description(co.oid, 'pg_constraint') AS comment,
+						array_to_string(co.conkey, ',') AS columns,
+						nf.nspname AS referenced_schema,
+						clf.relname AS referenced_table,
+						array_to_string(co.confkey, ',') AS referenced_columns,
+						co.conrelid AS table_oid, co.confrelid AS referenced_table_oid
+				FROM	pg_catalog.pg_constraint co
+							JOIN pg_catalog.pg_class		cl	ON cl.oid	= co.conrelid
+							JOIN pg_catalog.pg_class		clf	ON clf.oid	= co.confrelid
+							JOIN pg_catalog.pg_namespace	n	ON n.oid	= co.connamespace
+							JOIN pg_catalog.pg_namespace	nf	ON nf.oid	= clf.relnamespace
+				WHERE	co.conrelid	= CAST(? AS regclass)
+					AND	co.conname	= ?
+					AND	co.contype	= 'f'
+				LIMIT	1
+		", $this->quotedName(), $sName);
+
+		count($oQuery) == 1
+			or burn('UnexpectedValueException',
+				sprintf(_WT('Foreign key "%s" does not exist.'), $sName));
+
+		return $this->instantiateObject($this->getForeignKeyClass(), $oQuery->fetch());
+	}
+
+	/**
+		Returns whether a foreign key of a given name.
+
+		@param	$sName						The name of the foreign key.
+		@return	bool						Whether the foreign key exists.
+	*/
+
+	public function foreignKeyExists($sName)
+	{
+		$sExists = $this->db()->queryValue("SELECT EXISTS(SELECT 1
+			FROM pg_catalog.pg_constraint
+			WHERE conrelid = CAST(? AS regclass) AND conname = ? AND contype = 'f'
+		)", $this->quotedName(), $sName);
+		return $sExists == 't';
+	}
+
+	/**
+		Returns all the foreign keys.
+
+		@return	array(weePgSQLDbMetaPrimaryKey)	The array of foreign keys.
+	*/
+
+	public function foreignKeys()
+	{
+		$oQuery = $this->db()->query("
+			SELECT			n.nspname AS schema, cl.relname AS table, co.conname AS name,
+							pg_catalog.obj_description(co.oid, 'pg_constraint') AS comment,
+							array_to_string(co.conkey, ',') AS columns,
+							nf.nspname AS referenced_schema,
+							clf.relname AS referenced_table,
+							array_to_string(co.confkey, ',') AS referenced_columns,
+							co.conrelid AS table_oid, co.confrelid AS referenced_table_oid
+				FROM		pg_catalog.pg_constraint co
+								JOIN pg_catalog.pg_class		cl	ON cl.oid	= co.conrelid
+								JOIN pg_catalog.pg_class		clf	ON clf.oid	= co.confrelid
+								JOIN pg_catalog.pg_namespace	n	ON n.oid	= co.connamespace
+								JOIN pg_catalog.pg_namespace	nf	ON nf.oid	= clf.relnamespace
+				WHERE		co.conrelid	= CAST(? AS regclass)
+						AND	co.conname	= ?
+						AND	co.contype	= 'f'
+				ORDER BY	co.conname
+		", $this->quotedName());
+
+		$aForeignKeys	= array();
+		$sClass			= $this->getForeignKeyClass();
+		foreach ($oQuery as $aForeignKey)
+			$aForeignKeys[] = $this->instantiateObject($sClass, $aForeignKey);
+		return $aForeignKeys;
+	}
+
+	/**
 		Returns the name of the column class.
 
 		@return	string						The name of the column class.
@@ -116,9 +202,20 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 	}
 
 	/**
+		Returns the name of the foreign key class.
+
+		@return	string						The name of the foreign key class.
+	*/
+
+	public function getForeignKeyClass()
+	{
+		return 'weePgSQLDbMetaForeignKey';
+	}
+
+	/**
 		Returns the name of the primary key class.
 
-		@return	string					The name of the primary key class.
+		@return	string						The name of the primary key class.
 	*/
 
 	public function getPrimaryKeyClass()
