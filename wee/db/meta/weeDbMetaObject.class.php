@@ -101,17 +101,6 @@ abstract class weeDbMetaObject implements Printable
 	}
 
 	/**
-		Returns the database object as an array.
-
-		@return	array		The database object as an array.
-	*/
-
-	public function toArray()
-	{
-		return $this->aData;
-	}
-
-	/**
 		Returns the string representation of the database object.
 
 		By default, the string representation of the database object if its
