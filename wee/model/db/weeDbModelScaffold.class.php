@@ -30,6 +30,17 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDbModelScaffold extends weeDbModel
 {
 	/**
+		The metadata for the table associated with this model.
+
+		The metadata contains information about:
+		- table:	The full table name, properly quoted.
+		- columns:	An array of all the columns names.
+		- primary:	An array of all the primary key columns names.
+	*/
+
+	protected $aMeta;
+
+	/**
 		Name of the weeDbSetScaffold class associated with this model.
 	*/
 
@@ -56,25 +67,26 @@ abstract class weeDbModelScaffold extends weeDbModel
 
 	public function update()
 	{
-		static $aMeta;
-
-		if (empty($aMeta)) {
-			$oSet = new $this->sSet;
-			$aMeta = $oSet->getMeta();
-		}
-
 		empty($this->aData) and burn('IllegalStateException', _WT('The model do not contain any data.'));
-		empty($aMeta['primary']) and burn('IllegalStateException', _WT('The table has no primary key defined.'));
 
 		$oDb = $this->getDb();
-		$sQuery = 'UPDATE ' . $aMeta['table'] . ' SET ';
+
+		if (empty($this->aMeta)) {
+			$oSet = new $this->sSet;
+			$oSet->setDb($oDb);
+			$this->aMeta = $oSet->getMeta();
+		}
+
+		empty($this->aMeta['primary']) and burn('IllegalStateException', _WT('The table has no primary key defined.'));
+
+		$sQuery = 'UPDATE ' . $this->aMeta['table'] . ' SET ';
 
 		foreach ($this->aData as $sName => $mValue)
-			if (in_array($sName, $aMeta['columns']) && !in_array($sName, $aMeta['primary']))
+			if (in_array($sName, $this->aMeta['columns']) && !in_array($sName, $this->aMeta['primary']))
 				$sQuery .= $oDb->escapeIdent($sName) . '=' . $oDb->escape($this->aData[$sName]) . ', ';
 
 		$sQuery = substr($sQuery, 0, -2) . ' WHERE TRUE';
-		foreach ($aMeta['primary'] as $sName)
+		foreach ($this->aMeta['primary'] as $sName)
 			$sQuery .= ' AND ' . $oDb->escapeIdent($sName) . '=' . $oDb->escape($this->aData[$sName]);
 
 		$this->query($sQuery);

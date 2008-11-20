@@ -39,6 +39,17 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected $sJoinType = 'LEFT OUTER JOIN';
 
 	/**
+		The metadata for the table associated with this set.
+
+		The metadata contains information about:
+		- table:	The full table name, properly quoted.
+		- columns:	An array of all the columns names.
+		- primary:	An array of all the primary key columns names.
+	*/
+
+	protected $aMeta;
+
+	/**
 		ORDER BY part of the SELECT queries.
 		Can be defined here or by using the orderBy method.
 	*/
@@ -100,6 +111,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			empty($aRef['set']) and burn('InvalidArgumentException', _WT('No set was given.'));
 
 			$oRefSet = new $aRef['set'];
+			$oRefSet->setDb($oDb);
 			$aRefMeta = $oRefSet->getMeta();
 
 			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
@@ -207,20 +219,23 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		@param $iCount The number of rows to fetch.
 		@return mixed An instance of weeDatabaseResult.
 		@throw InvalidArgumentException $iOffset and $iCount must be integers.
+		@throw InvalidArgumentException $iCount must be provided if $iOffset is given.
 	*/
 
 	public function fetchSubset($iOffset = 0, $iCount = 0)
 	{
 		is_int($iOffset) or burn('InvalidArgumentException', _WT('$iOffset must be an integer.'));
 		is_int($iCount) or burn('InvalidArgumentException', _WT('$iCount must be an integer.'));
+		(empty($iCount) && !empty($iOffset)) and burn('InvalidArgumentException',
+			_WT('$iCount must be provided when $iOffset is given.'));
 
 		$aMeta = $this->getMeta();
 
 		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE TRUE';
 		if (!empty($this->sOrderBy))
 			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
-		$sQuery .= empty($iCount) ? '' : ' LIMIT ' . $iCount;
-		$sQuery .= ' OFFSET ' . $iOffset;
+		if (!empty($iCount))
+			$sQuery .= ' LIMIT ' . $iCount . ' OFFSET ' . $iOffset;
 
 		return $this->query($sQuery);
 	}
@@ -261,18 +276,27 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 	public function getMeta()
 	{
-		static $aMeta = array();
-
-		if (empty($aMeta)) {
+		if (empty($this->aMeta)) {
 			$oTable = $this->getDb()->meta()->table($this->sTableName);
-			$aMeta = array(
+			$this->aMeta = array(
 				'table'		=> $oTable->quotedName(),
 				'columns'	=> $oTable->columnsNames(),
 				'primary'	=> $oTable->primaryKey()->columnsNames(),
 			);
 		}
 
-		return $aMeta;
+		return $this->aMeta;
+	}
+
+	/**
+		Return the reference sets associated with this one.
+
+		@return array The reference sets (the $aRefSets property).
+	*/
+
+	public function getRefSets()
+	{
+		return $this->aRefSets;
 	}
 
 	/**
@@ -369,20 +393,23 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		@param $iCount The number of rows to fetch.
 		@return mixed An instance of weeDatabaseResult.
 		@throw InvalidArgumentException $iOffset and $iCount must be integers.
+		@throw InvalidArgumentException $iCount must be provided if $iOffset is given.
 	*/
 
 	public function search($aCriteria, $iOffset = 0, $iCount = 0)
 	{
 		is_int($iOffset) or burn('InvalidArgumentException', _WT('$iOffset must be an integer.'));
 		is_int($iCount) or burn('InvalidArgumentException', _WT('$iCount must be an integer.'));
+		(empty($iCount) && !empty($iOffset)) and burn('InvalidArgumentException',
+			_WT('$iCount must be provided when $iOffset is given.'));
 
 		$aMeta = $this->getMeta();
 
 		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE ' . $this->searchBuildWhere($aCriteria);
 		if (!empty($this->sOrderBy))
 			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
-		$sQuery .= empty($iCount) ? '' : ' LIMIT ' . $iCount;
-		$sQuery .= ' OFFSET ' . $iOffset;
+		if (!empty($iCount))
+			$sQuery .= ' LIMIT ' . $iCount . ' OFFSET ' . $iOffset;
 
 		return $this->query($sQuery);
 	}

@@ -1,22 +1,24 @@
 <?php
 
-class myDbScaffoldModelComplexPKey extends weeDbModelScaffold
-{
-	protected $sSet = 'myDbScaffoldSetComplexPKey';
-}
-
-class myDbScaffoldSetComplexPKey extends weeDbSetScaffold
-{
-	protected $sModel = 'myDbScaffoldModelComplexPKey';
-	protected $sTableName = 'dbscaffoldcomplexkey';
-
-	// Making a few things public for testing
-
-	public $sOrderBy;
-
-	public function searchBuildWhere($aCriteria)
+if (!class_exists('myDbScaffoldModelComplexPKey')) {
+	class myDbScaffoldModelComplexPKey extends weeDbModelScaffold
 	{
-		return parent::searchBuildWhere($aCriteria);
+		protected $sSet = 'myDbScaffoldSetComplexPKey';
+	}
+
+	class myDbScaffoldSetComplexPKey extends weeDbSetScaffold
+	{
+		protected $sModel = 'myDbScaffoldModelComplexPKey';
+		protected $sTableName = 'dbscaffoldcomplexkey';
+
+		// Making a few things public for testing
+
+		public $sOrderBy;
+
+		public function searchBuildWhere($aCriteria)
+		{
+			return parent::searchBuildWhere($aCriteria);
+		}
 	}
 }
 
@@ -104,9 +106,11 @@ try {
 
 	// weeDbSetScaffold::fetchSubset
 
-	$oResults = $oSet->fetchSubset(5);
-	$this->isEqual($oSet->count() - 5, count($oResults),
-		_WT('The number of results returned by weeDbSetScaffold::fetchSubset is incorrect.'));
+	try {
+		$oResults = $oSet->fetchSubset(5);
+		$this->fail(_WT('weeDbSetScaffold::fetchSubset should throw an InvalidArgumentException when only 1 argument is given.'));
+	} catch (InvalidArgumentException $e) {
+	}
 
 	$oResults = $oSet->fetchSubset(0, 10);
 	$this->isEqual(10, count($oResults),
@@ -144,8 +148,11 @@ try {
 	$oResults = $oSet->search(array('pkey' => array('<=', 10)));
 	$this->isEqual(10, count($oResults), _WT('The weeDbSetScaffold::search method returned a wrong number of results.'));
 
-	$oResults = $oSet->search(array('pkey' => array('<=', 10)), 3);
-	$this->isEqual(7, count($oResults), _WT('The weeDbSetScaffold::search method returned a wrong number of results.'));
+	try {
+		$oResults = $oSet->search(array('pkey' => array('<=', 10)), 3);
+		$this->fail(_WT('weeDbSetScaffold::fetchSubset should throw an InvalidArgumentException when only 2 arguments are given.'));
+	} catch (InvalidArgumentException $e) {
+	}
 
 	$oResults = $oSet->search(array('pkey' => array('<=', 10)), 3 , 5);
 	$this->isEqual(5, count($oResults), _WT('The weeDbSetScaffold::search method returned a wrong number of results.'));
