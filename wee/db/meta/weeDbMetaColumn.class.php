@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,7 @@ abstract class weeDbMetaColumn extends weeDbMetaTableObject
 	/**
 		Returns whether the column has a default value.
 
-		@return	bool	true if the column has a default value, false otherwise.
+		@return	bool	Whether the column has a default value.
 	*/
 
 	abstract public function hasDefault();
@@ -46,7 +46,7 @@ abstract class weeDbMetaColumn extends weeDbMetaTableObject
 	/**
 		Returns whether the column can contain null values.
 	
-		@return	bool	true if the column accepts null as a value, false otherwise.
+		@return	bool	Whether the column can contain null values.
 	*/
 
 	abstract public function isNullable();
@@ -57,5 +57,8 @@ abstract class weeDbMetaColumn extends weeDbMetaTableObject
 		@return	int		The number of the column in the table.
 	*/
 
-	abstract public function num();
+	public function num()
+	{
+		return (int)$this->aData['num'];
+	}
 }

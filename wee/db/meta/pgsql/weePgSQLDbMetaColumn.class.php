@@ -99,17 +99,6 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	}
 
 	/**
-		Returns the number of the column in the table.
-
-		@return	int						The number of the column in the table.
-	*/
-
-	public function num()
-	{
-		return (int)$this->aData['num'];
-	}
-
-	/**
 		Returns the name of the schema of the column.
 
 		@return	string					The name of the schema.

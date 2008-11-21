@@ -90,15 +90,4 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 	{
 		return $this->aData['nullable'] == 'YES';
 	}
-
-	/**
-		Returns the number of the column in the table.
-
-		@return	int							The number of the column in the table.
-	*/
-
-	public function num()
-	{
-		return $this->aData['num'];
-	}
 }
