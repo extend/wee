@@ -115,7 +115,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			$aRefMeta = $oRefSet->getMeta();
 
 			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
-				_WT(sprintf('The reference table %s do not have a primary key.', $aRefMeta['table'])));
+				sprintf(_WT('The reference table %s do not have a primary key.'), $aRefMeta['table']));
 
 			$sJoin .= ' ' . $this->sJoinType . ' ' . $aRefMeta['table'] . ' ON (TRUE';
 
@@ -360,7 +360,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 					$this->sOrderBy .= ', ' . $oDb->escapeIdent($mValue);
 				else {
 					in_array($mValue, $this->aValidOrderByModifiers)
-						or burn('InvalidArgumentException', _WT(sprintf('The ORDER BY modifier requested, %s, do not exist.', $mValue)));
+						or burn('InvalidArgumentException', sprintf(_WT('The ORDER BY modifier requested, %s, do not exist.'), $mValue));
 
 					$this->sOrderBy .= ', ' . $oDb->escapeIdent($mName) . ' ' . $mValue;
 				}
@@ -445,7 +445,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 			if (is_array($mOperation)) {
 				in_array($mOperation[0], $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
-					_WT(sprintf('The criteria operation requested, "%s", do not exist.', $mOperation[0])));
+					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation[0]));
 
 				$sWhere .= $mOperation[0] . ' ';
 
@@ -460,7 +460,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 				}
 			} else {
 				in_array($mOperation, $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
-					_WT(sprintf('The criteria operation requested, "%s", do not exist.', $mOperation)));
+					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation));
 
 				$sWhere .= $mOperation;
 			}
