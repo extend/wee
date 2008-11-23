@@ -77,6 +77,17 @@ abstract class weeValidator implements Serializable
 	}
 
 	/**
+		Returns the arguments of the validator.
+
+		@return	array						The arguments which were given to the validator.
+	*/
+
+	public function getArgs()
+	{
+		return $this->aArgs;
+	}
+
+	/**
 		Returns the validation error message.
 
 		@return	string						The error message.
