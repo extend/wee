@@ -18,50 +18,52 @@ date_default_timezone_set('Europe/Paris');
 try {
 	// weeTimeValidator should throw a DomainException when the value to validate is not a string or an instance of Printable or an object castable to string.
 
+	$o = new weeTimeValidator;
+
 	try {
-		new weeTimeValidator(new stdClass);
+		$o->setValue(new stdClass);
 		$this->fail(_WT('weeTimeValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeTimeValidator(true);
+		$o->setValue(true);
 		$this->fail(_WT('weeTimeValidator should throw a DomainException when the value is a boolean.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeTimeValidator(null);
+		$o->setValue(null);
 		$this->fail(_WT('weeTimeValidator should throw a DomainException when the value is null.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeTimeValidator(array());
+		$o->setValue(array());
 		$this->fail(_WT('weeTimeValidator should throw a DomainException when the value is an array.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeTimeValidator(42);
+		$o->setValue(42);
 		$this->fail(_WT('weeTimeValidator should throw a DomainException when the value is an integer.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeTimeValidator(42.42);
+		$o->setValue(42.42);
 		$this->fail(_WT('weeTimeValidator should throw a DomainException when the value is a float.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeTimeValidator('09:42');
+		$o->setValue('09:42');
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeTimeValidator should not throw a DomainException when the value is a string.'));
 	}
 
 	try {
-		new weeTimeValidator(new PrintableInput_testTimeValidator);
+		$o->setValue(new PrintableInput_testTimeValidator);
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeTimeValidator should not throw a DomainException when the value is an instance of Printable.'));
 	}
 
 	try {
-		new weeTimeValidator(new CastableInput_testTimeValidator);
+		$o->setValue(new CastableInput_testTimeValidator);
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeTimeValidator should not throw a DomainException when the value is an object castable to string.'));
 	}

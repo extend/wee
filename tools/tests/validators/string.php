@@ -15,55 +15,57 @@ class CastableInput_testStringValidator {
 // weeStringValidator should throw a DomainException if the value is neither a scalar, the null value, an array,
 // an instance of Printable or an object castable to string.
 
+$o = new weeStringValidator;
+
 try {
-	new weeStringValidator(new stdClass);
+	$o->setValue(new stdClass);
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator(true);
+	$o->setValue(true);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is a boolean.'));
 }
 
 try {
-	new weeStringValidator(null);
+	$o->setValue(null);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is null.'));
 }
 
 try {
-	new weeStringValidator(array());
+	$o->setValue(array());
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is an array.'));
 }
 
 try {
-	new weeStringValidator(42);
+	$o->setValue(42);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is an integer.'));
 }
 
 try {
-	new weeStringValidator(42.42);
+	$o->setValue(42.42);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is a float.'));
 }
 
 try {
-	new weeStringValidator('win');
+	$o->setValue('win');
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is a string.'));
 }
 
 try {
-	new weeStringValidator(new PrintableInput_testStringValidator);
+	$o->setValue(new PrintableInput_testStringValidator);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is an instance of Printable.'));
 }
 
 try {
-	new weeStringValidator(new CastableInput_testStringValidator);
+	$o->setValue(new CastableInput_testStringValidator);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is an object castable to string.'));
 }
@@ -71,23 +73,23 @@ try {
 // weeStringValidator should throw a DomainException when the `len` argument is not a valid length.
 
 try {
-	new weeStringValidator('win', array('len' => 'not_a_length'));
+	new weeStringValidator(array('len' => 'not_a_length'));
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the `len` argument is not a valid length.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator('win', array('len' => -1));
+	new weeStringValidator(array('len' => -1));
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the `len` argument is negative.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator('win', array('len' => 3));
+	new weeStringValidator(array('len' => 3));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the `len` argument is a valid length.'));
 }
 
 try {
-	new weeStringValidator('win', array('len' => 0));
+	new weeStringValidator(array('len' => 0));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the `len` argument is equal to 0.'));
 }
@@ -95,23 +97,23 @@ try {
 // weeStringValidator should throw a DomainException when the `min` argument is not a valid length.
 
 try {
-	new weeStringValidator('win', array('min' => 'not_a_length'));
+	new weeStringValidator(array('min' => 'not_a_length'));
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the `min` argument is not a valid length.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator('win', array('min' => -1));
+	new weeStringValidator(array('min' => -1));
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the `min` argument is negative.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator('win', array('min' => 2));
+	new weeStringValidator(array('min' => 2));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the `min` argument is a valid length.'));
 }
 
 try {
-	new weeStringValidator('win', array('min' => 0));
+	new weeStringValidator(array('min' => 0));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the `min` argument is equal to 0.'));
 }
@@ -119,23 +121,23 @@ try {
 // weeStringValidator should throw a DomainException when the `max` argument is not a valid length.
 
 try {
-	new weeStringValidator('win', array('max' => 'not_a_length'));
+	new weeStringValidator(array('max' => 'not_a_length'));
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the `max` argument is not a valid length.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator('win', array('max' => -1));
+	new weeStringValidator(array('max' => -1));
 	$this->fail(_WT('weeStringValidator should throw a DomainException when the `max` argument is negative.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeStringValidator('win', array('max' => 4));
+	new weeStringValidator(array('max' => 4));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the `max` argument is a valid length.'));
 }
 
 try {
-	new weeStringValidator('win', array('max' => 0));
+	new weeStringValidator(array('max' => 0));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the `max` argument is equal to 0.'));
 }
@@ -143,17 +145,17 @@ try {
 // weeStringValidator should throw an InvalidArgumentException when the `min` and `max` arguments do not form a valid length range.
 
 try {
-	new weeStringValidator('win', array('min' => 4, 'max' => 2));
+	new weeStringValidator(array('min' => 4, 'max' => 2));
 	$this->fail(_WT('weeStringValidator should throw an InvalidArgumentException when the `min` argument is greater than the `max` one.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
-	new weeStringValidator('win', array('min' => 3, 'max' => 3));
+	new weeStringValidator(array('min' => 3, 'max' => 3));
 	$this->fail(_WT('weeStringValidator should throw an InvalidArgumentException when the `min` and `max` arguments are equal.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
-	new weeStringValidator('win', array('min' => 2, 'max' => 4));
+	new weeStringValidator(array('min' => 2, 'max' => 4));
 } catch (InvalidArgumentException $e) {
 	$this->fail(_WT('weeStringValidator should not throw an InvalidArgumentException when the `min` argument is smaller than the `max` one.'));
 }
@@ -161,7 +163,7 @@ try {
 // weeStringValidator should throw an InvalidArgumentException when the `len` and one of the `min` and `max` arguments are both specified.
 
 try {
-	new weeStringValidator('win', array('len' => 3, 'min' => 2, 'max' => 4));
+	new weeStringValidator(array('len' => 3, 'min' => 2, 'max' => 4));
 	$this->fail(_WT('weeStringValidator should throw an InvalidArgumentException when the `len` and one of the `min` and `max` arguments are both specified.'));
 } catch (InvalidArgumentException $e) {}
 

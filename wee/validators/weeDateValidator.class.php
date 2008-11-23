@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -52,30 +52,14 @@ class weeDateValidator extends weeValidator
 	/**
 		Initialises a new date validator.
 
-		$mValue must be either a string, an instance of Printable or an object castable to string.
-
-		@param	$mValue						The value to validate.
 		@param	$aArgs						The configuration arguments of the validator.
-		@throw	DomainException				$mValue is not of a correct type.
 		@throw	DomainException				The `max` argument is invalid.
 		@throw	DomainException				The `min` argument is invalid.
 		@throw	InvalidArgumentException	The `min` and `max` arguments do not form a valid date range.
 	*/
 
-	public function __construct($mValue, array $aArgs = array())
+	public function __construct(array $aArgs = array())
 	{
-		if (is_object($mValue))
-		{
-			if ($mValue instanceof Printable)
-				$mValue = $mValue->toString();
-			elseif (method_exists($mValue, '__toString'))
-				$mValue = (string)$mValue;
-		}
-
-		is_string($mValue)
-			or burn('DomainException',
-				_WT('$mValue is not of a correct type.'));
-
 		!isset($aArgs['min']) or is_string($aArgs['min']) and ($aArgs['min'] == 'current' or $this->isValidInput($aArgs['min']))
 			or burn('DomainException',
 				_WT('The `min` argument is invalid.'));
@@ -97,7 +81,7 @@ class weeDateValidator extends weeValidator
 					_WT('The `min` and `max` arguments do not form a valid date range.'));
 		}
 
-		parent::__construct($mValue, $aArgs);
+		parent::__construct($aArgs);
 	}
 
 	/**
@@ -122,6 +106,33 @@ class weeDateValidator extends weeValidator
 	}
 
 	/**
+		Attachs a value to the validator.
+
+		$mValue must be either a string, an instance of Printable or an object castable to string.
+
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+		@throw	DomainException				$mValue is not of a correct type.
+	*/
+
+	public function setValue($mValue)
+	{
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
+		}
+
+		is_string($mValue)
+			or burn('DomainException',
+				_WT('$mValue is not of a correct type.'));
+
+		return parent::setValue($mValue);
+	}
+
+	/**
 		Convenience function for inline validating of variables.
 
 		@param	$mValue						The value to validate.
@@ -131,8 +142,8 @@ class weeDateValidator extends weeValidator
 
 	public static function test($mValue, array $aArgs = array())
 	{
-		$o = new self($mValue, $aArgs);
-		return !$o->hasError();
+		$o = new self($aArgs);
+		return !$o->setValue($mValue)->hasError();
 	}
 
 	/**

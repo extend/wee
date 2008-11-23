@@ -39,16 +39,28 @@ class weeURLValidator extends weeValidator
 	);
 
 	/**
-		Initialises a new URL validator.
+		Returns whether the given input is a valid URL.
+
+		@param	$sInput			The input.
+		@return	bool			Whether the input is a valid URL.
+	*/
+
+	protected function isValidInput($sInput)
+	{
+		return filter_var($sInput, FILTER_VALIDATE_URL) !== false;
+	}
+
+	/**
+		Attachs a value to the validator.
 
 		$mValue must be either a string, an instance of Printable or an object castable to string.
 
-		@param	$mValue			The value to validate.
-		@param	$aArgs			The configuration arguments of the validator.
-		@throw	DomainException	$mValue is not of a correct type.
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+		@throw	DomainException				$mValue is not of a correct type.
 	*/
 
-	public function __construct($mValue, array $aArgs = array())
+	public function setValue($mValue)
 	{
 		if (is_object($mValue))
 		{
@@ -62,19 +74,7 @@ class weeURLValidator extends weeValidator
 			or burn('DomainException',
 				_WT('$mValue is not of a correct type.'));
 
-		parent::__construct($mValue, $aArgs);
-	}
-
-	/**
-		Returns whether the given input is a valid URL.
-
-		@param	$sInput			The input.
-		@return	bool			Whether the input is a valid URL.
-	*/
-
-	protected function isValidInput($sInput)
-	{
-		return filter_var($sInput, FILTER_VALIDATE_URL) !== false;
+		return parent::setValue($mValue);
 	}
 
 	/**
@@ -87,7 +87,7 @@ class weeURLValidator extends weeValidator
 
 	public static function test($mValue, array $aArgs = array())
 	{
-		$o = new self($mValue, $aArgs);
-		return !$o->hasError();
+		$o = new self($aArgs);
+		return !$o->setValue($mValue)->hasError();
 	}
 }

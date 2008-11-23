@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -41,20 +41,50 @@ class weeConfirmValidator extends weeFormValidator
 	*/
 
 	protected $aErrors = array(
-		'invalid' => 'Input confirmation failed');
-
-	/**
+		'invalid' => 'Input confirmation failed.'
+	);
+ 
+ 	/**
 		Initialises a new option validator.
 
 		$mValue must be either a scalar, an instance of Printable or an object castable to string.
 
-		@param	$mValue						The value to validate.
 		@param	$aArgs						The configuration arguments of the validator.
-		@throw	DomainException				$mValue is not of a correct type.
 		@throw	InvalidArgumentException	The argument `with` is missing.
 	*/
 
-	public function __construct($mValue, array $aArgs = array())
+	public function __construct(array $aArgs = array())
+	{
+		!empty($aArgs['with'])
+			or burn('InvalidArgumentException',
+				_WT('The argument `with` is mandatory.'));
+
+		parent::__construct($aArgs);
+	}
+
+	/**
+		Returns whether the given value is confirmed in the form data.
+
+		@param	$mInput						The input.
+		@return	bool						Whether the given value is confirmed.
+	*/
+
+	protected function isValidInput($mInput)
+	{
+		return array_value($this->aData, $this->aArgs['with']) == $mInput;
+	}
+
+	/**
+		Attaches a value to the validator.
+
+		$mValue must be either a scalar, an instance of Printable or an object castable to string.
+
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+		@throw	DomainException				$mValue is not of a correct type.
+	*/
+
+	public function setValue($mValue)
 	{
 		if (is_object($mValue))
 		{
@@ -68,22 +98,6 @@ class weeConfirmValidator extends weeFormValidator
 			or burn('DomainException',
 				_WT('$mValue is not of a correct type.'));
 
-		!empty($aArgs['with'])
-			or burn('InvalidArgumentException',
-				_WT('The argument `with` is mandatory.'));
-
-		parent::__construct($mValue, $aArgs);
-	}
-
-	/**
-		Returns whether the given value is confirmed in the form data.
-
-		@param	$mInput						The input.
-		@return	bool						Whether the given value is confirmed.
-	*/
-
-	protected function isValidInput($mInput)
-	{
-		return array_value($this->aData, $this->aArgs['with']) == $mInput;
+		return parent::setValue($mValue);
 	}
 }

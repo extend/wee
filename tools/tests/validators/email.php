@@ -14,51 +14,53 @@ class CastableInput_testEmailValidator {
 
 // weeEmailValidator should throw a DomainException when the value to validate is neither a string, an instance of Printable or an object castable to string.
 
+$o = new weeEmailValidator;
+
 try {
-	new weeEmailValidator(new stdClass);
+	$o->setValue(new stdClass);
 	$this->fail(_WT('weeEmailValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeEmailValidator(true);
+	$o->setValue(true);
 	$this->fail(_WT('weeEmailValidator should throw a DomainException when the value is a boolean.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeEmailValidator(null);
+	$o->setValue(null);
 	$this->fail(_WT('weeEmailValidator should throw a DomainException when the value is null.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeEmailValidator(array());
+	$o->setValue(array());
 	$this->fail(_WT('weeEmailValidator should throw a DomainException when the value is an array.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeEmailValidator(42);
+	$o->setValue(42);
 	$this->fail(_WT('weeEmailValidator should throw a DomainException when the value is an integer.'));
 } catch (DomainException $e) {}
 
 try {
-	new weeEmailValidator(42.42);
+	$o->setValue(42.42);
 	$this->fail(_WT('weeEmailValidator should throw a DomainException when the value is a float.'));
 } catch (DomainException $e) {}
 
 
 try {
-	new weeEmailValidator('valid@email.com');
+	$o->setValue('valid@email.com');
 } catch (DomainException $e) {
 	$this->fail(_WT('weeEmailValidator should not throw a DomainException when the value is a string.'));
 }
 
 try {
-	new weeEmailValidator(new PrintableInput_testEmailValidator);
+	$o->setValue(new PrintableInput_testEmailValidator);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeEmailValidator should not throw a DomainException when the value is an instance of Printable.'));
 }
 
 try {
-	new weeEmailValidator(new CastableInput_testEmailValidator);
+	$o->setValue(new CastableInput_testEmailValidator);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeEmailValidator should not throw a DomainException when the value is an object castable to string.'));
 }

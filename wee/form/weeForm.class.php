@@ -367,7 +367,8 @@ class weeForm implements Printable
 							sprintf(_WT('Validator %s does not exist.'), $oValidatorNode['type']));
 
  					$aAttributes	= (array)$oValidatorNode->attributes();
-					$oValidator		= new $sClass($aData[(string)$oNode->name], $aAttributes['@attributes']);
+					$oValidator		= new $sClass($aAttributes['@attributes']);
+					$oValidator->setValue($aData[(string)$oNode->name]);
 
 					if ($oValidator instanceof weeFormValidator)
 						$oValidator->setFormData($oNode, $aData);

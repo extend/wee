@@ -41,33 +41,6 @@ class weeOptionValidator extends weeFormValidator
 	);
 
 	/**
-		Initialises a new option validator.
-
-		$mValue must be either a scalar, an instance of Printable or an object castable to string.
-
-		@param	$mValue			The value to validate.
-		@param	$aArgs			The configuration arguments of the validator.
-		@throw	DomainException	$mValue is not of a correct type.
-	*/
-
-	public function __construct($mValue, array $aArgs = array())
-	{
-		if (is_object($mValue))
-		{
-			if ($mValue instanceof Printable)
-				$mValue = $mValue->toString();
-			elseif (method_exists($mValue, '__toString'))
-				$mValue = (string)$mValue;
-		}
-
-		is_scalar($mValue)
-			or burn('InvalidArgumentException',
-				_WT('$mValue is not of a correct type.'));
-
-		parent::__construct($mValue, $aArgs);
-	}
-
-	/**
 		Returns whether the given input is a valid form option for the associated widget.
 
 		@param	$mInput			The input.
@@ -78,5 +51,32 @@ class weeOptionValidator extends weeFormValidator
 	{
 		$oHelper = new weeFormOptionsHelper($this->oWidget);
 		return $oHelper->isInOptions($mInput);
+	}
+
+	/**
+		Attachs a value to the validator.
+
+		$mValue must be either a string, an integer, a float, an instance of Printable or an object castable to string.
+
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+		@throw	DomainException				$mValue is not of a correct type.
+	*/
+
+	public function setValue($mValue)
+	{
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
+		}
+
+		is_string($mValue) or is_int($mValue) or is_float($mValue)
+			or burn('DomainException',
+				_WT('$mValue is not of a correct type.'));
+
+		return parent::setValue($mValue);
 	}
 }

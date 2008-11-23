@@ -10,7 +10,8 @@ class weeFormValidator_test extends weeFormValidator {
 	}
 }
 
-$o = new weeFormValidator_test(42);
+$o = new weeFormValidator_test;
+$o->setValue(42);
 
 // weeFormValidator::validate should throw an IllegalStateException when the validator has not been associated with a form widget.
 

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -58,34 +58,18 @@ class weeNumberValidator extends weeValidator
 	/**
 		Initialises a new number validator.
 
-		$mValue must be either a string, an integer, a float, an instance of Printable or an object castable to string.
-
-		@param	$mValue						The value to validate.
 		@param	$aArgs						The configuration arguments of the validator.
-		@throw	DomainException				$mValue is not of a correct type.
 		@throw	DomainException				The `format` argument is invalid.
 		@throw	DomainException				The `max` argument is invalid.
 		@throw	DomainException				The `min` argument is invalid.
 		@throw	InvalidArgumentException	The `min` and `max` arguments do not form a valid number range.
 	*/
 
-	public function __construct($mValue, array $aArgs = array())
+	public function __construct(array $aArgs = array())
 	{
 		!isset($aArgs['format']) or $aArgs['format'] == 'int' or $aArgs['format'] == 'float'
 			or burn('InvalidArgumentException',
 				_WT('The `format` argument must be either "int" or "float".'));
-
-		if (is_object($mValue))
-		{
-			if ($mValue instanceof Printable)
-				$mValue = $mValue->toString();
-			elseif (method_exists($mValue, '__toString'))
-				$mValue = (string)$mValue;
-		}
-
-		is_string($mValue) or is_int($mValue) or is_float($mValue)
-			or burn('DomainException',
-				_WT('$mValue is not of a correct type.'));
 
 		!isset($aArgs['min']) or $this->isValidInput($aArgs['min'])
 			or burn('DomainException',
@@ -102,7 +86,7 @@ class weeNumberValidator extends weeValidator
 					_WT('The `min` and `max` arguments do not form a valid number range.'));
 		}
 
-		parent::__construct($mValue, $aArgs);
+		parent::__construct($aArgs);
 	}
 
 	/**
@@ -118,6 +102,33 @@ class weeNumberValidator extends weeValidator
 	}
 
 	/**
+		Attachs a value to the validator.
+
+		$mValue must be either a string, an integer, a float, an instance of Printable or an object castable to string.
+
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+		@throw	DomainException				$mValue is not of a correct type.
+	*/
+
+	public function setValue($mValue)
+	{
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
+		}
+
+		is_string($mValue) or is_int($mValue) or is_float($mValue)
+			or burn('DomainException',
+				_WT('$mValue is not of a correct type.'));
+
+		return parent::setValue($mValue);
+	}
+
+	/**
 		Convenience function for inline validating of variables.
 
 		@param	$mValue						The value to validate.
@@ -127,8 +138,8 @@ class weeNumberValidator extends weeValidator
 
 	public static function test($mValue, array $aArgs = array())
 	{
-		$o = new self($mValue, $aArgs);
-		return !$o->hasError();
+		$o = new self($aArgs);
+		return !$o->setValue($mValue)->hasError();
 	}
 
 	/**

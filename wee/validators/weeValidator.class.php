@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for validation mechanisms.
 */
 
-abstract class weeValidator
+abstract class weeValidator implements Serializable
 {
 	/**
 		The error message of the validator.
@@ -48,10 +48,16 @@ abstract class weeValidator
 	protected $aArgs = array();
 
 	/**
+		Whether a value has been attached to the validator.
+	*/
+
+	protected $bHasValue = false;
+
+	/**
 		Whether the value has been validated.
 	*/
 
-	protected $bValidated = false;
+	protected $bValidated;
 
 	/**
 		The value to validate.
@@ -62,14 +68,12 @@ abstract class weeValidator
 	/**
 		Initializes a new validator.
 
-		@param	$mValue						The value to validate.
 		@param	$aArgs						The configuration arguments of the validator.
 	*/
 
-	public function __construct($mValue, array $aArgs = array())
+	public function __construct(array $aArgs = array())
 	{
-		$this->aArgs	= $aArgs + $this->aArgs;
-		$this->mValue	= $mValue;
+		$this->aArgs = $aArgs + $this->aArgs;
 	}
 
 	/**
@@ -84,6 +88,7 @@ abstract class weeValidator
 		$this->hasError()
 			or burn('IllegalStateException',
 				_WT('The validator does not have an error message because the validation succeeded.'));
+
 		return $this->sError;
 	}
 
@@ -91,10 +96,15 @@ abstract class weeValidator
 		Returns whether the validation failed.
 
 		@return	bool						Whether the validation failed.
+		@throw	IllegalStateException		No value has been attached to the validator yet.
 	*/
 
 	public function hasError()
 	{
+		$this->bHasValue
+			or burn('IllegalStateException',
+				_('No value has been attached to the validator yet.'));
+
 		if (!$this->bValidated)
 		{
 			$this->validate();
@@ -115,6 +125,18 @@ abstract class weeValidator
 	*/
 
 	protected abstract function isValidInput($mInput);
+
+	/**
+		Serializes the validator.
+
+		@return	string						The serialized arguments of the validator.
+		@see								http://www.php.net/~helly/php/ext/spl/interfaceSerializable.html
+	*/
+
+	public function serialize()
+	{
+		return serialize($this->aArgs);
+	}
 
 	/**
 		Formats and saves the error message.
@@ -141,6 +163,34 @@ abstract class weeValidator
 
 		if (isset($this->aArgs[$sType]))
 			$this->sError = str_replace('%' . $sType . '%', $this->aArgs[$sType], $this->sError);
+	}
+
+	/**
+		Attachs a value to the validator.
+
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+	*/
+
+	public function setValue($mValue)
+	{
+		$this->sError		= null;
+		$this->bHasValue	= true;
+		$this->bValidated	= false;
+		$this->mValue		= $mValue;
+
+		return $this;
+	}
+
+	/**
+		Unserializes a validator.
+
+		@param	$sSerialized				The serialized arguments of the validator.
+	*/
+
+	public function unserialize($sSerialized)
+	{
+		$this->__construct(unserialize($sSerialized));
 	}
 
 	/**

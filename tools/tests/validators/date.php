@@ -21,50 +21,52 @@ try {
 
 	// weeDateValidator should throw a DomainException when the value to validate is not a string or an instance of Printable or an object castable to string.
 
+	$o = new weeDateValidator;
+
 	try {
-		new weeDateValidator(new stdClass);
+		$o->setValue(new stdClass);
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the value is an object which is neither an instance of Printable nor an object castable to string.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator(true);
+		$o->setValue(true);
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the value is a boolean.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator(null);
+		$o->setValue(null);
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the value is null.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator(array());
+		$o->setValue(array());
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the value is an array.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator(42);
+		$o->setValue(42);
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the value is an integer.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator(42.42);
+		$o->setValue(42.42);
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the value is a float.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29');
+		$o->setValue('1987-10-29');
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the value is a string.'));
 	}
 
 	try {
-		new weeDateValidator(new PrintableInput_testDateValidator);
+		$o->setValue(new PrintableInput_testDateValidator);
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the value is an instance of Printable.'));
 	}
 
 	try {
-		new weeDateValidator(new CastableInput_testDateValidator);
+		$o->setValue(new CastableInput_testDateValidator);
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the value is an object castable to string.'));
 	}
@@ -72,23 +74,23 @@ try {
 	// weeDateValidator should throw a DomainException when the `min` argument is not a valid date.
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => 42));
+		new weeDateValidator(array('min' => 42));
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the `min` argument is not a string.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => 'not_a_date'));
+		new weeDateValidator(array('min' => 'not_a_date'));
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the `min` argument is not a valid date.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => '1987-10-29'));
+		new weeDateValidator(array('min' => '1987-10-29'));
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the `min` argument is a valid date.'));
 	}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => 'current'));
+		new weeDateValidator(array('min' => 'current'));
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the `min` argument is "current".'));
 	}
@@ -96,23 +98,23 @@ try {
 	// weeDateValidator should throw a DomainException when the `max` argument is not a valid date.
 
 	try {
-		new weeDateValidator('1987-10-29', array('max' => 42));
+		new weeDateValidator(array('max' => 42));
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the `max` argument is not a string.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29', array('max' => 'not_a_date'));
+		new weeDateValidator(array('max' => 'not_a_date'));
 		$this->fail(_WT('weeDateValidator should throw a DomainException when the `max` argument is not a valid date.'));
 	} catch (DomainException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29', array('max' => '1987-10-29'));
+		new weeDateValidator(array('max' => '1987-10-29'));
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the `max` argument is a valid date.'));
 	}
 
 	try {
-		new weeDateValidator('1987-10-29', array('max' => 'current'));
+		new weeDateValidator(array('max' => 'current'));
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the `max` argument is "current".'));
 	}
@@ -120,29 +122,29 @@ try {
 	// weeDateValidator should throw an InvalidArgumentException when the `min` and `max` arguments do not form a valid date range.
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => '1987-10-30', 'max' => '1987-10-28'));
+		new weeDateValidator(array('min' => '1987-10-30', 'max' => '1987-10-28'));
 		$this->fail(_WT('weeDateValidator should throw an InvalidArgumentException when the `min` argument is greater than the `max` one.'));
 	} catch (InvalidArgumentException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => '1987-10-29', 'max' => '1987-10-29'));
+		new weeDateValidator(array('min' => '1987-10-29', 'max' => '1987-10-29'));
 		$this->fail(_WT('weeDateValidator should throw an InvalidArgumentException when the `min` and `max` arguments are equal.'));
 	} catch (InvalidArgumentException $e) {}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => '1987-10-28', 'max' => '1987-10-30'));
+		new weeDateValidator(array('min' => '1987-10-28', 'max' => '1987-10-30'));
 	} catch (InvalidArgumentException $e) {
 		$this->fail(_WT('weeDateValidator should not throw an InvalidArgumentException when the `min` argument is smaller than the `max` one.'));
 	}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => 'current', 'max' => $sTomorrow));
+		new weeDateValidator(array('min' => 'current', 'max' => $sTomorrow));
 	} catch (InvalidArgumentException $e) {
 		$this->fail(_WT('weeDateValidator should not throw an InvalidArgumentException when the `min` argument is "current" and the `max` one is tomorrow date.'));
 	}
 
 	try {
-		new weeDateValidator('1987-10-29', array('min' => $sYesterday, 'max' => 'current'));
+		new weeDateValidator(array('min' => $sYesterday, 'max' => 'current'));
 	} catch (InvalidArgumentException $e) {
 		$this->fail(_WT('weeDateValidator should not throw an InvalidArgumentException when the `max` argument is "current" and the `min` one is yesterday date.'));
 	}

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -52,11 +52,7 @@ class weeStringValidator extends weeValidator
 	/**
 		Initialises a string validator.
 
-		$mValue must be either a scalar, the null value, an array, an instance of Printable or an object castable to string.
-
-		@param	$mValue						The value to validate.
 		@param	$aArgs						The configuration arguments of the validator.
-		@throw	DomainException				$mValue is not of a correct type.
 		@throw	DomainException				The `len` argument is invalid.
 		@throw	DomainException				The `min` argument is invalid.
 		@throw	DomainException				The `max` argument is invalid.
@@ -64,20 +60,8 @@ class weeStringValidator extends weeValidator
 		@throw	InvalidArgumentException	The `len` and one of the `min` or `max` arguments are both specified.
 	*/
 
-	public function __construct($mValue, array $aArgs = array())
+	public function __construct(array $aArgs = array())
 	{
-		if (is_object($mValue))
-		{
-			if ($mValue instanceof Printable)
-				$mValue = $mValue->toString();
-			elseif (method_exists($mValue, '__toString'))
-				$mValue = (string)$mValue;
-		}
-
-		is_scalar($mValue) or is_null($mValue) or is_array($mValue)
-			or burn('DomainException',
-				_WT('$mValue is not of a correct type.'));
-
 		!isset($aArgs['len']) or filter_var($aArgs['len'], FILTER_VALIDATE_INT) !== false and $aArgs['len'] >= 0
 			or burn('DomainException',
 				_WT('The `len` argument is invalid.'));
@@ -101,7 +85,7 @@ class weeStringValidator extends weeValidator
 			or burn('InvalidArgumentException',
 				_WT('The `len` and one of the `min` or `max` arguments are both specified.'));
 
-		parent::__construct($mValue, $aArgs);
+		parent::__construct($aArgs);
 	}
 
 	/**
@@ -126,8 +110,35 @@ class weeStringValidator extends weeValidator
 
 	public static function test($mValue, array $aArgs = array())
 	{
-		$o = new self($mValue, $aArgs);
-		return !$o->hasError();
+		$o = new self($aArgs);
+		return !$o->setValue($mValue)->hasError();
+	}
+
+	/**
+		Attachs a value to the validator.
+
+		$mValue must be either a string, an integer, a float, an instance of Printable or an object castable to string.
+
+		@param	$mValue						The value to attach.
+		@return	$this						Used to chain methods.
+		@throw	DomainException				$mValue is not of a correct type.
+	*/
+
+	public function setValue($mValue)
+	{
+		if (is_object($mValue))
+		{
+			if ($mValue instanceof Printable)
+				$mValue = $mValue->toString();
+			elseif (method_exists($mValue, '__toString'))
+				$mValue = (string)$mValue;
+		}
+
+		is_scalar($mValue) or is_null($mValue) or is_array($mValue)
+			or burn('DomainException',
+				_WT('$mValue is not of a correct type.'));
+
+		return parent::setValue($mValue);
 	}
 
 	/**
