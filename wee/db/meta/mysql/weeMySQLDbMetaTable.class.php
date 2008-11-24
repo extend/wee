@@ -54,7 +54,9 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 	{
 		$oQuery = $this->meta()->db()->query('
 			SELECT		TABLE_NAME AS `table`, COLUMN_NAME AS name, ORDINAL_POSITION AS num,
-						COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment
+						COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment,
+						DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS max_length,
+						COLUMN_TYPE AS raw_type
 				FROM	information_schema.columns
 				WHERE	COLUMN_NAME		= ?
 					AND	TABLE_NAME		= ?
@@ -254,7 +256,9 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 	{
 		return $this->meta()->db()->query('
 			SELECT			TABLE_NAME AS `table`, COLUMN_NAME AS name, ORDINAL_POSITION AS num,
-							COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment
+							COLUMN_DEFAULT AS `default`, IS_NULLABLE AS nullable, COLUMN_COMMENT AS comment,
+							DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS max_length,
+							COLUMN_TYPE AS raw_type
 				FROM		information_schema.columns
 				WHERE		TABLE_NAME		= :name
 						AND	TABLE_SCHEMA	= DATABASE()

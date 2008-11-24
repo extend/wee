@@ -36,6 +36,34 @@ abstract class weeDbMetaColumn extends weeDbMetaTableObject
 	abstract public function defaultValue();
 
 	/**
+		Returns a validator for the column.
+
+		@return	weeValidator			A validator appropriate for the column.
+		@throw	UnhandledTypeException	The type of the column is not handled by dbmeta.
+	*/
+
+	public function getValidator()
+	{
+		switch ($this->aData['type'])
+		{
+			case 'tinyint':
+			case 'smallint':
+			case 'mediumint':
+			case 'int':
+			case 'bigint':
+				return weeDbMeta::getIntegerValidator($this->aData['type']);
+
+			case 'char':
+			case 'varchar':
+				return new weeStringValidator(array('max' => $this->aData['max_length']));
+
+			default:
+				burn('UnhandledTypeException',
+					sprintf(_WT('Type "%s" is not handled by dbmeta.'), $this->aData['type']));
+		}
+	}
+
+	/**
 		Returns whether the column has a default value.
 
 		@return	bool	Whether the column has a default value.

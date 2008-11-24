@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -74,6 +74,64 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 				WHERE	adrelid	= ?::regclass
 					AND	adnum	= ?
 		', $this->oTable->quotedName(), $this->num());
+	}
+
+	/**
+		Returns a validator for the column.
+
+		Handled types:
+		 - smallint
+		 - int
+		 - bigint
+		 - real
+		 - character
+		 - character varying
+		 - time (in 24-hours format, without time zone)
+
+		@return	weeValidator			A validator appropriate for the column.
+		@see							http://www.postgresql.org/docs/8.3/static/datatype.html
+	*/
+
+	public function getValidator()
+	{
+		switch ($this->aData['type'])
+		{
+			case 'int2': // smallint
+			case 'int4': // int
+				$aBounds = array(
+					'int2' => array('min' => -32768,	 	'max' => 32767),
+					'int4' => array('min' => -2147483648,	'max' => 2147483647),
+				);
+
+				return new weeNumberValidator($aBounds[$this->aData['type']]);
+
+			case 'int8': // bigint
+				return new weeBigNumberValidator(array(
+					'min' => '-9223372036854775808',
+					'max' => '9223372036854775807'
+				));
+
+			case 'float4': // real
+				return new weeNumberValidator(array('format' => 'float'));
+
+			case 'bpchar': // character
+				return new weeStringValidator(array('max' => $this->aData['type_mod'] - 4));
+
+			case 'varchar': // character varying
+				if ($this->aData['type_mod'] == -1)
+					return new weeStringValidator;
+				else
+					return new weeStringValidator(array('max' => $this->aData['type_mod'] - 4));
+
+			case 'time':
+				// PostgreSQL also supports time zones, and 12-hours format,
+				// but we don't handle them.
+				return new weeTimeValidator;
+
+			default:
+				burn('UnhandledTypeException',
+					sprintf(_WT('Type "%s" is not handled by dbmeta.'), $this->aData['type']));
+		}
 	}
 
 	/**

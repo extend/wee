@@ -56,10 +56,12 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 		$oQuery = $this->meta()->db()->query('
 			SELECT		n.nspname AS schema, c.relname AS table, a.attname AS name, a.attnum AS num,
 						NOT a.attnotnull AS nullable, a.atthasdef AS has_default,
-						pg_catalog.col_description(a.attrelid, a.attnum) AS comment
+						pg_catalog.col_description(a.attrelid, a.attnum) AS comment,
+						t.typname AS type, a.atttypmod AS type_mod
 				FROM	pg_catalog.pg_attribute a
 							JOIN pg_catalog.pg_class		c ON c.oid = a.attrelid
 							JOIN pg_catalog.pg_namespace	n ON n.oid = c.relnamespace
+							JOIN pg_catalog.pg_type			t ON t.oid = a.atttypid
 				WHERE	a.attrelid		= CAST(? AS regclass)
 					AND a.attname		= ?
 					AND a.attnum		> 0
@@ -289,10 +291,12 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 		return $this->meta()->db()->query('
 			SELECT			n.nspname AS schema, c.relname AS table, a.attname AS name, a.attnum AS num,
 							NOT a.attnotnull AS nullable, a.atthasdef AS has_default,
-							pg_catalog.col_description(a.attrelid, a.attnum) AS comment
+							pg_catalog.col_description(a.attrelid, a.attnum) AS comment,
+							t.typname AS type, a.atttypmod AS type_mod
 				FROM		pg_catalog.pg_attribute a
 								JOIN pg_catalog.pg_class		c ON c.oid = a.attrelid
 								JOIN pg_catalog.pg_namespace	n ON n.oid = c.relnamespace
+								JOIN pg_catalog.pg_type			t ON t.oid = a.atttypid
 				WHERE		a.attrelid		= CAST(? AS regclass)
 						AND a.attnum		> 0
 						AND	a.attisdropped	= false
