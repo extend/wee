@@ -34,4 +34,18 @@ abstract class weeSet extends weeDataSource
 	*/
 
 	protected $sModel;
+
+	/**
+		Returns the model name associated with this set.
+
+		@return string The model class name.
+	*/
+
+	public function getModelName()
+	{
+		empty($this->sModel) and burn('IllegalStateException',
+			_WT('The property $sModel must not be empty.'));
+
+		return $this->sModel;
+	}
 }
