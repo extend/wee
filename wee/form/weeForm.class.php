@@ -155,21 +155,6 @@ class weeForm implements Printable
 	}
 
 	/**
-		Remove every node of the form XML returned by the given XPath query.
-
-		@param $sXPath the XPath query.
-	*/
-
-	public function removeNodes($sXPath)
-	{
-		foreach ($this->oXML->xpath($sXPath) as $oNode)
-		{
-			$oNode = dom_import_simplexml($oNode);
-			$oNode->parentNode->removeChild($oNode);
-		}
-	}
-
-	/**
 		Removes any data sent not found in the widgets of the form.
 		Helps prevent data injection vulnerabilities.
 
@@ -199,6 +184,17 @@ class weeForm implements Printable
 	}
 
 	/**
+		Return the form's submit method.
+
+		@return string The form's submit method. Usually 'get' or 'post'.
+	*/
+
+	public function getMethod()
+	{
+		return (string)$this->oXML->method;
+	}
+
+	/**
 		Create and initialize an helper for the specified widget.
 
 		@param $sHelper Class name of the helper you want to create.
@@ -212,6 +208,21 @@ class weeForm implements Printable
 
 		$oXML = $this->xpathOne('//widget[name="' . xmlspecialchars($sWidget) . '"]');
 		return new $sHelper($oXML);
+	}
+
+	/**
+		Remove every node of the form XML returned by the given XPath query.
+
+		@param $sXPath the XPath query.
+	*/
+
+	public function removeNodes($sXPath)
+	{
+		foreach ($this->oXML->xpath($sXPath) as $oNode)
+		{
+			$oNode = dom_import_simplexml($oNode);
+			$oNode->parentNode->removeChild($oNode);
+		}
 	}
 
 	/**
