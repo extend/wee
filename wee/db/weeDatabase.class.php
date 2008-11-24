@@ -285,8 +285,6 @@ abstract class weeDatabase
 			else
 				$mQueryString = $this->bindNamedParameters(func_get_args());
 		}
-		elseif (is_object($mQueryString))
-			$mQueryString = $mQueryString->build($this);
 
 		return $this->doQuery($mQueryString);
 	}
