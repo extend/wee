@@ -83,7 +83,7 @@ class weeOracleDatabase extends weeDatabase
 
 		if ($rStatement === false)
 		{
-			$this->setLastError(oci_error($rStatement));
+			$this->setLastError(oci_error($this->rLink));
 			burn('DatabaseException', 'Failed to parse the given query.');
 		}
 
