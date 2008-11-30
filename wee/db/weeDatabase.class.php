@@ -54,7 +54,7 @@ abstract class weeDatabase
 		The database driver objects can't be cloned.
 	*/
 
-	private function __clone()
+	private final function __clone()
 	{
 	}
 
