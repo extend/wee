@@ -136,6 +136,17 @@ class weeMySQLDatabase extends weeDatabase
 	}
 
 	/**
+		Returns the name of the mysql dbmeta class.
+
+		@param	mixed	The name of the mysql dbmeta class.
+	*/
+
+	public function getMetaClass()
+	{
+		return 'weeMySQLDbMeta';
+	}
+
+	/**
 		Returns the primary key index value.
 		Useful when you need to retrieve the row primary key value you just inserted.
 		This function may work a bit differently in each drivers.

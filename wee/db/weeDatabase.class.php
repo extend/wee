@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -163,6 +163,17 @@ abstract class weeDatabase
 	abstract public function getLastError();
 
 	/**
+		Returns the name of the dbmeta class associated with this driver.
+
+		@param	mixed	The name of the dbmeta class or null if the driver does not support dbmeta.
+	*/
+
+	public function getMetaClass()
+	{
+		return null;
+	}
+
+	/**
 		Returns the primary key index value.
 		Useful when you need to retrieve the row primary key value you just inserted.
 		This function may work a bit differently in each drivers.
@@ -175,30 +186,22 @@ abstract class weeDatabase
 
 	/**
 		Returns the meta object associated with this database.
-		The object is created only once.
 
-		@return weeDbMeta	The meta object.
-		@todo				weeDbMeta class name shouldn't be hardcoded.
+		@return weeDbMeta				The meta object.
+		@throw	BadMethodCallException	This database driver does not support dbmeta.
 	*/
 
 	public function meta()
 	{
-		if (!isset($this->oMeta))
+		if ($this->oMeta === null)
 		{
-			$sDbClass	= get_class($this);
-			$sClass		= str_replace('Database', 'DbMeta', $sDbClass);
-
-			if (!class_exists($sClass))
-				while (($sDbClass = get_parent_class($sDbClass)) !== false)
-				{
-					$sClass = str_replace('Database', 'DbMeta', $sDbClass);
-					if (class_exists($sClass))
-						break;
-				}
-
+			$sClass = $this->getMetaClass();
+			$sClass !== null
+				or burn('BadMethodCallException',
+					_WT('This database driver does not support dbmeta.'));
 			$this->oMeta = new $sClass($this);
 		}
-		
+
 		return $this->oMeta;
 	}
 

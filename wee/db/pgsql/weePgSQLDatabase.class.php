@@ -141,6 +141,17 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
+		Returns the name of the pgsql dbmeta class.
+
+		@param	mixed	The name of the pgsql dbmeta class.
+	*/
+
+	public function getMetaClass()
+	{
+		return 'weePgSQLDbMeta';
+	}
+
+	/**
 		Returns the primary key index value.
 		Useful when you need to retrieve the row primary key value you just inserted.
 		This function may work a bit differently in each drivers.
