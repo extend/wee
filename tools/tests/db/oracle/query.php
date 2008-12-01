@@ -172,3 +172,12 @@ try {
 	$oDb->queryValue('SELECT Q_NAME, Q_QUANTITY FROM QUERY WHERE Q_QUANTITY=0');
 	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns one row of two columns.');
 } catch (UnexpectedValueException $e) {}
+
+// weeOracleResult::fetchAll
+
+$aAll = array();
+foreach ($aInsertValues as $i => $aRow)
+	$aAll[] = array('q_id' => $i + 1) + $aRow;
+
+$this->isEqual($aAll, $oDb->query('SELECT * FROM query')->fetchAll(),
+	_WT('weeOracleResult::fetchAll does not return the expected rows of the table.'));
