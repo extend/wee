@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,41 +29,38 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeOracleResult extends weeDatabaseResult
 {
 	/**
-		Number of results.
+		The number of rows in the result set.
 	*/
 
 	protected $iCount;
 
 	/**
-		All results.
+		The rows of the result set.
 	*/
 
-	protected $aResults;
+	protected $aRows;
 
 	/**
-		Index number of the row to fetch for Iterator.
-	*/
+		Initialises a new oracle result set.
 
-	protected $iCurrentIndex;
-
-	/**
-		Initialize the class with the result of the query.
-
-		@param $rResult The resource for the query result returned by weeDatabase's query method.
+		@param	$rResult					The oracle result resource.
+		@throw	InvalidArgumentException	$rResult is not a valid oci8 statement resource.
 	*/
 
 	public function __construct($rResult)
 	{
-		fire(!is_resource($rResult), 'InvalidArgumentException', '$rResult must be a resource.');
+		@get_resource_type($rResult) == 'oci8 statement'
+			or burn('InvalidArgumentException',
+				_WT('$rResult is not a valid oci8 statement resource.'));
 
-		$this->iCount = @oci_fetch_all($rResult, $this->aResults, 0, -1, OCI_ASSOC + OCI_FETCHSTATEMENT_BY_ROW);
+		$this->iCount = @oci_fetch_all($rResult, $this->aRows, 0, -1, OCI_ASSOC + OCI_FETCHSTATEMENT_BY_ROW);
 		oci_free_statement($rResult);
 	}
 
 	/**
 		Return the number of results returned by the query.
 
-		@return int The number of results.
+		@return	int		The number of results.
 	*/
 
 	public function count()
@@ -72,109 +69,46 @@ class weeOracleResult extends weeDatabaseResult
 	}
 
 	/**
-		Return the current row.
+		Fetches the data of the next row of the result set.
 
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+		@return	mixed	An array containing the data of the next row or false if there is no current row.
 	*/
 
-	public function current()
+	protected function doFetch()
 	{
-		if (empty($this->sRowClass))
-			$a = $this->aResults[$this->iCurrentIndex];
-		else
-			$a = new $this->sRowClass($this->aResults[$this->iCurrentIndex]);
-
-		return $this->processRow($a);
+		$m = current($this->aRows);
+		next($this->aRows);
+		return $m;
 	}
 
 	/**
-		Fetch the next row.
+		Rewinds the result set to its first row.
+	*/
 
-		Usually used to fetch the result of a query with only one result returned,
-		because if there's no result it throws an exception.
+	protected function doRewind()
+	{
+		reset($this->aRows);
+	}
+
+	/**
+		Fetches all the rows of the result set.
 
 		The return value type can differ depending on the row class.
 		The row class can be changed using the rowClass method.
 
-		@return array Usually an array, or a child of weeDatabaseRow.
-	*/
+		This method should not be used when iterating over the rows of the result set
+		through the Iterator interface.
 
-	public function fetch()
-	{
-		$this->count() == 1
-			or burn('DatabaseException',
-				_WT('The result set does not contain exactly one row.'));
-
-		fire(empty($this->aResults[0]), 'DatabaseException',
-			'Failed to retrieve the row because no row were returned by the query.');
-
-		if (empty($this->sRowClass))
-			$a = $this->aResults[0];
-		else
-			$a = new $this->sRowClass($this->aResults[0]);
-
-		return $this->processRow($a);
-	}
-
-	/**
-		Fetch all the rows returned by the query.
-
-		The return value type can differ depending on the row class.
-		The row class can be changed using the rowClass method.
-
-		@return array Usually an array, or a child of weeDatabaseRow.
+		@return	array(mixed)	An array of arrays or instances of weeDatabaseRow.
 	*/
 
 	public function fetchAll()
 	{
-		//TODO:handle the row class here too, and don't fire
-		fire(!empty($this->sRowClass), 'IllegalStateException',
-			'You cannot use a row class with weeOracleResult::fetchAll yet.');
+		if ($this->sRowClass !== null)
+			return parent::fetchAll();
 
-		return $this->aResults;
-	}
-
-	/**
-		Return the key of the current row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function key()
-	{
-		return $this->iCurrentIndex;
-	}
-
-	/**
-		Move forward to next row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function next()
-	{
-		$this->iCurrentIndex++;
-	}
-
-	/**
-		Rewind the Iterator to the first row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function rewind()
-	{
-		$this->iCurrentIndex = 0;
-	}
-
-	/**
-		Check if there is a current row after calls to rewind() or next().
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function valid()
-	{
-		return !empty($this->aResults[$this->iCurrentIndex]);
+		if ($this->bMustEncodeData)
+			return weeOutput::encodeArray($this->aRows);
+		return $this->aRows;
 	}
 }

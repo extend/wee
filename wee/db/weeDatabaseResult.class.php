@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,9 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Base class for database query results handling.
-	An object of this class is created by the weeDatabase's query method for SELECT statements.
+
+	Instances of this class are returned by weeDatabase's query method and
+	should not be instantiated manually.
 */
 
 abstract class weeDatabaseResult extends weeDataSource implements Countable, Iterator
@@ -36,37 +38,124 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 	protected $sRowClass;
 
 	/**
-		Initialize the class with the result of the query.
-
-		@param $rResult The resource for the query result returned by weeDatabase's query method.
+		The current fetched row.
 	*/
 
-	abstract public function __construct($rResult);
+	protected $mCurrentFetch;
 
 	/**
-		Fetch the next row.
+		The index of the current fetched row.
+	*/
 
-		Usually used to fetch the result of a query with only one result returned,
-		because if there's no result it throws an exception.
+	protected $iCurrentIndex;
+
+	/**
+		Returns the current row.
+
+		@return	mixed	Either an array or an instance of weeDatabaseRow or false if there is no current row.
+		@see			http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function current()
+	{
+		if ($this->mCurrentFetch === null)
+			$this->mCurrentFetch = $this->doFetch();
+
+		if ($this->mCurrentFetch)
+			return $this->processRow($this->mCurrentFetch);
+		return false;
+	}
+
+	/**
+		Fetches the data of the next row of the result set.
+
+		@return	mixed	An array containing the data of the next row or false if there is no current row.
+	*/
+
+	abstract protected function doFetch();
+
+	/**
+		Rewinds the result set to its first row.
+	*/
+
+	abstract protected function doRewind();
+
+	/**
+		Fetches the next row.
+
+		Used to fetch the only row of the result set.
+		If the result set is empty or contain more than one row.
 
 		The return value type can differ depending on the row class.
 		The row class can be changed using the rowClass method.
 
-		@return array Usually an array, or a child of weeDatabaseRow.
+		@return	mixed				An array or an instance of weeDatabaseRow.
+		@throw	DatabaseException	The result set does not contain exactly one row.
 	*/
 
-	abstract public function fetch();
+	public function fetch()
+	{
+		$this->count() == 1
+			or burn('DatabaseException',
+				_WT('The result set does not contain exactly one row.'));
+
+		$this->rewind();
+		return $this->current();
+	}
 
 	/**
-		Fetch all the rows returned by the query.
+		Fetches all the rows of the result set.
 
 		The return value type can differ depending on the row class.
 		The row class can be changed using the rowClass method.
 
-		@return array Usually an array, or a child of weeDatabaseRow.
+		This method should not be used when iterating over the rows of the result set
+		through the Iterator interface.
+
+		@return	array(mixed)	An array of arrays or instances of weeDatabaseRow.
 	*/
 
-	abstract public function fetchAll();
+	public function fetchAll()
+	{
+		return iterator_to_array($this);
+	}
+
+	/**
+		Returns the key of the current row.
+
+		@return	mixed	The key of the current row or false if there is no current row.
+		@see			http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function key()
+	{
+		return $this->iCurrentIndex;
+	}
+
+	/**
+		Move forward to next row.
+
+		@see	http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function next()
+	{
+		$this->mCurrentFetch = $this->doFetch();
+		$this->iCurrentIndex++;
+	}
+
+	/**
+		Rewinds the Iterator to the first row.
+
+		@see	http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function rewind()
+	{
+		$this->mCurrentFetch = null;
+		$this->iCurrentIndex = 0;
+		$this->doRewind();
+	}
 
 	/**
 		Encodes the row if needed.
@@ -77,6 +166,9 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 
 	protected function processRow($aRow)
 	{
+		if ($this->sRowClass !== null)
+			$aRow = new $this->sRowClass($aRow);
+
 		if ($this->bMustEncodeData)
 		{
 			if ($aRow instanceof weeDataSource)
@@ -89,7 +181,8 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 	}
 
 	/**
-		Change the type of the return for fetch and fetchAll methods.
+		Changes the type of the return for fetch and fetchAll methods and the
+		Iterator interface.
 
 		By default they return an array containing the row values,
 		but a child class of weeDatabaseRow can be specified that will be used
@@ -98,8 +191,8 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 		This can be used after a query if you want to abstract your result in
 		an object and add methods for easy manipulation of this result.
 
-		@param	$sClass The class used to return row's data.
-		@return	$this
+		@param	$sClass	The class used to return row's data.
+		@return	$this	Used to chain methods.
 	*/
 
 	public function rowClass($sClass)
@@ -108,5 +201,19 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 
 		$this->sRowClass = $sClass;
 		return $this;
+	}
+
+	/**
+		Returns whether there is a current row after calls to rewind() or next().
+
+		@see	http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function valid()
+	{
+		if ($this->mCurrentFetch === null)
+			$this->mCurrentFetch = $this->doFetch();
+
+		return $this->mCurrentFetch !== false;
 	}
 }

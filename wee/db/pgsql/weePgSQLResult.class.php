@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,40 +29,31 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weePgSQLResult extends weeDatabaseResult
 {
 	/**
-		Resource for this query result.
+		The pgsql result set.
 	*/
 
 	protected $rResult;
 
 	/**
-		Data from the current row.
-	*/
+		Initialises a new pgsql result set.
 
-	protected $aCurrentFetch;
-
-	/**
-		Index number of the row to fetch.
-		Second parameter of pg_fetch_assoc.
-	*/
-
-	protected $iCurrentIndex;
-
-	/**
-		Initialize the class with the result of the query.
-
-		@param $rResult The resource for the query result returned by weeDatabase's query method.
+		@param	$rResult					The pgsql result resource.
+		@throw	InvalidArgumentException	$rResult is not a valid pgsql result resource.
 	*/
 
 	public function __construct($rResult)
 	{
-		fire(!is_resource($rResult), 'InvalidArgumentException', '$rResult must be a resource.');
+		@get_resource_type($rResult) == 'pgsql result'
+			or burn('InvalidArgumentException',
+				_WT('$rResult is not a valid pgsql result resource.'));
+
 		$this->rResult = $rResult;
 	}
 
 	/**
 		Return the number of results returned by the query.
 
-		@return int The number of results.
+		@return	int		The number of results.
 	*/
 
 	public function count()
@@ -75,112 +66,51 @@ class weePgSQLResult extends weeDatabaseResult
 	}
 
 	/**
-		Return the current row.
+		Fetches the data of the next row of the result set.
 
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+		@return	mixed	An array containing the data of the next row or false if there is no current row.
 	*/
 
-	public function current()
+	protected function doFetch()
 	{
-		return $this->processRow($this->aCurrentFetch);
+		return pg_fetch_assoc($this->rResult);
 	}
 
 	/**
-		Fetch the next row.
+		Rewinds the result set to its first row.
+	*/
 
-		Usually used to fetch the result of a query with only one result returned,
-		because if there's no result it throws an exception.
+	protected function doRewind()
+	{
+		pg_result_seek($this->rResult, 0);
+	}
+
+	/**
+		Fetches all the rows of the result set.
 
 		The return value type can differ depending on the row class.
 		The row class can be changed using the rowClass method.
 
-		@return array Usually an array, or a child of weeDatabaseRow.
-	*/
+		This method should not be used when iterating over the rows of the result set
+		through the Iterator interface.
 
-	public function fetch()
-	{
-		$this->count() == 1
-			or burn('DatabaseException',
-				_WT('The result set does not contain exactly one row.'));
-
-		$a = pg_fetch_assoc($this->rResult);
-		fire($a === false, 'DatabaseException',
-			'Failed to retrieve the row. Might be because no row were returned by the query,' .
-			' or because you are incorrectly trying to loop through all the rows using this method.');
-
-		if (!empty($this->sRowClass))
-			$a = new $this->sRowClass($a);
-
-		return $this->processRow($a);
-	}
-
-	/**
-		Fetch all the rows returned by the query.
-
-		The return value type can differ depending on the row class.
-		The row class can be changed using the rowClass method.
-
-		@return array Usually an array, or a child of weeDatabaseRow.
+		@return	array(mixed)	An array of arrays or instances of weeDatabaseRow.
 	*/
 
 	public function fetchAll()
 	{
-		//TODO:handle the row class here too, and don't fire
-		fire(!empty($this->sRowClass), 'IllegalStateException',
-			'You cannot use a row class with weePgSQLResult::fetchAll yet.');
+		if ($this->sRowClass !== null)
+			return parent::fetchAll();
 
 		$m = pg_fetch_all($this->rResult);
-		return $m === false ? array() : $m;
-	}
 
-	/**
-		Return the key of the current row.
+		if ($m)
+		{
+			if ($this->bMustEncodeData)
+				return weeOutput::encodeArray($m);
+			return $m;
+		}
 
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function key()
-	{
-		return $this->iCurrentIndex;
-	}
-
-	/**
-		Move forward to next row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function next()
-	{
-		$this->iCurrentIndex++;
-	}
-
-	/**
-		Rewind the Iterator to the first row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function rewind()
-	{
-		$this->iCurrentIndex = 0;
-	}
-
-	/**
-		Check if there is a current row after calls to rewind() or next().
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function valid()
-	{
-		$this->aCurrentFetch = @pg_fetch_assoc($this->rResult, $this->iCurrentIndex);
-
-		if (!empty($this->sRowClass) && $this->aCurrentFetch !== false)
-			$this->aCurrentFetch = new $this->sRowClass($this->aCurrentFetch);
-
-		return ($this->aCurrentFetch !== false);
+		return array();
 	}
 }
-
-?>
