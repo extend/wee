@@ -50,6 +50,14 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 	protected $iCurrentIndex;
 
 	/**
+		Database result sets cannot be cloned.
+	*/
+
+	private final function __clone()
+	{
+	}
+
+	/**
 		Returns the current row.
 
 		@return	mixed	Either an array or an instance of weeDatabaseRow or false if there is no current row.
