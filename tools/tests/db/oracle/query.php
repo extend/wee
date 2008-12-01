@@ -177,7 +177,7 @@ try {
 
 $aAll = array();
 foreach ($aInsertValues as $i => $aRow)
-	$aAll[] = array('q_id' => $i + 1) + $aRow;
+	$aAll[] = array('Q_ID' => $i + 1) + $aRow;
 
 $this->isEqual($aAll, $oDb->query('SELECT * FROM query')->fetchAll(),
 	_WT('weeOracleResult::fetchAll does not return the expected rows of the table.'));
