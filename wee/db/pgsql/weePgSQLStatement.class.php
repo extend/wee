@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2007 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weePgSQLStatement extends weeDatabaseStatement
 {
 	/**
+		The pgsql link resource.
+	*/
+
+	protected $rLink;
+
+	/**
 		Number of affected rows for the previous query.
 		Stocked here to prevent errors if getPKId is called.
 	*/
@@ -35,9 +41,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 	protected $iNumAffectedRows;
 
 	/**
-		The PgSQL extension bind parameters when executing it.
-		The array must contain the values with 0 corresponding to $1,
-		1 to $2 and so on...
+		The parameters to bind to the prepared statement.
 	*/
 
 	protected $aParameters = array();
@@ -57,15 +61,19 @@ class weePgSQLStatement extends weeDatabaseStatement
 	protected $sStatementName;
 
 	/**
-		Create a prepared statement.
+		Creates a prepared statement.
 
-		@param $rLink The database link
-		@param $mQueryString The query string
+		@param	$rLink						The pgsql link resource.
+		@param	$mQueryString				The query string.
+		@throw	InvalidArgumentException	$rLink is not a valid pgsql link resource.
+		@throw	DatabaseException			PostgreSQL failed to prepare the given query.
 	*/
 
 	public function __construct($rLink, $sQueryString)
 	{
-		parent::__construct($rLink, $sQueryString);
+		@get_resource_type($rLink) == 'pgsql link'
+			or burn('InvalidArgumentException',
+				_WT('$rLink is not a valid pgsql link resource.'));
 
 		// Get parameters name and position
 
@@ -85,50 +93,52 @@ class weePgSQLStatement extends weeDatabaseStatement
 
 		// Prepare the statement
 
-		$this->sStatementName = 'st_' . md5($sQueryString);
+		$this->sStatementName	= 'st_' . md5($sQueryString);
+		$this->rLink			= $rLink;
 
 		$rResult = pg_prepare($this->rLink, $this->sStatementName, $sQueryString);
-		fire($rResult === false, 'DatabaseException', 'Failed to prepare the statement: ' . pg_last_error($this->rLink));
+		$rResult !== false
+			or burn('DatabaseException',
+				_WT('PostgreSQL failed to prepare the given query with the following message:')
+					. "\n" . pg_last_error($this->rLink));
 	}
 
 	/**
-		Bind parameters to the statement.
+		Does the pgsql-dependent work to bind the parameters to the statement.
 
-		You can pass either one parameter name and its value,
-		or an array of parameters that will be binded.
-
-		@overload bind($sName, $sValue) Example of query call with one parameter instead of an array
-		@param	$aBindParams The parameters to bind to the statement
-		@return	$this
+		@param	$aParameters	The parameters to bind.
 	*/
 
-	public function bind($aBindParams)
+	protected function doBind($aParameters)
 	{
-		if (func_num_args() == 2)
-			$aBindParams = array(func_get_arg(0), func_get_arg(1));
-
-		foreach ($aBindParams as $sName => $sValue)
-			$this->aParameters[$this->aParametersMap[$sName]] = $sValue;
-
-		return $this;
+		foreach ($aParameters as $m => $mValue)
+			if (isset($this->aParametersMap[$m]))
+				$this->aParameters[$this->aParametersMap[$m]] = $mValue;
 	}
 
 	/**
-		Execute the prepared statement.
+		Executes the prepared statement.
 
-		@return weeDatabaseResult Only with SELECT queries: an object for results handling
+		@return	mixed					An instance of weePgSQLStatement if the query returned rows or null.
+		@throw	IllegalStateException	The number of parameters required by the prepared statement does not match the number of bound parameters.
+		@throw	DatabaseException		PostgreSQL failed to execute the prepared statement.
 	*/
 
 	public function execute()
 	{
-		fire(sizeof($this->aParameters) != sizeof($this->aParametersMap), 'IllegalStateException',
-			'The prepared statement requires ' . sizeof($this->aParametersMap) . ' parameters, but ' .
-			sizeof($this->aParameters) . ' were given.');
+		$iParametersCount	= count($this->aParameters);
+		$iMapSize			= count($this->aParametersMap);
+		$iParametersCount == $iMapSize
+			or burn('IllegalStateException',
+				sprintf(_WT('The prepared statement requires %d parameters, %d were given.'),
+					$iParametersCount, $iMapSize));
 
 		ksort($this->aParameters);
 		$rResult = @pg_execute($this->rLink, $this->sStatementName, $this->aParameters);
-		fire($rResult === false, 'DatabaseException',
-			'Failed to execute the prepared statement: ' . pg_last_error($this->rLink));
+		$rResult !== false
+			or burn('DatabaseException',
+				_WT('PostgreSQL failed to execute the prepared statement with the following message:'
+					. "\n" . pg_last_error($this->rLink)));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
@@ -142,7 +152,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 		You can't use this method safely to check if your UPDATE executed successfully,
 		since the UPDATE statement does not always update rows that are already up-to-date.
 
-		@return integer The number of affected rows in the last query
+		@return	int	The number of affected rows in the last query.
 	*/
 
 	public function numAffectedRows()
@@ -150,5 +160,3 @@ class weePgSQLStatement extends weeDatabaseStatement
 		return $this->iNumAffectedRows;
 	}
 }
-
-?>
