@@ -88,9 +88,10 @@ abstract class weeDatabase
 
 		foreach ($aMatches[1] as $sName)
 		{
-			fire(((is_array($aArguments[1]) && !array_key_exists($sName, $aArguments[1]))
-				|| (!is_array($aArguments[1]) && !isset($aArguments[1][$sName]))), 'DatabaseException',
-				'Could not bind the named parameter for ' . $sName . ' because the value was not given in the arguments.');
+			// see http://blog.extend.ws/2008/03/01/arrayaccess-quirks/
+			is_array($aArguments[1]) ? array_key_exists($sName, $aArguments[1]) : isset($aArguments[1][$sName])
+				or burn('InvalidArgumentException',
+					sprintf(_WT('Could not bind the `%s` named parameter because its value was not given in the arguments.'), $sName));
 
 			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
 		}
@@ -229,14 +230,22 @@ abstract class weeDatabase
 	}
 
 	/**
-		Prepare an SQL query statement.
+		Prepares an SQL query statement.
 
-		@param	$sQueryString			The query string.
-		@return	weeDatabaseStatement	The prepared statement.
-		@see weeDatabaseStatement
+		By default, returns an instance of weeDatabaseDummyStatement,
+		which is a fallback fake implementation of prepared statements.
+
+		When possible, a real weeDatabaseStatement subclass should be
+		written.
+
+		@param	$sQuery						The query string.
+		@return	weeDatabaseDummyStatement	The prepared statement.
 	*/
 
-	abstract public function prepare($sQueryString);
+	public function prepare($sQuery)
+	{
+		return new weeDatabaseDummyStatement($this, $sQuery);
+	}
 
 	/**
 		Build and execute an SQL query.

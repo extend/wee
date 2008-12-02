@@ -185,16 +185,4 @@ class weeSQLiteDatabase extends weeDatabase
 	{
 		return $this->oDb->changes();
 	}
-
-	/**
-		Prepare an SQL query statement.
-
-		@throw	BadMethodCallException	Prepared statements are not supported in SQLite 2.
-	*/
-
-	public function prepare($sQueryString)
-	{
-		burn('BadMethodCallException',
-			_WT('Prepared statements are not supported in SQLite 2.'));
-	}
 }

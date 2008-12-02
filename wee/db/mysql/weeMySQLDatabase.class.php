@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -171,19 +171,6 @@ class weeMySQLDatabase extends weeDatabase
 	public function numAffectedRows()
 	{
 		return mysql_affected_rows($this->rLink);
-	}
-
-	/**
-		TODO
-
-		@param	$sQueryString			The query string.
-		@return	weeDatabaseStatement	The prepared statement.
-		@see weeDatabaseStatement
-	*/
-
-	public function prepare($sQueryString)
-	{
-		burn('BadMethodCallException', 'This method is not implemented yet.');
 	}
 
 	/**
