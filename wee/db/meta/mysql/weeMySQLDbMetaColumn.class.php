@@ -31,10 +31,11 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 		Initializes a new mysql column object.
 
 		This class should NEVER be instantiated manually.
-		Instances of this class should be returned by weeMySQLDbMetaColumn.
+		Instances of this class should be returned by weeMySQLDbMetaTable.
 
-		@param	$oMeta					The dbmeta object.
-		@param	$aData					The object data.
+		@param	$oMeta	The dbmeta object.
+		@param	$aData	The object data.
+		@param	$oTable	The table of the column.
 	*/
 
 	public function __construct(weeMySQLDbMeta $oMeta, array $aData, weeMySQLDbMetaTable $oTable)
@@ -45,7 +46,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 	/**
 		Returns the comment of the column.
 
-		@return	string					The comment of the column.
+		@return	string	The comment of the column.
 	*/
 
 	public function comment()
@@ -82,8 +83,8 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 		 - date
 		 - time (range restricted from 00:00:00 to 23:59:59)
 
-		@return	weeValidator			A validator appropriate for the column.
-		@see							http://dev.mysql.com/doc/refman/5.0/en/data-types.html
+		@return	weeValidator	A validator appropriate for the column.
+		@see					http://dev.mysql.com/doc/refman/5.0/en/data-types.html
 	*/
 
 	public function getValidator()
@@ -149,7 +150,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 	/**
 		Returns whether the column has a default value.
 
-		@return	bool					Whether the column has a default value.
+		@return	bool	Whether the column has a default value.
 	*/
 
 	public function hasDefault()
@@ -160,7 +161,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 	/**
 		Returns whether the column can contain null values.
 	
-		@return	bool					Whether the column can contain null values.
+		@return	bool	Whether the column can contain null values.
 	*/
 
 	public function isNullable()
