@@ -25,6 +25,9 @@ if (!defined('ALLOW_INCLUSION')) die;
 	A dummy prepared statement object for database drivers which does not support
 	this feature.
 
+	Using this class does not increase the speed on database side,
+	but it does reduce the overhead induced by the weeDatabase::query method.
+
 	Instances of this class are returned by weeDatabase's prepare method and
 	should not be instantiated manually.
 */
