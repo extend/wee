@@ -108,16 +108,12 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 	/**
 		Does the database-dependent work to bind the parameters to the statement.
 
-		The parameters are given as an associative array matching either index or
-		names to parameters values, depending on whether the query is using
-		interrogation marks placeholders.
-
 		@param	$aParameters	The parameters to bind.
 	*/
 
 	protected function doBind($aParameters)
 	{
-		$this->aParameters = $aParameters;
+		$this->aParameters = $aParameters + $this->aParameters;
 	}
 
 	/**
