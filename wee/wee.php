@@ -316,7 +316,18 @@ function xmlspecialchars($sText)
 // Core components
 
 /**
+	Interface for mappable objects.
+	Mappable are objects that can be mapped to an array using the toArray method.
+*/
+
+interface Mappable
+{
+	public function toArray();
+}
+
+/**
 	Interface for printable objects.
+	Printable objects are objects that can be converted to string using the toString method.
 
 	We have to use this instead of __toString since we can't throw any exception in __toString...
 */
