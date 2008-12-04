@@ -11,32 +11,32 @@ try
 	$oTable1 = $oMeta->table('test1');
 	$oTable2 = $oMeta->table('test2');
 
-	// weePgSQLDbMetaTable::hasPrimaryKey
+	// weeMySQLDbMetaTable::hasPrimaryKey
 
 	$this->isTrue($oTable1->hasPrimaryKey(),
-		_WT('weePgSQLDbMetaTable::hasPrimaryKey should return true when the table has a primary key.'));
+		_WT('weeMySQLDbMetaTable::hasPrimaryKey should return true when the table has a primary key.'));
 
 	$this->isFalse($oTable2->hasPrimaryKey(),
-		_WT('weePgSQLDbMetaTable::hasPrimaryKey should return false when the table does not have a primary key.'));
+		_WT('weeMySQLDbMetaTable::hasPrimaryKey should return false when the table does not have a primary key.'));
 
-	// weePgSQLDbMetaTable::primaryKey
+	// weeMySQLDbMetaTable::primaryKey
 
 	try {
 		$oTable2->primaryKey();
-		$this->fail(_WT('weePgSQLDbMetaTable::primaryKey should throw an IllegalStateException when the table does not have a primary key.'));
+		$this->fail(_WT('weeMySQLDbMetaTable::primaryKey should throw an IllegalStateException when the table does not have a primary key.'));
 	} catch (IllegalStateException $e) {}
 
 	$oPrimaryKey = $oTable1->primaryKey();
 
-	// weePgSQLDbMetaPrimaryKey::name
+	// weeMySQLDbMetaPrimaryKey::name
 
 	$this->isEqual('PRIMARY', $oPrimaryKey->name(),
-		_WT('weePgSQLDbMetaPrimaryKey::name should return "PRIMARY".'));
+		_WT('weeMySQLDbMetaPrimaryKey::name should return "PRIMARY".'));
 
-	// weePgSQLDbMetaPrimaryKey::columnsNames
+	// weeMySQLDbMetaPrimaryKey::columnsNames
 
 	$this->isEqual(array('a', 'c'), $oPrimaryKey->columnsNames(),
-		_WT('weePgSQLDbMetaPrimaryKey::columnsNames does not correctly return all the columns of the primary key.'));
+		_WT('weeMySQLDbMetaPrimaryKey::columnsNames does not correctly return all the columns of the primary key.'));
 }
 catch (Exception $oException) {}
 
