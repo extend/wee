@@ -27,7 +27,7 @@ try
 	$aArgs = $o->getArgs();
 
 	$this->isEqual('int', $aArgs['format'],
-		_WT('The the smallint validator should expect integers.'));
+		_WT('The smallint validator should expect integers.'));
 
 	$this->isEqual(- pow(256, 2) / 2, $aArgs['min'],
 		_WT('The `min` argument of the smallint validator is not correct.'));
@@ -71,7 +71,7 @@ try
 	$aArgs = $o->getArgs();
 
 	$this->isEqual('int', $aArgs['format'],
-		_WT('The the bigint validator should expect integers.'));
+		_WT('The bigint validator should expect integers.'));
 
 	if (function_exists('bcpow')) {
 		$this->isEqual(bcsub(0, bcdiv(bcpow(256, 8), 2)), $aArgs['min'],
