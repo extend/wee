@@ -161,6 +161,17 @@ class weeSQLiteDatabase extends weeDatabase
 	}
 
 	/**
+		Returns the name of the dbmeta class associated with this driver.
+
+		@param	mixed	The name of the dbmeta class or null if the driver does not support dbmeta.
+	*/
+
+	public function getMetaClass()
+	{
+		return 'weeSQLiteDbMeta';
+	}
+
+	/**
 		Returns the primary key index value of the last inserted row.
 
 		@param	$sName	Unused in this database driver.
