@@ -111,8 +111,8 @@ class weeUnitTestCase
 
 	protected function isFalse($mVar, $sMessage)
 	{
-		if ((bool)$mVar)
-			throw new UnitTestException($sMessage);
+		if ($mVar)
+			throw new ComparisonTestException(false, $mVar, $sMessage);
 	}
 
 	/**
@@ -230,8 +230,8 @@ class weeUnitTestCase
 
 	protected function isNull($mVar, $sMessage)
 	{
-		if (!is_null($mVar))
-			throw new UnitTestException($sMessage);
+		if ($mVar !== null)
+			throw new ComparisonTestException(null, $mVar, $sMessage);
 	}
 
 	/**
@@ -242,8 +242,8 @@ class weeUnitTestCase
 
 	protected function isTrue($mVar, $sMessage)
 	{
-		if (!(bool)$mVar)
-			throw new UnitTestException($sMessage);
+		if (!$mVar)
+			throw new ComparisonTestException(true, $mVar, $sMessage);
 	}
 
 	/**
