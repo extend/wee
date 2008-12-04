@@ -67,6 +67,11 @@ if (!defined('WEE_PATH'))	define('WEE_PATH', ROOT_PATH . 'wee/');
 if (!defined('PHP_EXT'))	define('PHP_EXT',  strrchr(__FILE__, '.'));
 if (!defined('CLASS_EXT'))	define('CLASS_EXT',	'.class' . PHP_EXT);
 
+// Define the LC_MESSAGES constant if not defined
+
+if (!defined('LC_MESSAGES'))
+	define('LC_MESSAGES', 5);
+
 // Atomize magic quotes
 
 set_magic_quotes_runtime(0);
