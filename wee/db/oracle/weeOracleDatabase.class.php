@@ -77,7 +77,7 @@ class weeOracleDatabase extends weeDatabase
 		@return	string	The escaped value.
 	*/
 
-	public function doEscape($mValue)
+	protected function doEscape($mValue)
 	{
 		return "'" . addslashes($mValue) . "'";
 	}

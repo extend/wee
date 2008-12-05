@@ -86,7 +86,7 @@ class weeMySQLDatabase extends weeDatabase
 		@return	string	The escaped value.
 	*/
 
-	public function doEscape($mValue)
+	protected function doEscape($mValue)
 	{
 		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
 	}

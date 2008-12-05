@@ -79,7 +79,7 @@ class weeMySQLiDatabase extends weeDatabase
 		@return	string	The escaped value.
 	*/
 
-	public function doEscape($mValue)
+	protected function doEscape($mValue)
 	{
 		return "'" . $this->oDb->escape_string($mValue) . "'";
 	}

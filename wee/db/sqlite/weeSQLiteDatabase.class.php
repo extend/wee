@@ -86,7 +86,7 @@ class weeSQLiteDatabase extends weeDatabase
 		@return	string	The escaped value.
 	*/
 
-	public function doEscape($mValue)
+	protected function doEscape($mValue)
 	{
 		return "'" . sqlite_escape_string($mValue) . "'";
 	}
