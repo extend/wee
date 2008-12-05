@@ -197,6 +197,18 @@ class weeMySQLDatabase extends weeDatabase
 	}
 
 	/**
+		Prepares an SQL query statement.
+
+		@param	$sQuery				The query string.
+		@return	weeMySQLStatement	The prepared statement.
+	*/
+
+	public function prepare($sQuery)
+	{
+		return new weeMySQLStatement($this, $sQuery);
+	}
+
+	/**
 		Changes database without reconnecting.
 		The new database must be on the same host of the previous.
 
