@@ -31,17 +31,21 @@ class weeMySQLDbMeta extends weeDbMeta
 		Initializes a new MySQL database meta.
 
 		@param	$oDb						The database to query.
+		@throw	InvalidArgumentException	$oDb is not an instance of weeMySQLDatabase nor weeMySQLiDatabase.
 	*/
 
-	public function __construct(weeMySQLDatabase $oDb)
+	public function __construct(weeDatabase $oDb)
 	{
+		$oDb instanceof weeMySQLDatabase or $oDb instanceof weeMySQLiDatabase
+			or burn('InvalidArgumentException',
+				_WT('$oDb must be an instance of weeMySQLDatabase or weeMySQLiDatabase.'));
 		parent::__construct($oDb);
 	}
 
 	/**
 		Returns the name of the table class.
 
-		@return	string						The name of the table class.
+		@return	string	The name of the table class.
 	*/
 
 	public function getTableClass()
@@ -54,6 +58,7 @@ class weeMySQLDbMeta extends weeDbMeta
 
 		@param	$sName						The name of the table.
 		@return	weeMySQLDbMetaTable			The table.
+		@throw	UnexpectedValueException	The tables does not exist.
 	*/
 
 	public function table($sName)
@@ -78,8 +83,8 @@ class weeMySQLDbMeta extends weeDbMeta
 	/**
 		Returns whether a table of a given name exists in the database.
 
-		@param	$sName						The name of the table.
-		@return	bool						true if the table exists in the database, false otherwise.
+		@param	$sName	The name of the table.
+		@return	bool	true if the table exists in the database, false otherwise.
 	*/
 
 	public function tableExists($sName)

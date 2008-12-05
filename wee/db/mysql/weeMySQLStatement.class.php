@@ -60,12 +60,17 @@ class weeMySQLStatement extends weeDatabaseStatement
 	/**
 		Initialises a mysql prepared statement.
 
-		@param	$oDb	The mysql database.
-		@param	$sQuery	The query.
+		@param	$oDb						The mysql database.
+		@param	$sQuery						The query.
+		@throw	InvalidArgumentException	$oDb is not an instance of weeMySQLDatabase nor weeMySQLiDatabase.
 	*/
 
-	public function __construct(weeMySQLDatabase $oDb, $sQuery)
+	public function __construct(weeDatabase $oDb, $sQuery)
 	{
+		$oDb instanceof weeMySQLDatabase or $oDb instanceof weeMySQLiDatabase
+			or burn('InvalidArgumentException',
+				_WT('$oDb must be an instance of weeMySQLDatabase or weeMySQLiDatabase.'));
+
 		preg_match_all('/:([\w_]+)/', $sQuery, $aMatches, PREG_OFFSET_CAPTURE);
 
 		$s			= '';
