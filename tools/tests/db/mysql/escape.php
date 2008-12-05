@@ -9,28 +9,22 @@ $this->isEqual("'egg'", $oDb->escape('egg'),
 $this->isEqual("'123'", $oDb->escape(123),
 	'Escaping of the integer 123 is wrong.');
 
-if (defined('WEE_ON_WINDOWS'))
-{
+$sFormerLocale = setlocale(LC_NUMERIC, 'C');
+
+try {
 	$this->isEqual("'7.5'", $oDb->escape(7.5),
-		'Escaping of the float 7.5 is wrong.');
-	$this->isEqual("'7.5'", $oDb->escape(7.50),
-		'Escaping of the float 7.50 is wrong.');
+		_WT('weeMySQLDatabase::escape does not return the expected escaped float when the locale is "C".'));
+
+	setlocale(LC_NUMERIC, 'fr_FR');
+
+	$this->isEqual("'7.5'", $oDb->escape(7.5),
+		_WT('weeMySQLDatabase::escape does not return the expected escaped float when the locale is "fr_FR".'));
 }
-else
-{
-	$sFormerLocale	= setlocale(LC_NUMERIC, '0');
-	$aLocales		= array();
-	exec('locale -a', $aLocales);
-	foreach ($aLocales as $sLocale)
-	{
-		setlocale(LC_NUMERIC, $sLocale);
-		$this->isEqual("'7.5'", $oDb->escape(7.5),
-			sprintf(_WT('Escaping of the float 7.5 is wrong with locale %s.'), $sLocale));
-		$this->isEqual("'7.5'", $oDb->escape(7.50),
-			sprintf(_WT('Escaping of the float 7.50 is wrong with locale %s.'), $sLocale));
-	}
-	setlocale(LC_NUMERIC, $sFormerLocale);
-}
+catch (Exception $oException) {}
+
+setlocale(LC_NUMERIC, $sFormerLocale);
+if (isset($oException))
+	throw $oException;
 
 $this->isEqual("'that\\'s all folks!'", $oDb->escape("that's all folks!"),
 	'Escaping of the string "that\'s all folks" is wrong.');
