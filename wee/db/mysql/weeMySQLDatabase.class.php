@@ -80,6 +80,18 @@ class weeMySQLDatabase extends weeDatabase
 	}
 
 	/**
+		Does the database-dependent logic of the escape operation.
+
+		@param	$mValue	The value to escape.
+		@return	string	The escaped value.
+	*/
+
+	public function doEscape($mValue)
+	{
+		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
+	}
+
+	/**
 		Executes an SQL query.
 
 		@param	$sQuery			The query to execute.
@@ -96,31 +108,6 @@ class weeMySQLDatabase extends weeDatabase
 
 		if ($mResult !== true)
 			return new weeMySQLResult($mResult);
-	}
-
-	/**
-		Escapes the given value for safe concatenation in an SQL query.
-		You should not build query by concatenation if possible (see query).
-		You should NEVER use sprintf when building queries.
-
-		@param	$mValue	The value to escape.
-		@return	string	The escaped value, wrapped around simple quotes.
-	*/
-
-	public function escape($mValue)
-	{
-		if ($mValue === null)
-			return 'null';
-		elseif ($mValue instanceof Printable)
-			$mValue = $mValue->toString();
-		elseif (is_float($mValue))
-		{
-			$sFormerLocale = setlocale(LC_NUMERIC, 'C');
-			$mValue = (string)$mValue;
-			setlocale(LC_NUMERIC, $sFormerLocale);
-		}
-
-		return "'" . mysql_real_escape_string($mValue, $this->rLink) . "'";
 	}
 
 	/**

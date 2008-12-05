@@ -71,6 +71,18 @@ class weeOracleDatabase extends weeDatabase
 	}
 
 	/**
+		Does the oracle-dependent logic of the escape operation.
+
+		@param	$mValue	The value to escape.
+		@return	string	The escaped value.
+	*/
+
+	public function doEscape($mValue)
+	{
+		return "'" . addslashes($mValue) . "'";
+	}
+
+	/**
 		Execute an SQL query.
 
 		@param	$sQueryString	The query string
@@ -98,25 +110,6 @@ class weeOracleDatabase extends weeDatabase
 
 		$this->iNumAffectedRows = oci_num_rows($rStatement);
 		oci_free_statement($rStatement);
-	}
-
-	/**
-		Escape the given value for safe concatenation in an SQL query.
-		You should not build query by concatenation if possible (see query).
-		You should NEVER use sprintf when building queries.
-
-		@param	$mValue	The value to escape
-		@return	string	The escaped value, wrapped around simple quotes
-	*/
-
-	public function escape($mValue)
-	{
-		if ($mValue === null)
-			return 'null';
-		elseif ($mValue instanceof Printable)
-			$mValue = $mValue->toString();
-
-		return "'" . addslashes($mValue) . "'";
 	}
 
 	/**

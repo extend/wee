@@ -80,6 +80,18 @@ class weeSQLiteDatabase extends weeDatabase
 	}
 
 	/**
+		Does the sqlite-dependent logic of the escape operation.
+
+		@param	$mValue	The value to escape.
+		@return	string	The escaped value.
+	*/
+
+	public function doEscape($mValue)
+	{
+		return "'" . sqlite_escape_string($mValue) . "'";
+	}
+
+	/**
 		Executes an SQL query.
 
 		@param	$sQuery				The query to execute.
@@ -103,28 +115,6 @@ class weeSQLiteDatabase extends weeDatabase
 
 		if ($m->numFields())
 			return new weeSQLiteResult($m);
-	}
-
-	/**
-		Escapes a given value for safe concatenation in an SQL query.
-
-		@param	$mValue				The value to escape.
-		@return	string				The escaped value, wrapped around simple quotes.
-	*/
-
-	public function escape($mValue)
-	{
-		if ($mValue === null)
-			return 'null';
-
-		if (is_float($mValue))
-		{
-			$sFormerLocale = setlocale(LC_NUMERIC, 'C');
-			$mValue = (string)$mValue;
-			setlocale(LC_NUMERIC, $sFormerLocale);
-		}
-
-		return "'" . sqlite_escape_string($mValue) . "'";
 	}
 
 	/**

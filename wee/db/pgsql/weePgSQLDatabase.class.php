@@ -66,6 +66,18 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
+		Does the pgsql-dependent logic of the escape operation.
+
+		@param	$mValue	The value to escape.
+		@return	string	The escaped value.
+	*/
+
+	public function doEscape($mValue)
+	{
+		return "'" . pg_escape_string($mValue) . "'";
+	}
+
+	/**
 		Execute an SQL query.
 
 		@param	$sQueryString	The query string
@@ -82,32 +94,6 @@ class weePgSQLDatabase extends weeDatabase
 
 		if (pg_num_fields($rResult) > 0)
 			return new weePgSQLResult($rResult);
-	}
-
-	/**
-		Escape the given value for safe concatenation in an SQL query.
-		You should not build query by concatenation if possible (see query).
-		You should NEVER use sprintf when building queries.
-
-		@param	$mValue	The value to escape
-		@return	string	The escaped value, wrapped around simple quotes
-	*/
-
-	public function escape($mValue)
-	{
-		if ($mValue === null)
-			return 'null';
-		elseif ($mValue instanceof Printable)
-			$mValue = $mValue->toString();
-		elseif (is_float($mValue))
-		{
-			// The decimal separator used when a float is cast to string is locale-dependent.
-			$sDecimalSeparator = array_value(localeconv(), 'decimal_point');
-			if ($sDecimalSeparator != '.')
-				$mValue = str_replace($sDecimalSeparator, '.', $mValue);
-		}
-
-		return "'" . pg_escape_string($mValue) . "'";
 	}
 
 	/**

@@ -125,6 +125,15 @@ abstract class weeDatabase
 	}
 
 	/**
+		Does the database-dependent logic of the escape operation.
+
+		@param	$mValue	The value to escape.
+		@return	string	The escaped value.
+	*/
+
+	abstract protected function doEscape($mValue);
+
+	/**
 		Execute an SQL query.
 
 		@param	$sQueryString		The query string
@@ -134,18 +143,36 @@ abstract class weeDatabase
 	abstract protected function doQuery($sQueryString);
 
 	/**
-		Escape the given value for safe concatenation in an SQL query.
+		Escapes the given value for safe concatenation in an SQL query.
 		You should not build query by concatenation if possible (see query).
 		You should NEVER use sprintf when building queries.
 
+		When the given value is null, the SQL token "null" is returned.
+
+
 		@param	$mValue	The value to escape
-		@return	string	The escaped value, wrapped around simple quotes
+		@return	string	The escaped value.
 	*/
 
-	abstract public function escape($mValue);
+	public function escape($mValue)
+	{
+		if ($mValue === null)
+			return 'null';
+
+		if ($mValue instanceof Printable)
+			$mValue = $mValue->toString();
+		elseif (is_float($mValue))
+		{
+			$sFormerLocale = setlocale(LC_NUMERIC, 'C');
+			$mValue = (string)$mValue;
+			setlocale(LC_NUMERIC, $sFormerLocale);
+		}
+
+		return $this->doEscape($mValue);
+	}
 
 	/**
-		Escape the given identifier for safe concatenation in an SQL query.
+		Escapes the given identifier for safe concatenation in an SQL query.
 
 		@param	$sValue	The identifier to escape
 		@return	string	The escaped identifier, wrapped around adequate quotes
