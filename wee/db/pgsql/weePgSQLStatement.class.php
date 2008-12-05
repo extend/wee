@@ -93,7 +93,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 
 		// Prepare the statement
 
-		$this->sStatementName	= 'st_' . md5($sQueryString);
+		$this->sStatementName	= 'st_' . md5(uniqid());
 		$this->rLink			= $rLink;
 
 		$rResult = pg_prepare($this->rLink, $this->sStatementName, $sQueryString);
