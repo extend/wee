@@ -133,8 +133,11 @@ class weeForm implements Printable
 
 	public function fill($aData)
 	{
-		fire(!is_array($aData) && !($aData instanceof ArrayAccess), 'InvalidArgumentException',
-			'$aData must be an associative array of names and values.');
+		is_array($aData) || ($aData instanceof Mappable) or burn('InvalidArgumentException',
+			'$aData must be an associative array of names and values or a Mappable object.');
+
+		if (is_object($aData))
+			$aData = $aData->toArray();
 
 		$this->aData = $aData + $this->aData;
 	}
