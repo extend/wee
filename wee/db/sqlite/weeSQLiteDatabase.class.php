@@ -49,7 +49,7 @@ class weeSQLiteDatabase extends weeDatabase
 		@param	$aParams					The parameters of the driver.
 		@throw	ConfigurationException		The SQLite PHP extension is missing.
 		@throw	InvalidArgumentException	The `file` parameter is missing.
-		@throw	UnexpectedValueException	The database file does not exist and the `create` parameter does not evaluate to true.
+		@throw	FileNotFoundException		The database file does not exist and the `create` parameter does not evaluate to true.
 		@throw	DatabaseException			The database could not be opened.
 	*/
 
@@ -68,7 +68,7 @@ class weeSQLiteDatabase extends weeDatabase
 		);
 
 		$aParams['create'] or file_exists($aParams['file'])
-			or burn('UnexpectedValueException',
+			or burn('FileNotFoundException',
 				_WT('The database file does not exist and the `create` parameter does not evaluate to true.'));
 
 		$oDb = sqlite_factory($aParams['file'], 0666, $this->sLastError);
