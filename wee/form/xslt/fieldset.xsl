@@ -22,7 +22,7 @@
 		</xsl:if>
 
 		<xsl:call-template name="container">
-			<xsl:with-param name="select" select="*"/>
+			<xsl:with-param name="select" select="*[not(local-name()='class') and not(local-name()='label')]"/>
 		</xsl:call-template>
 	</fieldset>
 </xsl:template>
