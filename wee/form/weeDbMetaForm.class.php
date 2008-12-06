@@ -37,7 +37,7 @@ class weeDbMetaForm extends weeForm
 		- formkey:		Whether the form key mechanism should be used for added security. Defaults to true.
 		- uri:			The form URI. Defaults to $_SERVER['REQUEST_URI'].
 		- method:		Method of submission of the form. Usually 'get' or 'post'. Defaults to 'post'.
-		- show-pkey:	Whether to show primary key fields. By default, only a hidden field is output for the 'upd' action.
+		- show-pkey:	Whether to show primary key fields. By default, only a hidden field is output for the 'update' action.
 
 		@param $oSet The set to build the form for.
 		@param $aOptions Options to control the building of the form.
@@ -51,8 +51,8 @@ class weeDbMetaForm extends weeForm
 		if (empty($aOptions['action']))
 			$aOptions['action'] = 'add';
 
-		in_array($aOptions['action'], array('add', 'upd'))
-			or burn('InvalidArgumentException', 'Invalid action name. Valid action names are "add" or "upd".');
+		in_array($aOptions['action'], array('add', 'update'))
+			or burn('InvalidArgumentException', 'Invalid action name. Valid action names are "add" or "update".');
 
 		$this->loadFromSet($oSet, $aOptions);
 
@@ -74,7 +74,7 @@ class weeDbMetaForm extends weeForm
 
 	protected function addWidget($sType, $sName)
 	{
-		$oChild = $this->oXML->widgets->addChild('widget');
+		$oChild = $this->oXML->widgets->widget->addChild('widget');
 		$oChild->addAttribute('type', $sType);
 		$oChild->addChild('name', $sName);
 		$oChild->addChild('label', $sName);
@@ -116,13 +116,13 @@ class weeDbMetaForm extends weeForm
 
 		$this->oXML = simplexml_load_string('<form><method>'
 			. xmlspecialchars(array_value($aOptions, 'method', 'post'))
-			. '</method><widgets/></form>');
+			. '</method><widgets><widget type="fieldset"/></widgets></form>');
 
 		foreach ($aMeta['columns'] as $sColumn) {
 			if (in_array($sColumn, $aMeta['primary'])) {
 				if (!empty($aOptions['show-pkey']))
 					$this->addWidget('textbox', $sColumn);
-				elseif ($aOptions['action'] == 'upd')
+				elseif ($aOptions['action'] == 'update')
 					$this->addWidget('hidden', $sColumn);
 			} elseif (empty($aRefSets[$sColumn]))
 				$this->addWidget('textbox', $sColumn);
@@ -142,6 +142,18 @@ class weeDbMetaForm extends weeForm
 					$oHelper->addOption(array('label' => $aRow[$sLabelColumn], 'value' => $aRow[$aRefSets[$sColumn]['key']]));
 			}
 		}
+
+		$oFieldset = $this->oXML->widgets->widget->addChild('widget');
+		$oFieldset->addAttribute('type', 'fieldset');
+		$oFieldset->addChild('class', 'buttonsfieldset');
+
+		if ($aOptions['action'] == 'update') {
+			$oButton = $oFieldset->addChild('widget');
+			$oButton->addAttribute('type', 'resetbutton');
+		}
+
+		$oButton = $oFieldset->addChild('widget');
+		$oButton->addAttribute('type', 'submitbutton');
 	}
 
 	/**
