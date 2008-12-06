@@ -119,7 +119,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 	/**
 		Executes the prepared statement.
 
-		@return	mixed					An instance of weePgSQLStatement if the query returned rows or null.
+		@return	mixed					An instance of weePgSQLResult if the query returned rows or null.
 		@throw	IllegalStateException	The number of parameters required by the prepared statement does not match the number of bound parameters.
 		@throw	DatabaseException		PostgreSQL failed to execute the prepared statement.
 	*/
