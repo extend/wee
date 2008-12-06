@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -42,9 +42,8 @@ class weeExplainSQLResult extends weeDatabaseResult implements ArrayAccess
 		@param $oResult The objet created after executing the query.
 	*/
 
-	public function __construct($oResult)
+	public function __construct(weeDatabaseResult $oResult)
 	{
-		$oResult instanceof weeDatabaseResult or burn('InvalidArgumentException', '$oResult must be an instance of weeDatabaseResult.');
 		$this->oResult = $oResult;
 	}
 
@@ -61,14 +60,25 @@ class weeExplainSQLResult extends weeDatabaseResult implements ArrayAccess
 	}
 
 	/**
-		Return the current row.
+		Fetches the data of the next row of the result set.
 
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+		@return	mixed	An array containing the data of the next row or false if there is no current row.
 	*/
 
-	public function current()
+	protected function doFetch()
 	{
-		return $this->oResult->current();
+		$m = $this->oResult->current();
+		$this->oResult->next();
+		return $m;
+	}
+
+	/**
+		Rewinds the result set to its first row.
+	*/
+
+	protected function doRewind()
+	{
+		$this->oResult->rewind();
 	}
 
 	/**
@@ -91,28 +101,6 @@ class weeExplainSQLResult extends weeDatabaseResult implements ArrayAccess
 	public function fetchAll()
 	{
 		return $this;
-	}
-
-	/**
-		Return the key of the current row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function key()
-	{
-		return $this->oResult->key();
-	}
-
-	/**
-		Move forward to next row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function next()
-	{
-		$this->oResult->next();
 	}
 
 	/**
@@ -162,27 +150,5 @@ class weeExplainSQLResult extends weeDatabaseResult implements ArrayAccess
 
 	public function offsetUnset($offset)
 	{
-	}
-
-	/**
-		Rewind the Iterator to the first row.
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function rewind()
-	{
-		$this->oResult->rewind();
-	}
-
-	/**
-		Check if there is a current row after calls to rewind() or next().
-
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function valid()
-	{
-		return $this->oResult->valid();
 	}
 }
