@@ -101,7 +101,7 @@ abstract class weeFrame implements Printable
 			_WT('An attempt to dispatch an event already occured.'));
 
 		$this->sContext		= array_value($aEvent, 'context');
-		$sFunc				= empty($aEvent['name']) ? 'defaultEvent' : 'event' . $aEvent['name'];
+		$sFunc				= $this->translateEventName(array_value($aEvent, 'name'));
 		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
 			(empty($aEvent['name']) ? _WT('The default event does not exist.') : sprintf(_WT('The event "%s" does not exist.'), $aEvent['name'])));
 
@@ -250,6 +250,20 @@ abstract class weeFrame implements Printable
 			return $this->oTaconite->applyTo($this->oTpl);
 
 		return $this->oTpl->toString();
+	}
+
+	/**
+		Translate the event's name into its corresponding method.
+
+		@param $sName The event's name.
+		@return string The method's name for this event.
+	*/
+
+	protected function translateEventName($sName)
+	{
+		if (empty($sName))
+			return 'defaultEvent';
+		return 'event' . $sName;
 	}
 
 	/**
