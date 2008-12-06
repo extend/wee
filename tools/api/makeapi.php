@@ -33,6 +33,7 @@ $o = new weeDocumentorXML;
 file_put_contents(
 	$argv[1] . 'api.xml',
 	$o	->docClassFromPath('wee')
+		->docClass('Mappable')
 		->docClass('Printable')
 		->docFunc('fire')
 		->docFunc('burn')

@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Builds an XML based on PHP code.
 */
 
-abstract class weeDocumentor implements Printable
+abstract class weeDocumentor implements Mappable, Printable
 {
 	/**
 		Stores parsed classes data.

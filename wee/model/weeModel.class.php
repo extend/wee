@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for defining a model.
 */
 
-abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator
+abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator, Mappable
 {
 	/**
 		Key and value for the currently iterated element.

@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@see share/conf/sample.cnf for an example configuration file
 */
 
-class weeConfigFile
+class weeConfigFile implements Mappable
 {
 	/**
 		Contains the configuration data.
