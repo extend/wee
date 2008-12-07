@@ -305,12 +305,12 @@ function rmdir_recursive($sPath, $bOnlyContents = false)
 }
 
 /**
-	Convert special characters to HTML entities.
+	Convert special characters to XML entities.
 
 	Original author: treyh on PHP comments for htmlspecialchars.
 
-	@param $sText The string being converted.
-	@return string The converted string.
+	@param	$sText	The string being converted.
+	@return	string	The converted string.
 */
 
 function xmlspecialchars($sText)
