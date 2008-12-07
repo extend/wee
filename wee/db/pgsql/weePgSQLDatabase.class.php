@@ -99,16 +99,19 @@ class weePgSQLDatabase extends weeDatabase
 	/**
 		Escape the given identifier for safe concatenation in an SQL query.
 
-		@param	$sValue	The identifier to escape
-		@return	string	The escaped identifier, wrapped around double quotes
+		@param	$sValue						The identifier to escape
+		@return	string						The escaped identifier, wrapped around double quotes
+		@throw	InvalidArgumentException	The given value is not a valid pgsql identifier.
 	*/
 
 	public function escapeIdent($sValue)
 	{
 		if ($sValue instanceof Printable)
 			$sValue = $sValue->toString();
-		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
-			_WT('$sValue is not a valid pgsql identifier.'));
+		$iLength = strlen($sValue);
+		$iLength > 0 and $iLength <= 63 and strpos($sValue, "\0") === false
+			or burn('InvalidArgumentException',
+				_WT('$sValue is not a valid pgsql identifier.'));
 
 		return '"' . str_replace('"', '""', $sValue) . '"';
 	}
