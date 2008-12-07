@@ -24,20 +24,17 @@ $this->isEqual('null', $oDb->escape(null),
 $this->isEqual('"egg"', $oDb->escapeIdent('egg'),
 	'escapeIdent does not properly escape the identifier "egg".');
 
-$this->isEqual('"that""s all folks!"', $oDb->escapeIdent('that"s all folks!'),
-	'escapeIdent does not properly escape the identifier \'that"s all folks!\'.');
+try {
+	$oDb->escapeIdent('that"s all folks!');
+	$this->fail(_WT('weeOracleDatabase::escapeIdent does not throw an InvalidArgumentException when the identifier contains double quotes.'));
+} catch (InvalidArgumentException $e) {}
 
 try {
 	$oDb->escapeIdent('');
-	$this->fail('escapeIdent does not throw an InvalidArgumentException when the identifier is empty.');
+	$this->fail('weeOracleDatabase::escapeIdent does not throw an InvalidArgumentException when the identifier is empty.');
 } catch(InvalidArgumentException $e) {}
 
 try {
-	$oDb->escapeIdent("\0");
-	$this->fail('escapeIdent does not throw an InvalidArgumentException when the identifier contains a NUL character.');
-} catch(InvalidArgumentException $e) {}
-
-try {
-	$oDb->escapeIdent(str_repeat('w', 64));
-	$this->fail('escapeIdent does not throw an InvalidArgumentException when the identifier is longer than 63 characters.');
+	$oDb->escapeIdent(str_repeat('w', 31));
+	$this->fail('weeOracleDatabase::escapeIdent does not throw an InvalidArgumentException when the identifier is longer than 30 characters.');
 } catch(InvalidArgumentException $e) {}

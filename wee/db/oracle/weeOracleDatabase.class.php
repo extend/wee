@@ -121,10 +121,12 @@ class weeOracleDatabase extends weeDatabase
 
 	public function escapeIdent($sValue)
 	{
-		fire(empty($sValue) || strpos($sValue, "\0") !== false || strlen($sValue) > 63, 'InvalidArgumentException',
-			_WT('$sValue is not a valid pgsql identifier.'));
+		$iLength = strlen($sValue);
+		strpos($sValue, '"') === false and $iLength > 0 and $iLength <= 30
+			or burn('InvalidArgumentException',
+				_WT('$sValue is not a valid oracle identifier.'));
 
-		return '"' . str_replace('"', '""', $sValue) . '"';
+		return '"' . $sValue . '"';
 	}
 
 	/**
