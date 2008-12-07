@@ -113,17 +113,17 @@ class weeMySQLDatabase extends weeDatabase
 	/**
 		Escape the given identifier for safe concatenation in an SQL query.
 
-		@param	$sValue	The identifier to escape.
-		@return	string	The escaped identifier, wrapped around ticks.
+		@param	$sValue						The identifier to escape.
+		@return	string						The escaped identifier, wrapped around ticks.
+		@throw	InvalidArgumentException	The given value is not a valid mysql identifier.
 	*/
 
 	public function escapeIdent($sValue)
 	{
-		fire(
-			empty($sValue) || strpos($sValue, "\0") !== false || strpos($sValue, chr(255)) !== false || !substr_compare($sValue, ' ', -1) || strlen($sValue) > 64,
-			'InvalidArgumentException',
-			_WT('$sValue is not a valid mysql identifier.')
-		);
+		$iLength = strlen($sValue);
+		$iLength > 0 and $iLength < 65 and strpos($sValue, "\0") === false and strpos($sValue, chr(255)) === false and substr_compare($sValue, ' ', -1)
+			or burn('InvalidArgumentException',
+				_WT('$sValue is not a valid mysql identifier.'));
 
 		return '`' . str_replace('`', '``', $sValue) . '`';
 	}
