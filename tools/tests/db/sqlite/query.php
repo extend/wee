@@ -117,14 +117,14 @@ try {
 
 	$oResults->rewind();
 	$this->isTrue($oResults->valid(),
-		_WT('weeMySQLResult::valid should return true after a call to weeMySQLResult::rewind when the result set is not empty.'));
+		_WT('weeSQLiteResult::valid should return true after a call to weeSQLiteResult::rewind when the result set is not empty.'));
 
 	$this->isEqual(array('q_id' => 1) + $aInsertValues[0], $oResults->current(),
-		_WT('weeMySQLResult::current should return the first row of the result set after a call to weeMySQLResult::rewind.'));
+		_WT('weeSQLiteResult::current should return the first row of the result set after a call to weeSQLiteResult::rewind.'));
 
 	$oResults->next();
 	$this->isEqual(array('q_id' => 2) + $aInsertValues[1], $oResults->current(),
-		_WT('weeMySQLResult::current should return the second row of the result set when moving forward to the second row.'));
+		_WT('weeSQLiteResult::current should return the second row of the result set when moving forward to the second row.'));
 
 	// Test foreach
 
