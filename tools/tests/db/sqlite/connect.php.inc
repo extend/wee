@@ -3,7 +3,7 @@
 try {
 	$oDb = new weeSQLiteDatabase(array(
 		'create'	=> true,
-		'file'		=> ROOT_PATH . 'app/tmp/wee_tests.db'
+		'file'		=> ':memory'
 	));
 } catch (ConfigurationException $o) {
 	$this->skip();
