@@ -30,11 +30,15 @@ class weeSQLiteDbMeta extends weeDbMeta
 	/**
 		Initialises a new SQLite database meta.
 
-		@param	$oDb	The database to query.
+		@param	$oDb						The database to query.
+		@throw	InvalidArgumentException	$oDb is not an instance of weeSQLiteDatabase nor a sqlite or sqlite3 instance of weePDODatabase.
 	*/
 
-	public function __construct(weeSQLiteDatabase $oDb)
+	public function __construct(weeDatabase $oDb)
 	{
+		$oDb instanceof weeSQLiteDatabase || $oDb instanceof weePDODatabase && in_array($oDb->getDriverName(), array('sqlite', 'sqlite2'))
+			or burn('InvalidArgumentException',
+				_WT('$oDb must be an instance of weePgSQLDatabase or a sqlite or sqlite2 instance of weeSQLiteDatabase.'));
 		parent::__construct($oDb);
 	}
 

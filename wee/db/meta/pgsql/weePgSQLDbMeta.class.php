@@ -29,13 +29,17 @@ class weePgSQLDbMeta extends weeDbMeta
 	implements weeDbMetaSchemaProvider
 {
 	/**
-		Initializes a new PostgreSQL database meta.
+		Initialises a new PostgreSQL database meta.
 
 		@param	$oDb						The database to query.
+		@throw	InvalidArgumentException	$oDb is not an instance of weePgSQLDatabase nor a pgsql instance of weePDODatabase.
 	*/
 
-	public function __construct(weePgSQLDatabase $oDb)
+	public function __construct(weeDatabase $oDb)
 	{
+		$oDb instanceof weePgSQLDatabase || $oDb instanceof weePDODatabase && $oDb->getDriverName() == 'pgsql'
+			or burn('InvalidArgumentException',
+				_WT('$oDb must be an instance of weePgSQLDatabase or a pgsql instance of weePDODatabase.'));
 		parent::__construct($oDb);
 	}
 
