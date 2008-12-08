@@ -28,21 +28,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeMySQLDbMeta extends weeDbMeta
 {
 	/**
-		Initialises a new MySQL database meta.
-
-		@param	$oDb						The database to query.
-		@throw	InvalidArgumentException	$oDb is not an instance of weeMySQLDatabase nor weeMySQLiDatabase nor a mysql instance of weePDODatabase.
-	*/
-
-	public function __construct(weeDatabase $oDb)
-	{
-		$oDb instanceof weeMySQLDatabase || $oDb instanceof weeMySQLiDatabase || $oDb instanceof weePDODatabase && $oDb->getDriverName() == 'mysql'
-			or burn('InvalidArgumentException',
-				_WT('$oDb must be an instance of weeMySQLDatabase or weeMySQLiDatabase or a mysql instance of weePDODatabase.'));
-		parent::__construct($oDb);
-	}
-
-	/**
 		Returns the name of the table class.
 
 		@return	string	The name of the table class.
