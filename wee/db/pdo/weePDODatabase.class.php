@@ -134,7 +134,7 @@ class weePDODatabase extends weeDatabase
 				$iLength = strlen($sValue);
 				$iLength > 0 && $iLength < 65 && strpos($sValue, "\0") === false && strpos($sValue, chr(255)) === false && substr_compare($sValue, ' ', -1)
 					or burn('InvalidArgumentException',
-						_WT('$sValue is not a valid mysqli identifier.'));
+						_WT('$sValue is not a valid mysql identifier.'));
 
 				return '`' . str_replace('`', '``', $sValue) . '`';
 
