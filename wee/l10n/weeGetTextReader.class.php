@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2008 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,31 +30,40 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeGetTextReader
 {
 	/**
-		Is the file compiled with little endianness?
-	*/
-
-	private $bLittleEndian = true;
-
-	/**
 		The file stream.
 	*/
 
-	private $oStream;
+	protected $rHandle;
+
+	/**
+		Is the file compiled with little endianness?
+	*/
+
+	protected $bLittleEndian = true;
 
 	/**
 		The strings compiled in the binary MO file.
 	*/
 
-	private $aStrings;
+	protected $aStrings;
 
 	/**
-		Constructs a new gettext binary MO file reader.
-		@param $sFilename The name of the file to be read.
+		Initialises a new gettext binary MO file reader.
+
+		@param	$sFilename					The name of the file to be read.
+		@throw	FileNotFoundException		The given file does not exist.
+		@throw	NotPermittedException		The given file could not be opened.
+		@throw	UnexpectedValueException	The given file does not seem to be a MO file.
 	*/
 
 	public function __construct($sFilename)
 	{
-		$this->oStream = new weeFileStream($sFilename);
+		is_file($sFilename) or burn('FileNotFoundException',
+			sprintf(_WT('File "%s" does not exist.'), $sFilename));
+
+		$this->rHandle = @fopen($sFilename, 'r');
+		$this->rHandle !== false or burn('NotPermittedException',
+			sprintf(_WT('File "%s" could not be opened.'), $sFilename));
 
 		switch ($this->readInt())
 		{
@@ -67,11 +76,12 @@ class weeGetTextReader
 				break;
 
 			default:
-				burn('UnexpectedValueException', "File '$sFilename' does not seem to be a mo file.");
+				burn('UnexpectedValueException',
+					sprintf(_WT('File "%s" does not seem to be a MO file.'), $sFilename));
 		}
 
 		// We skip the revision field, we don't need it.
-		$this->oStream->seek(4, weeFileStream::SEEK_CURRENT);
+		$this->seek(4, SEEK_CUR);
 
 		$iStringsCount				= $this->readInt();
 		$iOriginalTableOffset		= $this->readInt();
@@ -84,8 +94,6 @@ class weeGetTextReader
 		$aTranslationStrings		= $this->readStrings($aTranslationTable);
 
 		$this->aStrings				= array_combine($aOriginalStrings, $aTranslationStrings);
-
-		unset($this->oStream);
 	}
 
 	/**
@@ -99,14 +107,33 @@ class weeGetTextReader
 	}
 
 	/**
-		Reads an integer from the file stream.
-		This method automatically handles endianness.
-		@return int The read integer.
+		Reads a given amount of bytes from the file.
+
+		@param	$iBytes				The amount of bytes to be read.
+		@return	string				The read string.
+		@throw	EndOfFileException	The end of the file has been reached.
 	*/
 
-	private function readInt()
+	protected function read($iBytes)
 	{
-		$s = $this->oStream->read(4);
+		$s = fread($this->rHandle, $iBytes);
+		!feof($this->rHandle) or burn('EndOfFileException',
+			sprintf(_WT('Unexpected end of file while reading %d bytes from "%s".'), $iBytes, $this->sFilename));
+
+		return $s;
+	}
+
+	/**
+		Reads an integer from the file stream.
+
+		This method automatically handles endianness.
+
+		@return	int	The read integer.
+	*/
+
+	protected function readInt()
+	{
+		$s = $this->read(4);
 		if ($this->bLittleEndian)
 			$a = unpack('V', $s);
 		else
@@ -116,14 +143,15 @@ class weeGetTextReader
 
 	/**
 		Reads a table of a given size from the file stream at a given offset.
+
 		@param	$iOffset	The offset where the table starts in the file.
 		@param	$iSize		The size of the table to be read.
 		@return	array		The read table.
 	*/
 
-	private function readTable($iOffset, $iSize)
+	protected function readTable($iOffset, $iSize)
 	{
-		$this->oStream->seek($iOffset);
+		$this->seek($iOffset);
 		$a = array();
 		for ($i = 0; $i < $iSize; ++$i)
 			$a[] = $this->readTableEntry();
@@ -132,15 +160,17 @@ class weeGetTextReader
 
 	/**
 		Reads a table entry from the file stream.
+
 		The returned table entry is an associative array with 2 keys:
-			- length: The length of the string.
-			- offset: The offset where the string begins in the file.
+		- length: The length of the string.
+		- offset: The offset where the string begins in the file.
+
 		@return	array		The read table entry.
 	*/
 
-	private function readTableEntry()
+	protected function readTableEntry()
 	{
-		$s = $this->oStream->read(8);
+		$s = $this->read(8);
 		if ($this->bLittleEndian)
 			$a = unpack('Vlength/Voffset', $s);
 		else
@@ -150,31 +180,51 @@ class weeGetTextReader
 
 	/**
 		Reads a string of a given size from the file stream at a given offset.
+
 		@param	$iOffset	The offset where the string begins in the file.
 		@param	$iLength	The length of the string to be read.
 		@return	string		The read string.
 	*/
 
-	private function readString($iOffset, $iLength)
+	protected function readString($iOffset, $iLength)
 	{
 		if (!$iLength)
 			return '';
 
-		$this->oStream->seek($iOffset);
-		return $this->oStream->read($iLength);
+		$this->seek($iOffset);
+		return $this->read($iLength);
 	}
 
 	/**
 		Reads strings referenced in a given table.
+
 		@param	$aTable		The table referencing the strings to be read.
 		@return	array		The read strings.
 	*/
 
-	private function readStrings($aTable)
+	protected function readStrings($aTable)
 	{
 		$a = array();
 		foreach ($aTable as $aTableEntry)
 			$a[] = $this->readString($aTableEntry['offset'], $aTableEntry['length']);
 		return $a;
+	}
+
+	/**
+		Seeks a given position in the file.
+
+		@param	$iPosition			The position to be sought.
+		@param	$iWhence			The relative position from where to start.
+		@throw	EndOfFileException	Unexpected end of file while seeking through the file.
+		@see	fseek()
+	*/	
+
+	protected function seek($iPosition, $iWhence = SEEK_SET)
+	{
+		$i = fseek($this->rHandle, $iPosition, $iWhence);
+		$i != -1 or burn('EndOfFileException',
+			sprintf(_WT('Unexpected end of file while seeking through "%s".'), $this->sFilename));
+
+		return $i;
 	}
 }
