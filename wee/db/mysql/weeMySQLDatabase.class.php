@@ -41,7 +41,7 @@ class weeMySQLDatabase extends weeDatabase
 		 - user:		The user of the connection to the database.
 		 - password:	The password used by the user.
 		 - dbname:		The name of the database to select.
-		 - encoding:	The encoding to use for the database connection.
+		 - encoding:	The encoding to use for the database connection. Defaults to 'utf8'.
 
 		Refer to the documentation of mysql_connect() to know the default values
 		of the `host`, `user` and `password` parameters.
@@ -64,16 +64,15 @@ class weeMySQLDatabase extends weeDatabase
 				_WT('MySQL failed to connect to the database with the following message:')
 					. "\n" . mysql_error());
 
-		if (isset($aParams['encoding']))
-			try
-			{
-				$this->query("SET NAMES ?", $aParams['encoding']);
-			}
-			catch (DatabaseException $e)
-			{
-				burn('InvalidArgumentException',
-					sprintf(_WT('Encoding "%s" is invalid.'), $aParams['encoding']));
-			}
+		if (empty($aParams['encoding']))
+			$aParams['encoding'] = 'utf8';
+
+		try {
+			$this->query("SET NAMES ?", $aParams['encoding']);
+		} catch (DatabaseException $e) {
+			burn('InvalidArgumentException',
+				sprintf(_WT('Encoding "%s" is invalid.'), $aParams['encoding']));
+		}
 
 		if (isset($aParams['dbname']))
 			$this->selectDb($aParams['dbname']);
