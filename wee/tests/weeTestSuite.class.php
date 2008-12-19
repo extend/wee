@@ -69,6 +69,9 @@ class weeTestSuite implements Printable
 
 	public function __construct($sTestsPath)
 	{
+		!defined('WEE_CODE_COVERAGE') || function_exists('xdebug_enable')
+			or burn('ConfigurationException', 'The XDebug PHP extension is required for code coverage analysis.');
+
 		if (defined('WEE_ON_WINDOWS'))
 			$this->sTestsPath = realpath(getcwd()) . '\\' . str_replace('/', '\\', $sTestsPath);
 		else
