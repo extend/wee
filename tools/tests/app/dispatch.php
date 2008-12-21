@@ -43,18 +43,18 @@ $o = new weeApplication_testDispatch;
 try
 {
 	$o->dispatchEvent(array('frame' => 'invalid_frame'));
-	$this->fail(_WT('weeApplication does not throw an UnexpectedValueException upon invalid frame dispatch.'));
+	$this->fail(_WT('weeApplication does not throw a RouteNotFoundException upon invalid frame dispatch.'));
 }
-catch (UnexpectedValueException $e)
+catch (RouteNotFoundException $e)
 {
 }
 
 try
 {
 	$o->dispatchEvent(array('frame' => 'test_frame', 'name' => 'invalid'));
-	$this->fail(_WT('weeApplication does not throw an UnexpectedValueException upon invalid frame/event dispatch.'));
+	$this->fail(_WT('weeApplication does not throw a RouteNotFoundException upon invalid frame/event dispatch.'));
 }
-catch (UnexpectedValueException $e)
+catch (RouteNotFoundException $e)
 {
 }
 
@@ -68,9 +68,9 @@ try
 	$this->isInstanceOf($o->getFrame(), 'test_frame',
 		_WT('weeApplication::getFrame should return an instance of the frame class passed to weeApplication::dispatchEvent.'));
 }
-catch (UnexpectedValueException $e)
+catch (RouteNotFoundException $e)
 {
-	$this->fail(_WT('weeApplication throws an UnexpectedValueException upon valid frame dispatch.'));
+	$this->fail(_WT('weeApplication throws a RouteNotFoundException upon valid frame dispatch.'));
 }
 
 function frame_status($iStatus)

@@ -97,12 +97,12 @@ abstract class weeFrame implements Printable
 
 	public function dispatchEvent($aEvent)
 	{
-		fire($this->iStatus != 0, 'IllegalStateException',
+		$this->iStatus == 0 or burn('IllegalStateException',
 			_WT('An attempt to dispatch an event already occured.'));
 
 		$this->sContext		= array_value($aEvent, 'context');
 		$sFunc				= $this->translateEventName(array_value($aEvent, 'name'));
-		fire(!is_callable(array($this, $sFunc)), 'UnexpectedValueException',
+		is_callable(array($this, $sFunc)) or burn('RouteNotFoundException',
 			(empty($aEvent['name']) ? _WT('The default event does not exist.') : sprintf(_WT('The event "%s" does not exist.'), $aEvent['name'])));
 
 		try

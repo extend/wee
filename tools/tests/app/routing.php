@@ -110,5 +110,5 @@ try {
 	$aGet = array();
 	$o->translateRoute($sPathInfo, $aGet);
 	$this->fail(sprintf(_WT('The translation of the route "%s" should have failed.'), $sPathInfo));
-} catch (Error404Exception $e) {
+} catch (RouteNotFoundException $e) {
 }

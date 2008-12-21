@@ -35,10 +35,10 @@ $this->isInstanceOf($oFrame, 'loadframe_test',
 
 try {
 	$o->loadFrame('frame_which_does_not_exist');
-	$this->fail(_WT('loadFrame should throw an UnexpectedValueException, the requested frame does not exist.'));
-} catch (UnexpectedValueException $e) {}
+	$this->fail(_WT('loadFrame should throw a RouteNotFoundException, the requested frame does not exist.'));
+} catch (RouteNotFoundException $e) {}
 
 try {
 	$o->loadFrame('stdClass');
-	$this->fail(_WT('loadFrame should throw an UnexpectedValueException, the frame class is not a subclass of weeFrame'));
-} catch (UnexpectedValueException $e) {}
+	$this->fail(_WT('loadFrame should throw an RouteNotFoundException, the frame class is not a subclass of weeFrame'));
+} catch (RouteNotFoundException $e) {}

@@ -22,8 +22,8 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Exception used when the page cannot be found.
+	Exception used when the route cannot be found.
 */
 
-class Error404Exception extends Exception
+class RouteNotFoundException extends RuntimeException
 {}

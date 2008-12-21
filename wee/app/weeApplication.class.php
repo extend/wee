@@ -412,7 +412,7 @@ class weeApplication
 
 	protected function loadFrame($sFrame)
 	{
-		@is_subclass_of($sFrame, 'weeFrame') or burn('UnexpectedValueException',
+		@is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
 			sprintf(_WT('The frame %s does not exist.'), $sFrame));
 
 		$oFrame = new $sFrame;
@@ -493,6 +493,8 @@ class weeApplication
 
 		$sPathInfo = substr(self::getPathInfo(), 1);
 
+		// Use the toppage frame if the pathinfo is empty
+
 		if (empty($sPathInfo))
 			return array('frame' => (isset($this->aConfig['app.toppage'])) ? $this->aConfig['app.toppage'] : 'toppage') + $aEvent;
 
@@ -529,7 +531,7 @@ class weeApplication
 		Note that values already present in the $aGet array will be overwritten
 		if they share the same name as these new parameters
 
-		An Error404Exception is thrown when the route cannot be found
+		A RouteNotFoundException is thrown when the route cannot be found
 		and the configuration variable 'routing.strict' is true.
 
 		@param $sPathInfo The pathinfo before routing
@@ -549,22 +551,17 @@ class weeApplication
 			if ($iCount > 0) {
 				$aRoute = explode('?', $sTranslatedRoute, 2);
 
-				// Parse the new found query string
-
 				if (sizeof($aRoute) > 1) {
-					$aParams = explode('&', $aRoute[1]);
-
-					foreach ($aParams as $mParam) {
-						$mParam = explode('=', $mParam, 2);
-						$aGet[$mParam[0]] = $mParam[1];
-					}
+					$aNewGet = array();
+					parse_str($aRoute[1], $aNewGet);
+					$aGet = $aNewGet + $aGet;
 				}
 
 				return $aRoute[0];
 			}
 		}
 
-		array_value($this->aConfig, 'routing.strict') and burn('Error404Exception',
+		array_value($this->aConfig, 'routing.strict') and burn('RouteNotFoundException',
 			_WT('The route could not be found for this URL.'));
 
 		return $sPathInfo;
