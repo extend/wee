@@ -47,3 +47,8 @@ output.gzip			= 1
 session.driver		= weeSession
 session.check.ip	= 1
 session.check.token	= 1
+
+# Routing settings
+
+routing.strict	= 0
+# route.example	= toppage

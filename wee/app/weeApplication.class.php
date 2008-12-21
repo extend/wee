@@ -39,12 +39,6 @@ if (!defined('WEE_CONF_FILE'))
 class weeApplication
 {
 	/**
-		Aliases for weeFrame objects.
-	*/
-
-	protected $oAliases;
-
-	/**
 		Configuration for this application.
 	*/
 
@@ -98,16 +92,6 @@ class weeApplication
 			else
 				require(ROOT_PATH . 'res/wee/noconfig.htm');
 			exit;
-		}
-
-		// Load aliases file
-
-		if (!empty($this->aConfig['aliases.file'])) {
-			$sFile = $this->aConfig['aliases.file'];
-			if (substr($sFile, 0, 2) == '//')
-				$sFile = ROOT_PATH . substr($sFile, 2);
-
-			$this->oAliases = new weeAliasesFile($sFile);
 		}
 
 		// Add path to autoload
@@ -512,8 +496,8 @@ class weeApplication
 		if (empty($sPathInfo))
 			return array('frame' => (isset($this->aConfig['app.toppage'])) ? $this->aConfig['app.toppage'] : 'toppage') + $aEvent;
 
-		if (isset($this->oAliases))
-			$sPathInfo = $this->oAliases->resolveAlias($sPathInfo);
+		// Apply custom routing
+		$sPathInfo = $this->translateRoute($sPathInfo, $aEvent['get']);
 
 		$i = strpos($sPathInfo, '/');
 		if ($i === false)
@@ -530,5 +514,59 @@ class weeApplication
 		$aEvent['pathinfo']	= substr($sPathInfo, $i + 1);
 
 		return $aEvent;
+	}
+
+	/**
+		Apply custom routing.
+
+		All the routes defined in the configuration file are tested in their given order.
+		The translated route is returned as soon as there is a match.
+
+		Note that this method is not called if the pathinfo is empty.
+
+		If there is a new query string as a result of the custom routing,
+		we parse it and add its values to the $aGet array.
+		Note that values already present in the $aGet array will be overwritten
+		if they share the same name as these new parameters
+
+		An Error404Exception is thrown when the route cannot be found
+		and the configuration variable 'routing.strict' is true.
+
+		@param $sPathInfo The pathinfo before routing
+		@param $aGet The GET array this method will write to if additional parameters are found after translating
+		@return string The pathinfo after the routing translation
+	*/
+
+	protected function translateRoute($sPathInfo, &$aGet)
+	{
+		$aRoutes = $this->cnfArray('route');
+		$iCount = 0;
+
+		foreach ($aRoutes as $sPattern => $sRoute) {
+			$sPattern = '/^' . str_replace('/', '\/', $sPattern) . '$/i';
+			$sTranslatedRoute = preg_replace($sPattern, $sRoute, $sPathInfo, 1, $iCount);
+
+			if ($iCount > 0) {
+				$aRoute = explode('?', $sTranslatedRoute, 2);
+
+				// Parse the new found query string
+
+				if (sizeof($aRoute) > 1) {
+					$aParams = explode('&', $aRoute[1]);
+
+					foreach ($aParams as $mParam) {
+						$mParam = explode('=', $mParam, 2);
+						$aGet[$mParam[0]] = $mParam[1];
+					}
+				}
+
+				return $aRoute[0];
+			}
+		}
+
+		array_value($this->aConfig, 'routing.strict') and burn('Error404Exception',
+			_WT('The route could not be found for this URL.'));
+
+		return $sPathInfo;
 	}
 }
