@@ -415,10 +415,7 @@ class weeApplication
 		@is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
 			sprintf(_WT('The frame %s does not exist.'), $sFrame));
 
-		$oFrame = new $sFrame;
-		$oFrame->setController($this);
-
-		return $oFrame;
+		return new $sFrame($this);
 	}
 
 	/**

@@ -89,6 +89,18 @@ abstract class weeFrame implements Printable
 	protected $oTpl;
 
 	/**
+		Create the frame and set the controller associated with it.
+		The controller is used to dispatch events. It is usually a weeApplication object.
+
+		@param $oController Controller associated with this frame
+	*/
+
+	public function __construct($oController)
+	{
+		$this->oController = $oController;
+	}
+
+	/**
 		Map an event to the respective method of this class.
 
 		@param $aEvent Event information
@@ -196,19 +208,6 @@ abstract class weeFrame implements Printable
 			$this->loadTemplate();
 
 		$this->oTpl->set($mName, $mValue);
-	}
-
-	/**
-		Set the controller which was used to create this frame
-		and dispatch the event. Controller is usually a weeApplication object.
-
-		@param object Controller which sent the event
-	*/
-
-	public function setController($oController)
-	{
-		fire(!empty($this->oController), 'UnexpectedValueException', _WT('$oController must not be empty.'));
-		$this->oController = $oController;
 	}
 
 	/**
