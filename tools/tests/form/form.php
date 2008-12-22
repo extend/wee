@@ -17,7 +17,8 @@ weeXHTMLOutput::select();
 
 // Generate and display the form
 
-fire(empty($_GET['type']) || !ctype_alnum($_GET['type']));
+empty($_GET['type']) || !ctype_alnum($_GET['type'])
+	and burn('UnexpectedValueException');
 
 $oForm	= new weeForm($_GET['type']);
 $oTpl	= new weeTemplate('form', array(
