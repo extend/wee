@@ -151,8 +151,11 @@ class weeForm implements Printable
 
 	public function fillErrors($aErrors)
 	{
-		fire(!is_array($aErrors) && !($aErrors instanceof ArrayAccess), 'InvalidArgumentException',
-			'$aErrors must be an associative array of names and values.');
+		is_array($aErrors) || ($aErrors instanceof Mappable) or burn('InvalidArgumentException',
+			'$aErrors must be an associative array of names and values or a Mappable object.');
+
+		if (is_object($aErrors))
+			$aErrors = $aErrors->toArray();
 
 		$this->aErrors = $aErrors + $this->aErrors;
 	}
