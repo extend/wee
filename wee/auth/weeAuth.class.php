@@ -80,7 +80,7 @@ abstract class weeAuth
 
 	public function hash($sPassword)
 	{
-		fire(!defined('MAGIC_STRING'), 'IllegalStateException',
+		defined('MAGIC_STRING') or burn('IllegalStateException',
 			'You cannot hash a password without defining the MAGIC_STRING constant first.');
 
 		$sFunc = $this->aParams['hash_treatment'];

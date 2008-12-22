@@ -43,13 +43,13 @@ class weeAuthDbTable extends weeAuth
 
 	public function __construct($aParams = array())
 	{
-		fire(empty($aParams['db']) || !($aParams['db'] instanceof weeDatabase), 'InvalidArgumentException',
+		empty($aParams['db']) || !($aParams['db'] instanceof weeDatabase) and burn('InvalidArgumentException',
 			'You must provide a parameter "db" containing an instance of weeDatabase.');
-		fire(empty($aParams['table']), 'InvalidArgumentException',
+		empty($aParams['table']) and burn('InvalidArgumentException',
 			'You must provide a parameter "table" containing the name of the credentials table in your database.');
-		fire(empty($aParams['identifier_field']), 'InvalidArgumentException',
+		empty($aParams['identifier_field']) and burn('InvalidArgumentException',
 			'You must provide a parameter "identifier_field" containing the name of the field for the identifiers.');
-		fire(empty($aParams['password_field']), 'InvalidArgumentException',
+		empty($aParams['password_field']) and burn('InvalidArgumentException',
 			'You must provide a parameter "password_field" containing the name of the field for the passwords.');
 
 		if (empty($aParams['password_treatment']))
@@ -97,7 +97,7 @@ class weeAuthDbTable extends weeAuth
 
 	public function authenticateHash($aCredentials)
 	{
-		fire(!defined('MAGIC_STRING'), 'IllegalStateException',
+		defined('MAGIC_STRING') or burn('IllegalStateException',
 			'You cannot hash a passphrase without defining the MAGIC_STRING constant first.');
 
 		if ($this->getDb() instanceof weeMySQLDatabase)
@@ -131,7 +131,7 @@ class weeAuthDbTable extends weeAuth
 		if (count($oResults) == 0)
 			throw new AuthenticationException('The credentials provided were incorrect.');
 
-		fire(count($oResults) != 1, 'UnexpectedValueException',
+		count($oResults) == 1 or burn('UnexpectedValueException',
 			'The authentication query returned more than 1 result. Your table most likely contains dupes.');
 
 		$aData = $oResults->fetch();
