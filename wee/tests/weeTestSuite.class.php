@@ -75,7 +75,7 @@ class weeTestSuite implements Printable
 		if (defined('WEE_ON_WINDOWS'))
 			$this->sTestsPath = realpath(getcwd()) . '\\' . str_replace('/', '\\', $sTestsPath);
 		else
-			$this->sTestsPath = $_SERVER['PWD'] . '/' . $sTestsPath;
+			$this->sTestsPath = realpath(getcwd()) . '/' . $sTestsPath;
 	}
 
 	/**
