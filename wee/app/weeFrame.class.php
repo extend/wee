@@ -92,12 +92,15 @@ abstract class weeFrame implements Printable
 		Create the frame and set the controller associated with it.
 		The controller is used to dispatch events. It is usually a weeApplication object.
 
-		@param $oController Controller associated with this frame
+		@param $oController Controller associated with this frame, defaults to weeApp()
 	*/
 
-	public function __construct($oController)
+	public function __construct($oController = null)
 	{
-		$this->oController = $oController;
+		is_null($oController) && !is_callable('weeApp') and burn('InvalidParameterException',
+			_WT('You need to specify a controller that weeFrame can use to dispatch events.'));
+
+		$this->oController = is_null($oController) ? weeApp() : $oController;
 	}
 
 	/**
