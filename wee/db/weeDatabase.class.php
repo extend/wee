@@ -114,7 +114,7 @@ abstract class weeDatabase
 		$iNbParts	= sizeof($aParts);
 		$iNbArgs	= sizeof($aArguments);
 
-		fire($iNbParts != $iNbArgs, 'UnexpectedValueException',
+		$iNbParts == $iNbArgs or burn('UnexpectedValueException',
 			'The number of placeholders in the query does not match the number of arguments.');
 
 		$s = $aParts[0];
@@ -350,11 +350,11 @@ abstract class weeDatabase
 		$aArgs	= func_get_args();
 		$m		= call_user_func_array(array($this, 'query'), $aArgs);
 
-		fire(!($m instanceof weeDatabaseResult), 'InvalidArgumentException', 'The query is not a SELECT query.');
-		fire(count($m) != 1, 'UnexpectedValueException', 'The query did not return exactly one row.');
+		$m instanceof weeDatabaseResult or burn('InvalidArgumentException', 'The query is not a SELECT query.');
+		count($m) == 1 or burn('UnexpectedValueException', 'The query did not return exactly one row.');
 
 		$a = $m->fetch();
-		fire(count($a) != 1, 'UnexpectedValueException', 'The queried row does not contain exactly one column.');
+		count($a) == 1 or burn('UnexpectedValueException', 'The queried row does not contain exactly one column.');
 
 		// Small test to allow weeExplainSQLResult to work correctly with this method
 		if (is_array($a))

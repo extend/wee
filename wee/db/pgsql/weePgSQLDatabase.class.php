@@ -58,7 +58,7 @@ class weePgSQLDatabase extends weeDatabase
 			$sConnection .= $sKey . '=' . $sValue . ' ';
 
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
-		fire($this->rLink === false, 'DatabaseException', 'Failed to connect to database.');
+		$this->rLink === false and burn('DatabaseException', 'Failed to connect to database.');
 
 		// Set encoding
 
@@ -87,7 +87,7 @@ class weePgSQLDatabase extends weeDatabase
 	protected function doQuery($sQueryString)
 	{
 		$rResult = @pg_query($this->rLink, $sQueryString);
-		fire($rResult === false, 'DatabaseException', 'Failed to execute the given query: ' . $this->getLastError());
+		$rResult === false and burn('DatabaseException', 'Failed to execute the given query: ' . $this->getLastError());
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
@@ -160,7 +160,7 @@ class weePgSQLDatabase extends weeDatabase
 			));
 
 		$r = pg_query($sQuery);
-		fire($r === false, 'DatabaseException', 'Failed to retrieve the value of the sequence: ' . $this->getLastError());
+		$r === false and burn('DatabaseException', 'Failed to retrieve the value of the sequence: ' . $this->getLastError());
 
 		return (int)pg_fetch_result($r, 0, 0);
 	}

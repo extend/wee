@@ -48,7 +48,7 @@ abstract class weeDatabaseRow extends weeDataSource implements ArrayAccess, Iter
 
 	public function __construct($aRow)
 	{
-		fire(empty($aRow) || !is_array($aRow), 'InvalidArgumentException', '$aRow must be a non-empty array.');
+		empty($aRow) || !is_array($aRow) and burn('InvalidArgumentException', '$aRow must be a non-empty array.');
 		$this->aRow = $aRow;
 	}
 
@@ -106,7 +106,7 @@ abstract class weeDatabaseRow extends weeDataSource implements ArrayAccess, Iter
 
 	public function offsetGet($offset)
 	{
-		fire(!array_key_exists($offset, $this->aRow), 'InvalidArgumentException',
+		array_key_exists($offset, $this->aRow) or burn('InvalidArgumentException',
 			'The value for offset ' . $offset . ' was not found in the data.');
 
 		if ($this->bMustEncodeData)

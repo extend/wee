@@ -205,7 +205,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 
 	public function rowClass($sClass)
 	{
-		fire(empty($sClass), 'InvalidArgumentException', '$sClass must not be empty.');
+		empty($sClass) and burn('InvalidArgumentException', '$sClass must not be empty.');
 
 		$this->sRowClass = $sClass;
 		return $this;

@@ -61,7 +61,7 @@ class weeMySQLResult extends weeDatabaseResult
 	public function count()
 	{
 		$i = mysql_num_rows($this->rResult);
-		fire($i === false, 'DatabaseException',
+		$i === false and burn('DatabaseException',
 			'An error occurred while trying to count the number of rows returned by the query.');
 
 		return $i;
