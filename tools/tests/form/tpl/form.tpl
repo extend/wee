@@ -3,7 +3,7 @@
 <head>
 	<title>Form examples</title>
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
-	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/wee.css"/>
+	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/form.block.css"/>
 </head>
 
 <body>
