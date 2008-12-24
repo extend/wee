@@ -149,6 +149,8 @@ final class weeException
 
 		It gets the error's details and send them to the error page, then stops the execution.
 
+		If the request is an HTTP request, a 500 Internal Server Error code is sent.
+
 		@param	$iNumber	Contains the level of the error raised, as an integer.
 		@param	$sMessage	Contains the error message, as a string.
 		@param	$sFile		Contains the filename that the error was raised in, as a string.
@@ -168,7 +170,9 @@ final class weeException
 			self::printError('Error: ' . $sName . "\n"
 				. 'Message: ' . $sMessage . "\n"
 				. "Trace:\n" . self::formatTrace(debug_backtrace()));
-		else
+		else {
+			header('HTTP/1.0 500 Internal Server Error');
+
 			self::printErrorPage(array(
 				'type'		=> 'error',
 				'name'		=> $sName,
@@ -178,6 +182,7 @@ final class weeException
 				'file'		=> $sFile,
 				'line'		=> $iLine,
 			));
+		}
 
 		exit($iNumber);
 	}
@@ -187,6 +192,11 @@ final class weeException
 
 		It gets the exception's details and send them to the error page.
 		It does not stop the script execution, since PHP does it itself after calling this function.
+
+		If the request is an HTTP request, and:
+			- If the exception is an instance of RouteNotFoundException, send a 404 Not Found error
+			- If the exception is an instance of NotPermittedException, send a 403 Forbidden error
+			- Otherwise, send a 500 Internal Server Error
 
 		@param $oException The exception object.
 		@see http://php.net/set_exception_handler
@@ -199,6 +209,13 @@ final class weeException
 				. 'Message: ' . $oException->getMessage() . "\n"
 				. "Trace:\n" . self::formatTrace($oException->getTrace()));
 		else {
+			if ($oException instanceof RouteNotFoundException)
+				header('HTTP/1.0 404 Not Found');
+			elseif ($oException instanceof NotPermittedException)
+				header('HTTP/1.0 403 Forbidden');
+			else
+				header('HTTP/1.0 500 Internal Server Error');
+
 			$aTrace = $oException->getTrace();
 
 			// If burn was used, take the file and line where the burn call occurred
