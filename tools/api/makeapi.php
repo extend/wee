@@ -35,7 +35,6 @@ file_put_contents(
 	$o	->docClassFromPath('wee')
 		->docClass('Mappable')
 		->docClass('Printable')
-		->docFunc('fire')
 		->docFunc('burn')
 		->docFunc('_T')
 		->docFunc('_WT')
