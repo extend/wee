@@ -57,6 +57,8 @@ if (!defined('BASE_PATH')) {
 		$s .= '../';
 
 	define('BASE_PATH', $s);
+
+	unset($i, $s);
 }
 if (!defined('ROOT_PATH'))	define('ROOT_PATH',	'./');
 if (!defined('APP_PATH')) {
