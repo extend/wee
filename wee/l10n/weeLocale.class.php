@@ -22,25 +22,77 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Extends intl Locale class and adds a constructor useful when used
-	as a driver of the application module, allowing the auto-selection
-	of a locale based on the HTTP_ACCEPT_LANGUAGE header.
+	Application module that complements the intl Locale class
+	by adding mechanisms to select automatically the locale
+	depending on the request sent by the browser.
 */
 
-class weeLocale extends Locale
+class weeLocale
 {
+	/**
+		Map between the 2-letter language codes and the locale names.
+
+		Only defines a few of the most popular languages by default,
+		and only defines one locale per language. If you need a finer control
+		over the languages you will be required to extend this class. Take
+		care not to use an existing code (in the ISO standard) when doing so.
+
+		@see http://en.wikipedia.org/wiki/Global_Internet_usage
+		@see http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+	*/
+
+	protected $aLocaleMap = array(
+		'ar' => 'ar_SA', // Arabic
+		'ca' => 'ca_ES', // Catalan
+		'cs' => 'cs_CZ', // Czech
+		'da' => 'da_DK', // Danish
+		'de' => 'de_DE', // German
+		'el' => 'el_GR', // Greek
+		'en' => 'en_US', // English
+		'es' => 'es_ES', // Spanish
+		'fa' => 'fa_IR', // Persian
+		'fi' => 'fi_FI', // Finnish
+		'fr' => 'fr_FR', // French
+		'he' => 'iw_IL', // Hebrew
+		'hi' => 'hi_IN', // Hindi
+		'hu' => 'hu_HU', // Hungarian
+		'is' => 'is_IS', // Icelandic
+		'it' => 'it_IT', // Italian
+		'ja' => 'ja_JP', // Japanese
+		'ko' => 'ko_KR', // Korean
+		'ms' => 'ms_MY', // Malay
+		'nl' => 'nl_NL', // Dutch
+		'no' => 'no_NO', // Norwegian
+		'pl' => 'pl_PL', // Polish
+		'pt' => 'pt_BR', // Portuguese
+		'ro' => 'ro_RO', // Romanian
+		'ru' => 'ru_RU', // Russian
+		'sh' => 'sh_YU', // Serbo-Croatian
+		'sk' => 'sk_SK', // Slovak
+		'sl' => 'sl_SI', // Slovenian
+		'sv' => 'sv_SE', // Swedish
+		'th' => 'th_TH', // Thai
+		'tr' => 'tr_TR', // Turkish
+		'uk' => 'uk_UA', // Ukrainian
+		'vi' => 'vi_VN', // Vietnamese
+		'zh' => 'zh_CN', // Chinese
+	);
+
 	/**
 		Initialize the locale.
 
 		The parameters array can contain:
-		- default:	The default locale to use when others aren't available.
 		- auto:		Whether to automatically try to select the best locale based on the HTTP_ACCEPT_LANGUAGE header.
+		- default:	The default locale to use when others aren't available.
 
 		@param $aParams The parameters listed above.
 	*/
 
-	public function __construct($aParams)
+	public function __construct($aParams = array())
 	{
+		function_exists('locale_set_default') or burn('ConfigurationException',
+			_WT('The intl PHP extension is required by the weeLocale application driver.'));
+
 		if (!empty($aParams['default']))
 			locale_set_default($aParams['default'])
 				or burn('InvalidArgumentException', 'Setting the default locale failed.');
@@ -71,13 +123,41 @@ class weeLocale extends Locale
 		@param $sLocale The new locale.
 	*/
 
-	public function set($sLocale)
+	public function set($sLocale, $sCodeSet = 'UTF-8', $sModifier = null)
 	{
-		// We need the complete locale name
-		if (strpos($sLocale, '_') === false)
-			$sLocale .= '_' . strtoupper($sLocale);
+		if (strlen($sLocale) == 2)
+			$sLocale = array_value($this->aLocaleMap, $sLocale, $sLocale);
 
-		setlocale(LC_ALL, $sLocale . '.UTF-8')
+		if (strlen($sLocale) > 1) {
+			if (!is_null($sCodeSet))
+				$sLocale .= '.' . $sCodeSet;
+			if (!is_null($sModifier))
+				$sLocale .= '@' . $sModifier;
+		}
+
+		setlocale(LC_ALL, $sLocale)
 			or burn('UnexpectedValueException', 'An error occurred while trying to set the locale.');
+	}
+
+	/**
+		Change the locale used by the application by using the pathinfo
+		to determine which language is requested.
+
+		The language MUST exist in the $aLocaleMap property to be detected.
+
+		@param $sPathInfo The pathinfo for this request.
+		@return string The pathinfo minus the language part, if any.
+	*/
+
+	public function setFromPathInfo($sPathInfo)
+	{
+		$aSplit = explode('/', $sPathInfo, 2);
+
+		if (array_key_exists($aSplit[0], $this->aLocaleMap)) {
+			$this->set($aSplit[0]);
+			$sPathInfo = substr($sPathInfo, 3);
+		}
+
+		return $sPathInfo;
 	}
 }

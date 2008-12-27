@@ -490,8 +490,11 @@ class weeApplication
 
 		$sPathInfo = substr(self::getPathInfo(), 1);
 
-		// Use the toppage frame if the pathinfo is empty
+		// Apply the locale found in the pathinfo if the locale module is started
+		if (!empty($sPathInfo) && !empty($this->aDrivers['locale']))
+			$sPathInfo = $this->aDrivers['locale']->setFromPathInfo($sPathInfo);
 
+		// Use the toppage frame if the pathinfo is empty
 		if (empty($sPathInfo))
 			return array('frame' => (isset($this->aConfig['app.toppage'])) ? $this->aConfig['app.toppage'] : 'toppage') + $aEvent;
 
