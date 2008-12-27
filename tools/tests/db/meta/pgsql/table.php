@@ -12,6 +12,29 @@ try
 	$oDb->query('CREATE SCHEMA pikachu CREATE TABLE test1 () CREATE TABLE test2 ()');
 	$oDb->query("COMMENT ON TABLE test1 IS 'Tests are marvelous.'");
 
+	// weePgSQLDbMeta::tables
+
+	$bTableFound = false;
+	foreach ($oMeta->tables() as $oTable)
+	{
+		if ($oTable->name() == 'test1')
+		{
+			if ($bTableFound)
+				$this->burn(_WT('weePgSQLDbMeta::tables returned two tables named "test1".'));
+
+			$this->isEqual($oCurrent->name(), $oTable->schemaName(),
+				_WT('weePgSQLDbMeta::tables did not return the table "test1" from the current schema.'));
+
+			$bTableFound = true;
+		}
+		else
+			$this->isNotEqual('test2', $oTable->name(),
+				_WT('weePgSQLDbMeta::tables returned a table "test2" which was created in a different schema than the current.'));
+	}
+
+	$this->isTrue($bTableFound,
+		_WT('weePgSQLDbMeta::tables did not return the expected table "test1".'));
+
 	// weePgSQLDbMeta::tableExists
 
 	$this->isTrue($oMeta->tableExists('test1'),
@@ -38,7 +61,7 @@ try
 	try {
 		$oMeta->table('pg_namespace');
 	} catch (Exception $e) {
-		$this->fail(sprintf(_WT('weePgSQLDbMeta::table throw a %s when requesting a visible table from a system catalog.'),
+		$this->fail(sprintf(_WT('weePgSQLDbMeta::table throws a %s when requesting a visible table from a system catalog.'),
 			get_class($e)));
 	}
 

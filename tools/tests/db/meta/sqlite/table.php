@@ -7,6 +7,15 @@ $oDb->query('CREATE TABLE dbmeta (a)');
 
 try
 {
+	// weeSQLiteDbMeta::tables
+
+	$aTablesNames = array();
+	foreach ($oMeta->tables() as $oTable)
+		$aTablesNames[] = $oTable->name();
+
+	$this->isEqual(array('dbmeta'), $aTablesNames,
+		_WT('weeSQLiteDbMeta::tables did not return the expected table.'));
+
 	// weeSQLiteDbMeta::tableExists
 
 	$this->isTrue($oMeta->tableExists('dbmeta'),

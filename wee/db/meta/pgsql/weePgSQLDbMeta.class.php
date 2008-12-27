@@ -192,16 +192,17 @@ class weePgSQLDbMeta extends weeDbMeta
 
 	public function tables()
 	{
-		$oQuery = $this->meta()->db()->query("
+		$oQuery = $this->db()->query("
 			SELECT			n.nspname AS schema, c.relname AS name, r.rolname AS owner,
 							pg_catalog.obj_description(c.oid, 'pg_class') AS comment,
 							pg_catalog.pg_has_role(r.rolname, 'USAGE') AS alterable
 				FROM		pg_catalog.pg_class c
+							JOIN pg_catalog.pg_namespace	n ON n.oid = c.relnamespace
 							JOIN pg_catalog.pg_roles		r ON r.oid = c.relowner
 				WHERE		c.relkind = 'r'
 						AND pg_table_is_visible(c.oid)
 				ORDER BY	schema, name
-		", $sName);
+		");
 
 		$aTables	= array();
 		$sClass		= $this->getTableClass();
