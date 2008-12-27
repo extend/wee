@@ -47,19 +47,6 @@ abstract class weeDbModelScaffold extends weeDbModel
 	protected $sSet;
 
 	/**
-		Creates a new instance of this model with the data passed as parameter.
-		Also gets the metadata information from the set.
-
-		@param $aData Data to be set at initialization.
-	*/
-
-	public function __construct($aData)
-	{
-
-		parent::__construct($aData);
-	}
-
-	/**
 		Saves the data stored in this model to the database.
 
 		@throw IllegalStateException The data was empty or the table has no primary key.
