@@ -35,8 +35,8 @@ class weeSession implements ArrayAccess
 
 	public function __construct()
 	{
-		fire(session_id() != '', 'IllegalStateException',
-			'A session already exist. You cannot create a new weeSession if a PHP session is active.');
+		session_id() != '' and burn('IllegalStateException',
+			_WT('A session already exist. You cannot create a new weeSession if a PHP session is active.'));
 
 		// Sanitize session id, then start session
 
@@ -104,8 +104,8 @@ class weeSession implements ArrayAccess
 
 		if (defined('WEE_SESSION_CHECK_TOKEN'))
 		{
-			fire(!defined('MAGIC_STRING'), 'IllegalStateException',
-				'You cannot use token session protection without defining the MAGIC_STRING constant first.');
+			defined('MAGIC_STRING') or burn('IllegalStateException',
+				_WT('You cannot use token session protection without defining the MAGIC_STRING constant first.'));
 
 			$_SESSION['session_token'] = substr(md5(rand() . MAGIC_STRING), 0, 8) . substr(md5(time() . MAGIC_STRING), 0, 8);
 			weeOutput::setCookie('session_token', $_SESSION['session_token']);
@@ -162,8 +162,8 @@ class weeSession implements ArrayAccess
 
 	public function offsetGet($offset)
 	{
-		fire(!array_key_exists($offset, $_SESSION), 'InvalidArgumentException',
-			'There is no value stored in the session for the offset ' . $offset . '.');
+		array_key_exists($offset, $_SESSION) or burn('InvalidArgumentException',
+			sprintf(_WT('There is no value stored in the session for the offset %s.'), $offset));
 		return $_SESSION[$offset];
 	}
 
