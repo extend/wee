@@ -180,8 +180,11 @@ class weeForm implements Printable
 
 	public function filter($aData)
 	{
-		$aWidgets	= $this->oXML->xpath('//widget/name');
-		$aNames		= array();
+		$aWidgets = $this->oXML->xpath('//widget/name');
+		if ($aWidgets === false)
+			return array();
+
+		$aNames = array();
 
 		foreach ($aWidgets as $oWidget)
 			$aNames[(string)$oWidget] = null;
@@ -224,11 +227,14 @@ class weeForm implements Printable
 
 	public function removeNodes($sXPath)
 	{
-		foreach ($this->oXML->xpath($sXPath) as $oNode)
-		{
-			$oNode = dom_import_simplexml($oNode);
-			$oNode->parentNode->removeChild($oNode);
-		}
+		$aNodes = $this->oXML->xpath($sXPath);
+
+		if ($aNodes !== false)
+			foreach ($aNodes as $oNode)
+			{
+				$oNode = dom_import_simplexml($oNode);
+				$oNode->parentNode->removeChild($oNode);
+			}
 	}
 
 	/**
@@ -422,8 +428,8 @@ class weeForm implements Printable
 	public function xpathOne($sPath)
 	{
 		$a = $this->xpath($sPath);
-		fire(sizeof($a) != 1, 'UnexpectedValueException',
-			'weeForm::xpathOne expects one and only one result; it retrieved ' . sizeof($a) . '.');
+		$a === false || sizeof($a) != 1 and burn('UnexpectedValueException',
+			sprintf(_WT('weeForm::xpathOne expects one and only one result; it retrieved %d.'), $a === false ? 0 : sizeof($a)));
 		return $a[0];
 	}
 }

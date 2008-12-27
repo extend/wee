@@ -10,13 +10,17 @@ if (!defined('FORM_PATH'))
 $oForm = new weeForm('options', 'update');
 $oHelper = $oForm->helper('weeFormOptionsHelper', 'choice');
 
-$oHelper->addOptions(array(
+$aOptions = array(
 	array('label' => 'test 1', 'value' => '39'),
 	array('label' => 'test 2', 'value' => '40'),
 	array('label' => 'test 3', 'value' => '41'),
 	array('label' => 'test 4', 'value' => '43'),
 	array('label' => 'test 5', 'value' => '44'),
-));
+);
+
+$oHelper->addOptions($aOptions);
+$oDupeHelper = $oForm->helper('weeFormOptionsHelper', 'dupe');
+$oDupeHelper->addOptions($aOptions);
 
 try {
 	$oForm->validate(array('choice' => 42));
@@ -32,15 +36,18 @@ try {
 	$this->fail('Form validation should have succeeded.');
 }
 
-$oHelper->select('42');
-$this->isFalse($oHelper->isSelected(39), 'Only 42 should have been selected.');
-$this->isFalse($oHelper->isSelected(40), 'Only 42 should have been selected.');
-$this->isFalse($oHelper->isSelected(41), 'Only 42 should have been selected.');
-$this->isTrue($oHelper->isSelected(42), 'Only 42 should have been selected.');
-$this->isFalse($oHelper->isSelected(43), 'Only 42 should have been selected.');
-$this->isFalse($oHelper->isSelected(44), 'Only 42 should have been selected.');
+$oHelper->select('39');
+$this->isTrue($oHelper->isSelected(39), 'Only 39 should have been selected.');
+$this->isFalse($oHelper->isSelected(40), 'Only 39 should have been selected.');
+$this->isFalse($oHelper->isSelected(41), 'Only 39 should have been selected.');
+$this->isFalse($oHelper->isSelected(42), 'Only 39 should have been selected.');
+$this->isFalse($oHelper->isSelected(43), 'Only 39 should have been selected.');
+$this->isFalse($oHelper->isSelected(44), 'Only 39 should have been selected.');
 
+$oDupeHelper->select('40');
 $oHelper->selectNone();
+$this->isTrue($oDupeHelper->isSelected(40), 'The dupe item should still be selected.');
+
 $oHelper->select(array('41', '44'));
 $this->isFalse($oHelper->isSelected(39), 'Only 41 and 44 should have been selected.');
 $this->isFalse($oHelper->isSelected(40), 'Only 41 and 44 should have been selected.');

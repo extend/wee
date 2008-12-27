@@ -11,6 +11,12 @@
 			<validator type="weeOptionValidator"/>
 		</widget>
 
+		<widget type="choice">
+			<name>dupe</name>
+			<label>dupe:</label>
+			<validator type="weeOptionValidator"/>
+		</widget>
+
 		<widget type="submitbutton"/>
 	</widgets>
 </form>

@@ -127,7 +127,10 @@ class weeFormOptionsHelper
 	{
 		$sEscapedValue	= xmlspecialchars($sValue);
 		$aOptions		= $this->oXML->options->xpath(
-			'//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]');
+			'item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]');
+
+		if ($aOptions === false)
+			return false;
 		return sizeof($aOptions) != 0;
 	}
 
@@ -142,9 +145,11 @@ class weeFormOptionsHelper
 	{
 		$sEscapedValue	= xmlspecialchars($sValue);
 		$aOptions		= $this->oXML->options->xpath(
-			'//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and @selected]
+			'item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and @selected]
 		');
 
+		if ($aOptions === false)
+			return false;
 		return sizeof($aOptions) != 0;
 	}
 
@@ -169,13 +174,14 @@ class weeFormOptionsHelper
 
 	public function selectNone()
 	{
-		$aOptions = $this->oXML->options->xpath('//item[@selected]');
+		$aOptions = $this->oXML->options->xpath('item[@selected]');
 
-		foreach ($aOptions as $oItem)
-		{
-			$oNode = dom_import_simplexml($oItem);
-			$oNode->removeAttribute('selected');
-		}
+		if ($aOptions !== false)
+			foreach ($aOptions as $oItem)
+			{
+				$oNode = dom_import_simplexml($oItem);
+				$oNode->removeAttribute('selected');
+			}
 	}
 
 	/**
@@ -188,10 +194,10 @@ class weeFormOptionsHelper
 	{
 		$sEscapedValue	= xmlspecialchars($sValue);
 		$aOption		= $this->oXML->options->xpath(
-			'//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
+			'item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
 		);
 
-		fire(sizeof($aOption) != 1, 'BadXMLException',
+		($aOption === false || sizeof($aOption) != 1) and burn('BadXMLException',
 			'The value was not found in the options or was found more than once.');
 
 		$aOption[0]['selected'] = 'selected';
@@ -223,7 +229,7 @@ class weeFormOptionsHelper
 			return $this->oXML->options;
 
 		$aDest = $this->oXML->options->xpath($sDestXPath);
-		fire(sizeof($aDest) != 1, 'BadXMLException',
+		($aDest === false || sizeof($aDest) != 1) and burn('BadXMLException',
 			'The XPath statement ' . $sDestXPath . ' must return exactly 1 result, ' . sizeof($aDest) . ' were returned.');
 
 		return $aDest[0];
