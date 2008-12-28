@@ -10,6 +10,19 @@ try
 	$oDb->query('CREATE SCHEMA pikachu CREATE TABLE test1 () CREATE TABLE test2 ()');
 	$oDb->query("COMMENT ON SCHEMA pikachu IS 'pika pika!'");
 
+	// weePgSQLDbMeta::schemas
+
+	$bSchemaFound = false;
+	foreach ($oMeta->schemas() as $oSchema)
+		if ($oSchema->name() == 'pikachu')
+		{
+			$bSchemaFound = true;
+			break;
+		}
+
+	$this->isTrue($bSchemaFound,
+		_WT('weePgSQLDbMeta::schemas should return at least the newly-created schema.'));
+
 	// weePgSQLDbMeta::schemaExists
 
 	$this->isTrue($oMeta->schemaExists('pikachu'),
