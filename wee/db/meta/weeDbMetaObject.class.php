@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class used to query meta data about database objects.
 */
 
-abstract class weeDbMetaObject implements Printable
+abstract class weeDbMetaObject
 {
 	/**
 		The database to query.
@@ -98,19 +98,5 @@ abstract class weeDbMetaObject implements Printable
 	public function quotedName()
 	{
 		return $this->db()->escapeIdent($this->name());
-	}
-
-	/**
-		Returns the string representation of the database object.
-
-		By default, the string representation of the database object if its
-		quoted name.
-
-		@return	string		The string representation.
-	*/
-
-	public function toString()
-	{
-		return $this->quotedName();
 	}
 }
