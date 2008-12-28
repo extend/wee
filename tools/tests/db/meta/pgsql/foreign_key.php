@@ -54,6 +54,11 @@ try
 	$this->isEqual(array('c', 'b'), $oForeignKey->columnsNames(),
 		_WT('weePgSQLDbMetaForeignKey::columnsNames does not correctly return all the columns of the foreign key.'));
 
+	// weePgSQLDbMetaForeignKey::schemaName
+
+	$this->isEqual($oMeta->currentSchema()->name(), $oForeignKey->schemaName(),
+		_WT('weePgSQLDbMetaForeignKey::schemaName does not correctly return the name of the schema in which is the foreign key.'));
+
 	// weePgSQLDbMetaForeignKey::referencedColumnsNames
 
 	$this->isEqual(array('b', 'a'), $oForeignKey->referencedColumnsNames(),
