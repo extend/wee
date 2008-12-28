@@ -45,6 +45,11 @@ try
 
 	$this->isEqual(array('c', 'a'), $oPrimaryKey->columnsNames(),
 		_WT('weePgSQLDbMetaPrimaryKey::columnsNames does not correctly return all the columns of the primary key.'));
+
+	// weePgSQLDbMetaPrimaryKey::schemaName
+
+	$this->isEqual($oMeta->currentSchema()->name(), $oPrimaryKey->schemaName(),
+		_WT('weePgSQLDbMetaPrimaryKey::schemaName does not correctly return the name of the schema in which is the primary key.'));
 }
 catch (Exception $oException) {}
 
