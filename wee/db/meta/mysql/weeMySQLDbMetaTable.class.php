@@ -104,7 +104,7 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 		Returns a foreign key of a given name.
 
 		@param	$sName						The name of the foreign key.
-		@return	weeMySQLDbMetaPrimaryKey	The foreign key.
+		@return	weeMySQLDbMetaForeignKey	The foreign key.
 		@throw	UnexpectedValueException	The foreign key does not exist.
 	*/
 
@@ -149,20 +149,19 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 	/**
 		Returns all the foreign keys.
 
-		@return	array(weeMySQLDbMetaPrimaryKey)	The array of foreign keys.
+		@return	array(weeMySQLDbMetaForeignKey)	The array of foreign keys.
 	*/
 
 	public function foreignKeys()
 	{
-		$oQuery = $this->db()->query('
-			SELECT			TABLE_NAME AS table, CONSTRAINT_NAME AS name,
-							REFERENCED_TABLE_NAME AS referenced_table,
-							UNIQUE_CONSTRAINT_NAME AS referenced_constraint
-				FROM		information_schema.REFERENTIAL_CONSTRAINTS
+		$oQuery = $this->db()->query("
+			SELECT			TABLE_NAME AS `table`, CONSTRAINT_NAME AS name
+				FROM		information_schema.TABLE_CONSTRAINTS
 				WHERE		TABLE_NAME			= ?
+						AND	CONSTRAINT_TYPE		= 'FOREIGN KEY'
 						AND	CONSTRAINT_SCHEMA	= DATABASE()
 				ORDER BY	CONSTRAINT_NAME
-		', $this->name());
+		", $this->name());
 
 		$aForeignKeys	= array();
 		$sClass			= $this->getForeignKeyClass();

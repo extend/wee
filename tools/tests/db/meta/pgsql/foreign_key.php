@@ -13,6 +13,15 @@ try
 
 	$oTable = $oMeta->table('test2');
 
+	// weePgSQLDbMetaTable::foreignKeys
+
+	$aForeignKeysNames = array();
+	foreach ($oTable->foreignKeys() as $oForeignKey)
+		$aForeignKeysNames[] = $oForeignKey->name();
+
+	$this->isEqual(array('i_am_a_fk'), $aForeignKeysNames,
+		_WT('weePgSQLDbMetaTable::foreignKeys did not return the expected foreign key.'));
+
 	// weePgSQLDbMetaTable::foreignKeyExists
 
 	$this->isTrue($oTable->foreignKeyExists('i_am_a_fk'),
