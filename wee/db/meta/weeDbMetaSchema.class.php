@@ -27,15 +27,4 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 abstract class weeDbMetaSchema extends weeDbMetaObject
 	implements weeDbMetaTableProvider
-{
-	/**
-		Returns a qualified object name.
-
-		@param	$sName					The unqualified name of an object.
-		@return	string					The qualified name of the object.
-	*/
-	protected function qualifyName($sName)
-	{
-		return $this->quotedName() . '.' . $this->db()->escapeIdent($sName);
-	}
-}
+{}
