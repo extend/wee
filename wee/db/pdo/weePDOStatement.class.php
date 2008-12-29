@@ -49,7 +49,7 @@ class weePDOStatement extends weeDatabaseStatement
 		@param	$sQuery	The query.
 	*/
 
-	public function __construct(weePDODatabase $oDb, $sQuery)
+	public function __construct(PDO $oDb, $sQuery)
 	{
 		try
 		{

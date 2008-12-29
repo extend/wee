@@ -242,4 +242,16 @@ class weePDODatabase extends weeDatabase
 	{
 		return $this->iAffectedRowsCount;
 	}
+
+	/**
+		Prepares an SQL query statement.
+
+		@param	$sQuery			The query string.
+		@return	weePDOStatement	The prepared statement.
+	*/
+
+	public function prepare($sQuery)
+	{
+		return new weePDOStatement($this->oDb, $sQuery);
+	}
 }
