@@ -1,13 +1,23 @@
 <?php
 
-require(dirname(__FILE__) . '/connect.php.inc');
+require('connect.php.inc');
 
-// weePDODatabase::getLastError
+// Test weePDODatabase::getLastError
+
+$oDb->query('SELECT 1');
 
 try {
-	$oDb->query('INVALID_SQL');
-}
-catch (DatabaseException $e) {
-	$this->isNotNull($oDb->getLastError(),
-		_WT('weePDODatabase::getLastError should return the message of the last error.'));
+	$oDb->getLastError();
+	$this->fail(_WT('weePDODatabase::getLastError should throw an IllegalStateException when no error occurred during the execution of the last query.'));
+} catch (IllegalStateException $e) {}
+
+try {
+	$oDb->query('BLAH');
+} catch (DatabaseException $e) {
+	try {
+		$this->isNotNull($oDb->getLastError(),
+			'An error has happened while trying to query, but getLastError returns nothing.');
+	} catch (IllegalStateException $e) {
+		$this->fail(_WT('weePDODatabase::getLastError should not throw an IllegalStateException when an error occurred during the execution of the last query.'));
+	}
 }
