@@ -129,12 +129,16 @@ class weeDbMetaForm extends weeForm
 			else {
 				$this->addWidget('choice', $sColumn);
 
-				$sLabelColumn = $aRefSets[$sColumn]['key'];
-				foreach ($aRefSets[$sColumn]['meta']['columns'] as $sRefColumn)
-					if (strpos($sRefColumn, 'label') !== false) {
-						$sLabelColumn = $sRefColumn;
-						break;
-					}
+				if (isset($aRefSets[$sColumn]['meta']['label']))
+					$sLabelColumn = $aRefSets[$sColumn]['meta']['label'];
+				else {
+					$sLabelColumn = $aRefSets[$sColumn]['key'];
+					foreach ($aRefSets[$sColumn]['meta']['columns'] as $sRefColumn)
+						if (strpos($sRefColumn, 'label') !== false) {
+							$sLabelColumn = $sRefColumn;
+							break;
+						}
+				}
 
 				$oHelper = $this->helper('weeFormOptionsHelper', $sColumn);
 				$oHelper->addOption(array('label' => 'NULL', 'value' => ''));

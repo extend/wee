@@ -215,8 +215,9 @@ abstract class weeFrame implements Printable
 
 	/**
 		Setup the frame.
-
 		This method is called before each event method call.
+
+		@param $aEvent Event information
 	*/
 
 	protected function setup($aEvent)
@@ -263,7 +264,8 @@ abstract class weeFrame implements Printable
 
 	protected function translateEventName($sName)
 	{
-		if (empty($sName))
+		//TODO:test weeFailSafeRouting
+		if (empty($sName) || ($this instanceof weeFailSafeRouting && !is_callable(array($this, 'event' . $sName))))
 			return 'defaultEvent';
 		return 'event' . $sName;
 	}
@@ -272,7 +274,7 @@ abstract class weeFrame implements Printable
 		Method called when the user have not access to the specified frame/event.
 		The process will stop after this method returns.
 
-		@param	$aEvent	Event information
+		@param $aEvent Event information
 	*/
 
 	protected function unauthorizedAccess($aEvent)
