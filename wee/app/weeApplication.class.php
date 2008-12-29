@@ -89,8 +89,10 @@ class weeApplication
 
 			if (defined('WEE_CLI'))
 				echo "The configuration file was not found.\nPlease consult the documentation for more information.\n";
-			else
+			else {
+				header('HTTP/1.0 500 Internal Server Error');
 				require(ROOT_PATH . 'res/wee/noconfig.htm');
+			}
 			exit;
 		}
 
@@ -442,8 +444,10 @@ class weeApplication
 			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
 				if (defined('WEE_CLI'))
 					echo _WT('You are not allowed to access the specified frame/event.'), "\n";
-				else
+				else {
+					header('HTTP/1.0 403 Forbidden');
 					require(ROOT_PATH . 'res/wee/unauthorized.htm');
+				}
 				exit;
 			}
 
