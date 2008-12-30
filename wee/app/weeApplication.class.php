@@ -100,8 +100,8 @@ class weeApplication
 		// - All path are separated by : like in PATH environment variable
 		// - A // in the path means ROOT_PATH
 
-		if (!empty($this->aConfig['autoload.path'])) {
-			$aPath = explode(':', $this->aConfig['autoload.path']);
+		if (!empty($this->aConfig['app.autoload.path'])) {
+			$aPath = explode(':', $this->aConfig['app.autoload.path']);
 			foreach ($aPath as $s)
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
@@ -130,8 +130,8 @@ class weeApplication
 
 		// Timezone settings
 
-		if (!empty($this->aConfig['timezone']))
-			date_default_timezone_set($this->aConfig['timezone']);
+		if (!empty($this->aConfig['app.timezone']))
+			date_default_timezone_set($this->aConfig['app.timezone']);
 
 		// Select output driver
 
