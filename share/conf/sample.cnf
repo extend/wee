@@ -4,7 +4,6 @@
 # Global settings
 
 autoload.path	= //app/php
-aliases.file	=
 timezone		= UTC
 
 # Force drivers to start before running the application
