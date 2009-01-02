@@ -5,7 +5,7 @@ require(dirname(__FILE__) . '/connect.php.inc');
 // Create the test table
 
 $oDb->query('
-	CREATE TEMPORARY TABLE prepstat (
+	CREATE TABLE prepstat (
 		ps_id INTEGER PRIMARY KEY,
 		ps_integer INTEGER,
 		ps_varchar CHARACTER VARYING(50),
@@ -67,6 +67,13 @@ try {
 
 	$this->isEqual(4242, $aImplicitTest['ps_integer'],
 		_WT('"SELECT ps_integer FROM prepstat WHERE ps_boolean=1" should return 4242.'));
+
+	// weePDOStatement::numAffectedRows
+
+	$oDeleteStat = $oDb->prepare('DELETE FROM prepstat');
+	$oDeleteStat->execute();
+	$this->isEqual(count($aInsertValues), $oDeleteStat->numAffectedRows(),
+		_WT('weePDOStatement::numAffectedRows does not correctly return the number of affected rows.'));
 } catch (Exception $oException) {}
 
 $oDb->query('DROP TABLE prepstat');

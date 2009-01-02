@@ -68,3 +68,10 @@ $aImplicitTest = $oDb->prepare('
 
 $this->isEqual(4242, $aImplicitTest['ps_integer'],
 	_WT('"SELECT ps_integer FROM prepstat WHERE ps_boolean=TRUE" should return 4242.'));
+
+// weePDOStatement::numAffectedRows
+
+$oDeleteStat = $oDb->prepare('DELETE FROM prepstat');
+$oDeleteStat->execute();
+$this->isEqual(count($aInsertValues), $oDeleteStat->numAffectedRows(),
+	_WT('weePDOStatement::numAffectedRows does not correctly return the number of affected rows.'));

@@ -178,6 +178,10 @@ class weeSQLiteDatabase extends weeDatabase
 		You can't use this method safely to check if your UPDATE executed successfully,
 		since the UPDATE statement does not always update rows that are already up-to-date.
 
+		Please note that SQLite always return 0 for an unconditional DELETE statement (e.g.
+		DELETE FROM tablename), if you need the number of deleted rows, you should execute
+		DELETE FROM tablename WHERE 1.
+
 		@return int		The number of affected rows in the last query.
 	*/
 

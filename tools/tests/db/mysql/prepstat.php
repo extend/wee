@@ -67,6 +67,13 @@ try {
 
 	$this->isEqual(4242, $aImplicitTest['ps_integer'],
 		_WT('"SELECT ps_integer FROM prepstat WHERE ps_boolean=1" should return 4242.'));
+
+	// weeMySQLStatement::numAffectedRows
+
+	$oDeleteStat = $oDb->prepare('DELETE FROM prepstat');
+	$oDeleteStat->execute();
+	$this->isEqual(count($aInsertValues), $oDeleteStat->numAffectedRows(),
+		_WT('weeMySQLStatement::numAffectedRows does not correctly return the number of affected rows.'));
 } catch (Exception $oException) {}
 
 $oDb->query('DROP TABLE prepstat');
