@@ -177,3 +177,6 @@ foreach ($aInsertValues as $i => $aRow)
 
 $this->isEqual($aAll, $oDb->query('SELECT * FROM query')->fetchAll(),
 	_WT('weePgSQLResult::fetchAll does not return the expected rows of the table.'));
+
+$this->isEqual(array(), $oDb->query('SELECT * FROM pg_catalog.pg_tables WHERE false')->fetchAll(),
+	_WT('weePgSQLResult::fetchAll does not correctly return an empty array when the result set is empty.'));
