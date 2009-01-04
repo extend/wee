@@ -12,10 +12,13 @@ class CastableInput_testNumberValidator {
 	}
 }
 
+$o = new weeNumberValidator;
+
+$this->isEqual(array('format' => 'int'), $o->getArgs(),
+	_WT('weeNumberValidator does not return the expected default `format` argument.'));
+
 // weeNumberValidator should throw a DomainException when the value to validate is neither an integer,
 // a float or a string, an instance of Printable or an object castable to string.
-
-$o = new weeNumberValidator;
 
 try {
 	$o->setValue(new stdClass);
@@ -65,6 +68,25 @@ try {
 	$o->setValue(new CastableInput_testNumberValidator);
 } catch (DomainException $e) {
 	$this->fail(_WT('weeNumberValidator should not throw a DomainException when the value is an object castable to string.'));
+}
+
+// weeNumberValidator should throw an InvalidArgumentException when the `format` argument is invalid.
+
+try {
+	new weeNumberValidator(array('format' => 'fail'));
+	$this->fail(_WT('weeNumberValidator should throw an InvalidArgumentException when the `format` argument is invalid.'));
+} catch (InvalidArgumentException $e) {}
+
+try {
+	new weeNumberValidator(array('format' => 'int'));
+} catch (InvalidArgumentException $e) {
+	$this->fail(_WT('weeNumberValidator should not throw an InvalidArgumentException when the `format` argument is "int".'));
+}
+
+try {
+	new weeNumberValidator(array('format' => 'float'));
+} catch (InvalidArgumentException $e) {
+	$this->fail(_WT('weeNumberValidator should not throw an InvalidArgumentException when the `format` argument is "float".'));
 }
 
 // weeNumberValidator should throw a DomainException when the `min` argument is not a valid number.
