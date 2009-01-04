@@ -192,7 +192,6 @@ class weeTaconite implements Printable
 			$oElement->removeChild($oChild);
 		$this->applyTagAppend($oAction, $oElement);
 	}
-		
 
 	/**
 		Apply taconite operations against an XML document.
@@ -211,18 +210,16 @@ class weeTaconite implements Printable
 
 	public function applyTo($sXMLDocument)
 	{
-		//TODO:test
-
 		if ($sXMLDocument instanceof Printable)
 			$sXMLDocument = $sXMLDocument->toString();
 
-		$oDocument = new DOMDocument();
+		$oDocument = new DOMDocument;
 		@$oDocument->loadXML($sXMLDocument) or burn('BadXMLException',
 			_WT('The given string is not a well-formed XML document.'));
 		$this->oXPath = new DOMXPath($oDocument);
 
-		$oXML = new DOMDocument();
-		$oXML->loadXML($this->toString()) or burn('BadXMLException',
+		$oXML = new DOMDocument;
+		@$oXML->loadXML($this->toString()) or burn('BadXMLException',
 			_WT('The string returned by weeTaconite::toString is not a well-formed XML document.'));
 
 		foreach ($oXML->documentElement->childNodes as $oAction)
@@ -240,7 +237,12 @@ class weeTaconite implements Printable
 		}
 
 		unset($this->oXPath);
-		return $oDocument->saveXML();
+
+		// We cannot use LIBXML_NOXMLDECL here because it's not supported by
+		// DOMDocument::saveXML.
+
+		$s = $oDocument->saveXML();
+		return rtrim(substr($s, strpos($s, '?>') + 3));
 	}
 
 	/**
