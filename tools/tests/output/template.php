@@ -3,6 +3,8 @@
 weeXHTMLOutput::select();
 
 class weeTemplate_test extends weeTemplate {
+	public $aData = array();
+
 	public function __construct() {}
 
 	public function mkLink($sLink, $aArgs = array()) {
@@ -35,6 +37,23 @@ $this->isEqual('/foo/bar?fish=spam&amp;arg=value', $o->mkLink('/foo/bar', array(
 
 $this->isEqual('/foo/bar?arg=another+value', $o->mkLink('/foo/bar', array('arg' => 'another value')),
 	_WT('weeTemplate::mkLink should override the arguments added through weeTemplate::addLinkArgs.'));
+
+// weeTemplate::set
+
+$this->isEqual(array(), $o->aData,
+	_WT('weeTemplate::aData should be empty before any weeTemplate::set call.'));
+
+$o->set('one', 'value');
+$this->isEqual(array('one' => 'value'), $o->aData,
+	_WT('weeTemplate::aData should contain the variable/value pair passed to weeTemplate::set when called with two arguments.'));
+
+$o->set(array('two' => 2, 'three' => 3));
+$this->isEqual(array('one' => 'value', 'two' => 2, 'three' => 3), $o->aData,
+	_WT('weeTemplate::aData should contain the array of variable/value pairs passed to weeTemplate::set when called with one argument.'));
+
+$o->set(array('one' => 'another_value'));
+$this->isEqual(array('one' => 'another_value', 'two' => 2, 'three' => 3), $o->aData,
+	_WT('weeTemplate::aData should be updated when calling weeTemplate::set with existing variables.'));
 
 /*
 <?php
