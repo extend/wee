@@ -12,6 +12,8 @@ class weeTemplate_test extends weeTemplate {
 
 $o = new weeTemplate_test;
 
+// weeTemplate::mkLink
+
 $this->isEqual('/foo&amp;/bar?&lt;=blah&amp;answer=42', $o->mkLink('/foo&/bar', array('<' => 'blah', 'answer' => 42)),
 	_WT('weeTemplate::mkLink should encode the link with the weeOutput::encodeValue method.'));
 
@@ -23,6 +25,16 @@ $this->isEqual('/foo/bar?space=a+b', $o->mkLink('/foo/bar', array('space' => 'a 
 
 $this->isEqual('/foo/bar?entity=%26', $o->mkLink('/foo/bar', array('entity' => '&')),
 	_WT('weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::decode method before encoding them with the urlencode function.'));
+
+// weeTemplate::addLinkArgs
+
+$o->addLinkArgs(array('arg' => 'value'));
+
+$this->isEqual('/foo/bar?fish=spam&amp;arg=value', $o->mkLink('/foo/bar', array('fish' => 'spam')),
+	_WT('weeTemplate::mkLink should include the arguments added through weeTemplate::addLinkArgs.'));
+
+$this->isEqual('/foo/bar?arg=another+value', $o->mkLink('/foo/bar', array('arg' => 'another value')),
+	_WT('weeTemplate::mkLink should override the arguments added through weeTemplate::addLinkArgs.'));
 
 /*
 <?php
