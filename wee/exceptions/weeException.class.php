@@ -244,8 +244,13 @@ final class weeException
 		if (empty(self::$sErrorPagePath))
 			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';
 
+		// Restart the gzip handler if it was started before
 		if (defined('WEE_GZIP'))
 			ob_start('ob_gzhandler');
+
+		// Switch output to XHTML and encode the debug array
+		weeXHTMLOutput::select();
+		$aDebug = weeOutput::encodeArray($aDebug);
 
 		require(self::$sErrorPagePath);
 	}
