@@ -166,7 +166,10 @@ class weeApplication
 			empty($this->aConfig[$sName . '.driver']) and burn('InvalidArgumentException',
 				sprintf('The driver %s was not found in the configuration.', $sName));
 
-			$this->aDrivers[$sName] = new $this->aConfig[$sName . '.driver']($this->cnfArray($sName));
+			$aParams = $this->cnfArray($sName);
+			unset($aParams['driver']); // Redundant, remove it
+
+			$this->aDrivers[$sName] = new $this->aConfig[$sName . '.driver']($aParams);
 		}
 
 		return $this->aDrivers[$sName];
