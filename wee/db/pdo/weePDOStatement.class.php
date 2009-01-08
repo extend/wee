@@ -97,6 +97,11 @@ class weePDOStatement extends weeDatabaseStatement
 		You can't use this method safely to check if your UPDATE executed successfully,
 		since the UPDATE statement does not always update rows that are already up-to-date.
 
+		There is a bug in PHP 5.2.6 (and possibly all the previous versions) that make
+		PDO unable to retrieve the number of affected rows when using the SQLite driver.
+		See http://bugs.php.net/bug.php?id=46007 for more details. This seems to be
+		fixed as of PHP 5.2.7.
+
 		@return	int	The number of affected rows in the last query.
 	*/
 
