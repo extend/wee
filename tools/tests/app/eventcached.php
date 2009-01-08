@@ -26,7 +26,7 @@ $aEvent['frame']	= 'cache';
 $sCacheFilename		= CACHE_PATH . $aEvent['frame'] . '/?';
 
 $iRet = @mkdir(CACHE_PATH . $aEvent['frame'], 0755, true);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create (or recreate) the directory %s.'), CACHE_PATH . $aEvent['frane']));
+$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create (or recreate) the directory %s.'), CACHE_PATH . $aEvent['frame']));
 
 touch($sCacheFilename, time() - 5);
 clearstatcache();
