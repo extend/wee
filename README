@@ -3,12 +3,12 @@ to write less, but better code easily. It is not a huge, bloated framework,
 it does not generate code, it just lets you write understandable code
 in a few lines.
 
-Web:Extend is currently alpha software. It is used by a few people in
+Web:Extend is currently beta software. It is used by a few people in
 production environments but you should be aware that it has not been
-tested enough to be considered stable or even beta. Please help us by
-testing it and developing with it.
+tested enough to be considered stable. Please help us by testing it
+and submitting bug reports.
 
-You can find documentation on http://wee.extend.ws on the Trac wiki,
+You can find documentation on http://wee.extend.ws/wiki/Documentation
 along with the SVN web interface and the bug reporting system. If you
 find a bug please report it there and NOT on sourceforge.
 
@@ -17,27 +17,3 @@ if you wish to discuss about Web:Extend, please post to our mailing
 list at http://groups.google.com/group/wee-users
 
 Thank you for trying this software.
-
-	CHANGELOG:
-
-0.2.0:
-- Allow removing "index.php/" from the url using url rewriting
-- Aliases are not restricted anymore to the frame part of the url
-- DEBUG mode is now activated using configuration files too
-- A frame will load its template only when required; the template
-  can now be changed by calling loadTemplate
-- Templates are now cached if the frame request it; cache can be
-  cleared for a specific event, frame or parameters using the
-  weeApp()->clearCache method
-- weeStringValidator now returns false if a string contain NUL
-- weeStringValidator now fails if parameters are wrong
-- weeFileConfig can now include other files
-- weeDatabase::bindNamedParameters now accept null values
-- $aEvent['event'] is now $aEvent['name']
-- New unit test framework
-- Added various unit tests
-- Draft of the dbmeta module for accessing meta information in databases
-- jQuery 1.2.3
-- jQuery's taconite 3.01
-
-0.1.0: First alpha version
