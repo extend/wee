@@ -233,7 +233,7 @@ abstract class weeFrame implements Printable
 
 	public function toString()
 	{
-		fire($this->iStatus != self::EVENT_DISPATCHED, 'IllegalStateException',
+		$this->iStatus != self::EVENT_DISPATCHED and burn('IllegalStateException',
 			_WT('An event must be dispatched before calling toString().'));
 
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))

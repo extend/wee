@@ -72,7 +72,7 @@ class weeEmailTemplate extends weeTemplate
 				break;
 
 			// Malformed email header
-			fire(strpos($sLine, ': ') === false, 'UnexpectedValueException',
+			strpos($sLine, ': ') === false and burn('UnexpectedValueException',
 				'Malformed email header. Please make sure name and value are separated by ": ".' .
 				" If you didn't specify any header in the template file please check that you added an empty line at the top.");
 
@@ -83,5 +83,3 @@ class weeEmailTemplate extends weeTemplate
 		return $sEmail;
 	}
 }
-
-?>

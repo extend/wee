@@ -105,7 +105,7 @@ class weeUploadedFile
 
 	public function getError()
 	{
-		fire($this->iErrorCode == UPLOAD_ERR_OK, 'IllegalStateException',
+		$this->iErrorCode == UPLOAD_ERR_OK and burn('IllegalStateException',
 			'There was no error while uploading files. Please call weeUploadedFile::getError only if weeUploadedFile::isOK returns true.');
 
 		$aErrorMessages = array(
@@ -170,9 +170,9 @@ class weeUploadedFile
 	public function moveTo($sDestination, $sNewFilename = null)
 	{
 		clearstatcache();
-		fire(!is_dir($sDestination), 'InvalidArgumentException',
+		is_dir($sDestination) or burn('InvalidArgumentException',
 			'Destination ' . $sDestination . ' is not a directory.');
-		fire(!is_uploaded_file($this->sTmpName), 'UnexpectedValueException',
+		is_uploaded_file($this->sTmpName) or burn('UnexpectedValueException',
 			'PHP reported that ' . $this->sTmpName . ' is not an uploaded file.');
 
 		if (empty($sNewFilename))
@@ -181,5 +181,3 @@ class weeUploadedFile
 		return move_uploaded_file($this->sTmpName, $sDestination . '/' . $sNewFilename);
 	}
 }
-
-?>

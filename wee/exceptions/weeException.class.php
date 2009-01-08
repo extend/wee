@@ -36,28 +36,6 @@ function burn($sException, $sMessage = null)
 }
 
 /**
-	Test the condition, and throws the specified exception if the condition SUCCEED. Else, do nothing.
-
-	Use this function for simpler checks in your code.
-	Usually, you don't have to continue rendering the page when there's an error in the page URL for example (because of an error or a hack attempt),
-	you should just stop the script and print an error page telling the user that the URL wasn't entered correctly.
-	This also apply for database errors, where you die with an error page if the database is down.
-	This function allows you to throw exception when this happens, and if you don't catch the exception
-	the class weeException will print an error page.
-
-	@deprecated Use "condition or burn()" or "condition and burn()" instead of fire.
-	@param $bCondition The condition to check
-	@param $sException The exception class to throw if the condition SUCCEED.
-	@param $sMessage Description of the error and, when applicable, how to resolve it.
-*/
-
-function fire($bCondition, $sException = 'UnexpectedValueException', $sMessage = null)
-{
-	if ($bCondition)
-		burn($sException, $sMessage);
-}
-
-/**
 	Namespace for exception handling when the exception thrown is not catched.
 	You should never need to call these functions yourself.
 */

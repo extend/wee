@@ -198,11 +198,11 @@ class weeConfigFile implements Mappable
 
 	protected function parseFile($sFilename)
 	{
-		fire(!file_exists($sFilename), 'FileNotFoundException',
+		file_exists($sFilename) or burn('FileNotFoundException',
 			"File '$sFilename' does not exist.");
 		
 		$sRealpath = realpath($sFilename);
-		fire(in_array($sRealpath, $this->aFilesStack), 'UnexpectedValueException',
+		in_array($sRealpath, $this->aFilesStack) and burn('UnexpectedValueException',
 			"'$sRealpath' configuration file is already in the parsing stack.");
 
 		$rFile					= fopen($sFilename, 'r');
@@ -243,7 +243,7 @@ class weeConfigFile implements Mappable
 		{
 			$sParam = ltrim(substr($sLine, 7));
 
-			fire(empty($sParam), 'UnexpectedValueException',
+			empty($sParam) and burn('UnexpectedValueException',
 				'The parameter of the include instruction is missing.');
 
 			if ($sParam[0] != '=')
@@ -254,7 +254,7 @@ class weeConfigFile implements Mappable
 		}
 
 		$i = strpos($sLine, '=');
-		fire($i === false, 'UnexpectedValueException',
+		$i === false and burn('UnexpectedValueException',
 			'The assignement instruction does not have an equal sign.');
 
 		$sLeft	= rtrim(substr($sLine, 0, $i));

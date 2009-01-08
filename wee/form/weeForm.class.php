@@ -67,14 +67,14 @@ class weeForm implements Printable
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
 			'The XSL PHP extension is required by weeForm.');
 
-		fire(!ctype_print($sAction), 'InvalidArgumentException', 'The action name must be printable.');
+		ctype_print($sAction) or burn('InvalidArgumentException', 'The action name must be printable.');
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
-		fire(!file_exists($sFilename), 'FileNotFoundException',
+		file_exists($sFilename) or burn('FileNotFoundException',
 			'The file ' . $sFilename . " doesn't exist.");
 
 		$this->oXML = simplexml_load_file($sFilename);
-		fire($this->oXML === false || !isset($this->oXML->widgets), 'BadXMLException',
+		($this->oXML === false || !isset($this->oXML->widgets)) and burn('BadXMLException',
 			'The file ' . $sFilename . ' is not a valid form document.');
 
 		if (!isset($this->oXML->uri))
@@ -108,7 +108,7 @@ class weeForm implements Printable
 			// Requires both a session open and MAGIC_STRING defined
 			// The form key helps prevent cross-site request forgery
 
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+			(session_id() == '' || !defined('MAGIC_STRING')) and burn('IllegalStateException',
 				'You cannot use the formkey protection without an active session. ' .
 				'Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
@@ -213,7 +213,7 @@ class weeForm implements Printable
 
 	public function helper($sHelper, $sWidget)
 	{
-		fire(!ctype_print($sWidget), 'InvalidArgumentException', 'The widget name must be printable.');
+		ctype_print($sWidget) or burn('InvalidArgumentException', 'The widget name must be printable.');
 
 		$oXML = $this->xpathOne('//widget[name="' . xmlspecialchars($sWidget) . '"]');
 		return new $sHelper($oXML);
@@ -267,7 +267,7 @@ class weeForm implements Printable
 		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
 		foreach ($aKeys as $sName)
 		{
-			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
+			ctype_print($sName) or burn('InvalidArgumentException', 'The widget name must be printable.');
 
 			$a = $this->oXML->xpath('//widget[name="' . xmlspecialchars($sName) . '"]');
 			if (!empty($a))
@@ -328,7 +328,7 @@ class weeForm implements Printable
 
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
 		{
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+			(session_id() == '' || !defined('MAGIC_STRING')) and burn('IllegalStateException',
 				'You cannot use the formkey protection without an active session.' .
 				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
