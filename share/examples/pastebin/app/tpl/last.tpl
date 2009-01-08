@@ -7,15 +7,6 @@
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/yui/reset-fonts.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/form.block.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>pub/pastebin.css"/>
-
-	<!-- compliance patch for microsoft browsers -->
-	<!--[if lt IE 8]>
-		<script type="text/javascript">
-			document.write('<style>body{visibility:hidden}html>body{visibility:visible}</style>');
-		</script>
-		<script src="<?php echo APP_PATH?>res/ie7/ie7-core.js" type="text/javascript"></script>
-		<script src="<?php echo APP_PATH?>res/ie7/ie7-css2-selectors.js" type="text/javascript"></script>
-	<![endif]-->
 </head>
 <body>
 	<div id="container">
