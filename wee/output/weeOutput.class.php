@@ -95,7 +95,7 @@ abstract class weeOutput
 	{
 		empty(self::$oInstance) and burn('IllegalStateException',
 			'An instance of weeOutput must be selected before calling weeOutput::encodeValue.' .
-			' You should select it before doing any code relating to output, be forms or templates.');
+			' You should select it before doing any code relating to output, be it forms or templates.');
 
 		return self::$oInstance->encode($mValue);
 	}
