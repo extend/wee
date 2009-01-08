@@ -1,5 +1,8 @@
 <?php
 
+if (!function_exists('locale_set_default'))
+	return $this->skip();
+
 class weeLocale_testSetFromPathInfo extends weeLocale
 {
 	public static $sLocale;

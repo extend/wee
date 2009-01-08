@@ -1,5 +1,8 @@
 <?php
 
+if (!function_exists('locale_set_default'))
+	return $this->skip();
+
 $o = new weeLocale;
 
 $sBefore = setlocale(LC_ALL, 'en_US');
