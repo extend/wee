@@ -105,18 +105,15 @@ class weeForm implements Printable
 		if ((int)$this->oXML->formkey)
 		{
 			// Create the form key and store it in the session
-			// Requires both a session open and MAGIC_STRING defined
+			// Currently requires a session to be open previously
 			// The form key helps prevent cross-site request forgery
 
-			(session_id() == '' || !defined('MAGIC_STRING')) and burn('IllegalStateException',
+			session_id() == '' and burn('IllegalStateException',
 				'You cannot use the formkey protection without an active session. ' .
 				'Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
-			$sTime		= microtime();
-			$sFormKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
-			$_SESSION['session_formkeys'][$sFormKey] = $sTime;
-
-			unset($sTime); // Clean-up
+			$sFormKey = md5(uniqid(rand(), true));
+			$_SESSION['session_formkeys'][$sFormKey] = microtime();
 		}
 
 		ob_start();
@@ -328,26 +325,19 @@ class weeForm implements Printable
 
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
 		{
-			(session_id() == '' || !defined('MAGIC_STRING')) and burn('IllegalStateException',
+			session_id() == '' and burn('IllegalStateException',
 				'You cannot use the formkey protection without an active session.' .
 				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
-				$oException->addError('', _WT('Form key not found.'));
+				$oException->addError('', _WT('Invalid form key.'));
 			else
 			{
-				// Recalculate form key to check validity
+				// If form key was generated more than 6 hours ago, it is considered invalid
 
-				if ($aData['wee_formkey'] != md5($_SERVER['HTTP_HOST'] . $_SESSION['session_formkeys'][$aData['wee_formkey']] . MAGIC_STRING))
-					$oException->addError('', _WT('Invalid form key.'));
-				else
-				{
-					// If form key was generated more than 6 hours ago, it is considered invalid
-
-					$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
-					if (time() > $aTime[1] + 3600 * 6)
-						$oException->addError('', _WT('Form key out of date.'));
-				}
+				$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
+				if (time() > $aTime[1] + 3600 * 6)
+					$oException->addError('', _WT('Form key out of date.'));
 			}
 
 			// Form has been submitted, unset the form key
@@ -374,7 +364,7 @@ class weeForm implements Printable
 						if (!empty($oNode['required_error']))
 							$oException->addError((string)$oNode->name, _T($oNode['required_error']));
 						else
-							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for %s'), (string)$oNode->label));
+							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for the field %s.'), (string)$oNode->label));
 					}
 
 					continue;
