@@ -33,6 +33,14 @@ class weeDbMetaFormUI extends weeFormUI
 
 	protected $oSet;
 
+	protected function defaultEvent($aEvent)
+	{
+		if (array_value($aEvent['get'], 'output') == 'xml')
+			$this->set('xmloutput', $this->oForm->toXML());
+
+		return parent::defaultEvent($aEvent);
+	}
+
 	/**
 		Defines the set to use with the dbmeta form.
 
@@ -55,6 +63,8 @@ class weeDbMetaFormUI extends weeFormUI
 
 	protected function setup($aEvent)
 	{
+		$this->set('debug', defined('DEBUG'));
+
 		$this->sAction = (empty($aEvent['name'])) ? 'add' : $aEvent['name'];
 		$this->oForm = new weeDbMetaForm($this->oSet, array(
 			'action' => $aEvent['name'],

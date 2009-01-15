@@ -199,4 +199,17 @@ class weeDbMetaForm extends weeForm
 
 		return $aMap;
 	}
+
+	/**
+		Output the form to XML.
+
+		@return string The form generated from the set in its .form XML file format.
+	*/
+
+	public function toXML()
+	{
+		$oDoc = dom_import_simplexml($this->oXML)->ownerDocument;
+		$oDoc->formatOutput = true;
+		return $oDoc->saveXML();
+	}
 }

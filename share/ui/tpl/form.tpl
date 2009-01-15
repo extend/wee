@@ -11,3 +11,13 @@
 		<?php echo $form->toString()?> 
 	<?php endif?> 
 <?php endif?> 
+
+<?php if (!empty($debug)):?> 
+	<div class="debug">
+		<a href="<?php echo $this->mkLink($_SERVER['REQUEST_URI'], empty($xmloutput) ? array('output' => 'xml') : array())?>">View Form's XML</a>
+
+		<?php if (!empty($xmloutput)):?> 
+			<pre><?php echo $xmloutput?></pre>
+		<?php endif?> 
+	</div>
+<?php endif?> 
