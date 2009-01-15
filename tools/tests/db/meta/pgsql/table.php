@@ -14,7 +14,8 @@ try
 
 	// weePgSQLDbMeta::tables
 
-	$bTableFound = false;
+	$bTableFound	= false;
+	$aTablesNames	= array();
 	foreach ($oMeta->tables() as $oTable)
 	{
 		if ($oTable->name() == 'test1')
@@ -30,10 +31,17 @@ try
 		else
 			$this->isNotEqual('test2', $oTable->name(),
 				_WT('weePgSQLDbMeta::tables returned a table "test2" which was created in a different schema than the current.'));
+
+		$aTablesNames[] = $oTable->name();
 	}
 
 	$this->isTrue($bTableFound,
 		_WT('weePgSQLDbMeta::tables did not return the expected table "test1".'));
+
+	// weePgSQLDbMeta::tablesNames
+
+	$this->isEqual($aTablesNames, $oMeta->tablesNames(),
+		_WT('weePgSQLDbMeta::tablesNames did not return the same tables as the tables method.'));
 
 	// weePgSQLDbMeta::tableExists
 

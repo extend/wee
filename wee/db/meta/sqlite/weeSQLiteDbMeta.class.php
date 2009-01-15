@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -73,23 +73,17 @@ class weeSQLiteDbMeta extends weeDbMeta
 	}
 
 	/**
-		Returns all the tables of the database.
+		Queries all the tables of the database.
 
-		@return	array(weeSQLiteDbMetaTable)	The array of tables.
+		@return	weeDatabaseResult	The data of all the tables of the database.
 	*/
 
-	public function tables()
+	protected function queryTables()
 	{
-		$oQuery = $this->db()->query("
+		return $this->db()->query("
 			SELECT name FROM sqlite_master
 			WHERE type = 'table'
 			ORDER BY name
 		");
-
-		$aTables	= array();
-		$sClass		= $this->getTableClass();
-		foreach ($oQuery as $aTable)
-			$aTables[] = new $sClass($this, $aTable);
-		return $aTables;
 	}
 }

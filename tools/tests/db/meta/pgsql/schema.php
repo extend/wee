@@ -84,6 +84,11 @@ try
 		$aNames[] = $oTable->name();
 	$this->isEqual(array('test1', 'test2'), $aNames,
 		_WT('weePgSQLDbMetaSchema::tables does not correctly return all the tables in the schema.'));
+
+	// weePgSQLDbMetaSchema::tablesNames
+
+	$this->isEqual(array('test1', 'test2'), $oSchema->tablesNames(),
+		_WT("weePgSQLDbMetaSchema::tablesNames does not return the expected tables' names."));
 }
 catch (Exception $oException) {}
 

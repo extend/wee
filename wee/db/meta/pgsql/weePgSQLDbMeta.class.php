@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -185,14 +185,14 @@ class weePgSQLDbMeta extends weeDbMeta
 	}
 
 	/**
-		Returns all the visible tables in the database.
+		Queries all the visible tables of the database.
 
-		@return array(weePgSQLDbMetaTable)	The tables.
+		@return	weeDatabaseResult	The data of all the tables of the database.
 	*/
 
-	public function tables()
+	protected function queryTables()
 	{
-		$oQuery = $this->db()->query("
+		return $this->db()->query("
 			SELECT			n.nspname AS schema, c.relname AS name, r.rolname AS owner,
 							pg_catalog.obj_description(c.oid, 'pg_class') AS comment,
 							pg_catalog.pg_has_role(r.rolname, 'USAGE') AS alterable
@@ -203,11 +203,5 @@ class weePgSQLDbMeta extends weeDbMeta
 						AND pg_table_is_visible(c.oid)
 				ORDER BY	schema, name
 		");
-
-		$aTables	= array();
-		$sClass		= $this->getTableClass();
-		foreach ($oQuery as $aTable)
-			$aTables[] = new $sClass($this, $aTable);
-		return $aTables;
 	}
 }
