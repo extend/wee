@@ -12,16 +12,21 @@ try
 
 	// weePgSQLDbMeta::schemas
 
-	$bSchemaFound = false;
-	foreach ($oMeta->schemas() as $oSchema)
+	$bSchemaFound	= false;
+	$aSchemasNames	= array();
+	foreach ($oMeta->schemas() as $oSchema) {
 		if ($oSchema->name() == 'pikachu')
-		{
 			$bSchemaFound = true;
-			break;
-		}
+		$aSchemasNames[] = $oSchema->name();
+	}
 
 	$this->isTrue($bSchemaFound,
 		_WT('weePgSQLDbMeta::schemas should return at least the newly-created schema.'));
+
+	// weePgSQLDbMeta::schemasNames
+
+	$this->isEqual($aSchemasNames, $oMeta->schemasNames(),
+		_WT("weePgSQLDbMeta::schemasNames did not return the same schemas' names as the schemas method."));
 
 	// weePgSQLDbMeta::schemaExists
 

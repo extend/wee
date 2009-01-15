@@ -122,18 +122,25 @@ class weePgSQLDbMeta extends weeDbMeta
 
 	public function schemas()
 	{
-		$oQuery = $this->db()->query("
-			SELECT			nspname AS name, pg_catalog.pg_get_userbyid(nspowner) AS owner, oid,
-							pg_catalog.pg_has_role(nspowner, 'MEMBER') AS alterable,
-							pg_catalog.obj_description(oid, 'pg_namespace') AS comment
-				FROM		pg_namespace
-				ORDER BY	nspname
-		");
-
 		$aSchemas	= array();
 		$sClass		= $this->getSchemaClass();
-		foreach ($oQuery as $aSchema)
+		foreach ($this->querySchemas() as $aSchema)
 			$aSchemas[] = new $sClass($this, $aSchema);
+		return $aSchemas;
+	}
+
+	/**
+		Returns the names of all the schemas in the database.
+
+		@return	array(string)	The names of all the schemas.
+	*/
+
+	public function schemasNames()
+	{
+		$aSchemas	= array();
+		$sClass		= $this->getSchemaClass();
+		foreach ($this->querySchemas() as $aSchema)
+			$aSchemas[] = $aSchema['name'];
 		return $aSchemas;
 	}
 
@@ -182,6 +189,23 @@ class weePgSQLDbMeta extends weeDbMeta
 			WHERE relname = ? AND relkind = 'r' AND pg_table_is_visible(oid)
 		)", $sName);
 		return $sExists == 't';
+	}
+
+	/**
+		Queries all the schemas of the database.
+
+		@return	weeDatabaseResult	The data of all the schemas of the database.
+	*/
+
+	protected function querySchemas()
+	{
+		return $this->db()->query("
+			SELECT			nspname AS name, pg_catalog.pg_get_userbyid(nspowner) AS owner, oid,
+							pg_catalog.pg_has_role(nspowner, 'MEMBER') AS alterable,
+							pg_catalog.obj_description(oid, 'pg_namespace') AS comment
+				FROM		pg_namespace
+				ORDER BY	nspname
+		");
 	}
 
 	/**

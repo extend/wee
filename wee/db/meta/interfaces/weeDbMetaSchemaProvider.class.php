@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ interface weeDbMetaSchemaProvider
 	/**
 		Returns the current schema of the database.
 
-		@return	weeDbMetaSchema			The current schema.
+		@return	weeDbMetaSchema		The current schema.
 	*/
 
 	public function currentSchema();
@@ -38,7 +38,7 @@ interface weeDbMetaSchemaProvider
 	/**
 		Returns the name of the schema class.
 
-		@return	string					The name of the schema class.
+		@return	string	The name of the schema class.
 	*/
 
 	public function getSchemaClass();
@@ -46,8 +46,8 @@ interface weeDbMetaSchemaProvider
 	/**
 		Returns a schema of a given name in the database.
 
-		@param	$sName					The name of the schema.
-		@return	weeDbMetaSchema			The schema.
+		@param	$sName			The name of the schema.
+		@return	weeDbMetaSchema	The schema.
 	*/
 
 	public function schema($sName);
@@ -55,8 +55,8 @@ interface weeDbMetaSchemaProvider
 	/**
 		Returns whether a schema of a given name exists in the database.
 
-		@param	$sName					The name of the schema.
-		@return	bool					true if the schema exists in the database, false otherwise.
+		@param	$sName	The name of the schema.
+		@return	bool	true if the schema exists in the database, false otherwise.
 	*/
 
 	public function schemaExists($sName);
@@ -68,4 +68,12 @@ interface weeDbMetaSchemaProvider
 	*/
 
 	public function schemas();
+
+	/**
+		Returns the names of all the schemas of the database.
+
+		@return	array(string)	The names of all the schemas.
+	*/
+
+	public function schemasNames();
 }
