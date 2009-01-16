@@ -35,8 +35,8 @@ class weeAuthDbTable extends weeAuth
 			table:				The table containing the credentials to authenticate against.
 			identifier_field:	The field containing the identifiers.
 			password_field:		The field containing the passwords hashed with 'password_treatment'.
-			password_treatment:	The function applied to each passwords stored in the 'password_field' field. Defaults to 'md5'.
-			hash_treatment:		The PHP function to use to hash passwords stored client-side. Defaults to 'md5'.
+			password_treatment:	The callback applied to each passwords stored in the 'password_field' field. Defaults to 'md5'.
+			hash_treatment:		The callback to use to hash passwords stored client-side. Defaults to 'md5'.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -44,16 +44,19 @@ class weeAuthDbTable extends weeAuth
 	public function __construct($aParams = array())
 	{
 		empty($aParams['db']) || !($aParams['db'] instanceof weeDatabase) and burn('InvalidArgumentException',
-			'You must provide a parameter "db" containing an instance of weeDatabase.');
+			_WT('You must provide a parameter "db" containing an instance of weeDatabase.'));
 		empty($aParams['table']) and burn('InvalidArgumentException',
-			'You must provide a parameter "table" containing the name of the credentials table in your database.');
+			_WT('You must provide a parameter "table" containing the name of the credentials table in your database.'));
 		empty($aParams['identifier_field']) and burn('InvalidArgumentException',
-			'You must provide a parameter "identifier_field" containing the name of the field for the identifiers.');
+			_WT('You must provide a parameter "identifier_field" containing the name of the field for the identifiers.'));
 		empty($aParams['password_field']) and burn('InvalidArgumentException',
-			'You must provide a parameter "password_field" containing the name of the field for the passwords.');
+			_WT('You must provide a parameter "password_field" containing the name of the field for the passwords.'));
 
 		if (empty($aParams['password_treatment']))
 			$aParams['password_treatment'] = 'md5';
+		else
+			is_callable($aParams['password_treatment'])
+				or burn('InvalidArgumentException', _WT('The `password_treatment` parameter must be a valid callback.'));
 
 		parent::__construct($aParams);
 	}
@@ -71,14 +74,26 @@ class weeAuthDbTable extends weeAuth
 
 	public function authenticate($aCredentials)
 	{
-		return $this->doQuery($this->getDb()->bindNamedParameters(array('
+		$sFunc					= $this->aParams['password_treatment'];
+		$aCredentials['hash']	= $sFunc($aCredentials['password']);
+		unset($aCredentials['password']);
+
+		$oResults = $this->getDb()->query('
 			SELECT *
-				FROM ' . $this->aParams['table'] . '
-				WHERE	' . $this->aParams['identifier_field'] . '=:identifier
-					AND	' . $this->aParams['password_field'] . '=' . $this->aParams['password_treatment'] . '(:password)
-				LIMIT 1',
-			$aCredentials
-		)));
+				FROM ' . $this->getDb()->escapeIdent($this->aParams['table']) . '
+				WHERE	' . $this->getDb()->escapeIdent($this->aParams['identifier_field']) . '=:identifier
+					AND	' . $this->getDb()->escapeIdent($this->aParams['password_field']) . '=:hash
+		', $aCredentials);
+
+		if (count($oResults) == 0)
+			throw new AuthenticationException('The credentials provided were incorrect.');
+
+		count($oResults) == 1 or burn('UnexpectedValueException',
+			_WT('The authentication query returned more than 1 result. Your table most likely contains dupes.'));
+
+		$aData = $oResults->fetch();
+		unset($aData[$this->aParams['password_field']]);
+		return $aData;
 	}
 
 	/**
@@ -98,21 +113,28 @@ class weeAuthDbTable extends weeAuth
 	public function authenticateHash($aCredentials)
 	{
 		defined('MAGIC_STRING') or burn('IllegalStateException',
-			'You cannot hash a passphrase without defining the MAGIC_STRING constant first.');
+			_WT('You cannot hash a passphrase without defining the MAGIC_STRING constant first.'));
 
-		if ($this->getDb() instanceof weeMySQLDatabase)
-			$sConcat = 'CONCAT(' . $this->aParams['password_field'] . ', ' . ':magic_string)';
-		else
-			$sConcat = $this->aParams['password_field'] . ' || :magic_string';
-
-		return $this->doQuery($this->getDb()->bindNamedParameters(array('
+		$oResults = $this->getDb()->query('
 			SELECT *
-				FROM ' . $this->aParams['table'] . '
-				WHERE	' . $this->aParams['identifier_field'] . '=:identifier
-					AND	' . $this->aParams['hash_treatment'] . '(' . $sConcat . ')=:password
-				LIMIT 1',
-			array('magic_string' => MAGIC_STRING) + $aCredentials,
-		)));
+				FROM ' . $this->getDb()->escapeIdent($this->aParams['table']) . '
+				WHERE ' . $this->getDb()->escapeIdent($this->aParams['identifier_field']) . ' = ?
+		', $aCredentials['identifier']);
+
+		count($oResults) != 0 or burn('AuthenticationException',
+			_WT('The provided credentials were incorrect.'));
+
+		count($oResults) == 1 or burn('UnexpectedValueException',
+			_WT('The authentication query returned more than 1 result. Your table most likely contains dupes.'));
+
+		$aData = $oResults->fetch();
+		$sFunc = $this->aParams['hash_treatment'];
+
+		$aCredentials['password'] == $sFunc($aData[$this->aParams['password_field']] . MAGIC_STRING)
+			or burn('AuthenticationException', _WT('The provided credentials were incorrect.'));
+
+		unset($aData[$this->aParams['password_field']]);
+		return $aData;
 	}
 
 	/**
@@ -132,7 +154,7 @@ class weeAuthDbTable extends weeAuth
 			throw new AuthenticationException('The credentials provided were incorrect.');
 
 		count($oResults) == 1 or burn('UnexpectedValueException',
-			'The authentication query returned more than 1 result. Your table most likely contains dupes.');
+			_WT('The authentication query returned more than 1 result. Your table most likely contains dupes.'));
 
 		$aData = $oResults->fetch();
 		unset($aData[$this->aParams['password_field']]);

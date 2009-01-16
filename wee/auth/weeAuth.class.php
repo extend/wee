@@ -37,7 +37,7 @@ abstract class weeAuth
 		Create a new weeAuth object and stores the paramters.
 
 		Parameters:
-			hash_treatment: The PHP function to use to hash passwords stored client-side. Defaults to 'md5'.
+			hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'md5'.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -46,6 +46,9 @@ abstract class weeAuth
 	{
 		if (empty($aParams['hash_treatment']))
 			$aParams['hash_treatment'] = 'md5';
+		else
+			is_callable($aParams['hash_treatment'])
+				or burn('InvalidArgumentException', _WT('The `hash_treatment` parameter must be a valid callback.'));
 
 		$this->aParams = $aParams;
 	}
@@ -81,7 +84,7 @@ abstract class weeAuth
 	public function hash($sPassword)
 	{
 		defined('MAGIC_STRING') or burn('IllegalStateException',
-			'You cannot hash a password without defining the MAGIC_STRING constant first.');
+			_WT('You cannot hash a password without defining the MAGIC_STRING constant first.'));
 
 		$sFunc = $this->aParams['hash_treatment'];
 		return $sFunc($sFunc($sPassword) . MAGIC_STRING);
