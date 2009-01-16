@@ -486,10 +486,11 @@ class weeApplication
 			//TODO:sometimes we may want to only accept xmlhttprequest when the
 			//request comes from a user who we know is using this application,
 			//and not some random other webserver using it for its own purpose...
-			'context' => (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http',
+			'context'	=> (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http',
+			'method'	=> $_SERVER['REQUEST_METHOD'],
 
-			'get'	=> $_GET,
-			'post'	=> $_POST,
+			'get'		=> $_GET,
+			'post'		=> $_POST,
 
 			'name'		=> null,
 			'pathinfo'	=> null,

@@ -21,9 +21,10 @@ $aFormerPost	= $_POST;
 
 try {
 	$_SERVER = array(
-		'REQUEST_URI'		=> '/test.php?test=get',
+		'PATH_INFO'			=> '',
+		'REQUEST_METHOD'	=> 'GET',
 		'REQUEST_STRING'	=> '?test=get',
-		'PATH_INFO'			=> ''
+		'REQUEST_URI'		=> '/test.php?test=get',
 	);
 
 	$_GET = array(
@@ -132,6 +133,14 @@ try {
 
 	$this->isEqual('get', $aEvent['get']['test'],
 		'The event does not have the correct value of the GET request parameter given to the application.');
+
+	// Request Method
+
+	$this->isTrue(isset($aEvent['method']),
+		_WT('weeApplication::translateEvent does not have a request method.'));
+
+	$this->isEqual('GET', $aEvent['method'],
+		_WT('weeApplication::translateEvent does not return the expected request method.'));
 } catch (Exception $oException) {}
 
 $_SERVER	= $aFormerServer;
