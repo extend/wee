@@ -35,8 +35,8 @@ class weeAuthDbTable extends weeAuth
 			table:				The table containing the credentials to authenticate against.
 			identifier_field:	The field containing the identifiers.
 			password_field:		The field containing the passwords hashed with 'password_treatment'.
-			password_treatment:	The callback applied to each passwords stored in the 'password_field' field. Defaults to 'md5'.
-			hash_treatment:		The callback to use to hash passwords stored client-side. Defaults to 'md5'.
+			password_treatment:	The callback applied to each passwords stored in the 'password_field' field. Defaults to 'sha1'.
+			hash_treatment:		The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -53,7 +53,7 @@ class weeAuthDbTable extends weeAuth
 			_WT('You must provide a parameter "password_field" containing the name of the field for the passwords.'));
 
 		if (empty($aParams['password_treatment']))
-			$aParams['password_treatment'] = 'md5';
+			$aParams['password_treatment'] = 'sha1';
 		else
 			is_callable($aParams['password_treatment'])
 				or burn('InvalidArgumentException', _WT('The `password_treatment` parameter must be a valid callback.'));
@@ -134,31 +134,6 @@ class weeAuthDbTable extends weeAuth
 			or burn('AuthenticationException', _WT('The provided credentials were incorrect.'));
 
 		unset($aData[$this->aParams['password_field']]);
-		return $aData;
-	}
-
-	/**
-		Performs the authentication using the given query.
-		If the query finds 0 result, then the authentication failed and an AuthenticationException is thrown.
-		If the query finds 2 or more results, an UnexpectedValueException is thrown.
-
-		@param $sQuery Authentication query to perform.
-		@return array Data retrieved while authenticating. Contains the whole row retrieved from the database.
-	*/
-
-	protected function doQuery($sQuery)
-	{
-		$oResults = $this->getDb()->query($sQuery);
-
-		if (count($oResults) == 0)
-			throw new AuthenticationException('The credentials provided were incorrect.');
-
-		count($oResults) == 1 or burn('UnexpectedValueException',
-			_WT('The authentication query returned more than 1 result. Your table most likely contains dupes.'));
-
-		$aData = $oResults->fetch();
-		unset($aData[$this->aParams['password_field']]);
-
 		return $aData;
 	}
 
