@@ -7,9 +7,9 @@
 			<xsl:value-of select="concat($formidprefix, name, $formidsuffix)"/>
 		</xsl:attribute>
 
-		<xsl:if test="@help">
+		<xsl:if test="help">
 			<xsl:attribute name="title">
-				<xsl:value-of select="@help"/>
+				<xsl:value-of select="help"/>
 			</xsl:attribute>
 		</xsl:if>
 
