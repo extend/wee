@@ -106,13 +106,6 @@ class weeApplication
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
-		// Cache settings
-
-		if (!empty($this->aConfig['output.cache.path']))
-			define('CACHE_PATH',	str_replace('//', ROOT_PATH, $this->aConfig['output.cache.path']) . '/');
-		if (!empty($this->aConfig['output.cache.expire']))
-			define('CACHE_EXPIRE',	$this->aConfig['output.cache.expire']);
-
 		// Mail settings
 
 		if (!empty($this->aConfig['mail.debug.to']))
@@ -173,58 +166,6 @@ class weeApplication
 		}
 
 		return $this->aDrivers[$sName];
-	}
-
-	/**
-		Inform the application that we want to cache the output of the frame.
-
-		The parameter is an array of variable defining how to cache the output.
-		The only accepted variable currently is 'expire', defining the number of seconds
-		the cache file will be valid. The default value is defined by the constant
-		CACHE_EXPIRE, or 300 seconds if this constant is not found.
-
-		@param $aParams Array of variables defining how to cache the output.
-	*/
-
-	public function cacheEvent($aParams = array())
-	{
-		if (empty($aParams['expire']))
-			$aParams['expire'] = (defined('CACHE_EXPIRE')) ? CACHE_EXPIRE : 300;
-
-		$this->aCacheParams = $aParams;
-	}
-
-	/**
-		Clear all the cache files that matches the specified events.
-
-		There is an additional event option used only by clearCache: query_string.
-		It is what would fit in an urldecoded $_SERVER['QUERY_STRING'],
-		that is the part after ? in an url, but with the ? INCLUDED.
-
-		Giving the ? alone would delete only the cache file with no query string present,
-		while giving ?query_string would delete only ?query_string. Giving nothing or
-		giving an empty string would delete all the cache files for the specified frame, name and pathinfo.
-
-		@param $aEvent The event for which cache will be deleted. Uses frame, name, pathinfo and query_string parameters. Frame is mandatory.
-	*/
-
-	public function clearCache($aEvent)
-	{
-		empty($aEvent['frame']) and burn('InvalidArgumentException', 'The frame name must be given to clear its cache.');
-		$aEvent = array('name' => null, 'pathinfo' => null, 'query_string' => null) + $aEvent;
-
-		$sCache = CACHE_PATH . $aEvent['frame'];
-		if (!empty($aEvent['name'])) {
-			$sCache .= '/' . $aEvent['name'];
-			if (!empty($aEvent['pathinfo']))
-				$sCache .= $aEvent['pathinfo'];
-		}
-		$sCache .= '/' . $aEvent['query_string'];
-
-		if (is_dir($sCache))
-			rmdir_recursive($sCache);
-		else
-			@unlink($sCache);
 	}
 
 	/**
@@ -376,39 +317,6 @@ class weeApplication
 	}
 
 	/**
-		Return whether the event is cached.
-
-		If the event is cached, this method will add a value to the $aEvent
-		event array, 'cache', to give the path to the cache file to output.
-
-		@param [IN, OUT] $aEvent Event data given by weeApplication::translateEvent.
-	*/
-
-	protected function isEventCached(&$aEvent)
-	{
-		if (defined('NO_CACHE') || !defined('CACHE_PATH'))
-			return false;
-
-		$sFrameEvent	= $aEvent['frame'] . (isset($aEvent['name']) ? '/' . $aEvent['name'] : '');
-		$sCacheFilename = CACHE_PATH . $sFrameEvent . array_value($aEvent, 'pathinfo') . (isset($_SERVER['QUERY_STRING']) ? '/?' . urldecode($_SERVER['QUERY_STRING']) : '/?');
-
-		if (!file_exists($sCacheFilename))
-			return false;
-
-		$iTime = filemtime($sCacheFilename);
-
-		if ($iTime === false)
-			return false;
-
-		if ($iTime < time())
-			return false;
-
-		$aEvent['cache'] = $sCacheFilename;
-
-		return true;
-	}
-
-	/**
 		Load and initialize the specified frame.
 
 		@param	$sFrame						Frame's class name
@@ -427,51 +335,29 @@ class weeApplication
 	/**
 		Entry point for a wee application.
 
-		It translate the event sent by the browser, then
-			if there is a cache file for this event, just output it and quit
-			otherwise dispatch the event to the frame and display it.
-
-		Before displaying it, if the frame requested it, the output will be
-		stored in a file for later use for caching. The request is made by
-		calling weeApp()->cacheEvent() from within the frame.
+		It translates the event sent by the browser,
+		then dispatch it to the frame and finally
+		orders the frame to render the resulting view.
 	*/
 
 	public function main()
 	{
 		$aEvent = $this->translateEvent();
 
-		if ($this->isEventCached($aEvent))
-			readfile($aEvent['cache']);
-		else {
-			$this->dispatchEvent($aEvent);
+		$this->dispatchEvent($aEvent);
 
-			if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
-				if (defined('WEE_CLI'))
-					echo _WT('You are not allowed to access the specified frame/event.'), "\n";
-				else {
-					header('HTTP/1.0 403 Forbidden');
-					require(ROOT_PATH . 'res/wee/unauthorized.htm');
-				}
-				exit;
+		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
+			if (defined('WEE_CLI'))
+				echo _WT('You are not allowed to access the specified frame/event.'), "\n";
+			else {
+				header('HTTP/1.0 403 Forbidden');
+				require(ROOT_PATH . 'res/wee/unauthorized.htm');
 			}
-
-			weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
-			$sOutput = $this->oFrame->toString();
-
-			if (!empty($this->aCacheParams) && defined('CACHE_PATH')) {
-				$sCachePath = CACHE_PATH . $aEvent['frame'] . '/' . $aEvent['name'] . $aEvent['pathinfo'] . '/';
-				$sCacheFilename = $sCachePath . '?' . urldecode($_SERVER['QUERY_STRING']);
-
-				if (!is_dir($sCachePath))
-					mkdir($sCachePath, 0700, true);
-
-				file_put_contents($sCacheFilename, $sOutput);
-				touch($sCacheFilename, time() + $this->aCacheParams['expire']);
-				chmod($sCacheFilename, 0600);
-			}
-
-			echo $sOutput;
+			exit;
 		}
+
+		weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
+		echo $this->oFrame->toString();
 	}
 
 	/**
