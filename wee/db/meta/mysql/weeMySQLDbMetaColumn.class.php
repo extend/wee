@@ -71,7 +71,7 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 	}
 
 	/**
-		Returns a validator for the column.
+		Does the mysql-dependent logic of getValidator.
 
 		Handled types:
 		 - tinyint
@@ -83,11 +83,13 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 		 - date
 		 - time (range restricted from 00:00:00 to 23:59:59)
 
-		@return	weeValidator	A validator appropriate for the column.
+		The UNSIGNED modifier of the integer types is also properly handled.
+
+		@return	weeValidator	A validator appropriate for the column or null.
 		@see					http://dev.mysql.com/doc/refman/5.0/en/data-types.html
 	*/
 
-	public function getValidator()
+	protected function doGetValidator()
 	{
 		switch ($this->aData['type'])
 		{
@@ -109,19 +111,12 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 
 				if ($bUnsigned)
 				{
-					switch ($this->aData['type'])
-					{
-						case 'int':
-							$aArgs = array('min' => '0', 'max' => '4294967295');
-							break;
-
-						case 'bigint':
-							$aArgs = array('min' => '0', 'max' => '18446744073709551615');
-							break;
-
-						default:
-							$aArgs = array('min' => 0, 'max' => $aArgs['max'] - $aArgs['min']);
-					}
+					if ($this->aData['type'] == 'int')
+						$aArgs = array('min' => '0', 'max' => '4294967295');
+					elseif ($this->aData['type'] == 'bigint')
+						$aArgs = array('min' => '0', 'max' => '18446744073709551615');
+					else
+						$aArgs = array('min' => 0, 'max' => $aArgs['max'] - $aArgs['min']);
 				}
 
 				if (is_string($aArgs['min']))
@@ -140,10 +135,6 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 				// the real range of the time type is '-838:59:59' to '838:59:59',
 				// we restrict here to '00:00:00' to '23:59:59'.
 				return new weeTimeValidator;
-
-			default:
-				burn('UnhandledTypeException',
-					sprintf(_WT('Type "%s" is not handled by dbmeta.'), $this->aData['type']));
 		}
 	}
 

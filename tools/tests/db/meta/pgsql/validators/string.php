@@ -15,8 +15,13 @@ try
 
 	// char
 
+	$oColumn = $oTable->column('a');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weePgSQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'char'));
+
 	try {
-		$o = $oTable->column('a')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weePgSQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "char".'));
 	}
@@ -29,8 +34,13 @@ try
 
 	// varchar
 
+	$oColumn = $oTable->column('b');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weePgSQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'varchar'));
+
 	try {
-		$o = $oTable->column('b')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weePgSQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "varchar".'));
 	}
@@ -44,7 +54,7 @@ try
 	// unbounded varchar
 
 	$this->isEqual(array(), $oTable->column('c')->getValidator()->getArgs(),
-		_WT('The arguments of the unbounded varchar validator are correct.'));
+		_WT('The arguments of the unbounded varchar validator are not correct.'));
 }
 catch (Exception $oException) {}
 

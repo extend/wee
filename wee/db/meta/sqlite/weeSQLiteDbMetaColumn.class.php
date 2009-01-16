@@ -59,21 +59,19 @@ class weeSQLiteDbMetaColumn extends weeDbMetaColumn
 	}
 
 	/**
-		Returns a validator for the column.
+		Does the sqlite-dependent logic of getValidator.
 
-		@return	weeValidator			A validator appropriate for the column.
-		@throw	UnhandledTypeException	Thrown for every column except ones whose are INTEGER PRIMARY KEY.
-		@see							http://sqlite.org/datatypes.html
+		The only handled type is INTEGER PRIMARY KEY.
+
+		@return	weeValidator	A validator appropriate for the column or null.
+		@see					http://sqlite.org/datatypes.html
 	*/
 
-	public function getValidator()
+	protected function doGetValidator()
 	{
 		if ($this->aData['type'] == 'INTEGER' && $this->oTable->hasPrimaryKey()
 				&& $this->oTable->primaryKeyColumnsNames() == array($this->aData['name']))
 			return new weeNumberValidator;
-
-		burn('UnhandledTypeException',
-			_WT('SQLite is "typeless" except for INTEGER PRIMARY KEY columns.'));
 	}
 
 	/**

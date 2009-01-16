@@ -28,33 +28,71 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeDbMetaColumn extends weeDbMetaTableObject
 {
 	/**
+		The validator of the column.
+
+		Lazily set by hasValidator.
+	*/
+
+	protected $oValidator = false;
+
+	/**
 		Returns the default value of the column.
 
-		@return	string			The default value of the column.
+		@return	string	The default value of the column.
 	*/
 
 	abstract public function defaultValue();
 
 	/**
-		Returns a validator for the column.
+		Does the database-dependent logic of getValidator.
 
-		@return	weeValidator	A validator appropriate for the column.
+		This method should return null if the column type is not handled by DbMeta.
+
+		@return	mixed	A validator appropriate for the column or null.
 	*/
 
-	abstract public function getValidator();
+	abstract protected function doGetValidator();
+
+	/**
+		Returns a validator for the column.
+
+		@return	weeValidator			A validator appropriate for the column.
+		@throw	UnhandledTypeException	The type of the column is not handled by DbMeta.
+	*/
+
+	public function getValidator()
+	{
+		$this->hasValidator()
+			or burn('UnhandledTypeException',
+				_WT('The type of the column is not handled by DbMeta.'));
+		return $this->oValidator;
+	}
 
 	/**
 		Returns whether the column has a default value.
 
-		@return	bool			Whether the column has a default value.
+		@return	bool	Whether the column has a default value.
 	*/
 
 	abstract public function hasDefault();
 
 	/**
+		Returns whether the column has a validator.
+
+		@return bool	Whether the column has a validator.
+	*/
+
+	public function hasValidator()
+	{
+		if ($this->oValidator === false)
+			$this->oValidator = $this->doGetValidator();
+		return $this->oValidator !== null;
+	}
+
+	/**
 		Returns whether the column can contain null values.
 	
-		@return	bool			Whether the column can contain null values.
+		@return	bool	Whether the column can contain null values.
 	*/
 
 	abstract public function isNullable();
@@ -62,7 +100,7 @@ abstract class weeDbMetaColumn extends weeDbMetaTableObject
 	/**
 		Returns the number of the column in the table.
 
-		@return	int				The number of the column in the table.
+		@return	int	The number of the column in the table.
 	*/
 
 	public function num()
