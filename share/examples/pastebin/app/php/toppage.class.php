@@ -21,7 +21,7 @@ class toppage extends weeFrame
 
 				$this->set('posted_id', weeApp()->db->getPKId('pastebin_data_data_id_seq'));
 			} catch (FormValidationException $e) {
-				$this->set('errors', $oForm->getErrors());
+				$this->set('errors', $e->toArray());
 			}
 		}
 	}
