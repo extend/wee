@@ -77,10 +77,12 @@ class weeForm implements Printable
 		($this->oXML === false || !isset($this->oXML->widgets)) and burn('BadXMLException',
 			'The file ' . $sFilename . ' is not a valid form document.');
 
-		if (!isset($this->oXML->uri))
-			$this->oXML->addChild('uri', (!empty($_SERVER['REQUEST_URI']) ? xmlspecialchars($_SERVER['REQUEST_URI']) : null));
 		if (!isset($this->oXML->formkey))
 			$this->oXML->addChild('formkey', 1);
+		if (!isset($this->oXML->method))
+			$this->oXML->addChild('method', 'post');
+		if (!isset($this->oXML->uri))
+			$this->oXML->addChild('uri', (!empty($_SERVER['REQUEST_URI']) ? xmlspecialchars($_SERVER['REQUEST_URI']) : null));
 
 		// Delete elements with wrong action
 		$this->removeNodes('//*[@action!="' . xmlspecialchars($sAction) . '"]');
