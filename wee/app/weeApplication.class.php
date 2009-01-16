@@ -271,6 +271,7 @@ class weeApplication
 		Event information can contain the following parameters:
 			- context: either http or xmlhttprequest
 			- frame: name of the destination frame
+			- method: request method used to access the event (e.g. GET, POST)
 			- name: name of the event
 			- get: $_GET array for this event
 			- post: $_POST array for this event
