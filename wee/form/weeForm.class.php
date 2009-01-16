@@ -323,7 +323,7 @@ class weeForm implements Printable
 
 	public function validate($aData)
 	{
-		$oException = new FormValidationException('The validation of the form failed. See FormValidationException::getErrors to retrieve error messages.');
+		$oException = new FormValidationException(_WT('The validation of the form failed. You can retrieve error messages as a string using toString or an array using toArray.'));
 
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
 		{
