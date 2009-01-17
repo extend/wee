@@ -104,6 +104,11 @@ class weeCRUDUI extends weeUI
 			'method' => 'post',
 		));
 
+		if (!empty($aEvent['get']['orderby']) && in_array($aEvent['get']['orderby'], $this->aListColumns)) {
+			$this->oSet->orderBy(array($aEvent['get']['orderby'] => array_value($aEvent['get'], 'orderdirection', 'asc')));
+			$oList->setOrder($aEvent['get']['orderby'], array_value($aEvent['get'], 'orderdirection', 'asc'));
+		}
+
 		$oList->setList($this->oSet->fetchSubset(
 			$iPage * $this->iCountPerPage,
 			$this->iCountPerPage

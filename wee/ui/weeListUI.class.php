@@ -60,6 +60,13 @@ class weeListUI extends weeUI
 	protected $aList;
 
 	/**
+		TODO
+	*/
+
+	protected $sOrderBy;
+	protected $sOrderDirection;
+
+	/**
 		Columns identifying an item, used for the items actions links.
 	*/
 
@@ -138,6 +145,8 @@ class weeListUI extends weeUI
 			'global_actions' => $this->aGlobalActions,
 			'items_actions' => $this->aItemsActions,
 			'pagination' => $oPagination,
+			'orderby' => $this->sOrderBy,
+			'orderdirection' => $this->sOrderDirection,
 		));
 	}
 
@@ -151,6 +160,18 @@ class weeListUI extends weeUI
 	public function setColumns($aColumns)
 	{
 		$this->aColumns = $aColumns;
+	}
+
+	/**
+		TODO
+	*/
+
+	public function setOrder($sOrderBy = null, $sOrderDirection = 'asc')
+	{
+		// TODO:check parameters
+
+		$this->sOrderBy = $sOrderBy;
+		$this->sOrderDirection = $sOrderDirection;
 	}
 
 	/**

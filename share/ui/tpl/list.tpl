@@ -4,8 +4,13 @@
 	<table class="list">
 		<thead>
 			<tr>
-				<?php foreach ($columns as $label => $name):?> 
-					<th><?php if (is_int($label)) echo $name; else echo $label?></th>
+				<?php foreach ($columns as $label => $name): if (is_int($label)) $label = $name;?> 
+					<th>
+						<a href="<?php echo $this->mkLink($_SERVER['REQUEST_URI'], array(
+							'orderby' => $name,
+							'orderdirection' => $orderby != $name || empty($orderdirection) || $orderdirection == 'desc' ? 'asc' : 'desc',
+						))?>"<?php if ($orderby == $name):?> class="<?php echo $orderdirection?>"<?php endif?>><?php echo $label?></a>
+					</th>
 				<?php endforeach?> 
 
 				<?php if (!empty($items_actions)):?><th class="items-actions"><?php echo _WT('Actions')?></th><?php endif?> 
