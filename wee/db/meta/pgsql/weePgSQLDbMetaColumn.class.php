@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -34,9 +34,9 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 		This class should NEVER be instantiated manually.
 		Instances of this class should be returned by weePgSQLDbMetaTable.
 
-		@param	$oMeta					The pgsql dbmeta object.
-		@param	$aData					The column data.
-		@param	$oTable					The pgsql table of the column.
+		@param	$oMeta	The pgsql dbmeta object.
+		@param	$aData	The column data.
+		@param	$oTable	The pgsql table of the column.
 	*/
 
 	public function __construct(weePgSQLDbMeta $oMeta, array $aData, weePgSQLDbMetaTable $oTable)
@@ -47,7 +47,7 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	/**
 		Returns the comment of the column.
 
-		@return	string					The comment of the column.
+		@return	string	The comment of the column.
 	*/
 
 	public function comment()
@@ -77,7 +77,7 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	}
 
 	/**
-		Returns a validator for the column.
+		Does the pgsql-dependent logic of getValidator.
 
 		Handled types:
 		 - smallint
@@ -88,11 +88,11 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 		 - character varying
 		 - time (in 24-hours format, without time zone)
 
-		@return	weeValidator			A validator appropriate for the column.
-		@see							http://www.postgresql.org/docs/8.3/static/datatype.html
+		@return	weeValidator	A validator appropriate for the column or null.
+		@see					http://www.postgresql.org/docs/8.3/static/datatype.html
 	*/
 
-	public function getValidator()
+	protected function doGetValidator()
 	{
 		switch ($this->aData['type'])
 		{
@@ -127,17 +127,13 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 				// PostgreSQL also supports time zones, and 12-hours format,
 				// but we don't handle them.
 				return new weeTimeValidator;
-
-			default:
-				burn('UnhandledTypeException',
-					sprintf(_WT('Type "%s" is not handled by dbmeta.'), $this->aData['type']));
 		}
 	}
 
 	/**
 		Returns whether the column has a default value.
 
-		@return	bool					true if the column has a default value, false otherwise.
+		@return	bool	true if the column has a default value, false otherwise.
 	*/
 
 	public function hasDefault()
@@ -148,7 +144,7 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	/**
 		Returns whether the column can contain null values.
 	
-		@return	bool					true if the column accepts null as a value, false otherwise.
+		@return	bool	true if the column accepts null as a value, false otherwise.
 	*/
 
 	public function isNullable()
@@ -159,7 +155,7 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 	/**
 		Returns the name of the schema of the column.
 
-		@return	string					The name of the schema.
+		@return	string	The name of the schema.
 	*/
 
 	public function schemaName()

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -49,7 +49,7 @@ class weePDOStatement extends weeDatabaseStatement
 		@param	$sQuery	The query.
 	*/
 
-	public function __construct(weePDODatabase $oDb, $sQuery)
+	public function __construct(PDO $oDb, $sQuery)
 	{
 		try
 		{
@@ -96,6 +96,11 @@ class weePDOStatement extends weeDatabaseStatement
 		Returns the number of affected rows in the last INSERT, UPDATE or DELETE query.
 		You can't use this method safely to check if your UPDATE executed successfully,
 		since the UPDATE statement does not always update rows that are already up-to-date.
+
+		There is a bug in PHP 5.2.6 (and possibly all the previous versions) that make
+		PDO unable to retrieve the number of affected rows when using the SQLite driver.
+		See http://bugs.php.net/bug.php?id=46007 for more details. This seems to be
+		fixed as of PHP 5.2.7.
 
 		@return	int	The number of affected rows in the last query.
 	*/

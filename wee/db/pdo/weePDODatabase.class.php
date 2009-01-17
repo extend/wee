@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -241,5 +241,17 @@ class weePDODatabase extends weeDatabase
 	public function numAffectedRows()
 	{
 		return $this->iAffectedRowsCount;
+	}
+
+	/**
+		Prepares an SQL query statement.
+
+		@param	$sQuery			The query string.
+		@return	weePDOStatement	The prepared statement.
+	*/
+
+	public function prepare($sQuery)
+	{
+		return new weePDOStatement($this->oDb, $sQuery);
 	}
 }

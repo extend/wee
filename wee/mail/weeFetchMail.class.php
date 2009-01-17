@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -58,9 +58,9 @@ class weeFetchMail
 		function_exists('imap_open') or burn('ConfigurationException',
 			'The IMAP PHP extension is required by the weeFetchMail class.');
 
-		fire(empty($aParams['user']), 'InvalidParameterException',
+		empty($aParams['user']) and burn('InvalidParameterException',
 			'The user name was not provided in the connection parameters.');
-		fire(empty($aParams['password']), 'InvalidParameterException',
+		empty($aParams['password']) and burn('InvalidParameterException',
 			'The user password was not provided in the connection parameters.');
 
 		// Fill in the default values
@@ -76,7 +76,7 @@ class weeFetchMail
 		$sConnection .= '}' . $aParams['mailbox'];
 
 		$this->rLink = @imap_open($sConnection, $aParams['user'], $aParams['password'], OP_READONLY, 1);
-		fire($this->rLink === false, 'UnexpectedValueException', 'Failed to open the mailbox.');
+		$this->rLink === false and burn('UnexpectedValueException', 'Failed to open the mailbox.');
 	}
 
 	/**

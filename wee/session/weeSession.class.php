@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -102,12 +102,8 @@ class weeSession implements ArrayAccess
 		if (defined('WEE_SESSION_CHECK_IP'))
 			$_SESSION['session_ip'] = $this->getIP();
 
-		if (defined('WEE_SESSION_CHECK_TOKEN'))
-		{
-			defined('MAGIC_STRING') or burn('IllegalStateException',
-				_WT('You cannot use token session protection without defining the MAGIC_STRING constant first.'));
-
-			$_SESSION['session_token'] = substr(md5(rand() . MAGIC_STRING), 0, 8) . substr(md5(time() . MAGIC_STRING), 0, 8);
+		if (defined('WEE_SESSION_CHECK_TOKEN')) {
+			$_SESSION['session_token'] = md5(uniqid(rand(), true));
 			weeOutput::setCookie('session_token', $_SESSION['session_token']);
 		}
 	}

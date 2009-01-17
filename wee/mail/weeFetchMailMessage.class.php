@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -150,7 +150,7 @@ class weeFetchMailMessage extends weeDataSource implements ArrayAccess
 		if (is_null($this->oHeader))
 			$this->oHeader = imap_headerinfo($this->rLink, $this->iMsg);
 
-		fire(!isset($this->oHeader->$offset), 'InvalidArgumentException',
+		isset($this->oHeader->$offset) or burn('InvalidArgumentException',
 			'The value for offset ' . $offset . ' was not found in the data.');
 
 		if ($this->bMustEncodeData)

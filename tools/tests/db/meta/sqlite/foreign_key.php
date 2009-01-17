@@ -10,6 +10,15 @@ try
 {
 	$oTable = $oMeta->table('test2');
 
+	// weeSQLiteDbMetaTable::foreignKeys
+
+	$aForeignKeysNames = array();
+	foreach ($oTable->foreignKeys() as $oForeignKey)
+		$aForeignKeysNames[] = $oForeignKey->name();
+
+	$this->isEqual(array('0'), $aForeignKeysNames,
+		_WT('weeSQLiteDbMetaTable::foreignKeys did not return the expected foreign key.'));
+
 	// weeSQLiteDbMetaTable::foreignKeyExists
 
 	$this->isTrue($oTable->foreignKeyExists('0'),

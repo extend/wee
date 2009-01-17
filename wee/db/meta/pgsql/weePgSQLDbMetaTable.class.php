@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -180,7 +180,6 @@ class weePgSQLDbMetaTable extends weeDbMetaTable
 								JOIN pg_catalog.pg_namespace	n	ON n.oid	= co.connamespace
 								JOIN pg_catalog.pg_namespace	nf	ON nf.oid	= clf.relnamespace
 				WHERE		co.conrelid	= CAST(? AS regclass)
-						AND	co.conname	= ?
 						AND	co.contype	= 'f'
 				ORDER BY	co.conname
 		", $this->quotedName());

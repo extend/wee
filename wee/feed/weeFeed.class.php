@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -60,10 +60,10 @@ abstract class weeFeed implements Printable
 
 	public function __call($sName, $aArgs)
 	{
-		fire(empty($sName) || !ctype_alpha(str_replace(':', '', $sName)), 'InvalidArgumentException',
+		(empty($sName) || !ctype_alpha(str_replace(':', '', $sName))) and burn('InvalidArgumentException',
 			'$sName must be defined and contain only alpha characters or a colon.');
-		fire(!$this->isElementValid($sName), 'BadMethodCallException', $sName . ' is not a valid feed element name.');
-		fire(sizeof($aArgs) != 1, 'InvalidArgumentException', 'Only one value is accepted in $aArgs.');
+		$this->isElementValid($sName) or burn('BadMethodCallException', $sName . ' is not a valid feed element name.');
+		sizeof($aArgs) == 1 or burn('InvalidArgumentException', 'Only one value is accepted in $aArgs.');
 
 		$this->aFeed[$sName] = $aArgs[0];
 
@@ -105,10 +105,10 @@ abstract class weeFeed implements Printable
 
 	public function entry($aEntry)
 	{
-		fire(empty($aEntry), 'UnexpectedValueException', '$aEntry must not be empty.');
+		empty($aEntry) and burn('UnexpectedValueException', '$aEntry must not be empty.');
 
 		foreach ($aEntry as $sElement => $m)
-			fire(!$this->isEntryElementValid($sElement), 'InvalidArgumentException',
+			$this->isEntryElementValid($sElement) or burn('InvalidArgumentException',
 				$sElement . ' is not a valid feed entry element name.');
 
 		$this->aEntries[] = $aEntry;
@@ -164,5 +164,3 @@ abstract class weeFeed implements Printable
 		return in_array($sElement, $aValidElements);
 	}
 }
-
-?>

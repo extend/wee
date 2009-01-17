@@ -13,8 +13,13 @@ try
 
 	// time
 
+	$oColumn = $oTable->column('a');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weePgSQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'time'));
+
 	try {
-		$o = $oTable->column('a')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weePgSQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "time".'));
 	}

@@ -1,20 +1,16 @@
 # Sample configuration file for Web:Extend applications
 # You can use, modify or redistribute it freely
 
-# Global settings
+# Application settings
 
-autoload.path	= //app/php
-aliases.file	=
-timezone		= UTC
+app.timezone		= UTC
+app.toppage			= toppage
+app.autoload.path	= //app/php
 
 # Force drivers to start before running the application
 
 start.locale	= 0
 start.session	= 0
-
-# Application settings
-
-app.toppage = toppage
 
 # Database settings
 
@@ -38,8 +34,6 @@ mail.debug.reply-to =
 # Output settings
 
 output.driver		= weeXHTMLOutput
-output.cache.path	= //app/tmp/appcache
-output.cache.expire	= 300
 output.gzip			= 1
 
 # Session settings

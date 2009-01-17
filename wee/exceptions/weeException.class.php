@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -33,28 +33,6 @@ function burn($sException, $sMessage = null)
 	if (class_exists($sException))
 		throw new $sException($sMessage);
 	throw new DoubleFaultException('Class not found: ' . $sException);
-}
-
-/**
-	Test the condition, and throws the specified exception if the condition SUCCEED. Else, do nothing.
-
-	Use this function for simpler checks in your code.
-	Usually, you don't have to continue rendering the page when there's an error in the page URL for example (because of an error or a hack attempt),
-	you should just stop the script and print an error page telling the user that the URL wasn't entered correctly.
-	This also apply for database errors, where you die with an error page if the database is down.
-	This function allows you to throw exception when this happens, and if you don't catch the exception
-	the class weeException will print an error page.
-
-	@deprecated Use "condition or burn()" or "condition and burn()" instead of fire.
-	@param $bCondition The condition to check
-	@param $sException The exception class to throw if the condition SUCCEED.
-	@param $sMessage Description of the error and, when applicable, how to resolve it.
-*/
-
-function fire($bCondition, $sException = 'UnexpectedValueException', $sMessage = null)
-{
-	if ($bCondition)
-		burn($sException, $sMessage);
 }
 
 /**
@@ -266,8 +244,13 @@ final class weeException
 		if (empty(self::$sErrorPagePath))
 			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';
 
+		// Restart the gzip handler if it was started before
 		if (defined('WEE_GZIP'))
 			ob_start('ob_gzhandler');
+
+		// Switch output to XHTML and encode the debug array
+		weeXHTMLOutput::select();
+		$aDebug = weeOutput::encodeArray($aDebug);
 
 		require(self::$sErrorPagePath);
 	}

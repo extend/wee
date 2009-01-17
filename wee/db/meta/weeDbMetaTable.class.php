@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -110,9 +110,6 @@ abstract class weeDbMetaTable extends weeDbMetaObject
 
 	protected function instantiateObject($sClass, array $aData)
 	{
-		//TODO:tmp - antisegfault PHP #46753
-		@class_exists($sClass);
-
 		@is_subclass_of($sClass, 'weeDbMetaTableObject')
 			or burn('InvalidArgumentException',
 				_WT('The class is not a subclass of weeDbMetaTableObject.'));

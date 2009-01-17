@@ -13,22 +13,32 @@ try
 
 	// date
 
+	$oColumn = $oTable->column('a');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weeMySQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'date'));
+
 	try {
-		$o = $oTable->column('a')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weeMySQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "date".'));
 	}
 
 	$this->isInstanceOf($o, 'weeDateValidator',
-		_WT('weeMySQLDbMetaColumn::getValidator should return an instance of weeDateValidator when the type of the column is "char".'));
+		_WT('weeMySQLDbMetaColumn::getValidator should return an instance of weeDateValidator when the type of the column is "date".'));
 
 	$this->isEqual(array('min' => '1000-01-01', 'max' => '9999-12-31'), $o->getArgs(),
 		_WT('The arguments of the date validator are not correct.'));
 
 	// time
 
+	$oColumn = $oTable->column('b');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weeMySQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'time'));
+
 	try {
-		$o = $oTable->column('b')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weeMySQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "time".'));
 	}

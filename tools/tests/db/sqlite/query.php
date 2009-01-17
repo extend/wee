@@ -2,6 +2,11 @@
 
 require(dirname(__FILE__) . '/connect.php.inc');
 
+try {
+	$oDb->query('BLAH');
+	$this->fail(_WT('weeSQLiteDatabase::query should throw a DatabaseException when the query is invalid.'));
+} catch (DatabaseException $e) {}
+
 $oDb->query('
 	CREATE TEMPORARY TABLE query (
 		q_id INTEGER PRIMARY KEY,

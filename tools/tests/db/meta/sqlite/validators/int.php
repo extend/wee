@@ -11,8 +11,13 @@ try
 
 	// INTEGER PRIMARY KEY
 
+	$oColumn = $oTable->column('a');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weeSQLiteDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'INTEGER PRIMARY KEY'));
+
 	try {
-		$o = $oTable->column('a')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weeSQLiteDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the the column is "INTEGER PRIMARY KEY".'));
 	}

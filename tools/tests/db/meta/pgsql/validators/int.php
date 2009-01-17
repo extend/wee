@@ -15,8 +15,13 @@ try
 
 	// smallint
 
+	$oColumn = $oTable->column('a');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weePgSQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'smallint'));
+
 	try {
-		$o = $oTable->column('a')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weePgSQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the the column is "smallint".'));
 	}
@@ -37,8 +42,13 @@ try
 
 	// int
 
+	$oColumn = $oTable->column('b');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weePgSQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'int'));
+
 	try {
-		$o = $oTable->column('b')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weePgSQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the the column is "int".'));
 	}
@@ -59,8 +69,13 @@ try
 
 	// bigint
 
+	$oColumn = $oTable->column('c');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weePgSQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'bigint'));
+
 	try {
-		$o = $oTable->column('c')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weePgSQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the the column is "bigint".'));
 	}

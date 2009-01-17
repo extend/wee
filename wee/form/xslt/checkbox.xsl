@@ -7,14 +7,14 @@
 			<xsl:value-of select="concat($formidprefix, name, $formidsuffix)"/>
 		</xsl:attribute>
 
-		<xsl:if test="@help">
+		<xsl:if test="help">
 			<xsl:attribute name="title">
-				<xsl:value-of select="@help"/>
+				<xsl:value-of select="help"/>
 			</xsl:attribute>
 		</xsl:if>
 
 		<input type="checkbox" value="1">
-			<xsl:if test="@selected">
+			<xsl:if test="value">
 				<xsl:attribute name="checked">
 					<xsl:text>checked</xsl:text>
 				</xsl:attribute>
@@ -33,12 +33,6 @@
 			<xsl:attribute name="name">
 				<xsl:value-of select="name"/>
 			</xsl:attribute>
-
-			<xsl:if test="value">
-				<xsl:attribute name="value">
-					<xsl:value-of select="value"/>
-				</xsl:attribute>
-			</xsl:if>
 		</input>
 
 		<xsl:text> </xsl:text>

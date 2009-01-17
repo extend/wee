@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,8 +30,8 @@ interface weeDbMetaTableProvider
 	/**
 		Returns a table of a given name in the database.
 
-		@param	$sName					The name of the table.
-		@return	weeDbMetaTable			The table.
+		@param	$sName			The name of the table.
+		@return	weeDbMetaTable	The table.
 	*/
 
 	public function table($sName);
@@ -39,8 +39,8 @@ interface weeDbMetaTableProvider
 	/**
 		Returns whether a table of a given name exists in the database.
 
-		@param	$sName					The name of the table.
-		@return	bool					true if the table exists in the database, false otherwise.
+		@param	$sName	The name of the table.
+		@return	bool	true if the table exists in the database, false otherwise.
 	*/
 
 	public function tableExists($sName);
@@ -52,4 +52,12 @@ interface weeDbMetaTableProvider
 	*/
 
 	public function tables();
+
+	/**
+		Returns the names of all the tables in the database.
+
+		@return	array(string)	The names of all the tables.
+	*/
+
+	public function tablesNames();
 }

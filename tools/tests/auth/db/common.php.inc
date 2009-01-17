@@ -7,7 +7,7 @@ $oDb->query('
 	CREATE TEMPORARY TABLE auth (
 		user_id SERIAL NOT NULL,
 		user_email CHARACTER VARYING(255),
-		user_passwd CHARACTER(32),
+		user_passwd CHARACTER(40),
 		user_randomint INT,
 		user_randomstr CHARACTER VARYING(50)
 	);
@@ -56,7 +56,7 @@ $aInsertValues = array(
 
 foreach ($aInsertValues as $aRow)
 	$oDb->query('INSERT INTO auth (user_email, user_passwd, user_randomint, user_randomstr)
-		VALUES (:user_email, MD5(:user_passwd), :user_randomint, :user_randomstr)', $aRow);
+		VALUES (:user_email, :hash, :user_randomint, :user_randomstr)', array('hash' => sha1($aRow['user_passwd'])) + $aRow);
 
 // Test the authentication
 

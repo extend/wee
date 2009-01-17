@@ -7,6 +7,20 @@ try
 {
 	$oDb->query("CREATE TABLE IF NOT EXISTS dbmeta (a integer) COMMENT = 'Tests are marvelous.'");
 
+	// weeMySQLDbMeta::tables
+
+	$aTablesNames = array();
+	foreach ($oMeta->tables() as $oTable)
+		$aTablesNames[] = $oTable->name();
+
+	$this->isEqual(array('dbmeta'), $aTablesNames,
+		_WT('weeMySQLDbMeta::tables does not return the expected tables.'));
+
+	// weeMySQLDbMeta::tablesNames
+
+	$this->isEqual(array('dbmeta'), $oMeta->tablesNames(),
+		_WT("weeMySQLDbMeta::tablesNames does not return the expected tables' names."));
+
 	// weeMySQLDbMeta::tableExists
 
 	$this->isTrue($oMeta->tableExists('dbmeta'),

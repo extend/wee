@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2007 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -192,7 +192,6 @@ class weeTaconite implements Printable
 			$oElement->removeChild($oChild);
 		$this->applyTagAppend($oAction, $oElement);
 	}
-		
 
 	/**
 		Apply taconite operations against an XML document.
@@ -205,23 +204,23 @@ class weeTaconite implements Printable
 
 		@param	$sXMLDocument	The XML document.
 		@return	string			The modified XML document.
+		@throw	BadXMLException	The given string is not a well-formed XML document.
+		@throw	BadXMLException	The string returned by weeTaconite::toString is not a well-formed XML document.
 	*/
 
 	public function applyTo($sXMLDocument)
 	{
-		//TODO:test
-
 		if ($sXMLDocument instanceof Printable)
 			$sXMLDocument = $sXMLDocument->toString();
 
-		$oDocument = new DOMDocument();
-		$b = @$oDocument->loadXML($sXMLDocument);
-		fire(!$b, 'BadXMLException', 'Document $sXMLDocument is not valid XML.');
+		$oDocument = new DOMDocument;
+		@$oDocument->loadXML($sXMLDocument) or burn('BadXMLException',
+			_WT('The given string is not a well-formed XML document.'));
 		$this->oXPath = new DOMXPath($oDocument);
 
-		$oXML = new DOMDocument();
-		$b = $oXML->loadXML($this->toString());
-		fire(!$b, 'BadXMLException', 'Document created by weeTaconite::toString is not valid XML.');
+		$oXML = new DOMDocument;
+		@$oXML->loadXML($this->toString()) or burn('BadXMLException',
+			_WT('The string returned by weeTaconite::toString is not a well-formed XML document.'));
 
 		foreach ($oXML->documentElement->childNodes as $oAction)
 		{
@@ -238,7 +237,12 @@ class weeTaconite implements Printable
 		}
 
 		unset($this->oXPath);
-		return $oDocument->saveXML();
+
+		// We cannot use LIBXML_NOXMLDECL here because it's not supported by
+		// DOMDocument::saveXML.
+
+		$s = $oDocument->saveXML();
+		return rtrim(substr($s, strpos($s, '?>') + 3));
 	}
 
 	/**
@@ -257,7 +261,7 @@ class weeTaconite implements Printable
 
 		@param	$sSelect	The selector.
 		@param	$oDocument	The XML document.
-		@return	array		The selected elements.
+		@return	DOMNodeList	The selected elements.
 	*/
 
 	protected function select($sSelect, DOMDocument $oDocument)
@@ -282,5 +286,3 @@ class weeTaconite implements Printable
 		return '<taconite>' . $this->sXML . '</taconite>';
 	}
 }
-
-?>

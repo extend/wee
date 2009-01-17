@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -72,7 +72,7 @@ abstract class weeOutput
 
 	public static function deleteCookie($sName)
 	{
-		fire(headers_sent(), 'IllegalStateException', 'You cannot delete a cookie if headers are already sent.');
+		headers_sent() and burn('IllegalStateException', 'You cannot delete a cookie if headers are already sent.');
 
 		if (empty(self::$sCookiePath))
 			self::initCookiePath();
@@ -93,9 +93,9 @@ abstract class weeOutput
 
 	public static function encodeValue($mValue)
 	{
-		fire(empty(self::$oInstance), 'IllegalStateException',
+		empty(self::$oInstance) and burn('IllegalStateException',
 			'An instance of weeOutput must be selected before calling weeOutput::encodeValue.' .
-			' You should select it before doing any code relating to output, be forms or templates.');
+			' You should select it before doing any code relating to output, be it forms or templates.');
 
 		return self::$oInstance->encode($mValue);
 	}
@@ -146,11 +146,11 @@ abstract class weeOutput
 
 	public static function header($sString, $bReplace = true)
 	{
-		fire(headers_sent(), 'IllegalStateException',
+		headers_sent() and burn('IllegalStateException',
 			'You cannot add another header to be sent to browser if they are already sent.');
-		fire(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false, 'UnexpectedValueException',
+		(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
 			'Line breaks are not allowed in headers to prevent HTTP Response Splitting.');
-		fire(strpos($sString, "\0") !== false, 'UnexpectedValueException',
+		strpos($sString, "\0") !== false and burn('UnexpectedValueException',
 			'Null characters are not allowed in headers.');
 
 		header($sString, $bReplace);
@@ -212,7 +212,7 @@ abstract class weeOutput
 
 	public static function setCookie($sName, $sValue, $iExpire = null)
 	{
-		fire(headers_sent(), 'IllegalStateException', 'You cannot set a cookie if headers are already sent.');
+		headers_sent() and burn('IllegalStateException', 'You cannot set a cookie if headers are already sent.');
 
 		if (empty(self::$sCookiePath))
 			self::initCookiePath();

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -65,7 +65,7 @@ class weeTemplate implements Printable
 	public function __construct($sTemplate, array $aData = array())
 	{
 		$this->sFilename	= TPL_PATH . $sTemplate . TPL_EXT;
-		fire(!file_exists($this->sFilename), 'FileNotFoundException',
+		file_exists($this->sFilename) or burn('FileNotFoundException',
 			'The file ' . $this->sFilename . " doesn't exist.");
 
 		$this->aData		= $aData;
@@ -94,9 +94,21 @@ class weeTemplate implements Printable
 
 	protected function mkLink($sLink, $aArgs = array())
 	{
-		$sLink .= (strpos($sLink, '?') === false) ? '?' : '&';
-
 		$aArgs = $aArgs + $this->aLinkArgs;
+
+		if (empty($aArgs))
+			return weeOutput::encodeValue($sLink);
+
+		$aURL = explode('?', $sLink, 2);
+
+		if (sizeof($aURL) > 1) {
+			$aOldArgs = array();
+			parse_str($aURL[1], $aOldArgs);
+			$aArgs = $aArgs + $aOldArgs;
+		}
+
+		$sLink = $aURL[0] . '?';
+
 		foreach ($aArgs as $sName => $sValue)
 		{
 			if ($sValue instanceof Printable)
@@ -104,9 +116,8 @@ class weeTemplate implements Printable
 
 			$sLink .= $sName . '=' . urlencode(weeOutput::instance()->decode($sValue)) . '&';
 		}
-		$sLink = substr($sLink, 0, -1);
 
-		return weeOutput::encodeValue($sLink);
+		return weeOutput::encodeValue(substr($sLink, 0, -1));
 	}
 
 	/**

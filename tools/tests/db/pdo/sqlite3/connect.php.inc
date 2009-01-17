@@ -4,6 +4,8 @@ try {
 	$oDb = new weePDODatabase(array(
 		'dsn' => 'sqlite::memory:'
 	));
-} catch (ConfigurationException $o) {
-	$this->skip();
+} catch (Exception $o) {
+    if ($o instanceof ConfigurationException || $o instanceof DatabaseException)
+        $this->skip();
+    throw $e;
 }

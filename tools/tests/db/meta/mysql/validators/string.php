@@ -13,8 +13,13 @@ try
 
 	// char
 
+	$oColumn = $oTable->column('a');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weeMySQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'char'));
+
 	try {
-		$o = $oTable->column('a')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weeMySQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "char".'));
 	}
@@ -27,8 +32,13 @@ try
 
 	// varchar
 
+	$oColumn = $oTable->column('b');
+
+	$this->isTrue($oColumn->hasValidator(),
+		sprintf(_WT('weeMySQLDbMetaColumn::hasValidator should return true when the type of the column is "%s".'), 'varchar'));
+
 	try {
-		$o = $oTable->column('b')->getValidator();
+		$o = $oColumn->getValidator();
 	} catch (UnhandledTypeException $e) {
 		$this->fail(_WT('weeMySQLDbMetaColumn::getValidator should not throw an UnhandledTypeException when the type of the column is "varchar".'));
 	}

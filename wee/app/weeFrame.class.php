@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2007-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -233,7 +233,7 @@ abstract class weeFrame implements Printable
 
 	public function toString()
 	{
-		fire($this->iStatus != self::EVENT_DISPATCHED, 'IllegalStateException',
+		$this->iStatus != self::EVENT_DISPATCHED and burn('IllegalStateException',
 			_WT('An event must be dispatched before calling toString().'));
 
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))

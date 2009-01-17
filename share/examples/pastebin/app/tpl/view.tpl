@@ -1,21 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Pastebin Number: <?php echo $paste['data_id']?></title>
+	<?if (empty($error)):?> 
+		<title>Pastebin Number #<?php echo $paste['data_id']?></title>
+	<?else:?> 
+		<title>Error: No Data Found</title>
+	<?endif?> 
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
 
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/yui/reset-fonts.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/form.block.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>pub/pastebin.css"/>
-
-	<!-- compliance patch for microsoft browsers -->
-	<!--[if lt IE 8]>
-		<script type="text/javascript">
-			document.write('<style>body{visibility:hidden}html>body{visibility:visible}</style>');
-		</script>
-		<script src="<?php echo APP_PATH?>res/ie7/ie7-core.js" type="text/javascript"></script>
-		<script src="<?php echo APP_PATH?>res/ie7/ie7-css2-selectors.js" type="text/javascript"></script>
-	<![endif]-->
 </head>
 <body>
 	<div id="container">

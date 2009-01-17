@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006, 2007, 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -67,20 +67,22 @@ class weeForm implements Printable
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
 			'The XSL PHP extension is required by weeForm.');
 
-		fire(!ctype_print($sAction), 'InvalidArgumentException', 'The action name must be printable.');
+		ctype_print($sAction) or burn('InvalidArgumentException', 'The action name must be printable.');
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
-		fire(!file_exists($sFilename), 'FileNotFoundException',
+		file_exists($sFilename) or burn('FileNotFoundException',
 			'The file ' . $sFilename . " doesn't exist.");
 
 		$this->oXML = simplexml_load_file($sFilename);
-		fire($this->oXML === false || !isset($this->oXML->widgets), 'BadXMLException',
+		($this->oXML === false || !isset($this->oXML->widgets)) and burn('BadXMLException',
 			'The file ' . $sFilename . ' is not a valid form document.');
 
-		if (!isset($this->oXML->uri))
-			$this->oXML->addChild('uri', (!empty($_SERVER['REQUEST_URI']) ? xmlspecialchars($_SERVER['REQUEST_URI']) : null));
 		if (!isset($this->oXML->formkey))
 			$this->oXML->addChild('formkey', 1);
+		if (!isset($this->oXML->method))
+			$this->oXML->addChild('method', 'post');
+		if (!isset($this->oXML->uri))
+			$this->oXML->addChild('uri', (!empty($_SERVER['REQUEST_URI']) ? xmlspecialchars($_SERVER['REQUEST_URI']) : null));
 
 		// Delete elements with wrong action
 		$this->removeNodes('//*[@action!="' . xmlspecialchars($sAction) . '"]');
@@ -105,18 +107,15 @@ class weeForm implements Printable
 		if ((int)$this->oXML->formkey)
 		{
 			// Create the form key and store it in the session
-			// Requires both a session open and MAGIC_STRING defined
+			// Currently requires a session to be open previously
 			// The form key helps prevent cross-site request forgery
 
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+			session_id() == '' and burn('IllegalStateException',
 				'You cannot use the formkey protection without an active session. ' .
 				'Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
-			$sTime		= microtime();
-			$sFormKey	= md5($_SERVER['HTTP_HOST'] . $sTime . MAGIC_STRING);
-			$_SESSION['session_formkeys'][$sFormKey] = $sTime;
-
-			unset($sTime); // Clean-up
+			$sFormKey = md5(uniqid(rand(), true));
+			$_SESSION['session_formkeys'][$sFormKey] = microtime();
 		}
 
 		ob_start();
@@ -213,7 +212,7 @@ class weeForm implements Printable
 
 	public function helper($sHelper, $sWidget)
 	{
-		fire(!ctype_print($sWidget), 'InvalidArgumentException', 'The widget name must be printable.');
+		ctype_print($sWidget) or burn('InvalidArgumentException', 'The widget name must be printable.');
 
 		$oXML = $this->xpathOne('//widget[name="' . xmlspecialchars($sWidget) . '"]');
 		return new $sHelper($oXML);
@@ -267,7 +266,7 @@ class weeForm implements Printable
 		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
 		foreach ($aKeys as $sName)
 		{
-			fire(!ctype_print($sName), 'InvalidArgumentException', 'The widget name must be printable.');
+			ctype_print($sName) or burn('InvalidArgumentException', 'The widget name must be printable.');
 
 			$a = $this->oXML->xpath('//widget[name="' . xmlspecialchars($sName) . '"]');
 			if (!empty($a))
@@ -324,30 +323,23 @@ class weeForm implements Printable
 
 	public function validate($aData)
 	{
-		$oException = new FormValidationException('The validation of the form failed. See FormValidationException::getErrors to retrieve error messages.');
+		$oException = new FormValidationException(_WT('The validation of the form failed. You can retrieve error messages as a string using toString or an array using toArray.'));
 
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
 		{
-			fire(session_id() == '' || !defined('MAGIC_STRING'), 'IllegalStateException',
+			session_id() == '' and burn('IllegalStateException',
 				'You cannot use the formkey protection without an active session.' .
 				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
-				$oException->addError('', _WT('Form key not found.'));
+				$oException->addError('', _WT('Invalid form key.'));
 			else
 			{
-				// Recalculate form key to check validity
+				// If form key was generated more than 6 hours ago, it is considered invalid
 
-				if ($aData['wee_formkey'] != md5($_SERVER['HTTP_HOST'] . $_SESSION['session_formkeys'][$aData['wee_formkey']] . MAGIC_STRING))
-					$oException->addError('', _WT('Invalid form key.'));
-				else
-				{
-					// If form key was generated more than 6 hours ago, it is considered invalid
-
-					$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
-					if (time() > $aTime[1] + 3600 * 6)
-						$oException->addError('', _WT('Form key out of date.'));
-				}
+				$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
+				if (time() > $aTime[1] + 3600 * 6)
+					$oException->addError('', _WT('Form key out of date.'));
 			}
 
 			// Form has been submitted, unset the form key
@@ -374,7 +366,7 @@ class weeForm implements Printable
 						if (!empty($oNode['required_error']))
 							$oException->addError((string)$oNode->name, _T($oNode['required_error']));
 						else
-							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for %s'), (string)$oNode->label));
+							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for the field %s.'), (string)$oNode->label));
 					}
 
 					continue;

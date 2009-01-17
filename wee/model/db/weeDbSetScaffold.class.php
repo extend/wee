@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -359,7 +359,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 				if (is_int($mName))
 					$this->sOrderBy .= ', ' . $oDb->escapeIdent($mValue);
 				else {
-					in_array($mValue, $this->aValidOrderByModifiers)
+					in_array(strtoupper($mValue), $this->aValidOrderByModifiers)
 						or burn('InvalidArgumentException', sprintf(_WT('The ORDER BY modifier requested, %s, do not exist.'), $mValue));
 
 					$this->sOrderBy .= ', ' . $oDb->escapeIdent($mName) . ' ' . $mValue;
@@ -444,7 +444,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			$sWhere .= ' AND ' . $oDb->escapeIdent($sField) . ' ';
 
 			if (is_array($mOperation)) {
-				in_array($mOperation[0], $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
+				in_array(strtoupper($mOperation[0]), $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
 					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation[0]));
 
 				$sWhere .= $mOperation[0] . ' ';
@@ -459,7 +459,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 					$sWhere = substr($sWhere, 0, -1) . ')';
 				}
 			} else {
-				in_array($mOperation, $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
+				in_array(strtoupper($mOperation), $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
 					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation));
 
 				$sWhere .= $mOperation;

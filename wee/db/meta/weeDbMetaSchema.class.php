@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -29,13 +29,41 @@ abstract class weeDbMetaSchema extends weeDbMetaObject
 	implements weeDbMetaTableProvider
 {
 	/**
-		Returns a qualified object name.
+		Returns all the tables in the schema.
 
-		@param	$sName					The unqualified name of an object.
-		@return	string					The qualified name of the object.
+		@return	array(weeDbMetaTable)	The array of tables.
 	*/
-	protected function qualifyName($sName)
+
+	public function tables()
 	{
-		return $this->quotedName() . '.' . $this->db()->escapeIdent($sName);
+		$oMeta		= $this->meta();
+		$aTables	= array();
+		$sClass		= $oMeta->getTableClass();
+		foreach ($this->queryTables() as $aTable)
+			$aTables[] = new $sClass($oMeta, $aTable);
+		return $aTables;
 	}
+
+	/**
+		Returns the names of all the tables in the schema.
+
+		@return	array(string)	The names of all the tables.
+	*/
+
+	public function tablesNames()
+	{
+		$aTables	= array();
+		$sClass		= $this->meta()->getTableClass();
+		foreach ($this->queryTables() as $aTable)
+			$aTables[] = $aTable['name'];
+		return $aTables;
+	}
+
+	/**
+		Queries all the tables in the schema.
+
+		@return	weeDatabaseResult	The data of all the tables in the schema.
+	*/
+
+	abstract protected function queryTables();
 }

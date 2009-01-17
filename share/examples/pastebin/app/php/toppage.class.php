@@ -10,14 +10,18 @@ class toppage extends weeFrame
 			'is_submitted' => !empty($aEvent['post']),
 		));
 
-		if (!empty($aEvent['post']))
-		{
-			if ($oForm->hasErrors($aEvent['post']))
-				$this->set('errors', $oForm->getErrors());
-			else
-			{
-				weeApp()->db->query($oForm->toSQL($aEvent['post'], 'pastebin_data'));
+		if (!empty($aEvent['post'])) {
+			try {
+				$aEvent['post'] = $oForm->filter($aEvent['post']);
+				$oForm->validate($aEvent['post']);
+
+				weeApp()->db->query('
+					INSERT INTO pastebin_data (data_text) VALUES (:data_text)
+				', $aEvent['post']);
+
 				$this->set('posted_id', weeApp()->db->getPKId('pastebin_data_data_id_seq'));
+			} catch (FormValidationException $e) {
+				$this->set('errors', $e->toArray());
 			}
 		}
 	}

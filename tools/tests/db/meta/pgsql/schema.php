@@ -10,6 +10,24 @@ try
 	$oDb->query('CREATE SCHEMA pikachu CREATE TABLE test1 () CREATE TABLE test2 ()');
 	$oDb->query("COMMENT ON SCHEMA pikachu IS 'pika pika!'");
 
+	// weePgSQLDbMeta::schemas
+
+	$bSchemaFound	= false;
+	$aSchemasNames	= array();
+	foreach ($oMeta->schemas() as $oSchema) {
+		if ($oSchema->name() == 'pikachu')
+			$bSchemaFound = true;
+		$aSchemasNames[] = $oSchema->name();
+	}
+
+	$this->isTrue($bSchemaFound,
+		_WT('weePgSQLDbMeta::schemas should return at least the newly-created schema.'));
+
+	// weePgSQLDbMeta::schemasNames
+
+	$this->isEqual($aSchemasNames, $oMeta->schemasNames(),
+		_WT("weePgSQLDbMeta::schemasNames did not return the same schemas' names as the schemas method."));
+
 	// weePgSQLDbMeta::schemaExists
 
 	$this->isTrue($oMeta->schemaExists('pikachu'),
@@ -71,6 +89,11 @@ try
 		$aNames[] = $oTable->name();
 	$this->isEqual(array('test1', 'test2'), $aNames,
 		_WT('weePgSQLDbMetaSchema::tables does not correctly return all the tables in the schema.'));
+
+	// weePgSQLDbMetaSchema::tablesNames
+
+	$this->isEqual(array('test1', 'test2'), $oSchema->tablesNames(),
+		_WT("weePgSQLDbMetaSchema::tablesNames does not return the expected tables' names."));
 }
 catch (Exception $oException) {}
 

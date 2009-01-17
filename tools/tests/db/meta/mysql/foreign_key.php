@@ -8,8 +8,16 @@ try
 	$oDb->query('CREATE TABLE IF NOT EXISTS test1 (a integer, b integer, PRIMARY KEY (b, a)) ENGINE InnoDB');
 	$oDb->query('CREATE TABLE IF NOT EXISTS test2 (a integer, b integer, c integer, CONSTRAINT i_am_a_fk FOREIGN KEY (c, b) REFERENCES test1 (b, a)) ENGINE InnoDB');
 
-
 	$oTable = $oMeta->table('test2');
+
+	// weeMySQLDbMetaTable::foreignKeys
+
+	$aForeignKeysNames = array();
+	foreach ($oTable->foreignKeys() as $oForeignKey)
+		$aForeignKeysNames[] = $oForeignKey->name();
+
+	$this->isEqual(array('i_am_a_fk'), $aForeignKeysNames,
+		_WT('weeMySQLDbMetaTable::foreignKeys did not return the expected foreign key.'));
 
 	// weeMySQLDbMetaTable::foreignKeyExists
 

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Exception thrown when a form validation fails.
 */
 
-class FormValidationException extends RuntimeException implements Printable
+class FormValidationException extends RuntimeException implements Mappable, Printable
 {
 	/**
 		Error messages for each widgets of the form.
@@ -46,17 +46,6 @@ class FormValidationException extends RuntimeException implements Printable
 	}
 
 	/**
-		Return all the errors.
-
-		@return array The errors array.
-	*/
-
-	public function getErrors()
-	{
-		return $this->aErrors;
-	}
-
-	/**
 		Return whether any error was given.
 	*/
 
@@ -66,7 +55,20 @@ class FormValidationException extends RuntimeException implements Printable
 	}
 
 	/**
-		Output the errors to a linebreak separated string.
+		Return all the errors as an array.
+
+		@return array The errors as an array.
+	*/
+
+	public function toArray()
+	{
+		return $this->aErrors;
+	}
+
+	/**
+		Return all the errors as a line break separated string.
+
+		@return string The errors as a string.
 	*/
 
 	public function toString()

@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -46,14 +46,6 @@ abstract class weeDbMeta
 	}
 
 	/**
-		Returns the name of the table class.
-
-		@return	string					The name of the table class.
-	*/
-
-	abstract public function getTableClass();
-
-	/**
 		Returns the associated database object.
 
 		@return	weeDatabase	The associated database object.
@@ -63,4 +55,50 @@ abstract class weeDbMeta
 	{
 		return $this->oDb;
 	}
+
+	/**
+		Returns the name of the table class.
+
+		@return	string		The name of the table class.
+	*/
+
+	abstract public function getTableClass();
+
+	/**
+		Returns all the tables of the database.
+
+		@return	array(weeDbMetaTable)	The array of tables.
+	*/
+
+	public function tables()
+	{
+		$aTables	= array();
+		$sClass		= $this->getTableClass();
+		foreach ($this->queryTables() as $aTable)
+			$aTables[] = new $sClass($this, $aTable);
+		return $aTables;
+	}
+
+	/**
+		Returns the names of all the tables in the database.
+
+		@return	array(string)	The names of all the tables.
+	*/
+
+	public function tablesNames()
+	{
+		$aTables	= array();
+		$sClass		= $this->getTableClass();
+		foreach ($this->queryTables() as $aTable)
+			$aTables[] = $aTable['name'];
+		return $aTables;
+	}
+
+	/**
+		Queries all the tables of the database.
+
+		@return	weeDatabaseResult	The data of all the tables of the database.
+	*/
+
+	abstract protected function queryTables();
 }
