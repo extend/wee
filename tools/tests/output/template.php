@@ -16,11 +16,20 @@ $o = new weeTemplate_test;
 
 // weeTemplate::mkLink
 
+$this->isEqual('/foo', $o->mkLink('/foo'),
+	_WT('weeTemplate::mkLink should return the link as-is if no new parameter are to be added to the query string.'));
+
+$this->isEqual('/f&eacute;e', $o->mkLink('/fée'),
+	_WT('weeTemplate::mkLink should return the link encoded with no new content if no new parameter are to be added to the query string and it contains special characters.'));
+
 $this->isEqual('/foo&amp;/bar?&lt;=blah&amp;answer=42', $o->mkLink('/foo&/bar', array('<' => 'blah', 'answer' => 42)),
 	_WT('weeTemplate::mkLink should encode the link with the weeOutput::encodeValue method.'));
 
-$this->isEqual('/foo/bar?a=1&amp;b=2', $o->mkLink('/foo/bar?a=1', array('b' => '2')),
-	_WT('weeTemplate::mkLink should append the given parameters if the base link already contain a query string.'));
+$this->isEqual('/foo/bar?b=2&amp;a=1', $o->mkLink('/foo/bar?a=1', array('b' => '2')),
+	_WT('weeTemplate::mkLink should add the given parameters to the base link even if it already contains a query string.'));
+
+$this->isEqual('/foo/bar?a=2', $o->mkLink('/foo/bar?a=1', array('a' => '2')),
+	_WT('weeTemplate::mkLink should overwrite the base link parameters if a parameter of the same name is given.'));
 
 $this->isEqual('/foo/bar?space=a+b', $o->mkLink('/foo/bar', array('space' => 'a b')),
 	_WT('weeTemplate::mkLink should encode any URL parameter with the urlencode function.'));
