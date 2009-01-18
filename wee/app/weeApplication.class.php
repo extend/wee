@@ -212,7 +212,7 @@ class weeApplication
 		Event information can contain the following parameters:
 			- context: either http or xmlhttprequest
 			- frame: name of the destination frame
-			- method: request method used to access the event (e.g. GET, POST)
+			- method: request method used to access the event (e.g. get, post)
 			- name: name of the event
 			- get: $_GET array for this event
 			- post: $_POST array for this event
@@ -374,7 +374,7 @@ class weeApplication
 			//request comes from a user who we know is using this application,
 			//and not some random other webserver using it for its own purpose...
 			'context'	=> (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http',
-			'method'	=> $_SERVER['REQUEST_METHOD'],
+			'method'	=> strtolower($_SERVER['REQUEST_METHOD']),
 
 			'get'		=> $_GET,
 			'post'		=> $_POST,
