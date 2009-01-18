@@ -107,19 +107,6 @@ try {
 	$this->isEqual('action/new', $aEvent['pathinfo'],
 		'The pathinfo is not correct.');
 
-	// Context
-
-	$this->isTrue(isset($aEvent['context']),
-		'The event does not have a context.');
-
-	$this->isEqual('http', $aEvent['context'],
-		'The default context is not http.');
-
-	$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-	$aEvent = $o->translateEvent();
-	$this->isEqual('xmlhttprequest', $aEvent['context'],
-		'The event context is not xmlhttprequest even though the HTTP_X_REQUESTED_WITH server variable says so.');
-
 	// Request parameters
 
 	$this->isTrue(isset($aEvent['post']['test']),
@@ -134,13 +121,31 @@ try {
 	$this->isEqual('get', $aEvent['get']['test'],
 		'The event does not have the correct value of the GET request parameter given to the application.');
 
-	// Request Method
+	if (!defined('WEE_CLI')) {
+		// We cannot test context and method when running test suite from command line
+		// as they depend on the WEE_CLI constant.
 
-	$this->isTrue(isset($aEvent['method']),
-		_WT('weeApplication::translateEvent does not have a request method.'));
+		// Context
 
-	$this->isEqual('get', $aEvent['method'],
-		_WT('weeApplication::translateEvent does not return the expected request method.'));
+		$this->isTrue(isset($aEvent['context']),
+			'The event does not have a context.');
+
+		$this->isEqual('http', $aEvent['context'],
+			'The default context is not http.');
+
+		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+		$aEvent = $o->translateEvent();
+		$this->isEqual('xmlhttprequest', $aEvent['context'],
+			'The event context is not xmlhttprequest even though the HTTP_X_REQUESTED_WITH server variable says so.');
+
+		// Request Method
+
+		$this->isTrue(isset($aEvent['method']),
+			_WT('weeApplication::translateEvent does not have a request method.'));
+
+		$this->isEqual('get', $aEvent['method'],
+			_WT('weeApplication::translateEvent does not return the expected request method.'));
+	}
 } catch (Exception $oException) {}
 
 $_SERVER	= $aFormerServer;

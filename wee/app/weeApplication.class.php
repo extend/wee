@@ -79,8 +79,7 @@ class weeApplication
 			$oConfigFile = new weeConfigFile(WEE_CONF_FILE);
 			$this->aConfig = $oConfigFile->toArray();
 
-			if (!defined('DEBUG') && defined('WEE_CONF_CACHE'))
-			{
+			if (!defined('DEBUG') && defined('WEE_CONF_CACHE')) {
 				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->aConfig, true) . ';');
 				chmod(WEE_CONF_CACHE, 0600);
 			}
@@ -88,7 +87,8 @@ class weeApplication
 			// No configuration file. Stop here and display a friendly message.
 
 			if (defined('WEE_CLI'))
-				echo "The configuration file was not found.\nPlease consult the documentation for more information.\n";
+				echo _WT('The configuration file was not found.'), "\n",
+					_WT('Please consult the documentation for more information.'), "\n";
 			else {
 				header('HTTP/1.0 500 Internal Server Error');
 				require(ROOT_PATH . 'res/wee/noconfig.htm');
@@ -177,9 +177,7 @@ class weeApplication
 
 	public function cnf($sName)
 	{
-		if (!array_key_exists($sName, $this->aConfig))
-			return null;
-		return $this->aConfig[$sName];
+		return array_value($this->aConfig, $sName);
 	}
 
 	/**
@@ -210,7 +208,7 @@ class weeApplication
 		Dispatch an event to its respective frame.
 
 		Event information can contain the following parameters:
-			- context: either http or xmlhttprequest
+			- context: either cli, http or xmlhttprequest
 			- frame: name of the destination frame
 			- method: request method used to access the event (e.g. get, post)
 			- name: name of the event
@@ -370,18 +368,23 @@ class weeApplication
 	protected function translateEvent()
 	{
 		$aEvent = array(
-			//TODO:sometimes we may want to only accept xmlhttprequest when the
-			//request comes from a user who we know is using this application,
-			//and not some random other webserver using it for its own purpose...
-			'context'	=> (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http',
-			'method'	=> strtolower($_SERVER['REQUEST_METHOD']),
-
 			'get'		=> $_GET,
 			'post'		=> $_POST,
 
 			'name'		=> null,
 			'pathinfo'	=> null,
 		);
+
+		if (defined('WEE_CLI')) {
+			$aEvent['context']	= 'cli';
+			$aEvent['method']	= defined('STDIN') ? 'put' : 'get';
+		} else {
+			// TODO:sometimes we may want to only accept xmlhttprequest when the
+			// request comes from a user who we know is using this application,
+			// and not some random other webserver using it for its own purpose...
+			$aEvent['context']	= (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttmrequest' : 'http';
+			$aEvent['method']	= strtolower($_SERVER['REQUEST_METHOD']);
+		}
 
 		$sPathInfo = substr(self::getPathInfo(), 1);
 
