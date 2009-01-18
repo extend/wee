@@ -139,7 +139,7 @@ try {
 	$this->isTrue(isset($aEvent['method']),
 		_WT('weeApplication::translateEvent does not have a request method.'));
 
-	$this->isEqual('GET', $aEvent['method'],
+	$this->isEqual('get', $aEvent['method'],
 		_WT('weeApplication::translateEvent does not return the expected request method.'));
 } catch (Exception $oException) {}
 
