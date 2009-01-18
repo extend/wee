@@ -38,12 +38,6 @@ class weeTemplate implements Printable
 	protected $aData;
 
 	/**
-		Data in its encoded form.
-	*/
-
-	protected $aEncodedData;
-
-	/**
 		Filename of the template, including path and extension.
 	*/
 
@@ -84,6 +78,23 @@ class weeTemplate implements Printable
 	}
 
 	/**
+		Flush the output buffer.
+
+		This effectively tries to push all the output so far to the browser.
+		All output will be sent, even buffered output.
+
+		Sometimes the buffer can't be sent directly to the browser, because
+		of the presence of certain modules or because of an old web server version.
+		@see http://php.net/flush For more information about possible flush problems.
+	*/
+
+	protected function flush()
+	{
+		ob_flush();
+		flush();
+	}
+
+	/**
 		Create a link using a base url (which may or may not contain parameters)
 		and the values predefined previously and/or given by the $aArgs arguments.
 
@@ -121,6 +132,16 @@ class weeTemplate implements Printable
 	}
 
 	/**
+		Output the template.
+	*/
+
+	public function render()
+	{
+		extract(weeOutput::encodeArray($this->aData));
+		require($this->sFilename);
+	}
+
+	/**
 		Adds a value to the data array.
 
 		If first parameter is an array, the array values will be
@@ -143,39 +164,30 @@ class weeTemplate implements Printable
 	}
 
 	/**
-		Creates a new template.
-		Use this to create a template inside another.
-
-		Beware: child classes should not override this function.
+		Output another template.
+		Use this to embed a template inside another.
 
 		@param $sTemplate	The template name.
 		@param $aData		Data to be used in the template.
-		@return	string		The output of the template.
 	*/
 
 	protected function template($sTemplate, array $aData = array())
 	{
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
 		$o->addLinkArgs($this->aLinkArgs);
-
-		return $o->toString();
+		$o->render();
 	}
 
 	/**
 		Returns the template as a string.
-
-		TODO:this will encode data for each sub-templates, optimize
 
 		@return string The template.
 	*/
 
 	public function toString()
 	{
-		$this->aEncodedData = $this->aData;
-		extract(weeOutput::encodeArray($this->aEncodedData));
-
 		ob_start();
-		require($this->sFilename);
+		$this->render();
 		return ob_get_clean();
 	}
 }

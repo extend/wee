@@ -357,7 +357,7 @@ class weeApplication
 		}
 
 		weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
-		echo $this->oFrame->toString();
+		$this->oFrame->render();
 	}
 
 	/**
