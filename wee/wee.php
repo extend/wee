@@ -37,6 +37,11 @@ if (defined('DEBUG')) {
 	ini_set('display_errors', 0);
 }
 
+// Define the framework's version
+// Its format is compatible with PHP's version_compare function
+
+define('WEE_VERSION', '0.4.0');
+
 // Detect whether we are on Windows
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
