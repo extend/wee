@@ -60,7 +60,7 @@ class weePgSQLResult extends weeDatabaseResult
 	{
 		$i = pg_num_rows($this->rResult);
 		$i == -1 and burn('DatabaseException',
-			'An error occurred while trying to count the number of rows returned by the query.');
+			_WT('An error occurred while trying to count the number of rows returned by the query.'));
 
 		return $i;
 	}

@@ -95,7 +95,7 @@ class weeLocale
 
 		if (!empty($aParams['default']))
 			locale_set_default($aParams['default'])
-				or burn('InvalidArgumentException', 'Setting the default locale failed.');
+				or burn('InvalidArgumentException', _WT('Setting the default locale failed.'));
 
 		if (!empty($aParams['auto']) && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
 			try {
@@ -136,7 +136,7 @@ class weeLocale
 		}
 
 		setlocale(LC_ALL, $sLocale)
-			or burn('UnexpectedValueException', 'An error occurred while trying to set the locale.');
+			or burn('UnexpectedValueException', _WT('An error occurred while trying to set the locale.'));
 	}
 
 	/**

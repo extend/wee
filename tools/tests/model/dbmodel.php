@@ -51,4 +51,4 @@ $this->isNull($oModel->query('DELETE FROM dbmodel'),
 
 $oDb->query("INSERT INTO dbmodel VALUES (42)");
 $i = $oModel->queryValue('SELECT answer FROM dbmodel LIMIT 1');
-$this->isEqual(42, $i, 'weeDbModel::queryValue returned an incorrect value.');
+$this->isEqual(42, $i, _WT('weeDbModel::queryValue returned an incorrect value.'));

@@ -68,26 +68,26 @@ try {
 // Valid
 
 $this->isTrue(weeEmailValidator::test('test@example.com'),
-	'weeEmailValidator fails to validate "test@example.com".');
+	_WT('weeEmailValidator fails to validate "test@example.com".'));
 $this->isTrue(weeEmailValidator::test('test.test@example.com'),
-	'weeEmailValidator fails to validate "test.test@example.com".');
+	_WT('weeEmailValidator fails to validate "test.test@example.com".'));
 
 // Invalid
 
 $this->isFalse(weeEmailValidator::test(''),
-	'weeEmailValidator returns true for the empty string.');
+	_WT('weeEmailValidator returns true for the empty string.'));
 $this->isFalse(weeEmailValidator::test('example'),
-	'weeEmailValidator returns true for "example".');
+	_WT('weeEmailValidator returns true for "example".'));
 $this->isFalse(weeEmailValidator::test('example.com'),
-	'weeEmailValidator returns true for "example.com".');
+	_WT('weeEmailValidator returns true for "example.com".'));
 $this->isFalse(weeEmailValidator::test('@example.com'),
-	'weeEmailValidator returns true for "@example.com".');
+	_WT('weeEmailValidator returns true for "@example.com".'));
 $this->isFalse(weeEmailValidator::test('test@example'),
-	'weeEmailValidator returns true for "test@example".');
+	_WT('weeEmailValidator returns true for "test@example".'));
 $this->isFalse(weeEmailValidator::test('test@@example.com'),
-	'weeEmailValidator returns true for "test@@example.com".');
+	_WT('weeEmailValidator returns true for "test@@example.com".'));
 $this->isFalse(weeEmailValidator::test('test@test@example.com'),
-	'weeEmailValidator returns true for "test@test@example.com".');
+	_WT('weeEmailValidator returns true for "test@test@example.com".'));
 
 // Objects
 

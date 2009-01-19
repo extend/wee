@@ -199,11 +199,11 @@ class weeConfigFile implements Mappable
 	protected function parseFile($sFilename)
 	{
 		file_exists($sFilename) or burn('FileNotFoundException',
-			"File '$sFilename' does not exist.");
+			sprintf(_WT('The file "%s" does not exist.'), $sFilename));
 		
 		$sRealpath = realpath($sFilename);
 		in_array($sRealpath, $this->aFilesStack) and burn('UnexpectedValueException',
-			"'$sRealpath' configuration file is already in the parsing stack.");
+			sprintf(_WT('The configuration file "%s" is already in the parsing stack. There may be a recursive inclusion.'), $sRealpath));
 
 		$rFile					= fopen($sFilename, 'r');
 		$this->aFilesStack[]	= $sRealpath;
@@ -244,7 +244,7 @@ class weeConfigFile implements Mappable
 			$sParam = ltrim(substr($sLine, 7));
 
 			empty($sParam) and burn('UnexpectedValueException',
-				'The parameter of the include instruction is missing.');
+				_WT('The parameter of the include instruction is missing.'));
 
 			if ($sParam[0] != '=')
 			{
@@ -255,7 +255,7 @@ class weeConfigFile implements Mappable
 
 		$i = strpos($sLine, '=');
 		$i === false and burn('UnexpectedValueException',
-			'The assignement instruction does not have an equal sign.');
+			_WT('The assignement instruction does not have an equal sign.'));
 
 		$sLeft	= rtrim(substr($sLine, 0, $i));
 		$sRight	= ltrim(substr($sLine, $i + 1));

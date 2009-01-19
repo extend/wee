@@ -43,7 +43,7 @@ abstract class weeDbSet extends weeSet
 	public function getDb()
 	{
 		empty($this->oDatabase) && !is_callable('weeApp') and burn('IllegalStateException',
-			'No database has been associated to this set.');
+			_WT('No database has been associated to this set.'));
 
 		return (empty($this->oDatabase) ? weeApp()->db : $this->oDatabase);
 	}

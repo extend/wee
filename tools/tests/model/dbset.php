@@ -64,12 +64,12 @@ $this->isNull($oSet->query('DELETE FROM dbset'),
 
 try {
 	$oSet->queryRow('DELETE FROM dbset');
-	$this->fail('weeDbSet::queryRow should throw an UnexpectedValueException when the SQL query did not return a result set.');
+	$this->fail(_WT('weeDbSet::queryRow should throw an UnexpectedValueException when the SQL query did not return a result set.'));
 } catch (UnexpectedValueException $e) {}
 
 try {
 	$oSet->queryRow('SELECT * FROM dbset');
-	$this->fail('weeDbSet::queryRow should throw a DatabaseException when the result set is empty.');
+	$this->fail(_WT('weeDbSet::queryRow should throw a DatabaseException when the result set is empty.'));
 } catch (DatabaseException $e) {}
 
 $oDb->query('INSERT INTO dbset VALUES (42)');
@@ -81,5 +81,5 @@ $oDb->query('INSERT INTO dbset VALUES (42)');
 
 try {
 	$oSet->queryRow('SELECT * FROM dbset');
-	$this->fail('weeDbSet::queryRow should throw an DatabaseException when the result set contains more than one row.');
+	$this->fail(_WT('weeDbSet::queryRow should throw an DatabaseException when the result set contains more than one row.'));
 } catch (DatabaseException $e) {}

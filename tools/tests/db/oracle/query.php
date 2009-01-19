@@ -100,19 +100,19 @@ $this->isEqual(4, $aRow['C'],
 
 $aRow = $oDb->query('SELECT Q_NAME, Q_QUANTITY, Q_PRICE FROM QUERY WHERE Q_NAME=?', 'Eggs')->fetch();
 $this->isEqual($aInsertValues[1], $aRow,
-	'The data of the row "Eggs" is wrong.');
+	_WT('The data of the row "Eggs" is wrong.'));
 
 // Test fetch
 
 try {
 	$oDb->query('SELECT * FROM query')->fetch();
-	$this->fail('weeDatabaseResult::fetch must throw a DatabaseException when more than one row is found.');
+	$this->fail(_WT('weeDatabaseResult::fetch must throw a DatabaseException when more than one row is found.'));
 } catch (DatabaseException $e) {
 }
 
 try {
 	$oDb->query('SELECT * FROM query WHERE q_quantity=462')->fetch();
-	$this->fail('weeDatabaseResult::fetch must throw a DatabaseException when 0 row is found.');
+	$this->fail(_WT('weeDatabaseResult::fetch must throw a DatabaseException when 0 row is found.'));
 } catch (DatabaseException $e) {
 }
 
@@ -135,8 +135,8 @@ $this->isEqual(array('Q_ID' => 2) + $aInsertValues[1], $oResults->current(),
 
 foreach ($oResults as $aRow)
 {
-	$this->isFalse(empty($aRow), 'The returned row should not be empty.');
-	$this->isTrue(ctype_digit($aRow['Q_ID']), 'The field Q_ID should not be empty.');
+	$this->isFalse(empty($aRow), _WT('The returned row should not be empty.'));
+	$this->isTrue(ctype_digit($aRow['Q_ID']), _WT('The field Q_ID should not be empty.'));
 }
 
 class weeOracleResult_testForeach extends weeDatabaseRow {}
@@ -144,9 +144,9 @@ class weeOracleResult_testForeach extends weeDatabaseRow {}
 $oResults = $oDb->query('SELECT * FROM QUERY')->rowClass('weeOracleResult_testForeach');
 foreach ($oResults as $aRow)
 {
-	$this->isInstanceOf($aRow, 'weeOracleResult_testForeach', 'The returned row should be an instance of weeOracleResult_testForeach.');
-	$this->isFalse(empty($aRow), 'The returned row should not be empty.');
-	$this->isTrue(ctype_digit($aRow['Q_ID']), 'The field Q_ID should not be empty.');
+	$this->isInstanceOf($aRow, 'weeOracleResult_testForeach', _WT('The returned row should be an instance of weeOracleResult_testForeach.'));
+	$this->isFalse(empty($aRow), _WT('The returned row should not be empty.'));
+	$this->isTrue(ctype_digit($aRow['Q_ID']), _WT('The field Q_ID should not be empty.'));
 }
 
 // Test the queryValue method
@@ -155,22 +155,22 @@ try {
 	$this->isEqual(count($aInsertValues), $oDb->queryValue('SELECT COUNT(*) FROM QUERY'),
 		_WT('queryValue does not return the value expected.'));
 } catch (UnexpectedValueException $e) {
-	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
+	$this->fail(_WT('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.'));
 }
 
 try {
 	$oDb->queryValue('DELETE FROM QUERY WHERE Q_ID=0');
-	$this->fail('queryValue does not throw an InvalidArgumentException when the query is not a SELECT query.');
+	$this->fail(_WT('queryValue does not throw an InvalidArgumentException when the query is not a SELECT query.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
 	$oDb->queryValue('SELECT Q_NAME FROM QUERY WHERE Q_QUANTITY<5');
-	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns two rows.');
+	$this->fail(_WT('queryValue does not throw an UnexpectedValueException when the query returns two rows.'));
 } catch (UnexpectedValueException $e) {}
 
 try {
 	$oDb->queryValue('SELECT Q_NAME, Q_QUANTITY FROM QUERY WHERE Q_QUANTITY=0');
-	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns one row of two columns.');
+	$this->fail(_WT('queryValue does not throw an UnexpectedValueException when the query returns one row of two columns.'));
 } catch (UnexpectedValueException $e) {}
 
 // weeOracleResult::fetchAll

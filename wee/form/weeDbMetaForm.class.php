@@ -46,13 +46,13 @@ class weeDbMetaForm extends weeForm
 	public function __construct($oSet, $aOptions = array('action' => 'add', 'formkey' => true))
 	{
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
-			'The XSL PHP extension is required by weeForm.');
+			_WT('The XSL PHP extension is required by weeForm.'));
 
 		if (empty($aOptions['action']))
 			$aOptions['action'] = 'add';
 
 		in_array($aOptions['action'], array('add', 'update'))
-			or burn('InvalidArgumentException', 'Invalid action name. Valid action names are "add" or "update".');
+			or burn('InvalidArgumentException', _WT('Invalid action name. Valid action names are "add" or "update".'));
 
 		$this->loadFromSet($oSet, $aOptions);
 

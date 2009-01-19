@@ -12,4 +12,4 @@ $oForm->fill(array('textbox' => 'Bad'));
 $oForm->fill(array('textbox' => 'Good'));
 
 $this->isMatching('/value="Good"/', $oForm->toString(),
-	"The value given to textbox isn't in the generated form.");
+	_WT("The value given to textbox isn't in the generated form."));

@@ -36,6 +36,5 @@ try {
 	$this->isEqual($sExpectedContents, $o->getContents(),
 		_WT('weeFsFileModel::getContents should return the contents of the file.'));
 } catch (UnexpectedValueException $e) {
-	$this->fail(sprintf(_WT('weeFsFileModel should not throw an UnexpectedValueException, 
-		the file %s could be appended and the contents could be get.'), $sFilename));
+	$this->fail(sprintf(_WT('weeFsFileModel should not throw an UnexpectedValueException, the file %s could be appended and the contents could be get.'), $sFilename));
 }

@@ -72,7 +72,8 @@ abstract class weeOutput
 
 	public static function deleteCookie($sName)
 	{
-		headers_sent() and burn('IllegalStateException', 'You cannot delete a cookie if headers are already sent.');
+		headers_sent() and burn('IllegalStateException',
+			_WT('You cannot delete a cookie if headers are already sent.'));
 
 		if (empty(self::$sCookiePath))
 			self::initCookiePath();
@@ -94,8 +95,8 @@ abstract class weeOutput
 	public static function encodeValue($mValue)
 	{
 		empty(self::$oInstance) and burn('IllegalStateException',
-			'An instance of weeOutput must be selected before calling weeOutput::encodeValue.' .
-			' You should select it before doing any code relating to output, be it forms or templates.');
+			_WT('An instance of weeOutput must be selected before calling weeOutput::encodeValue.' .
+			' You should select it before doing any code relating to output, be it forms or templates.'));
 
 		return self::$oInstance->encode($mValue);
 	}
@@ -147,11 +148,11 @@ abstract class weeOutput
 	public static function header($sString, $bReplace = true)
 	{
 		headers_sent() and burn('IllegalStateException',
-			'You cannot add another header to be sent to browser if they are already sent.');
+			_WT('You cannot add another header to be sent to browser if they are already sent.'));
 		(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
-			'Line breaks are not allowed in headers to prevent HTTP Response Splitting.');
+			_WT('Line breaks are not allowed in headers to prevent HTTP Response Splitting.'));
 		strpos($sString, "\0") !== false and burn('UnexpectedValueException',
-			'Null characters are not allowed in headers.');
+			_WT('Null characters are not allowed in headers.'));
 
 		header($sString, $bReplace);
 	}
@@ -212,7 +213,7 @@ abstract class weeOutput
 
 	public static function setCookie($sName, $sValue, $iExpire = null)
 	{
-		headers_sent() and burn('IllegalStateException', 'You cannot set a cookie if headers are already sent.');
+		headers_sent() and burn('IllegalStateException', _WT('You cannot set a cookie if headers are already sent.'));
 
 		if (empty(self::$sCookiePath))
 			self::initCookiePath();

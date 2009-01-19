@@ -52,7 +52,7 @@ class weeFsLinkModel extends weeFsModel
 	public function __construct($aData = array())
 	{
 		defined('WEE_ON_WINDOWS') and burn('ConfigurationException',
-			'File links are not available on Windows.');
+			_WT('File links are not available on Windows.'));
 
 		parent::__construct($aData);
 		$this->aData['linkto'] = readlink($aData['filename']);

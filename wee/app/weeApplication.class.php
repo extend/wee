@@ -157,7 +157,7 @@ class weeApplication
 	{
 		if (empty($this->aDrivers[$sName])) {
 			empty($this->aConfig[$sName . '.driver']) and burn('InvalidArgumentException',
-				sprintf('The driver %s was not found in the configuration.', $sName));
+				sprintf(_WT('The driver "%s" was not found in the configuration.'), $sName));
 
 			$aParams = $this->cnfArray($sName);
 			unset($aParams['driver']); // Redundant, remove it
@@ -303,9 +303,9 @@ class weeApplication
 			static $iInstance = 0;
 			$iInstance++ == 0 or
 				burn('IllegalStateException',
-					_WT('Trying to instanciate weeApplication within its own constructor. ') .
-					_WT('This error can happen if you inherited a class created in the constructor ') .
-					_WT('and put logic that uses weeApplication in it (models, for example).'));
+					_WT('Trying to instanciate weeApplication within its own constructor. ' .
+						'This error can happen if you inherited a class created in the constructor ' .
+						'and put logic that uses weeApplication in it (models, for example).'));
 
 			function weeApp() { return weeApplication::instance(); }
 			self::$oSingleton = new self;

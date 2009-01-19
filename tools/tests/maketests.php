@@ -20,7 +20,7 @@
 */
 
 $aOptions = getopt('cf:');
-$aOptions === false and die("getopt fails to get options from the command line.\n");
+$aOptions === false and die("getopt failed to get the options from the command line.\n");
 
 if (!isset($aOptions['f'])) {
 	echo "usage: php maketests.php [-c] -f tests_path\n";

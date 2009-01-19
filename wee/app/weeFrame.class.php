@@ -173,7 +173,7 @@ abstract class weeFrame
 	public function render()
 	{
 		$this->iStatus != self::EVENT_DISPATCHED and burn('IllegalStateException',
-			_WT('An event must be dispatched before calling render().'));
+			_WT('An event must be dispatched before calling weeFrame::render.'));
 
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
 			return $this->oTaconite->render();

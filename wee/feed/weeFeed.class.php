@@ -61,9 +61,9 @@ abstract class weeFeed implements Printable
 	public function __call($sName, $aArgs)
 	{
 		(empty($sName) || !ctype_alpha(str_replace(':', '', $sName))) and burn('InvalidArgumentException',
-			'$sName must be defined and contain only alpha characters or a colon.');
-		$this->isElementValid($sName) or burn('BadMethodCallException', $sName . ' is not a valid feed element name.');
-		sizeof($aArgs) == 1 or burn('InvalidArgumentException', 'Only one value is accepted in $aArgs.');
+			_WT('$sName must be defined and contain only alpha characters or a colon.'));
+		$this->isElementValid($sName) or burn('BadMethodCallException', sprintf(_WT('"%s" is not a valid feed element name.'), $sName));
+		sizeof($aArgs) == 1 or burn('InvalidArgumentException', sprintf(_WT('The method "%s" accepts only one argument.'), $sName));
 
 		$this->aFeed[$sName] = $aArgs[0];
 
@@ -105,11 +105,11 @@ abstract class weeFeed implements Printable
 
 	public function entry($aEntry)
 	{
-		empty($aEntry) and burn('UnexpectedValueException', '$aEntry must not be empty.');
+		empty($aEntry) and burn('UnexpectedValueException', _WT('$aEntry must not be empty.'));
 
 		foreach ($aEntry as $sElement => $m)
 			$this->isEntryElementValid($sElement) or burn('InvalidArgumentException',
-				$sElement . ' is not a valid feed entry element name.');
+				sprintf(_WT('"%s" is not a valid feed entry element name.'), $sElement));
 
 		$this->aEntries[] = $aEntry;
 

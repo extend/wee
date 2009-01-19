@@ -13,7 +13,7 @@ try {
 
 	try {
 		$oColumn->getValidator();
-		$this->fail('weeMySQLDbMetaColumn should throw an UnhandledTypeException when the type cannot be handled by dbmeta.');
+		$this->fail(_WT('weeMySQLDbMetaColumn should throw an UnhandledTypeException when the type cannot be handled by dbmeta.'));
 	} catch (UnhandledTypeException $e) {}
 } catch (Exception $oException) {}
 

@@ -105,7 +105,7 @@ abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator, 
 	public function offsetGet($offset)
 	{
 		array_key_exists($offset, $this->aData) or burn('InvalidArgumentException',
-			'The value for offset ' . $offset . ' was not found in the data.');
+			sprintf(_WT('The value for offset "%s" was not found in the data.'), $offset));
 
 		if ($this->bMustEncodeData)
 			return weeOutput::encodeValue($this->aData[$offset]);
@@ -157,7 +157,7 @@ abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator, 
 
 	public function setFromArray($aData)
 	{
-		is_array($aData) or burn('InvalidArgumentException', '$aData must be an array.');
+		is_array($aData) or burn('InvalidArgumentException', _WT('$aData must be an array.'));
 		$this->aData = $aData + $this->aData;
 
 		return $this;

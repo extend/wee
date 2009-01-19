@@ -59,10 +59,10 @@ class weeTemplate implements Printable
 	public function __construct($sTemplate, array $aData = array())
 	{
 		$this->sFilename	= TPL_PATH . $sTemplate . TPL_EXT;
-		file_exists($this->sFilename) or burn('FileNotFoundException',
-			'The file ' . $this->sFilename . " doesn't exist.");
-
 		$this->aData		= $aData;
+
+		file_exists($this->sFilename) or burn('FileNotFoundException',
+			sprintf(_WT('The file %s does not exist.'), $this->sFilename));
 	}
 
 	/**

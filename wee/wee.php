@@ -287,28 +287,24 @@ function array_value($aArray, $sKey, $mIfNotSet = null)
 
 function rmdir_recursive($sPath, $bOnlyContents = false)
 {
-	is_dir($sPath) or burn('FileNotFoundException', "'$sPath' is not a directory.");
+	is_dir($sPath) or burn('FileNotFoundException', sprintf(_WT('"%s" is not a directory.'), $sPath));
 
 	$r = @opendir($sPath)
-		or burn('NotPermittedException', "'$sPath' directory cannot be opened.");
+		or burn('NotPermittedException', sprintf(_WT('The directory %s cannot be opened.'), $sPath));
 
 	while (($s = readdir($r)) !== false)
 		if ($s != '.' && $s !== '..') {
 			$s = $sPath . '/' . $s;
 			if (is_dir($s) && !is_link($s))
 				rmdir_recursive($s);
-			else {
-				@unlink($s)
-					or burn('NotPermittedException', "'$s' file cannot be deleted.");
-			}
+			else
+				@unlink($s) or burn('NotPermittedException', sprintf(_WT('The file %s cannot be deleted.'), $s));
 		}
 
 	closedir($r);
 
-	if (!$bOnlyContents) {
-		@rmdir($sPath)
-			or burn('NotPermittedException', "'$sPath' directory cannot be deleted.");
-	}
+	if (!$bOnlyContents)
+		@rmdir($sPath) or burn('NotPermittedException', sprintf(_WT('The directory %s cannot be deleted.'), $sPath));
 }
 
 /**

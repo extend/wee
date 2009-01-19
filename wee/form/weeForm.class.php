@@ -65,17 +65,17 @@ class weeForm implements Printable
 	public function __construct($sFilename, $sAction = 'add')
 	{
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
-			'The XSL PHP extension is required by weeForm.');
+			_WT('The XSL PHP extension is required by weeForm.'));
 
-		ctype_print($sAction) or burn('InvalidArgumentException', 'The action name must be printable.');
+		ctype_print($sAction) or burn('InvalidArgumentException', _WT('The action name must be printable.'));
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;
 		file_exists($sFilename) or burn('FileNotFoundException',
-			'The file ' . $sFilename . " doesn't exist.");
+			sprintf(_WT('The file "%s" does not exist.'), $sFilename));
 
 		$this->oXML = simplexml_load_file($sFilename);
 		($this->oXML === false || !isset($this->oXML->widgets)) and burn('BadXMLException',
-			'The file ' . $sFilename . ' is not a valid form document.');
+			sprintf(_WT('The file "%s" is not a valid form document.'), $sFilename));
 
 		if (!isset($this->oXML->formkey))
 			$this->oXML->addChild('formkey', 1);
@@ -111,8 +111,8 @@ class weeForm implements Printable
 			// The form key helps prevent cross-site request forgery
 
 			session_id() == '' and burn('IllegalStateException',
-				'You cannot use the formkey protection without an active session. ' .
-				'Please either start a session (recommended) or deactivate formkey protection in the form file.');
+				_WT('You cannot use the formkey protection without an active session. ' .
+				'Please either start a session (recommended) or deactivate formkey protection in the form file.'));
 
 			$sFormKey = md5(uniqid(rand(), true));
 			$_SESSION['session_formkeys'][$sFormKey] = microtime();
@@ -133,7 +133,7 @@ class weeForm implements Printable
 	public function fill($aData)
 	{
 		is_array($aData) || ($aData instanceof Mappable) or burn('InvalidArgumentException',
-			'$aData must be an associative array of names and values or a Mappable object.');
+			_WT('$aData must be an associative array of names and values or a Mappable object.'));
 
 		if (is_object($aData))
 			$aData = $aData->toArray();
@@ -151,7 +151,7 @@ class weeForm implements Printable
 	public function fillErrors($aErrors)
 	{
 		is_array($aErrors) || ($aErrors instanceof Mappable) or burn('InvalidArgumentException',
-			'$aErrors must be an associative array of names and values or a Mappable object.');
+			_WT('$aErrors must be an associative array of names and values or a Mappable object.'));
 
 		if (is_object($aErrors))
 			$aErrors = $aErrors->toArray();
@@ -212,7 +212,7 @@ class weeForm implements Printable
 
 	public function helper($sHelper, $sWidget)
 	{
-		ctype_print($sWidget) or burn('InvalidArgumentException', 'The widget name must be printable.');
+		ctype_print($sWidget) or burn('InvalidArgumentException', _WT('The widget name must be printable.'));
 
 		$oXML = $this->xpathOne('//widget[name="' . xmlspecialchars($sWidget) . '"]');
 		return new $sHelper($oXML);
@@ -266,7 +266,7 @@ class weeForm implements Printable
 		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
 		foreach ($aKeys as $sName)
 		{
-			ctype_print($sName) or burn('InvalidArgumentException', 'The widget name must be printable.');
+			ctype_print($sName) or burn('InvalidArgumentException', _WT('The widget name must be printable.'));
 
 			$a = $this->oXML->xpath('//widget[name="' . xmlspecialchars($sName) . '"]');
 			if (!empty($a))
@@ -328,8 +328,8 @@ class weeForm implements Printable
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
 		{
 			session_id() == '' and burn('IllegalStateException',
-				'You cannot use the formkey protection without an active session.' .
-				' Please either start a session (recommended) or deactivate formkey protection in the form file.');
+				_WT('You cannot use the formkey protection without an active session.' .
+				' Please either start a session (recommended) or deactivate formkey protection in the form file.'));
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
 				$oException->addError('', _WT('Invalid form key.'));

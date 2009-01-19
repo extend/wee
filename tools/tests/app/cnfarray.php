@@ -18,16 +18,16 @@ $o = new weeApplication_cnfarray;
 
 $aEmptyConfig = $o->cnfArray('empty');
 $this->isTrue(empty($aEmptyConfig),
-	'The "empty" option group should not have been found.');
+	_WT('The "empty" option group should not have been found.'));
 
 $aTestConfig = $o->cnfArray('test');
 $this->isEqual(3, count($aTestConfig),
-	'The number of items in "test" is wrong.');
+	_WT('The number of items in "test" is wrong.'));
 $this->isEqual($o->aConfig['test.string'], $aTestConfig['string'],
-	'The value for "string" is wrong.');
+	_WT('The value for "string" is wrong.'));
 $this->isEqual($o->aConfig['test.empty'], $aTestConfig['empty'],
-	'The value for "empty" is wrong.');
+	_WT('The value for "empty" is wrong.'));
 $this->isEqual($o->aConfig['test.zero'], $aTestConfig['zero'],
-	'The value for "zero" is wrong.');
+	_WT('The value for "zero" is wrong.'));
 $this->isTrue(empty($aTestConfig['dummy']),
-	'The value for "dummy" should not have been returned.');
+	_WT('The value for "dummy" should not have been returned.'));

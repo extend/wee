@@ -102,13 +102,13 @@ $this->isEqual($aInsertValues[1], $aRow,
 
 try {
 	$oDb->query('SELECT * FROM query')->fetch();
-	$this->fail('weeDatabaseResult::fetch must throw a DatabaseException when more than one row is found.');
+	$this->fail(_WT('weeDatabaseResult::fetch must throw a DatabaseException when more than one row is found.'));
 } catch (DatabaseException $e) {
 }
 
 try {
 	$oDb->query('SELECT * FROM query WHERE q_quantity=462')->fetch();
-	$this->fail('weeDatabaseResult::fetch must throw a DatabaseException when 0 row is found.');
+	$this->fail(_WT('weeDatabaseResult::fetch must throw a DatabaseException when 0 row is found.'));
 } catch (DatabaseException $e) {
 }
 
@@ -131,8 +131,8 @@ $this->isEqual(array('q_id' => 2) + $aInsertValues[1], $oResults->current(),
 
 foreach ($oResults as $aRow)
 {
-	$this->isFalse(empty($aRow), 'The returned row should not be empty.');
-	$this->isTrue(ctype_digit($aRow['q_id']), 'The field q_id should not be empty.');
+	$this->isFalse(empty($aRow), _WT('The returned row should not be empty.'));
+	$this->isTrue(ctype_digit($aRow['q_id']), _WT('The field q_id should not be empty.'));
 }
 
 class weePgsqlResult_testForeach extends weeDatabaseRow {}
@@ -140,9 +140,9 @@ class weePgsqlResult_testForeach extends weeDatabaseRow {}
 $oResults = $oDb->query('SELECT * FROM query')->rowClass('weePgsqlResult_testForeach');
 foreach ($oResults as $aRow)
 {
-	$this->isInstanceOf($aRow, 'weePgsqlResult_testForeach', 'The returned row should be an instance of weePgsqlResult_testForeach.');
-	$this->isFalse(empty($aRow), 'The returned row should not be empty.');
-	$this->isTrue(ctype_digit($aRow['q_id']), 'The field q_id should not be empty.');
+	$this->isInstanceOf($aRow, 'weePgsqlResult_testForeach', _WT('The returned row should be an instance of weePgsqlResult_testForeach.'));
+	$this->isFalse(empty($aRow), _WT('The returned row should not be empty.'));
+	$this->isTrue(ctype_digit($aRow['q_id']), _WT('The field q_id should not be empty.'));
 }
 
 // Test the queryValue method
@@ -151,22 +151,22 @@ try {
 	$this->isEqual(count($aInsertValues), $oDb->queryValue('SELECT count(*) FROM query'),
 		_WT('queryValue does not return the value expected.'));
 } catch (UnexpectedValueException $e) {
-	$this->fail('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.');
+	$this->fail(_WT('queryValue throws an UnexpectedValueException even though the query is known to return only one row of one column.'));
 }
 
 try {
 	$oDb->queryValue('DELETE FROM query WHERE false');
-	$this->fail('queryValue does not throw an InvalidArgumentException when the query is not a SELECT query.');
+	$this->fail(_WT('queryValue does not throw an InvalidArgumentException when the query is not a SELECT query.'));
 } catch (InvalidArgumentException $e) {}
 
 try {
 	$oDb->queryValue('SELECT q_name FROM query LIMIT 2');
-	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns two rows.');
+	$this->fail(_WT('queryValue does not throw an UnexpectedValueException when the query returns two rows.'));
 } catch (UnexpectedValueException $e) {}
 
 try {
 	$oDb->queryValue('SELECT q_name, q_quantity FROM query LIMIT 1');
-	$this->fail('queryValue does not throw an UnexpectedValueException when the query returns one row of two columns.');
+	$this->fail(_WT('queryValue does not throw an UnexpectedValueException when the query returns one row of two columns.'));
 } catch (UnexpectedValueException $e) {}
 
 // weePgSQLResult::fetchAll

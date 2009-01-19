@@ -170,77 +170,77 @@ try {
 // Strings
 
 $this->isTrue(weeStringValidator::test(null),
-	'weeStringValidator fails to validate the null value.');
+	_WT('weeStringValidator fails to validate the null value.'));
 $this->isTrue(weeStringValidator::test(''),
-	'weeStringValidator fails to validate the empty string.');
+	_WT('weeStringValidator fails to validate the empty string.'));
 $this->isTrue(weeStringValidator::test('32'),
-	'weeStringValidator fails to validate the string "32".');
+	_WT('weeStringValidator fails to validate the string "32".'));
 $this->isTrue(weeStringValidator::test('xxx'),
-	'weeStringValidator fails to validate the string "xxx".');
+	_WT('weeStringValidator fails to validate the string "xxx".'));
 $this->isTrue(weeStringValidator::test(str_repeat('x', 100000)),
-	'weeStringValidator fails to validate a string containing 100000 characters.');
+	_WT('weeStringValidator fails to validate a string containing 100000 characters.'));
 
 // Integers
 
 $this->isTrue(weeStringValidator::test(0),
-	'weeStringValidator fails to validate the number 0.');
+	_WT('weeStringValidator fails to validate the number 0.'));
 $this->isTrue(weeStringValidator::test(1),
-	'weeStringValidator fails to validate the number 1.');
+	_WT('weeStringValidator fails to validate the number 1.'));
 $this->isTrue(weeStringValidator::test(-1),
-	'weeStringValidator fails to validate the number -1.');
+	_WT('weeStringValidator fails to validate the number -1.'));
 $this->isTrue(weeStringValidator::test(111),
-	'weeStringValidator fails to validate the number 111.');
+	_WT('weeStringValidator fails to validate the number 111.'));
 $this->isTrue(weeStringValidator::test(-111),
-	'weeStringValidator fails to validate the number -111.');
+	_WT('weeStringValidator fails to validate the number -111.'));
 $this->isTrue(weeStringValidator::test(20000000),
-	'weeStringValidator fails to validate the number 20000000.');
+	_WT('weeStringValidator fails to validate the number 20000000.'));
 
 // Floats
 
 $this->isTrue(weeStringValidator::test(1.0),
-	'weeStringValidator fails to validate the number 1.0.');
+	_WT('weeStringValidator fails to validate the number 1.0.'));
 $this->isTrue(weeStringValidator::test(1.1),
-	'weeStringValidator fails to validate the number 1.1.');
+	_WT('weeStringValidator fails to validate the number 1.1.'));
 
 // Booleans
 
 $this->isTrue(weeStringValidator::test(true),
-	'weeStringValidator fails to validate the boolean true.');
+	_WT('weeStringValidator fails to validate the boolean true.'));
 $this->isTrue(weeStringValidator::test(false),
-	'weeStringValidator fails to validate the boolean false.');
+	_WT('weeStringValidator fails to validate the boolean false.'));
 
 // Arrays
 
 $this->isFalse(weeStringValidator::test(array(1, 2, 3, 'test', false)),
-	'weeStringValidator returns true for an array.');
+	_WT('weeStringValidator returns true for an array.'));
 
 // Length tests
 
 $this->isTrue(weeStringValidator::test('oeuf', array('len' => 4)),
-	'weeStringValidator fails to validate a string of 4 characters when len = 4.');
+	_WT('weeStringValidator fails to validate a string of 4 characters when len = 4.'));
 $this->isFalse(weeStringValidator::test('oeuf', array('len' => 5)),
-	'weeStringValidator returns true for a string of 4 characters when len = 5.');
+	_WT('weeStringValidator returns true for a string of 4 characters when len = 5.'));
 $this->isFalse(weeStringValidator::test('oeuf', array('len' => 3)),
-	'weeStringValidator returns true for a string of 4 characters when len = 3.');
+	_WT('weeStringValidator returns true for a string of 4 characters when len = 3.'));
 
 $this->isTrue(weeStringValidator::test('oeuf', array('min' => 4)),
-	'weeStringValidator fails to validate a string of 4 characters when min = 4.');
+	_WT('weeStringValidator fails to validate a string of 4 characters when min = 4.'));
 $this->isTrue(weeStringValidator::test('oeuf', array('min' => 1)),
-	'weeStringValidator fails to validate a string of 4 characters when min = 1.');
+	_WT('weeStringValidator fails to validate a string of 4 characters when min = 1.'));
 $this->isFalse(weeStringValidator::test('oeuf', array('min' => 10)),
-	'weeStringValidator returns true for a string of 4 characters when min = 10.');
+	_WT('weeStringValidator returns true for a string of 4 characters when min = 10.'));
 
 $this->isTrue(weeStringValidator::test('oeuf', array('max' => 4)),
-	'weeStringValidator fails to validate a string of 4 characters when max = 4.');
+	_WT('weeStringValidator fails to validate a string of 4 characters when max = 4.'));
 $this->isFalse(weeStringValidator::test('oeuf', array('max' => 1)),
-	'weeStringValidator returns true for a string of 4 characters when max = 1.');
+	_WT('weeStringValidator returns true for a string of 4 characters when max = 1.'));
 $this->isTrue(weeStringValidator::test('oeuf', array('max' => 10)),
-	'weeStringValidator fails to validate a string of 4 characters when max = 10.');
+	_WT('weeStringValidator fails to validate a string of 4 characters when max = 10.'));
 
 // NUL character
 
 $this->isFalse(weeStringValidator::test("string \0 possible hack if this string is used to open file, for example"),
-	'weeStringValidator returns true for a string containing null characters.');
+	_WT('weeStringValidator returns true for a string containing null characters.'));
 
 // Objects
 

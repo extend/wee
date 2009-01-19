@@ -70,7 +70,7 @@ abstract class weeDatabaseStatement
 		{
 			is_string($aParameters)
 				or burn('InvalidArgumentException',
-					'The first argument of the bind method should be a string when called with two parameters.');
+					_WT('The first argument of the bind method should be a string when called with two parameters.'));
 
 			$aParameters = array($aParameters => func_get_arg(1));
 		}

@@ -151,7 +151,7 @@ class weeFetchMailMessage extends weeDataSource implements ArrayAccess
 			$this->oHeader = imap_headerinfo($this->rLink, $this->iMsg);
 
 		isset($this->oHeader->$offset) or burn('InvalidArgumentException',
-			'The value for offset ' . $offset . ' was not found in the data.');
+			sprintf(_WT('The value for offset "%s" was not found in the data.'), $offset));
 
 		if ($this->bMustEncodeData)
 			return weeOutput::encodeValue($this->oHeader->$offset);
@@ -168,7 +168,7 @@ class weeFetchMailMessage extends weeDataSource implements ArrayAccess
 
 	public function offsetSet($offset, $value)
 	{
-		burn('BadMethodCallException', 'This array access is read-only.');
+		burn('BadMethodCallException', _WT('This array access is read-only.'));
 	}
 
 	/**
@@ -180,6 +180,6 @@ class weeFetchMailMessage extends weeDataSource implements ArrayAccess
 
 	public function offsetUnset($offset)
 	{
-		burn('BadMethodCallException', 'This array access is read-only.');
+		burn('BadMethodCallException', _WT('This array access is read-only.'));
 	}
 }

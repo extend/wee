@@ -80,7 +80,7 @@ abstract class weeFsModel extends weeModel
 	public function __construct($aData = array())
 	{
 		empty($aData['filename']) and burn('InvalidArgumentException',
-			'You must specify the filename in $aData[\'filename\'].');
+			_WT('You must specify the filename in $aData[\'filename\'].'));
 
 		// We want to handle everything UNIX-like
 		$aData['filename'] = str_replace('\\', '/', $aData['filename']);
@@ -147,7 +147,7 @@ abstract class weeFsModel extends weeModel
 	public function makeLink($sLinkFilename)
 	{
 		defined('WEE_ON_WINDOWS') and burn('ConfigurationException',
-			'This function is not available on Windows.');
+			_WT('This function is not available on Windows.'));
 
 		@symlink($this->sFilename, $sLinkFilename);
 	}
@@ -162,7 +162,7 @@ abstract class weeFsModel extends weeModel
 	{
 		$bResult = rename($this->sFilename, $sNewFilename);
 		$bResult or burn('UnexpectedValueException',
-			'Could not rename the file "' . $this->sFilename . '" to "' . $sNewFilename . '".');
+			sprintf(_WT('Could not rename the file "%s" to "%s".'), $this->sFilename, $sNewFilename));
 
 		$this->sFilename = $sNewFilename;
 		$this->aData['filename'] = $sNewFilename;

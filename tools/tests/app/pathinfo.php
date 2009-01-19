@@ -8,7 +8,7 @@ try {
 	$_SERVER['PATH_INFO']		= '/foo/bar';
 
 	$this->isEqual('/foo/bar', weeApplication::getPathInfo(),
-		'The path info is not the one from $_SERVER superglobal');
+		_WT('The path info is not the one from $_SERVER superglobal'));
 
 	$_SERVER['PATH_INFO']		= null;
 	$_SERVER['REDIRECT_URL']	= 'fake data';
@@ -16,31 +16,31 @@ try {
 	$_SERVER['PHP_SELF']		= $_SERVER['SCRIPT_NAME'] . '/foo/bar';
 
 	$this->isEqual('/foo/bar', weeApplication::getPathInfo(),
-		'The path info cannot be guessed from SCRIPT_NAME and PHP_SELF when PATH_INFO is not available and the request is a redirection.');
+		_WT('The path info cannot be guessed from SCRIPT_NAME and PHP_SELF when PATH_INFO is not available and the request is a redirection.'));
 
 	$_SERVER['REQUEST_URI']		.= '?';
 
 	$this->isEqual('/foo/bar?', weeApplication::getPathInfo(),
-		'Final interrogation mark is not included in the path info when explicitely set with an empty request string.');
+		_WT('Final interrogation mark is not included in the path info when explicitely set with an empty request string.'));
 
 	$_SERVER['REDIRECT_URL']	= null;
 	$sBaseRequestUri			= $_SERVER['SCRIPT_NAME'] . '/foo/bar';
 	$_SERVER['REQUEST_URI']		= $sBaseRequestUri;
 
 	$this->isEqual('/foo/bar', weeApplication::getPathInfo(),
-		'The path info cannot be guessed from REQUEST_URI and SCRIPT_NAME when PATH_INFO is not available.');
+		_WT('The path info cannot be guessed from REQUEST_URI and SCRIPT_NAME when PATH_INFO is not available.'));
 
 	$_SERVER['QUERY_STRING']	= 'test=true';
 	$_SERVER['REQUEST_URI']		= $sBaseRequestUri . '?' . $_SERVER['QUERY_STRING'];
 
 	$this->isEqual('/foo/bar', weeApplication::getPathInfo(),
-		'The request string can not be stripped off the path info.');
+		_WT('The request string can not be stripped off the path info.'));
 
 	$_SERVER['QUERY_STRING']	= '';
 	$_SERVER['REQUEST_URI']		= $sBaseRequestUri . '?';
 
 	$this->isEqual('/foo/bar?', weeApplication::getPathInfo(),
-		'Final interrogation mark is not included in the path info when explicitely set with an empty request string when PATH_INFO is not available.');
+		_WT('Final interrogation mark is not included in the path info when explicitely set with an empty request string when PATH_INFO is not available.'));
 
 	$_SERVER['SCRIPT_NAME']		= '/test/index.php';
 	$_SERVER['PHP_SELF']		= $_SERVER['SCRIPT_NAME'];
@@ -48,7 +48,7 @@ try {
 	$_SERVER['REQUEST_URI']		= '/test/?' . $_SERVER['QUERY_STRING'];
 
 	$this->isEqual('', weeApplication::getPathInfo(),
-		'The path info should be empty.');
+		_WT('The path info should be empty.'));
 } catch (Exception $oException) {}
 
 $_SERVER = $aFormerServer;

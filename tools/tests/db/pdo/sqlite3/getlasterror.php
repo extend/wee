@@ -16,7 +16,7 @@ try {
 } catch (DatabaseException $e) {
 	try {
 		$this->isNotNull($oDb->getLastError(),
-			'An error has happened while trying to query, but getLastError returns nothing.');
+			_WT('An error has happened while trying to query, but getLastError returns nothing.'));
 	} catch (IllegalStateException $e) {
 		$this->fail(_WT('weePDODatabase::getLastError should not throw an IllegalStateException when an error occurred during the execution of the last query.'));
 	}

@@ -106,7 +106,7 @@ class weeUploadedFile
 	public function getError()
 	{
 		$this->iErrorCode == UPLOAD_ERR_OK and burn('IllegalStateException',
-			'There was no error while uploading files. Please call weeUploadedFile::getError only if weeUploadedFile::isOK returns true.');
+			_WT('There was no error while uploading files. Please call weeUploadedFile::getError only if weeUploadedFile::isOK returns true.'));
 
 		$aErrorMessages = array(
 			UPLOAD_ERR_INI_SIZE		=> 'The uploaded file size exceeds the upload_max_filesize directive in php.ini.',
@@ -171,9 +171,9 @@ class weeUploadedFile
 	{
 		clearstatcache();
 		is_dir($sDestination) or burn('InvalidArgumentException',
-			'Destination ' . $sDestination . ' is not a directory.');
+			sprintf(_WT('Destination "%s" is not a directory.'), $sDestination));
 		is_uploaded_file($this->sTmpName) or burn('UnexpectedValueException',
-			'PHP reported that ' . $this->sTmpName . ' is not an uploaded file.');
+			sprintf(_WT('PHP reported that "%s" is not an uploaded file.'), $this->sTmpName));
 
 		if (empty($sNewFilename))
 			$sNewFilename = $this->getFilename();

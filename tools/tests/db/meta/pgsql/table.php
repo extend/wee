@@ -58,7 +58,7 @@ try
 
 	try {
 		$oMeta->table('lhc');
-		$this->fail('weePgSQLDbMeta::table should throw an UnexpectedValueException when requesting a table which does not exist in the database.');
+		$this->fail(_WT('weePgSQLDbMeta::table should throw an UnexpectedValueException when requesting a table which does not exist in the database.'));
 	} catch (UnexpectedValueException $e) {}
 
 	try {

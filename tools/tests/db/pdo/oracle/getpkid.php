@@ -39,8 +39,8 @@ for ($i = 0; $i < 100; $i++)
 	$iCurrent = $oDb->getPKId('GETPKID_SEQ');
 
 	$this->isEqual($iPrevious + 1, $iCurrent,
-		'The primary key id returned by getPKId (' . $iCurrent . ') ' .
-		'is not equal as the previous + 1 (' . $iPrevious . ' + 1).');
+		sprintf(_WT('The primary key id returned by getPKId (%d) ' .
+		'is not equal as the previous + 1 (%d + 1).'), $iCurrent, $iPrevious));
 
 	$iPrevious = $iCurrent;
 }

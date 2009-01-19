@@ -73,8 +73,8 @@ class weeEmailTemplate extends weeTemplate
 
 			// Malformed email header
 			strpos($sLine, ': ') === false and burn('UnexpectedValueException',
-				'Malformed email header. Please make sure name and value are separated by ": ".' .
-				" If you didn't specify any header in the template file please check that you added an empty line at the top.");
+				_WT('Malformed email header. Please make sure name and value are separated by ": ".' .
+				" If you didn't specify any header in the template file please check that you added an empty line at the top."));
 
 			$a = explode(': ', $sLine);
 			$this->aHeaders[$a[0]] = $a[1];

@@ -145,9 +145,9 @@ class weeUploadedFiles implements Iterator
 	public function get($sName)
 	{
 		empty($_FILES[$sName]) and burn('InvalidArgumentException',
-			'File ' . $sName . ' was not found in the uploaded files.');
+			sprintf(_WT('File "%s" was not found in the uploaded files.'), $sName));
 		is_array($_FILES[$sName]['name']) and burn('InvalidArgumentException',
-			$sName . " is an array of files. You can't retrieve it using weeUploadedFiles::get.");
+			sprintf(_WT('"%s" is an array of files. You cannot retrieve it using weeUploadedFiles::get.'), $sName));
 
 		return $this->createFile($_FILES[$sName]);
 	}

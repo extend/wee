@@ -130,7 +130,7 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 			$sName = $this->aParametersMap[$i];
 			is_array($this->aParameters) ? array_key_exists($sName, $this->aParameters) : isset($this->aParameters[$sName])
 				or burn('IllegalStateException',
-					sprintf(_WT('The value of the `%s` parameter is missing.'), $sName));
+					sprintf(_WT('The value of the parameter "%s" is missing.'), $sName));
 
 			$sQuery .= $this->oDb->escape($this->aParameters[$sName]) . $this->aQueryParts[$i];
 		}

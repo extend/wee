@@ -10,7 +10,7 @@ try {
 		array('my_string' => 'eggs are good, yup, yum', 'my_int' => 42, 'my_float' => 2008.2008),
 	));
 } catch (DatabaseException $e) {
-	$this->fail('weeDatabase::bindNamedParameters should not throw an exception for a random value.');
+	$this->fail(_WT('weeDatabase::bindNamedParameters should not throw an exception for a random value.'));
 }
 
 try {
@@ -19,5 +19,5 @@ try {
 		array('my_value' => null),
 	));
 } catch (DatabaseException $e) {
-	$this->fail('weeDatabase::bindNamedParameters should not throw an exception for null values.');
+	$this->fail(_WT('weeDatabase::bindNamedParameters should not throw an exception for null values.'));
 }
