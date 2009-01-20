@@ -106,14 +106,6 @@ class weeApplication
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
-		// Mail settings
-
-		if (!empty($this->aConfig['mail.debug.to']))
-			define('WEE_MAIL_DEBUG_TO', $this->aConfig['mail.debug.to']);
-
-		if (!empty($this->aConfig['mail.debug.reply-to']))
-			define('WEE_MAIL_DEBUG_REPLY_TO', $this->aConfig['mail.debug.reply-to']);
-
 		// Session settings
 
 		if (!empty($this->aConfig['session.check.ip']))

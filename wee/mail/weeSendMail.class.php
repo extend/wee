@@ -55,48 +55,4 @@ class weeSendMail extends PHPMailer
 			if (isset($this->$sName) && !is_array($this->$sName))
 				$this->$sName = $sValue;
 	}
-
-	/**
-		Send the mail.
-
-		You can configure various settings for debugging purposes,
-		which will change the behaviour of this class when DEBUG is defined.
-			- WEE_MAIL_DEBUG_TO:		all mails will be sent to this address
-			- WEE_MAIL_DEBUG_REPLY_TO:	sets the reply-to value to this address
-
-		If DEBUG is defined but WEE_MAIL_DEBUG_TO isn't, this method will just
-		return true without doing anything, allowing the test of other portions
-		of the program without doing the actual send of the email.
-
-		WEE_MAIL_DEBUG_REPLY_TO can be an email of the QA engineering team who
-		can receive all the complaints about emails during the test phase, for
-		example.
-	*/
-
-	public function send()
-	{
-		if (defined('DEBUG'))
-		{
-			if (!defined('WEE_MAIL_DEBUG_TO'))
-				return true;
-
-			// Remove the destinations and change the "to" address to the debug one
-
-			$this->to	= array();
-			$this->cc	= array();
-			$this->bcc	= array();
-
-			$this->addAddress(WEE_MAIL_DEBUG_TO);
-
-			// Change the "reply-to" address if a debug one is provided
-
-			if (defined('WEE_MAIL_DEBUG_REPLY_TO'))
-			{
-				$this->ReplyTo = array();
-				$this->addReplyTo(WEE_MAIL_DEBUG_REPLY_TO);
-			}
-		}
-
-		return parent::send();
-	}
 }

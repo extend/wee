@@ -26,11 +26,6 @@ locale.driver	= weeLocale
 locale.auto		= 1
 locale.default	=
 
-# Mail settings
-
-mail.debug.to =
-mail.debug.reply-to =
-
 # Output settings
 
 output.driver		= weeXHTMLOutput
