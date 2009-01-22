@@ -121,16 +121,18 @@ class weeMySQLiDatabase extends weeDatabase
 	}
 
 	/**
-		Gets the last error the database returned.
-		The drivers usually throw an exception when there's an error,
-		but you can get the error if you catch the exception and then call this method.
+		Returns the last error the database returned.
 
-		@return string The last error the database encountered
+		@return string	The last error the database encountered.
+		@throw	IllegalStateException	No error occured during the last operation.
 	*/
 
 	public function getLastError()
 	{
-		return $this->oDb->error;
+		$s = $this->oDb->error;
+		$s != '' or burn('IllegalStateException',
+			sprintf(_WT('%s did not return an error during the last operation.'), 'MySQLi'));
+		return $s;
 	}
 
 	/**

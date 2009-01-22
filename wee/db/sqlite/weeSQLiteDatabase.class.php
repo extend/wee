@@ -136,16 +136,16 @@ class weeSQLiteDatabase extends weeDatabase
 	}
 
 	/**
-		Gets the last error the database returned.
+		Returns the last error the database returned.
 
-		@return	string					The last error returned by the database.
-		@throw	IllegalStateException	SQLite did not return an error during the last operation.
+		@return string	The last error the database encountered.
+		@throw	IllegalStateException	No error occured during the last operation.
 	*/
 
 	public function getLastError()
 	{
 		$this->sLastError !== null or burn('IllegalStateException',
-				_WT('SQLite did not return an error during the last operation.'));
+			sprintf(_WT('%s did not return an error during the last operation.'), 'SQLite'));
 		return $this->sLastError;
 	}
 
