@@ -28,14 +28,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 	This frame defines events for all of these operations applicable on a given set.
 */
 
-class weeCRUDUI extends weeUI
+class weeCRUDUI extends weeContainerUI
 {
-	/**
-		Default prefix for UI CRUD events.
-	*/
-
-	protected $sBaseTemplatePrefix = 'ui/crud/';
-
 	/**
 		Number of items to display per page in the default event.
 	*/
@@ -64,8 +58,6 @@ class weeCRUDUI extends weeUI
 	{
 		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
 
-		$this->sBaseTemplate = 'index';
-
 		$iPage = (int)array_value($aEvent['get'], 'page', 0);
 		$iCount = $this->oSet->count();
 		$iTotal = (int)ceil($iCount / $this->iCountPerPage) - 1;
@@ -76,6 +68,7 @@ class weeCRUDUI extends weeUI
 			$iPage = $iTotal;
 
 		$oList = new weeListUI($this->oController);
+		$this->addFrame('index', $oList);
 
 		$aMeta = $this->oSet->getMeta();
 		$oList->setPrimaryKey($aMeta['primary']);
@@ -114,9 +107,7 @@ class weeCRUDUI extends weeUI
 			$this->iCountPerPage
 		), $this->iCountPerPage, $iCount);
 
-		$oList->dispatchEvent($aEvent);
-
-		$this->set('list', $oList);
+		parent::defaultEvent($aEvent);
 	}
 
 	/**
@@ -129,11 +120,12 @@ class weeCRUDUI extends weeUI
 	protected function doFormEvent($aEvent, $sCallbackMethod)
 	{
 		$oFormUI = new weeDbMetaFormUI($this->oController);
+		$this->addFrame('form', $oFormUI);
+
 		$oFormUI->setDbSet($this->oSet);
 		$oFormUI->setSubmitCallback(array($this, $sCallbackMethod));
-		$oFormUI->dispatchEvent($aEvent);
 
-		$this->set('form', $oFormUI);
+		parent::defaultEvent($aEvent);
 	}
 
 	/**
@@ -145,8 +137,6 @@ class weeCRUDUI extends weeUI
 	protected function eventAdd($aEvent)
 	{
 		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
-
-		$this->sBaseTemplate = 'add';
 		$this->doFormEvent($aEvent, 'insertRecordCallback');
 	}
 
@@ -162,6 +152,7 @@ class weeCRUDUI extends weeUI
 		empty($aEvent['post']) and burn('InvalidArgumentException', _WT('The event delete must be called using a POST request.'));
 
 		$this->sBaseTemplate = 'delete';
+		$this->sBaseTemplatePrefix = 'ui/crud/';
 		$this->oSet->delete($aEvent['post']);
 	}
 
@@ -174,8 +165,6 @@ class weeCRUDUI extends weeUI
 	protected function eventUpdate($aEvent)
 	{
 		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
-
-		$this->sBaseTemplate = 'update';
 		$this->doFormEvent($aEvent, 'updateRecordCallback');
 	}
 

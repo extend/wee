@@ -34,10 +34,11 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeContainerUI extends weeUI
 {
 	/**
-		Override weeUI default prefix.
+		Name of the template for the frame.
+		If not defined its value will be the name of the frame's class.
 	*/
 
-	protected $sBaseTemplatePrefix = null;
+	protected $sBaseTemplate = 'container';
 
 	/**
 		List of frames this container handles.
@@ -46,9 +47,8 @@ class weeContainerUI extends weeUI
 	protected $aFrames = array();
 
 	/**
-		Add a frame to the container.
+		Add an UI frame to the container.
 
-		The frame is not required to be a UI component, it can be a normal weeFrame.
 		Keep in mind though that if the frame doesn't implement weeFailSafeRouting,
 		there might be an exception triggered when the event doesn't exist in it.
 
@@ -69,7 +69,18 @@ class weeContainerUI extends weeUI
 			$mFrame = new $mFrame;
 		}
 
-		$this->aFrames[$sName] = $mFrame;
+		$mFrame->setContainer($this);
+		$mFrame->setId($this->getChildIdPrefix() . $sName);
+		$this->aFrames[$this->getChildIdPrefix() . $sName] = $mFrame;
+	}
+
+	/**
+		TODO
+	*/
+
+	public function child($sName)
+	{
+		return $this->aFrames[$sName];
 	}
 
 	/**
@@ -84,5 +95,14 @@ class weeContainerUI extends weeUI
 			$oFrame->dispatchEvent($aEvent);
 
 		$this->set('frames', $this->aFrames);
+	}
+
+	/**
+		TODO
+	*/
+
+	protected function getChildIdPrefix()
+	{
+		return empty($this->sId) ? '' : $this->sId . '-';
 	}
 }

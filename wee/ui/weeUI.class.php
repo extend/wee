@@ -34,12 +34,44 @@ class weeUI extends weeFrame implements weeFailSafeRouting
 	protected $sBaseTemplatePrefix = 'ui/';
 
 	/**
+		TODO
+	*/
+
+	protected $oContainer;
+
+	/**
+		TODO
+	*/
+
+	protected $sId;
+
+	/**
+		TODO
+	*/
+
+	public function setContainer($oContainer)
+	{
+		$oContainer instanceof weeContainerUI or burn('InvalidArgumentException',
+			_WT('The container must be an instance of weeContainerUI.'));
+
+		$this->oContainer = $oContainer;
+	}
+
+	/**
+	*/
+
+	public function setId($sId)
+	{
+		$this->sId = $sId;
+	}
+
+	/**
 		Allows you to change the template this UI component will use to render itself.
 
 		@param $sFullPathToTemplate Full path to the template, including any prefix.
 	*/
 
-	protected function setTemplate($sFullPathToTemplate)
+	public function setTemplate($sFullPathToTemplate)
 	{
 		$this->sBaseTemplate = $sFullPathToTemplate;
 		$this->sBaseTemplatePrefix = null;
