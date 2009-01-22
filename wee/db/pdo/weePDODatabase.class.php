@@ -31,7 +31,7 @@ class weePDODatabase extends weeDatabase
 		The number of rows affected by the last query.
 	*/
 
-	protected $iAffectedRowsCount;
+	protected $iNumAffectedRows;
 
 	/**
 		The database object.
@@ -78,6 +78,8 @@ class weePDODatabase extends weeDatabase
 				_WT('PDO failed to connect to the database with the following message:')
 					. "\n" . $e->getMessage());
 		}
+
+		$this->bIsSQLite2 = ($this->getDriverName() == 'sqlite2');
 	}
 
 	/**
@@ -96,7 +98,7 @@ class weePDODatabase extends weeDatabase
 		Executes an SQL query.
 
 		@param	$sQuery				The query to execute.
-		@return	weeSQLiteResult		For queries that return rows, the result object.
+		@return	weePDOResult		For queries that return rows, the result object.
 		@throw	DatabaseException	PDO failed to execute the query.
 	*/
 
@@ -111,9 +113,43 @@ class weePDODatabase extends weeDatabase
 				_WT('PDO failed to execute the query with the following error:') . "\n" . $this->sLastError);
 		}
 
-		$this->iAffectedRowsCount = $m->rowCount();
+		$this->iNumAffectedRows = $this->doRowCount($m);
 		if ($m->columnCount())
 			return new weePDOResult($m->fetchAll(PDO::FETCH_ASSOC));
+	}
+
+	/**
+		Does the driver-dependent work of PDOStatement::rowCount.
+
+		You should NOT call this method, its only use is to work around
+		a inconsistency in the PDO_SQLITE2 driver.
+
+		@param	$oStatement		The PDO statement.
+		@param	$bIsPrepared	Whether $oStatement comes from a prepared statement.
+		@return	int				The number of affected rows by the last execution of the statement.
+		@see	http://wee.extend.ws/ticket/71
+	*/
+
+	public function doRowCount(PDOStatement $oStatement, $bIsPrepared = false)
+	{
+		$iRowCount = $oStatement->rowCount();
+
+		if ($this->getDriverName() == 'sqlite2') {
+			if ($bIsPrepared && !isset($iNumAffectedRows))
+				// A prepared statement is executed for the first time, begin tracking of the number of
+				// affected rows reported by SQLite 2.
+				static $iNumAffectedRows = 0;
+
+			if (!$oStatement->columnCount() && isset($iNumAffectedRows)) {
+				// Prepared statements have been used and $oStatement is not a SELECT query,
+				// we need to return the difference between the new and old reported numbers of affected rows.
+				$i = $iRowCount - $iNumAffectedRows;
+				$iNumAffectedRows = $iRowCount;
+				return $i;
+			}
+		}
+
+		return $iRowCount;
 	}
 
 	/**
@@ -240,7 +276,7 @@ class weePDODatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		return $this->iAffectedRowsCount;
+		return $this->iNumAffectedRows;
 	}
 
 	/**
@@ -252,6 +288,15 @@ class weePDODatabase extends weeDatabase
 
 	public function prepare($sQuery)
 	{
-		return new weePDOStatement($this->oDb, $sQuery);
+		try
+		{
+			return new weePDOStatement($this, $this->oDb->prepare($sQuery));
+		}
+		catch (PDOException $e)
+		{
+			burn('DatabaseException',
+				_WT('PDO failed to prepare the query with the following message:')
+					. "\n" . $e->getMessage());
+		}
 	}
 }
