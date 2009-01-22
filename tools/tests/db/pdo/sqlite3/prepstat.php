@@ -70,7 +70,7 @@ try {
 
 	// weePDOStatement::numAffectedRows
 
-	$oDeleteStat = $oDb->prepare('DELETE FROM prepstat');
+	$oDeleteStat = $oDb->prepare('DELETE FROM prepstat WHERE 1');
 	$oDeleteStat->execute();
 	$this->isEqual(count($aInsertValues), $oDeleteStat->numAffectedRows(),
 		_WT('weePDOStatement::numAffectedRows does not correctly return the number of affected rows.'));

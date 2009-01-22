@@ -100,9 +100,10 @@ class weePDOStatement extends weeDatabaseStatement
 		since the UPDATE statement does not always update rows that are already up-to-date.
 
 		You shouldn't use this method to check the number of deleted rows by a
-		"DELETE FROM sometable" statement without a WHERE clause when using PDO_SQLITE2
-		because it deletes and then recreates the table to increase performance.
-		Use "DELETE FROM sometable WHERE 1" if you really need the number of deleted rows.
+		"DELETE FROM sometable" statement without a WHERE clause when using SQLite 2 or 3
+		because it deletes and then recreates the table to increase performance,
+		reporting no affected rows. Use "DELETE FROM sometable WHERE 1" if you really
+		need the number of deleted rows.
 
 		@return	int	The number of affected rows in the last query.
 	*/
