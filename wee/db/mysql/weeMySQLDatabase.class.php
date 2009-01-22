@@ -46,6 +46,8 @@ class weeMySQLDatabase extends weeDatabase
 		Refer to the documentation of mysql_connect() to know the default values
 		of the `host`, `user` and `password` parameters.
 
+		This class always opens a new link to the given database.
+
 		@param	$aParams					The parameters of the database.
 		@throw	ConfigurationException		The MySQL PHP extension is missing.
 		@throw	DatabaseException			MySQL failed to connect to the specified database.
@@ -58,7 +60,7 @@ class weeMySQLDatabase extends weeDatabase
 			or burn('ConfigurationException',
 				_WT('The MySQL PHP extension is required by the MySQL database driver.'));
 
-		$this->rLink = @mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'));
+		$this->rLink = @mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'), true);
 		$this->rLink !== false
 			or burn('DatabaseException',
 				_WT('MySQL failed to connect to the database with the following message:')
