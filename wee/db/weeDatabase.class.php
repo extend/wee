@@ -78,7 +78,7 @@ abstract class weeDatabase
 		@return	string		The query safely build
 	*/
 
-	public function bindNamedParameters($aArguments)
+	protected function bindNamedParameters($aArguments)
 	{
 		$sQueryString = $aArguments[0];
 
@@ -107,7 +107,7 @@ abstract class weeDatabase
 		@return	string		The query safely built
 	*/
 
-	public function bindQuestionMarks($aArguments)
+	protected function bindQuestionMarks($aArguments)
 	{
 		$aParts		= explode('?', $aArguments[0]);
 
