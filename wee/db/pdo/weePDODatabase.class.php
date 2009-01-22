@@ -78,8 +78,6 @@ class weePDODatabase extends weeDatabase
 				_WT('PDO failed to connect to the database with the following message:')
 					. "\n" . $e->getMessage());
 		}
-
-		$this->bIsSQLite2 = ($this->getDriverName() == 'sqlite2');
 	}
 
 	/**
