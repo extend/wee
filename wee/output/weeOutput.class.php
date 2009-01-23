@@ -34,13 +34,6 @@ abstract class weeOutput
 	protected $bGzipped;
 
 	/**
-		Path used in the deleteCookie and setCookie methods.
-		Currently determined automatically in the constructor.
-	*/
-
-	protected static $sCookiePath;
-
-	/**
 		Instance of the current output driver.
 		There can only be one.
 	*/
@@ -63,23 +56,6 @@ abstract class weeOutput
 	*/
 
 	public abstract function decode($mValue);
-
-	/**
-		Delete the specified cookie.
-
-		@param $sName Name of the cookie to delete.
-	*/
-
-	public static function deleteCookie($sName)
-	{
-		headers_sent() and burn('IllegalStateException',
-			_WT('You cannot delete a cookie if headers are already sent.'));
-
-		if (empty(self::$sCookiePath))
-			self::initCookiePath();
-
-		setcookie($sName, '', 0, self::$sCookiePath);
-	}
 
 	/**
 		Encodes data to be displayed.
@@ -158,28 +134,6 @@ abstract class weeOutput
 	}
 
 	/**
-		Determine the cookie path.
-		Called only once the first time setCookie or deleteCookie is called.
-
-		@todo We should have some common code for handling the request uri and various base path
-	*/
-
-	protected static function initCookiePath()
-	{
-		$sRequestURI		= (isset($_SERVER['REDIRECT_URL'])) ? $_SERVER['REDIRECT_URL'] : $_SERVER['PHP_SELF'];
-		self::$sCookiePath	= str_replace('\\', '/', dirname($sRequestURI));
-		$s					= APP_PATH;
-		while (substr($s, 0, 3) == '../')
-		{
-			self::$sCookiePath	= dirname(self::$sCookiePath);
-			$s					= substr($s, 3);
-		}
-		//TODO:this part looks useless, to be tested and confirmed
-		if (substr(self::$sCookiePath, strlen(self::$sCookiePath) - 1) != '/')
-			self::$sCookiePath .= '/';
-	}
-
-	/**
 		Return the currently selected instance.
 		Throw an exception if no instances are selected.
 
@@ -200,27 +154,6 @@ abstract class weeOutput
 	public function isGzipped()
 	{
 		return $this->bGzipped;
-	}
-
-	/**
-		Sends a cookie to the browser.
-		The default expire delay is 30 days.
-
-		@param $sName	Name of the cookie.
-		@param $sValue	Value of the cookie.
-		@param $iExpire	Expiration time (UNIX timestamp, in seconds).
-	*/
-
-	public static function setCookie($sName, $sValue, $iExpire = null)
-	{
-		headers_sent() and burn('IllegalStateException', _WT('You cannot set a cookie if headers are already sent.'));
-
-		if (empty(self::$sCookiePath))
-			self::initCookiePath();
-
-		if (is_null($iExpire))
-			$iExpire = time() + 2592000; // 30 days from now
-		setcookie($sName, $sValue, $iExpire, self::$sCookiePath);
 	}
 
 	/**
