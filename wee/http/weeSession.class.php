@@ -22,7 +22,7 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Wrapper for easier session management.
+	Wrapper around $_SESSION for easier session management.
 */
 
 class weeSession implements ArrayAccess
@@ -30,7 +30,11 @@ class weeSession implements ArrayAccess
 	/**
 		Starts the session.
 
-		If something seems wrong (isSessionInvalid returns true, or the session name is bad), reinitialize the session.
+		If anything looks wrong the session is reinitialized. This can happen because:
+			- the session's name sent by the cookie is invalid
+			- the session is deemed invalid by the isSessionInvalid method
+
+		@see weeSession::isSessionInvalid
 	*/
 
 	public function __construct()
@@ -45,23 +49,14 @@ class weeSession implements ArrayAccess
 		session_start();
 
 		if (!empty($_SESSION) && $this->isSessionInvalid())
-			$this->clear();
+			return $this->clear();
 
 		if (empty($_SESSION))
 			$this->initSession();
 	}
 
 	/**
-		Closes the session.
-	*/
-
-	public function __destruct()
-	{
-		session_write_close();
-	}
-
-	/**
-		Deletes session and create a new, empty one.
+		Clear the session.
 	*/
 
 	public function clear()
@@ -69,10 +64,13 @@ class weeSession implements ArrayAccess
 		$_SESSION = array();
 		session_regenerate_id();
 
-		weeOutput::setCookie(session_name(), '');
+		setcookie(session_name(), '');
 		unset($_COOKIE[session_name()]);
 
-		$this->initSession();
+		if (isset($_COOKIE['session_token'])) {
+			setcookie('session_token', '');
+			unset($_COOKIE['session_token']);
+		}
 	}
 
 	/**
@@ -104,7 +102,7 @@ class weeSession implements ArrayAccess
 
 		if (defined('WEE_SESSION_CHECK_TOKEN')) {
 			$_SESSION['session_token'] = md5(uniqid(rand(), true));
-			weeOutput::setCookie('session_token', $_SESSION['session_token']);
+			setcookie('session_token', $_SESSION['session_token']);
 		}
 	}
 
