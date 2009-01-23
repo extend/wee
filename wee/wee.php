@@ -309,7 +309,7 @@ function rmdir_recursive($sPath, $bOnlyContents = false)
 }
 
 /**
-	Sends a header to the browser.
+	Send a header to the browser.
 	Tentatively prevents HTTP Response Splitting.
 
 	@param $sString		Header string.
@@ -326,6 +326,18 @@ function safe_header($sString, $bReplace = true)
 		_WT('NUL characters are not allowed in headers.'));
 
 	header($sString, $bReplace);
+}
+
+/**
+	Start the session.
+	The session is reinitialized if the name of the cookie is invalid.
+*/
+
+function safe_session_start()
+{
+	if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()]))
+		unset($_COOKIE[session_name()]);
+	session_start();
 }
 
 /**

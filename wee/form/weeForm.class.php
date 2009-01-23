@@ -107,12 +107,9 @@ class weeForm implements Printable
 		if ((int)$this->oXML->formkey)
 		{
 			// Create the form key and store it in the session
-			// Currently requires a session to be open previously
-			// The form key helps prevent cross-site request forgery
 
-			session_id() == '' and burn('IllegalStateException',
-				_WT('You cannot use the formkey protection without an active session. ' .
-				'Please either start a session (recommended) or deactivate formkey protection in the form file.'));
+			if (session_id() == '')
+				safe_session_start();
 
 			$sFormKey = md5(uniqid(rand(), true));
 			$_SESSION['session_formkeys'][$sFormKey] = microtime();
@@ -327,9 +324,8 @@ class weeForm implements Printable
 
 		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
 		{
-			session_id() == '' and burn('IllegalStateException',
-				_WT('You cannot use the formkey protection without an active session.' .
-				' Please either start a session (recommended) or deactivate formkey protection in the form file.'));
+			if (session_id() == '')
+				safe_session_start();
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
 				$oException->addError('', _WT('Invalid form key.'));

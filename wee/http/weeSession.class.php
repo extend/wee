@@ -52,11 +52,8 @@ class weeSession implements ArrayAccess
 	{
 		$this->aParams = $aParams;
 
-		if (session_id() != '') {
-			if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()]))
-				unset($_COOKIE[session_name()]);
-			session_start();
-		}
+		if (session_id() == '')
+			safe_session_start();
 
 		if (!empty($_SESSION) && $this->isSessionInvalid())
 			return $this->clear();
