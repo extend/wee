@@ -139,21 +139,10 @@ final class weeAutoload
 
 // Register autoload functions
 
-if (function_exists('spl_autoload_register'))
-{
-	ini_set('unserialize_callback_func', 'spl_autoload_call');
-	spl_autoload_register(array('weeAutoload', 'loadClass'));
-	if (function_exists('__autoload'))
-		spl_autoload_register('__autoload');
-}
-elseif (!function_exists('__autoload'))
-{
-	ini_set('unserialize_callback_func', '__autoload');
-	function __autoload($sClass)
-	{
-		weeAutoload::loadClass($sClass);
-	}
-}
+ini_set('unserialize_callback_func', 'spl_autoload_call');
+spl_autoload_register(array('weeAutoload', 'loadClass'));
+if (function_exists('__autoload'))
+	spl_autoload_register('__autoload');
 
 // Handle cache loading and saving
 
