@@ -58,23 +58,20 @@ class weeMySQLDatabase extends weeDatabase
 	{
 		function_exists('mysql_connect')
 			or burn('ConfigurationException',
-				_WT('The MySQL PHP extension is required by the MySQL database driver.'));
+				sprintf(_WT('The %s PHP extension is required by this database driver.'), 'MySQL'));
 
 		$this->rLink = @mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'), true);
-		$this->rLink !== false
-			or burn('DatabaseException',
-				_WT('MySQL failed to connect to the database with the following message:')
-					. "\n" . mysql_error());
+		$this->rLink !== false or burn('DatabaseException',
+				_WT('Failed to connect to the database with the following message:') . "\n" . mysql_error());
 
-		if (empty($aParams['encoding']))
-			$aParams['encoding'] = 'utf8';
-
-		try {
-			$this->query("SET NAMES ?", $aParams['encoding']);
-		} catch (DatabaseException $e) {
-			burn('InvalidArgumentException',
-				sprintf(_WT('Encoding "%s" is invalid.'), $aParams['encoding']));
-		}
+		if (!isset($aParams['encoding']))
+			$this->doQuery('SET NAMES utf8');
+		else
+			try {
+				$this->query('SET NAMES ?', $aParams['encoding']);
+			} catch (DatabaseException $e) {
+				burn('InvalidArgumentException', sprintf(_WT('Encoding "%s" is invalid.'), $aParams['encoding']));
+			}
 
 		if (isset($aParams['dbname']))
 			$this->selectDb($aParams['dbname']);
@@ -102,10 +99,8 @@ class weeMySQLDatabase extends weeDatabase
 	protected function doQuery($sQuery)
 	{
 		$mResult = mysql_query($sQuery, $this->rLink);
-		$mResult !== false
-			or burn('DatabaseException',
-				_WT('MySQL failed to execute the given query with the following message:')
-			   		. "\n" . $this->getLastError());
+		$mResult !== false or burn('DatabaseException',
+			_WT('Failed to execute the given query with the following message:') . "\n" . $this->getLastError());
 
 		if ($mResult !== true)
 			return new weeMySQLResult($mResult);
@@ -124,7 +119,7 @@ class weeMySQLDatabase extends weeDatabase
 		$iLength = strlen($sValue);
 		$iLength > 0 and $iLength < 65 and strpos($sValue, "\0") === false and strpos($sValue, chr(255)) === false and substr_compare($sValue, ' ', -1)
 			or burn('InvalidArgumentException',
-				_WT('$sValue is not a valid mysql identifier.'));
+				_WT('The given string is not a valid identifier.'));
 
 		return '`' . str_replace('`', '``', $sValue) . '`';
 	}
@@ -167,9 +162,8 @@ class weeMySQLDatabase extends weeDatabase
 	{
 		// Do not use mysql_insert_id() here because it cannot handle BIGINT values.
 		$s = $this->queryValue('SELECT LAST_INSERT_ID()');
-		$s != '0'
-			or burn('IllegalStateException',
-				_WT('None of the previous executed queries generated an AUTO_INCREMENT value.'));
+		$s != '0' or burn('IllegalStateException',
+			_WT('No sequence value has been generated yet by the database in this session.'));
 		return $s;
 	}
 
@@ -208,10 +202,8 @@ class weeMySQLDatabase extends weeDatabase
 
 	public function selectDb($sDatabase)
 	{
-		$b = mysql_select_db($sDatabase, $this->rLink);
-		$b
-			or burn('DatabaseException',
-				sprintf(_WT('MySQL failed to select the database "%s" with the following message:'), $sDatabase)
-					. "\n" . $this->getLastError());
+		mysql_select_db($sDatabase, $this->rLink) or burn('DatabaseException',
+			sprintf(_WT('Failed to select the database "%s" with the following message:'), $sDatabase)
+				. "\n" . $this->getLastError());
 	}
 }
