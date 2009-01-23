@@ -338,18 +338,18 @@ abstract class weeDocumentor implements Mappable, Printable
 			or burn('InvalidArgumentException',
 				_WT('$sVariable is not a valid variable name.'));
 
-		switch ($sVariable[0])
-		{
-			case 'a':	return 'array';
-			case 'b':	return 'bool';
-			case 'f':	return 'float';
-			case 'i':	return 'int';
-			case 'm':	return 'mixed';
-			case 'o':	return 'object';
-			case 'r':	return 'resource';
-			case 's':	return 'string';
-			default:	return null;
-		}
+		static $aTypes = array(
+			'a' => 'array',
+			'b' => 'bool',
+			'f' => 'float',
+			'i' => 'int',
+			'm' => 'mixed',
+			'o' => 'object',
+			'r' => 'resource',
+			's' => 'string',
+		);
+
+		return array_value($aTypes, $sVariable[0]);
 	}
 
 	/**
