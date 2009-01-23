@@ -169,7 +169,10 @@ class weeSQLiteDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		return $this->oDb->lastInsertRowid();
+		$i = $this->oDb->lastInsertRowid();
+		$i != 0 or burn('IllegalStateException',
+			sprintf(_WT('%s have not generated a sequence value during the last operation.'), 'SQLite'));
+		return $i;
 	}
 
 	/**

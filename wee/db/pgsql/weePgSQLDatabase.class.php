@@ -144,11 +144,10 @@ class weePgSQLDatabase extends weeDatabase
 
 	/**
 		Returns the primary key index value.
-		Useful when you need to retrieve the row primary key value you just inserted.
-		This function may work a bit differently in each drivers.
 
-		@param	$sName	The primary key index name, if needed
-		@return	integer	The primary key index value
+		@param	$sName	The primary key index name, if needed.
+		@return	string	The primary key index value.
+		@throw	IllegalStateException	No value has been generated yet for the given sequence in this session.
 	*/
 
 	public function getPKId($sName = null)
@@ -156,15 +155,20 @@ class weePgSQLDatabase extends weeDatabase
 		if ($sName === null)
 			$sQuery = 'SELECT pg_catalog.lastval()';
 		else
-			$sQuery = $this->bindQuestionMarks(array(
-				'SELECT pg_catalog.currval(?)',
-				$sName
-			));
+			$sQuery = 'SELECT pg_catalog.currval(' . $this->escape($sName) . ')';
 
-		$r = pg_query($sQuery);
-		$r === false and burn('DatabaseException', _WT('Failed to retrieve the value of the sequence:') . "\n" . $this->getLastError());
+		// We need to get the SQLSTATE returned by PostgreSQL so we can't use pg_query here.
+		pg_send_query($this->rLink, $sQuery);
+		$r = pg_get_result($this->rLink);
 
-		return (int)pg_fetch_result($r, 0, 0);
+		$mSQLState = pg_result_error_field($r, PGSQL_DIAG_SQLSTATE);
+		if ($mSQLState == '55000')
+			burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PostgreSQL'));
+		elseif ($mSQLState !== null)
+			burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PostgreSQL')
+				. "\n" . pg_last_error($this->rLink));
+
+		return pg_fetch_result($r, 0, 0);
 	}
 
 	/**

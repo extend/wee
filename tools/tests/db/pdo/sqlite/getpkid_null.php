@@ -4,12 +4,12 @@ require('connect.php.inc');
 
 $oDb->query('
 	CREATE TEMPORARY TABLE getpkid (
-		pk_id SERIAL NOT NULL,
+		pk_id INTEGER PRIMARY KEY,
 		pk_value INTEGER
 	);
 ');
 
-$mPK = 'getpkid_pk_id_seq';
+$mPK = null;
 
 try {
 	require(dirname(__FILE__) . '/../../getpkid.php.inc');

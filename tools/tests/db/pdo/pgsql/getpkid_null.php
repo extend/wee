@@ -9,7 +9,7 @@ $oDb->query('
 	);
 ');
 
-$mPK = 'getpkid_pk_id_seq';
+$mPK = null;
 
 try {
 	require(dirname(__FILE__) . '/../../getpkid.php.inc');

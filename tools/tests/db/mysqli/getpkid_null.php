@@ -9,10 +9,10 @@ $oDb->query('
 	);
 ');
 
-$mPK = 'getpkid_pk_id_seq';
+$mPK = null;
 
 try {
-	require(dirname(__FILE__) . '/../../getpkid.php.inc');
+	require(dirname(__FILE__) . '/../getpkid.php.inc');
 } catch (Exception $oException) {}
 
 $oDb->query('DROP TABLE getpkid');

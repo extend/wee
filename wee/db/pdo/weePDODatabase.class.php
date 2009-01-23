@@ -28,22 +28,28 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weePDODatabase extends weeDatabase
 {
 	/**
-		The number of rows affected by the last query.
-	*/
-
-	protected $iNumAffectedRows;
-
-	/**
 		The database object.
 	*/
 
 	protected $oDb;
 
 	/**
+		The name of the PDO driver.
+	*/
+
+	protected $sDriverName;
+
+	/**
 		The last error message encountered.
 	*/
 
 	protected $sLastError;
+
+	/**
+		The number of rows affected by the last query.
+	*/
+
+	protected $iNumAffectedRows;
 
 	/**
 		Initialises a new pdo database.
@@ -78,6 +84,8 @@ class weePDODatabase extends weeDatabase
 				_WT('PDO failed to connect to the database with the following message:')
 					. "\n" . $e->getMessage());
 		}
+
+		$this->sDriverName = $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
 	}
 
 	/**
@@ -132,7 +140,7 @@ class weePDODatabase extends weeDatabase
 	{
 		$iRowCount = $oStatement->rowCount();
 
-		if ($this->getDriverName() == 'sqlite2') {
+		if ($this->sDriverName == 'sqlite2') {
 			if ($bIsPrepared && !isset($iNumAffectedRows))
 				// A prepared statement is executed for the first time, begin tracking of the number of
 				// affected rows reported by SQLite 2.
@@ -212,7 +220,7 @@ class weePDODatabase extends weeDatabase
 
 	public function getDriverName()
 	{
-		return $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
+		return $this->sDriverName;
 	}
 
 	/**
@@ -253,13 +261,38 @@ class weePDODatabase extends weeDatabase
 		@param	$sName					The name of the sequence.
 		@return	int						The primary key index value.
 		@throw	ConfigurationException	The PDO driver does not support this capability.
+		@throw	IllegalStateException	No value has been generated yet for the given sequence name.
+		@throw	DatabaseException		An error occured during the retrieving of the last generated value.
 	*/
 
 	public function getPKId($sName = null)
 	{
+		if ($this->sDriverName == 'mysql' || substr($this->sDriverName, 0, 6) == 'sqlite') {
+			$s = $this->oDb->lastInsertId($sName);
+			$s != '0' or burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PDO'));
+			return $s;
+		}
+
+		if ($this->sDriverName == 'pgsql' && $sName === null) {
+			$o = $this->oDb->query('SELECT pg_catalog.lastval()');
+			$a = $this->oDb->errorInfo();
+			if ($a[0] == '55000')
+				burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PDO'));
+			elseif ($a[0] != '00000')
+				burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PDO')
+					. "\n" . $a[2]);
+			return $o->fetchColumn(0);
+		}
+
 		$s = $this->oDb->lastInsertId($sName);
-		$this->oDb->errorCode() != 'IM001' or burn('ConfigurationException',
-			sprintf(_WT('Driver "%s" does not support this capability.'), $this->getDriverName()));
+		$a = $this->oDb->errorInfo();
+		if ($a[0] == '55000')
+			burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PDO'));
+		elseif ($a[0] == 'IM001')
+			burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->getDriverName()));
+		elseif ($a[0] != '00000')
+			burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PDO')
+				. "\n" . $a[2]);
 		return $s;
 	}
 
