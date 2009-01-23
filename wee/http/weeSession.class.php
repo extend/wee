@@ -201,8 +201,11 @@ class weeSession implements ArrayAccess
 		@param $aData Array containing the data to copy from.
 	*/
 
-	public function setFromArray(array $aData)
+	public function setFromArray($aData)
 	{
+		(is_array($aData) || $aData instanceof Iterator) or burn('InvalidArgumentException',
+			_WT('The $aData parameter must be an array or an Iterator object.'));
+
 		foreach ($aData as $sKey => $mValue)
 			$_SESSION[$sKey] = $mValue;
 	}
