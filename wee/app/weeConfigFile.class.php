@@ -73,7 +73,7 @@ class weeConfigFile implements Mappable
 			return ROOT_PATH . substr($sPath, 2);
 
 		if ($sPrefix == './')
-			return dirname($this->aFilesStack[sizeof($this->aFilesStack) - 1]) . '/' . substr($sPath, 2);
+			return dirname(end($this->aFilesStack)) . '/' . substr($sPath, 2);
 
 		return $sPath;
 	}
