@@ -106,13 +106,6 @@ class weeApplication
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
-		// Session settings
-
-		if (!empty($this->aConfig['session.check.ip']))
-			define('WEE_SESSION_CHECK_IP', 1);
-		if (!empty($this->aConfig['session.check.token']))
-			define('WEE_SESSION_CHECK_TOKEN', 1);
-
 		// Timezone settings
 
 		if (!empty($this->aConfig['app.timezone']))

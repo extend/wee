@@ -28,25 +28,35 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeSession implements ArrayAccess
 {
 	/**
-		Starts the session.
+		Session's configuration.
+	*/
+
+	protected $aParams;
+
+	/**
+		Sanitize the session id and start the session if it wasn't already.
 
 		If anything looks wrong the session is reinitialized. This can happen because:
 			- the session's name sent by the cookie is invalid
 			- the session is deemed invalid by the isSessionInvalid method
 
+		Two parameters change the behavior of this class:
+			- 'check.ip': whether to check for the client's IP on each request
+			- 'check.token': whether to check for the session token on each request
+
+		@params $aParams A list of parameters to configure the session class.
 		@see weeSession::isSessionInvalid
 	*/
 
-	public function __construct()
+	public function __construct($aParams = array())
 	{
-		session_id() != '' and burn('IllegalStateException',
-			_WT('A session already exist. You cannot create a new weeSession if a PHP session is active.'));
+		$this->aParams = $aParams;
 
-		// Sanitize session id, then start session
-
-		if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()]))
-			unset($_COOKIE[session_name()]);
-		session_start();
+		if (session_id() != '') {
+			if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()]))
+				unset($_COOKIE[session_name()]);
+			session_start();
+		}
 
 		if (!empty($_SESSION) && $this->isSessionInvalid())
 			return $this->clear();
@@ -88,19 +98,18 @@ class weeSession implements ArrayAccess
 	}
 
 	/**
-		Initialize the session if required.
+		Initialize the session.
 
-		If WEE_SESSION_CHECK_IP is defined, store the IP into the session.
-		If WEE_SESSION_CHECK_TOKEN is defined, generate a token and store
-		it both into the session and in the client's cookies.
+		If the parameter 'check.ip' evaluates to true, store the IP address into the session.
+		If the parameter 'check.token' evaluates to true, generate a token and store it both into the session and in the client's cookies.
 	*/
 
 	protected function initSession()
 	{
-		if (defined('WEE_SESSION_CHECK_IP'))
+		if (!empty($this->aParams['check.ip']))
 			$_SESSION['session_ip'] = $this->getIP();
 
-		if (defined('WEE_SESSION_CHECK_TOKEN')) {
+		if (!empty($this->aParams['check.token'])) {
 			$_SESSION['session_token'] = md5(uniqid(rand(), true));
 			setcookie('session_token', $_SESSION['session_token']);
 		}
@@ -110,10 +119,10 @@ class weeSession implements ArrayAccess
 		Checks if the session is invalid.
 
 		The session is invalid if:
-		 * WEE_SESSION_CHECK_IP is defined and either of
+		 * the parameter 'check.ip' evaluates to true and either of
 			 * the session's IP is empty
 			 * the session's IP is different from the current user IP
-		 * WEE_SESSION_CHECK_TOKEN is defined and either of
+		 * the parameter 'check.token' evaluates to true and either of
 			 * the session token is empty
 			 * the session token is different from the cookie's session token
 
@@ -122,11 +131,11 @@ class weeSession implements ArrayAccess
 
 	protected function isSessionInvalid()
 	{
-		if (defined('WEE_SESSION_CHECK_IP') &&
+		if (!empty($this->aParams['check.ip']) &&
 			(empty($_SESSION['session_ip']) || $this->getIP() != $_SESSION['session_ip']))
 			return true;
 
-		if (defined('WEE_SESSION_CHECK_TOKEN') &&
+		if (!empty($this->aParams['check.token']) &&
 			(empty($_COOKIE['session_token']) || empty($_SESSION['session_token']) || $_SESSION['session_token'] != $_COOKIE['session_token']))
 			return true;
 
