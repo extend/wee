@@ -167,9 +167,8 @@ class weePgSQLDbMeta extends weeDbMeta
 				LIMIT	1
 		", $sName);
 
-		count($oQuery) == 1
-			or burn('UnexpectedValueException',
-				sprintf(_WT('Table "%s" does not exist in the database.'), $sName));
+		count($oQuery) == 1 or burn('UnexpectedValueException',
+			sprintf(_WT('Table "%s" does not exist in the database or is not in its current schema search path.'), $sName));
 
 		$sClass = $this->getTableClass();
 		return new $sClass($this, $oQuery->fetch());
