@@ -91,7 +91,7 @@ abstract class weeDatabase
 			// see http://blog.extend.ws/2008/03/01/arrayaccess-quirks/
 			is_array($aArguments[1]) ? array_key_exists($sName, $aArguments[1]) : isset($aArguments[1][$sName])
 				or burn('InvalidArgumentException',
-					sprintf(_WT('Could not bind the `%s` named parameter because its value was not given in the arguments.'), $sName));
+					sprintf(_WT('Could not bind the parameter "%s" because its value was not given in the arguments.'), $sName));
 
 			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
 		}
@@ -148,7 +148,6 @@ abstract class weeDatabase
 		You should NEVER use sprintf when building queries.
 
 		When the given value is null, the SQL token "null" is returned.
-
 
 		@param	$mValue	The value to escape
 		@return	string	The escaped value.
@@ -224,9 +223,8 @@ abstract class weeDatabase
 		if ($this->oMeta === null)
 		{
 			$sClass = $this->getMetaClass();
-			$sClass !== null
-				or burn('BadMethodCallException',
-					_WT('This database driver does not support dbmeta.'));
+			$sClass !== null or burn('BadMethodCallException',
+				_WT('This database driver does not support dbmeta.'));
 			$this->oMeta = new $sClass($this);
 		}
 

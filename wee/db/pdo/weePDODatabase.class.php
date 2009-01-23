@@ -61,28 +61,23 @@ class weePDODatabase extends weeDatabase
 
 		@param	$aParams					The parameters of the driver.
 		@throw	ConfigurationException		The PDO PHP extension is missing.
-		@throw	InvalidArgumentException	The `dsn` parameter is missing.
+		@throw	InvalidArgumentException	Parameter "dsn" is missing.
+		@throw	DatabaseException			Failed to connect to database.
 	*/
 
 	public function __construct($aParams = array())
 	{
-		class_exists('PDO', false)
-			or burn('ConfigurationException',
-				_WT('The PDO PHP extension is required by this database driver.'));
+		class_exists('PDO', false) or burn('ConfigurationException',
+			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'PDO'));
 
-		isset($aParams['dsn'])
-			or burn('InvalidArgumentException',
-				_WT('The `dsn` parameter is missing.'));
+		isset($aParams['dsn']) or burn('InvalidArgumentException',
+			sprintf(_WT('Parameter "%s" is missing.'), 'dsn'));
 
-		try
-		{
+		try {
 			$this->oDb = new PDO($aParams['dsn'], array_value($aParams, 'user'), array_value($aParams, 'password'));
-		}
-		catch (PDOException $e)
-		{
-			burn('DatabaseException',
-				_WT('PDO failed to connect to the database with the following message:')
-					. "\n" . $e->getMessage());
+		} catch (PDOException $e) {
+			burn('DatabaseException', _WT('Failed to connect to the database with the following message:')
+				. "\n" . $e->getMessage());
 		}
 
 		$this->sDriverName = $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -105,7 +100,7 @@ class weePDODatabase extends weeDatabase
 
 		@param	$sQuery				The query to execute.
 		@return	weePDOResult		For queries that return rows, the result object.
-		@throw	DatabaseException	PDO failed to execute the query.
+		@throw	DatabaseException	Failed to execute the query.
 	*/
 
 	protected function doQuery($sQuery)
@@ -115,8 +110,7 @@ class weePDODatabase extends weeDatabase
 		if ($m === false)
 		{
 			$this->sLastError = array_value($this->oDb->errorInfo(), 2);
-			burn('DatabaseException',
-				_WT('PDO failed to execute the query with the following error:') . "\n" . $this->sLastError);
+			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $this->sLastError);
 		}
 
 		$this->iNumAffectedRows = $this->doRowCount($m);
@@ -169,46 +163,41 @@ class weePDODatabase extends weeDatabase
 
 	public function escapeIdent($sValue)
 	{
-		switch ($this->getDriverName())
+		switch ($this->sDriverName)
 		{
 			case 'mysql':
 				// see weeMySQLDatabase::escapeIdent
 				$iLength = strlen($sValue);
 				$iLength > 0 && $iLength < 65 && strpos($sValue, "\0") === false && strpos($sValue, chr(255)) === false && substr_compare($sValue, ' ', -1)
-					or burn('InvalidArgumentException',
-						_WT('$sValue is not a valid mysql identifier.'));
+					or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
 
 				return '`' . str_replace('`', '``', $sValue) . '`';
 
 			case 'oci':
 				// see weeOracleDatabase::escapeIdent
 				$iLength = strlen($sValue);
-				strpos($sValue, '"') === false && $iLength > 0 && $iLength <= 30
-					or burn('InvalidArgumentException',
-						_WT('$sValue is not a valid oracle identifier.'));
+				strpos($sValue, '"') === false && $iLength > 0 && $iLength <= 30 or burn('InvalidArgumentException',
+					_WT('The given string is not a valid identifier.'));
 
 				return '"' . $sValue . '"';
 
 			case 'pgsql':
 				// see weePgSQLDatabase::escapeIdent
 				$iLength = strlen($sValue);
-				$iLength > 0 && $iLength <= 63 && strpos($sValue, "\0") === false
-					or burn('InvalidArgumentException',
-						_WT('$sValue is not a valid pgsql identifier.'));
+				$iLength > 0 && $iLength <= 63 && strpos($sValue, "\0") === false or burn('InvalidArgumentException',
+					_WT('The given string is not a valid identifier.'));
 
 				return '"' . str_replace('"', '""', $sValue) . '"';
 
 			case 'sqlite':
 			case 'sqlite2':
 				// see weeSQLiteDatabase::escapeIdent
-				strlen($sValue) > 0 or burn('InvalidArgumentException',
-						_WT('$sValue is not a valid sqlite identifier.'));
+				strlen($sValue) > 0 or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
 
 				return '"' . str_replace('"', '""', $sValue) . '"';
 
 			default:
-				burn('ConfigurationException',
-					sprintf(_WT('Driver "%s" is not supported by the escapeIdent method.'), $this->getDriverName()));
+				burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDriverName));
 		}
 	}
 
@@ -251,12 +240,12 @@ class weePDODatabase extends weeDatabase
 	public function getLastError()
 	{
 		$this->sLastError !== null or burn('IllegalStateException',
-			sprintf(_WT('%s did not return an error during the last operation.'), 'PDO'));
+			_WT('Database did not return an error during the last operation.'));
 		return $this->sLastError;
 	}
 
 	/**
-		Returns the primary key index value of the last inserted row.
+		Returns the last sequence value generated by the database in this session.
 
 		@param	$sName					The name of the sequence.
 		@return	int						The primary key index value.
@@ -269,7 +258,7 @@ class weePDODatabase extends weeDatabase
 	{
 		if ($this->sDriverName == 'mysql' || substr($this->sDriverName, 0, 6) == 'sqlite') {
 			$s = $this->oDb->lastInsertId($sName);
-			$s != '0' or burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PDO'));
+			$s != '0' or burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
 			return $s;
 		}
 
@@ -277,22 +266,20 @@ class weePDODatabase extends weeDatabase
 			$o = $this->oDb->query('SELECT pg_catalog.lastval()');
 			$a = $this->oDb->errorInfo();
 			if ($a[0] == '55000')
-				burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PDO'));
+				burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
 			elseif ($a[0] != '00000')
-				burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PDO')
-					. "\n" . $a[2]);
+				burn('DatabaseException', _WT('Failed to return the value of the given sequence with the following message:') . "\n" . $a[2]);
 			return $o->fetchColumn(0);
 		}
 
 		$s = $this->oDb->lastInsertId($sName);
 		$a = $this->oDb->errorInfo();
 		if ($a[0] == '55000')
-			burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PDO'));
+			burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
 		elseif ($a[0] == 'IM001')
-			burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->getDriverName()));
+			burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDriverName));
 		elseif ($a[0] != '00000')
-			burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PDO')
-				. "\n" . $a[2]);
+			burn('DatabaseException', _WT('Failed to return the value of the given sequence with the following message:') . "\n" . $a[2]);
 		return $s;
 	}
 
@@ -325,15 +312,10 @@ class weePDODatabase extends weeDatabase
 
 	public function prepare($sQuery)
 	{
-		try
-		{
+		try {
 			return new weePDOStatement($this, $this->oDb->prepare($sQuery));
-		}
-		catch (PDOException $e)
-		{
-			burn('DatabaseException',
-				_WT('PDO failed to prepare the query with the following message:')
-					. "\n" . $e->getMessage());
+		} catch (PDOException $e) {
+			burn('DatabaseException', _WT('Failed to prepare the query with the following message:') . "\n" . $e->getMessage());
 		}
 	}
 }

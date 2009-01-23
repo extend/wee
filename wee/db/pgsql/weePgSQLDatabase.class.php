@@ -41,16 +41,19 @@ class weePgSQLDatabase extends weeDatabase
 	protected $iNumAffectedRows;
 
 	/**
-		Initialize the driver and connects to the database.
-		The arguments available may change between drivers.
+		Initialises a new pgsql database.
 
-		@param $aParams Arguments for database connection, identification, and class initialization
+		This database driver accepts the same parameters as the ones allowed in the connection string
+		passed to pg_connect.
+
+		@param	$aParams	The parameters of the database.
+		@see	http://php.net/pg_connect
 	*/
 
 	public function __construct($aParams = array())
 	{
 		function_exists('pg_connect') or burn('ConfigurationException',
-			_WT('The PostgreSQL PHP extension is required by the PostgreSQL database driver.'));
+			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'PostgreSQL'));
 
 		//TODO:maybe quote & escape values...
 		$sConnection = null;
@@ -58,10 +61,10 @@ class weePgSQLDatabase extends weeDatabase
 			$sConnection .= $sKey . '=' . $sValue . ' ';
 
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
-		$this->rLink === false and burn('DatabaseException', _WT('Failed to connect to database.'));
+		$this->rLink === false and burn('DatabaseException',
+			_WT('Failed to connect to database with the following message:') . "\n" . pg_last_error());
 
 		// Set encoding
-
 		pg_set_client_encoding($this->rLink, 'UNICODE');
 	}
 

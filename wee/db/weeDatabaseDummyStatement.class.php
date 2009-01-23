@@ -119,7 +119,7 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 	/**
 		Executes the prepared statement.
 
-		@return	mixed	An instance of weeDatabaseStatement if the query returned rows or null.
+		@return	mixed	An instance of weeDatabaseResult if the query returned rows or null.
 	*/
 
 	public function execute()
@@ -129,8 +129,7 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 		{
 			$sName = $this->aParametersMap[$i];
 			is_array($this->aParameters) ? array_key_exists($sName, $this->aParameters) : isset($this->aParameters[$sName])
-				or burn('IllegalStateException',
-					sprintf(_WT('The value of the parameter "%s" is missing.'), $sName));
+				or burn('IllegalStateException', sprintf(_WT('A value has yet to be bound to the parameter "%s".'), $sName));
 
 			$sQuery .= $this->oDb->escape($this->aParameters[$sName]) . $this->aQueryParts[$i];
 		}
