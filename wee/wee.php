@@ -20,7 +20,7 @@
 */
 
 if (!defined('ALLOW_INCLUSION')) die;
-if (version_compare(phpversion(), '5.0.0', '<')) die;
+if (version_compare(phpversion(), '5.2.0', '<')) die('PHP 5.2.x or greater is required.');
 
 // Prevent the script from using the default value for MAGIC_STRING
 
@@ -52,27 +52,28 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
 if (PHP_SAPI == 'cli')
 	define('WEE_CLI', 1);
 
-// Paths and files extensions
+// Paths
 
-if (!defined('BASE_PATH')) {
-	$i = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
-		- (int)(isset($_SERVER['REDIRECT_URL']));
+if (!defined('BASE_PATH')) // Base path of boostrap file
+	define('BASE_PATH', str_repeat('../', substr_count(substr($_SERVER['PHP_SELF'],
+		strlen($_SERVER['SCRIPT_NAME'])), '/') - (int)(isset($_SERVER['REDIRECT_URL']))));
 
-	for ($s = null; $i > 0; $i--)
-		$s .= '../';
+if (!defined('ROOT_PATH')) // Path to application's root directory
+	define('ROOT_PATH', './');
 
-	define('BASE_PATH', $s);
+if (!defined('APP_PATH')) // Path to application's web directory
+	define('APP_PATH', BASE_PATH . (ROOT_PATH == './' ? '' : ROOT_PATH));
 
-	unset($i, $s);
-}
-if (!defined('ROOT_PATH'))	define('ROOT_PATH',	'./');
-if (!defined('APP_PATH')) {
-	if (ROOT_PATH == './')	define('APP_PATH', BASE_PATH);
-	else					define('APP_PATH', BASE_PATH . ROOT_PATH);
-}
-if (!defined('WEE_PATH'))	define('WEE_PATH', ROOT_PATH . 'wee/');
-if (!defined('PHP_EXT'))	define('PHP_EXT',  strrchr(__FILE__, '.'));
-if (!defined('CLASS_EXT'))	define('CLASS_EXT',	'.class' . PHP_EXT);
+if (!defined('WEE_PATH')) // Path to the framework's directory
+	define('WEE_PATH', ROOT_PATH . 'wee/');
+
+// Files extensions
+
+if (!defined('PHP_EXT')) // PHP files extension
+	define('PHP_EXT', strrchr(__FILE__, '.'));
+
+if (!defined('CLASS_EXT')) // PHP class files extension
+	define('CLASS_EXT', '.class' . PHP_EXT);
 
 // Define the LC_MESSAGES constant if not defined
 
