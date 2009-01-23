@@ -113,27 +113,6 @@ abstract class weeOutput
 	}
 
 	/**
-		Sends a header to the browser.
-
-		Tentatively prevent HTTP Response Splitting.
-
-		@param $sString		Header string.
-		@param $bReplace	Replace existing header if true.
-	*/
-
-	public static function header($sString, $bReplace = true)
-	{
-		headers_sent() and burn('IllegalStateException',
-			_WT('You cannot add another header to be sent to browser if they are already sent.'));
-		(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
-			_WT('Line breaks are not allowed in headers to prevent HTTP Response Splitting.'));
-		strpos($sString, "\0") !== false and burn('UnexpectedValueException',
-			_WT('Null characters are not allowed in headers.'));
-
-		header($sString, $bReplace);
-	}
-
-	/**
 		Return the currently selected instance.
 		Throw an exception if no instances are selected.
 

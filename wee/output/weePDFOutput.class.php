@@ -69,9 +69,9 @@ class weePDFOutput extends weeLaTeXOutput
 
 		// Send the PDF to the browser
 
-		weeOutput::header('Content-Type: application/pdf');
-		weeOutput::header('Content-Length: ' . filesize($sTmpFilename . '.pdf'));
-		weeOutput::header('Content-Disposition: attachment; filename="' . $this->sFilename . '"');
+		safe_header('Content-Type: application/pdf');
+		safe_header('Content-Length: ' . filesize($sTmpFilename . '.pdf'));
+		safe_header('Content-Disposition: attachment; filename="' . $this->sFilename . '"');
 
 		readfile($sTmpFilename . '.pdf');
 

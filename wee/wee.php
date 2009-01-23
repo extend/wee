@@ -309,6 +309,26 @@ function rmdir_recursive($sPath, $bOnlyContents = false)
 }
 
 /**
+	Sends a header to the browser.
+	Tentatively prevents HTTP Response Splitting.
+
+	@param $sString		Header string.
+	@param $bReplace	Whether to replace any existing header Replace existing header if true.
+*/
+
+function safe_header($sString, $bReplace = true)
+{
+	headers_sent() and burn('IllegalStateException',
+		_WT('You cannot add another header to be sent to browser if they are already sent.'));
+	(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
+		_WT('Line breaks are not allowed in headers to prevent HTTP Response Splitting.'));
+	strpos($sString, "\0") !== false and burn('UnexpectedValueException',
+		_WT('NUL characters are not allowed in headers.'));
+
+	header($sString, $bReplace);
+}
+
+/**
 	Convert special characters to XML entities.
 
 	Original author: treyh on PHP comments for htmlspecialchars.
