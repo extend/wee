@@ -330,13 +330,16 @@ function safe_header($sString, $bReplace = true)
 
 /**
 	Start the session.
-	The session is reinitialized if the name of the cookie is invalid.
+	The session is reinitialized if the name of the session is invalid.
 */
 
 function safe_session_start()
 {
-	if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()]))
+	if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()])) {
 		unset($_COOKIE[session_name()]);
+		setcookie(session_name(), '');
+	}
+
 	session_start();
 }
 

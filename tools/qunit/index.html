@@ -19,6 +19,20 @@ $(function() {
 	test('delete', function() {batch(2, 'cookies/delete.php');});
 	test('apppath', function() {batch(1, 'cookies/apppath.php');});
 	test('path', function() {batch(1, 'cookies/path.php');});
+/*
+	module('Files');
+	test('no file uploaded', function() {
+	});
+	test('upload 1 file', function() {
+	});
+	test('upload n files', function() {
+	});
+*/
+	module('Session');
+	test('bad name', function() {batch(3, 'session/badname.php');});
+	test('bad token', function() {batch(3, 'session/badtoken.php');});
+	test('set values', function() {batch(3, 'session/set.php');});
+	test('clear', function() {batch(4, 'session/clear.php');});
 });
 	</script>
 </head>
