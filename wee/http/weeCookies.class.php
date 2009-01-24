@@ -93,7 +93,7 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Returns whether offset exists.
+		Return whether offset exists.
 
 		@param	$offset	Offset name.
 		@return	bool	Whether the offset exists.
@@ -106,7 +106,7 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Returns value at given offset.
+		Return value at given offset.
 
 		@param	$offset	Offset name.
 		@return	mixed	Value at given offset
@@ -121,7 +121,7 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Sets a new value for the given offset.
+		Set a new value for the given offset.
 
 		This aliases weeCookies::set with a default 3rd parameter.
 		This do NOT add the value directly in the cookies array.
@@ -138,7 +138,7 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Unsets offset.
+		Unset offset.
 
 		This aliases weeCookies::delete and sends a header to delete the cookie.
 		This do NOT remove the value directly from the cookies array.
@@ -154,21 +154,18 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Sends a cookie to the browser.
-		The default expire delay is 30 days.
+		Send a cookie to the browser.
 
 		@param $sName	Name of the cookie.
 		@param $sValue	Value of the cookie.
 		@param $iExpire	Expiration time (UNIX timestamp, in seconds).
 	*/
 
-	public function set($sName, $sValue, $iExpire = null)
+	public function set($sName, $sValue, $iExpire = 0)
 	{
 		headers_sent() and burn('IllegalStateException',
 			_WT('You cannot set a cookie if headers are already sent.'));
 
-		if (is_null($iExpire))
-			$iExpire = time() + 2592000; // 30 days from now
 		setcookie($sName, $sValue, $iExpire, $this->sCookiePath);
 	}
 }
