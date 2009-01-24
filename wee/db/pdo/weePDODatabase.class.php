@@ -40,12 +40,6 @@ class weePDODatabase extends weeDatabase
 	protected $sDriverName;
 
 	/**
-		The last error message encountered.
-	*/
-
-	protected $sLastError;
-
-	/**
 		The number of rows affected by the last query.
 	*/
 
@@ -105,13 +99,9 @@ class weePDODatabase extends weeDatabase
 
 	protected function doQuery($sQuery)
 	{
-		$this->sLastError = null;
 		$m = $this->oDb->query($sQuery);
-		if ($m === false)
-		{
-			$this->sLastError = array_value($this->oDb->errorInfo(), 2);
-			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $this->sLastError);
-		}
+		$m !== false or burn('DatabaseException', _WT('Failed to execute the query with the following error:')
+			. "\n" . array_value($this->oDb->errorInfo(), 2));
 
 		$this->iNumAffectedRows = $this->doRowCount($m);
 		if ($m->columnCount())
@@ -228,20 +218,6 @@ class weePDODatabase extends weeDatabase
 		);
 
 		return array_value($aDbMetaMap, $this->getDriverName());
-	}
-
-	/**
-		Returns the last error the database returned.
-
-		@return string	The last error the database encountered.
-		@throw	IllegalStateException	No error occured during the last operation.
-	*/
-
-	public function getLastError()
-	{
-		$this->sLastError !== null or burn('IllegalStateException',
-			_WT('Database did not return an error during the last operation.'));
-		return $this->sLastError;
 	}
 
 	/**

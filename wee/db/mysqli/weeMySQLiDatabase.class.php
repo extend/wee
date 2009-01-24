@@ -94,7 +94,7 @@ class weeMySQLiDatabase extends weeDatabase
 	{
 		$m = $this->oDb->query($sQuery);
 		$m !== false or burn('DatabaseException',
-				_WT('Failed to execute the given query with the following message:') . "\n" . $this->getLastError());
+			_WT('Failed to execute the given query with the following message:') . "\n" . $this->oDb->error);
 
 		if ($m !== true)
 			return new weeMySQLiResult($m);
@@ -115,20 +115,6 @@ class weeMySQLiDatabase extends weeDatabase
 			or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
 
 		return '`' . str_replace('`', '``', $sValue) . '`';
-	}
-
-	/**
-		Returns the last error the database returned.
-
-		@return string	The last error the database encountered.
-		@throw	IllegalStateException	No error occured during the last operation.
-	*/
-
-	public function getLastError()
-	{
-		$s = $this->oDb->error;
-		$s != '' or burn('IllegalStateException', _WT('Database did not return an error during the last operation.'));
-		return $s;
 	}
 
 	/**
@@ -198,6 +184,6 @@ class weeMySQLiDatabase extends weeDatabase
 	{
 		$this->oDb->select_db($sDatabase) or burn('DatabaseException',
 			sprintf(_WT('Failed to select the database "%s" with the following message:'), $sDatabase)
-				. "\n" . $this->getLastError());
+				. "\n" . $this->oDb->error);
 	}
 }

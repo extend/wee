@@ -100,7 +100,7 @@ class weeMySQLDatabase extends weeDatabase
 	{
 		$mResult = mysql_query($sQuery, $this->rLink);
 		$mResult !== false or burn('DatabaseException',
-			_WT('Failed to execute the given query with the following message:') . "\n" . $this->getLastError());
+			_WT('Failed to execute the given query with the following message:') . "\n" . mysql_error($this->rLink));
 
 		if ($mResult !== true)
 			return new weeMySQLResult($mResult);
@@ -121,20 +121,6 @@ class weeMySQLDatabase extends weeDatabase
 			or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
 
 		return '`' . str_replace('`', '``', $sValue) . '`';
-	}
-
-	/**
-		Returns the last error the database returned.
-
-		@return string	The last error the database encountered.
-		@throw	IllegalStateException	No error occured during the last operation.
-	*/
-
-	public function getLastError()
-	{
-		$s = mysql_error($this->rLink);
-		$s != '' or burn('IllegalStateException', _WT('Database did not return an error during the last operation.'));
-		return $s;
 	}
 
 	/**
@@ -197,13 +183,13 @@ class weeMySQLDatabase extends weeDatabase
 		The new database must be on the same host of the previous.
 
 		@param	$sDatabase			The database to use.
-		@throw	DatabaseException	MySQL failed to select the database.
+		@throw	DatabaseException	Failed to select the database.
 	*/
 
 	public function selectDb($sDatabase)
 	{
 		mysql_select_db($sDatabase, $this->rLink) or burn('DatabaseException',
 			sprintf(_WT('Failed to select the database "%s" with the following message:'), $sDatabase)
-				. "\n" . $this->getLastError());
+				. "\n" . mysql_error($this->rLink));
 	}
 }

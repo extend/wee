@@ -34,12 +34,6 @@ class weeSQLiteDatabase extends weeDatabase
 	protected $oDb;
 
 	/**
-		The last error returned by SQLite.
-	*/
-
-	protected $sLastError;
-
-	/**
 		Initialises a new sqlite database.
 
 		This driver accepts the following parameters:
@@ -68,9 +62,9 @@ class weeSQLiteDatabase extends weeDatabase
 		$aParams['create'] or file_exists($aParams['file']) or burn('FileNotFoundException',
 			_WT('The database file does not exist and the parameter "create" does not evaluate to true.'));
 
-		$oDb = sqlite_factory($aParams['file'], 0666, $this->sLastError);
+		$oDb = sqlite_factory($aParams['file'], 0666, $sLastError);
 		$oDb !== null or burn('DatabaseException',
-			_WT('Failed to connect to the database with the following error:') . "\n" . $this->sLastError);
+			_WT('Failed to connect to the database with the following error:') . "\n" . $sLastError);
 
 		$this->oDb = $oDb;
 	}
@@ -97,14 +91,13 @@ class weeSQLiteDatabase extends weeDatabase
 
 	protected function doQuery($sQuery)
 	{
-		$this->sLastError = null;
-		$m = @$this->oDb->query($sQuery, SQLITE_ASSOC, $this->sLastError);
+		$m = @$this->oDb->query($sQuery, SQLITE_ASSOC, $sLastError);
 
 		if ($m === false)
 		{
-			if ($this->sLastError === null)
-				$this->sLastError = sqlite_error_string($this->oDb->lastError());
-			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $this->sLastError);
+			if ($sLastError === null)
+				$sLastError = sqlite_error_string($this->oDb->lastError());
+			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $sLastError);
 		}
 
 		if ($m->numFields())
@@ -124,20 +117,6 @@ class weeSQLiteDatabase extends weeDatabase
 	{
 		strlen($sValue) > 0 or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
 		return '"' . str_replace('"', '""', $sValue) . '"';
-	}
-
-	/**
-		Returns the last error the database returned.
-
-		@return string	The last error the database encountered.
-		@throw	IllegalStateException	No error occured during the last operation.
-	*/
-
-	public function getLastError()
-	{
-		$this->sLastError !== null or burn('IllegalStateException',
-			_WT('Database did not return an error during the last operation.'));
-		return $this->sLastError;
 	}
 
 	/**

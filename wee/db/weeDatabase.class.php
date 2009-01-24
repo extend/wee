@@ -180,16 +180,6 @@ abstract class weeDatabase
 	abstract public function escapeIdent($sValue);
 
 	/**
-		Gets the last error the database returned.
-		The drivers usually throw an exception when there's an error,
-		but you can get the error if you catch the exception and then call this method.
-
-		@return string The last error the database encountered
-	*/
-
-	abstract public function getLastError();
-
-	/**
 		Returns the name of the dbmeta class associated with this driver.
 
 		@param	mixed	The name of the dbmeta class or null if the driver does not support dbmeta.

@@ -90,7 +90,8 @@ class weePgSQLDatabase extends weeDatabase
 	protected function doQuery($sQueryString)
 	{
 		$rResult = @pg_query($this->rLink, $sQueryString);
-		$rResult === false and burn('DatabaseException', _WT('Failed to execute the given query:') . "\n" . $this->getLastError());
+		$rResult === false and burn('DatabaseException', _WT('Failed to execute the given query:')
+			. "\n" . pg_last_error($this->rLink));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
@@ -117,21 +118,6 @@ class weePgSQLDatabase extends weeDatabase
 				_WT('$sValue is not a valid pgsql identifier.'));
 
 		return '"' . str_replace('"', '""', $sValue) . '"';
-	}
-
-	/**
-		Returns the last error the database returned.
-
-		@return string	The last error the database encountered.
-		@throw	IllegalStateException	No error occured during the last operation.
-	*/
-
-	public function getLastError()
-	{
-		$m = pg_last_error($this->rLink);
-		$m != '' or burn('IllegalStateException',
-			sprintf(_WT('%s did not return an error during the last operation.'), 'PostgreSQL'));
-		return $m;
 	}
 
 	/**
