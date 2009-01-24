@@ -164,7 +164,6 @@ class weeUploadedFile
 
 		@param	$sDestination	The path of the destination file.
 		@param	$sNewFilename	The destination filename. If null, it is the same filename as the source file.
-		@return	bool			True if the file was successfully moved, false otherwise.
 	*/
 
 	public function moveTo($sDestination, $sNewFilename = null)
@@ -178,6 +177,6 @@ class weeUploadedFile
 		if (empty($sNewFilename))
 			$sNewFilename = $this->getFilename();
 
-		return move_uploaded_file($this->sTmpName, $sDestination . '/' . $sNewFilename);
+		move_uploaded_file($this->sTmpName, $sDestination . '/' . $sNewFilename);
 	}
 }
