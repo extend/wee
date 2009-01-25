@@ -70,6 +70,8 @@ class weePDODatabase extends weeDatabase
 		try {
 			$this->oDb = new PDO($aParams['dsn'], array_value($aParams, 'user'), array_value($aParams, 'password'));
 		} catch (PDOException $e) {
+			if ($e->getCode() == 'IM003')
+				burn('ConfigurationException', _WT('The requested PDO driver is missing.'));
 			burn('DatabaseException', _WT('Failed to connect to the database with the following message:')
 				. "\n" . $e->getMessage());
 		}
