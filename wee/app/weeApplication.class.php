@@ -305,7 +305,7 @@ class weeApplication
 
 	protected function loadFrame($sFrame)
 	{
-		@is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
+		class_exists($sFrame) && is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
 			sprintf(_WT('The frame %s does not exist.'), $sFrame));
 
 		return new $sFrame($this);
