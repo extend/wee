@@ -198,7 +198,7 @@ class weeFormOptionsHelper
 		);
 
 		($aOption === false || sizeof($aOption) != 1) and burn('BadXMLException',
-			'The value was not found in the options or was found more than once.');
+			_WT('The value was not found in the options or was found more than once.'));
 
 		$aOption[0]['selected'] = 'selected';
 	}
@@ -230,7 +230,7 @@ class weeFormOptionsHelper
 
 		$aDest = $this->oXML->options->xpath($sDestXPath);
 		($aDest === false || sizeof($aDest) != 1) and burn('BadXMLException',
-			'The XPath statement ' . $sDestXPath . ' must return exactly 1 result, ' . sizeof($aDest) . ' were returned.');
+			sprintf(_WT('The XPath statement "%s" must return exactly 1 result, %d were returned.'), $sDestXPath, sizeof($aDest)));
 
 		return $aDest[0];
 	}

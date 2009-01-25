@@ -108,7 +108,7 @@ class weeOracleResult extends weeDatabaseResult
 			return parent::fetchAll();
 
 		if ($this->bMustEncodeData)
-			return weeOutput::encodeArray($this->aRows);
+			return weeOutput::instance()->encodeArray($this->aRows);
 		return $this->aRows;
 	}
 }

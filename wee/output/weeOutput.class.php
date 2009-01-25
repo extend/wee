@@ -28,35 +28,49 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeOutput
 {
 	/**
-		True if output will be gzipped, false otherwise.
-	*/
-
-	protected $bGzipped;
-
-	/**
-		Path used in the deleteCookie and setCookie methods.
-		Currently determined automatically in the constructor.
-	*/
-
-	protected static $sCookiePath;
-
-	/**
 		Instance of the current output driver.
-		There can only be one.
+		There can only be one at the same time.
 	*/
 
 	protected static $oInstance;
 
 	/**
-		Because there can only be one output driver, we disable cloning.
+		Initialize the output driver. Start output buffering if requested.
 	*/
 
-	final private function __clone()
+	public function __construct($aParams = array())
 	{
+		if (empty(self::$oInstance))
+			self::$oInstance = $this;
+
+		if (!empty($aParams['buffer']))
+			$this->bufferize(!empty($aParams['buffer.gzip']));
 	}
 
 	/**
-		Decodes a given value.
+		Bufferize the output. Enable GZIP compression on demand if available.
+
+		@param $bCompressOutput Whether to compress the output before sending it to the browser (if available).
+	*/
+
+	public function bufferize($bCompressOutput = true)
+	{
+		$bGZIP = $bCompressOutput && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+			&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
+
+		if (defined('WEE_GZIP') || ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
+			ob_start();
+		else {
+			$this->header('Content-Encoding: gzip');
+			ob_start('ob_gzhandler');
+
+			// Flag indicating we sent a gzip header
+			define('WEE_GZIP', 1);
+		}
+	}
+
+	/**
+		Decode a given value.
 
 		@param	$mValue	The value to decode.
 		@return	string	The decoded value.
@@ -65,52 +79,16 @@ abstract class weeOutput
 	public abstract function decode($mValue);
 
 	/**
-		Delete the specified cookie.
-
-		@param $sName Name of the cookie to delete.
-	*/
-
-	public static function deleteCookie($sName)
-	{
-		headers_sent() and burn('IllegalStateException', 'You cannot delete a cookie if headers are already sent.');
-
-		if (empty(self::$sCookiePath))
-			self::initCookiePath();
-
-		setcookie($sName, '', 0, self::$sCookiePath);
-	}
-
-	/**
-		Encodes data to be displayed.
-
-		This method redirects the call to the output encode method.
-		It is used for example inside Web:Extend itself since we can't know what drivers the program is using.
-		You should not have to use this method.
-
-		@param	$mValue	Data to encode.
-		@return	string	Data encoded.
-	*/
-
-	public static function encodeValue($mValue)
-	{
-		empty(self::$oInstance) and burn('IllegalStateException',
-			'An instance of weeOutput must be selected before calling weeOutput::encodeValue.' .
-			' You should select it before doing any code relating to output, be it forms or templates.');
-
-		return self::$oInstance->encode($mValue);
-	}
-
-	/**
 		Encodes data to be displayed.
 
 		@param	$mValue	Data to encode.
 		@return	string	Data encoded.
 	*/
 
-	abstract public function encode($mValue);
+	public abstract function encode($mValue);
 
 	/**
-		Encodes an array of data to be displayed.
+		Encode an array of data to be displayed.
 
 		Mainly used by weeTemplate to encode the data it received.
 		You should not have to use this method.
@@ -119,63 +97,20 @@ abstract class weeOutput
 		@return	array	Data array encoded.
 	*/
 
-	public static function encodeArray(&$a)
+	public function encodeArray(&$a)
 	{
-		foreach ($a as $mName => $mValue)
-		{
+		foreach ($a as $mName => $mValue) {
 			if ($mValue instanceof weeDataSource)
 				$a[$mName] = $mValue->encodeData();
 			elseif (is_object($mValue))
 				continue;
 			elseif (is_array($mValue))
-				$a[$mName] = self::encodeArray($mValue);
+				$a[$mName] = $this->encodeArray($mValue);
 			else
-				$a[$mName] = self::encodeValue($mValue);
+				$a[$mName] = $this->encode($mValue);
 		}
+
 		return $a;
-	}
-
-	/**
-		Sends a header to the browser.
-
-		Tentatively prevent HTTP Response Splitting.
-
-		@param $sString		Header string.
-		@param $bReplace	Replace existing header if true.
-	*/
-
-	public static function header($sString, $bReplace = true)
-	{
-		headers_sent() and burn('IllegalStateException',
-			'You cannot add another header to be sent to browser if they are already sent.');
-		(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
-			'Line breaks are not allowed in headers to prevent HTTP Response Splitting.');
-		strpos($sString, "\0") !== false and burn('UnexpectedValueException',
-			'Null characters are not allowed in headers.');
-
-		header($sString, $bReplace);
-	}
-
-	/**
-		Determine the cookie path.
-		Called only once the first time setCookie or deleteCookie is called.
-
-		@todo We should have some common code for handling the request uri and various base path
-	*/
-
-	protected static function initCookiePath()
-	{
-		$sRequestURI		= (isset($_SERVER['REDIRECT_URL'])) ? $_SERVER['REDIRECT_URL'] : $_SERVER['PHP_SELF'];
-		self::$sCookiePath	= str_replace('\\', '/', dirname($sRequestURI));
-		$s					= APP_PATH;
-		while (substr($s, 0, 3) == '../')
-		{
-			self::$sCookiePath	= dirname(self::$sCookiePath);
-			$s					= substr($s, 3);
-		}
-		//TODO:this part looks useless, to be tested and confirmed
-		if (substr(self::$sCookiePath, strlen(self::$sCookiePath) - 1) != '/')
-			self::$sCookiePath .= '/';
 	}
 
 	/**
@@ -187,79 +122,24 @@ abstract class weeOutput
 
 	public static function instance()
 	{
+		empty(self::$oInstance) and burn('IllegalStateException',
+			_WT('An instance of weeOutput must be created before it can be retrieved. Please make sure that you have '
+				. 'an output driver started before doing any code related to output, be it forms or templates.'));
+
 		return self::$oInstance;
 	}
 
 	/**
-		Tells if output will be gzipped or not.
+		Select a new output driver and return the previous one.
 
-		@return bool True if output is gzip encoded, false otherwise.
+		@param $oOutput New driver to be used.
+		@return weeOutput The driver being replaced.
 	*/
 
-	public function isGzipped()
+	public static function select(weeOutput $oOutput)
 	{
-		return $this->bGzipped;
-	}
-
-	/**
-		Sends a cookie to the browser.
-		The default expire delay is 30 days.
-
-		@param $sName	Name of the cookie.
-		@param $sValue	Value of the cookie.
-		@param $iExpire	Expiration time (UNIX timestamp, in seconds).
-	*/
-
-	public static function setCookie($sName, $sValue, $iExpire = null)
-	{
-		headers_sent() and burn('IllegalStateException', 'You cannot set a cookie if headers are already sent.');
-
-		if (empty(self::$sCookiePath))
-			self::initCookiePath();
-
-		if (is_null($iExpire))
-			$iExpire = time() + 2592000; // 30 days from now
-		setcookie($sName, $sValue, $iExpire, self::$sCookiePath);
-	}
-
-	/**
-		Set the output object to use.
-
-		@param $oInstance The object to use.
-	*/
-
-	public static function setInstance(weeOutput $oInstance)
-	{
-		self::$oInstance = $oInstance;
-	}
-
-	/**
-		Start the output.
-		Checks if gzip compression is supported and initialize output buffering.
-
-		@param $bGzipOutput Whether to gzip the output before sending it to the browser (if available).
-	*/
-
-	public function start($bGzipOutput = true)
-	{
-		if (!$bGzipOutput || empty($_SERVER['HTTP_ACCEPT_ENCODING']))
-			$this->bGzipped		= false;
-		else
-		{
-			$s					= str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING']);
-			$aAcceptEncoding	= explode(',', $s);
-			$this->bGzipped		= in_array('gzip', $aAcceptEncoding);
-		}
-
-		if (ini_get('output_buffering') || !$this->bGzipped || ini_get('zlib.output_compression'))
-			ob_start();
-		else
-		{
-			$this->header('Content-Encoding: gzip');
-			ob_start('ob_gzhandler');
-
-			// Flag indicating we sent a gzip header
-			define('WEE_GZIP', 1);
-		}
+		$oOld = weeOutput::$oInstance;
+		weeOutput::$oInstance = $oOutput;
+		return $oOld;
 	}
 }

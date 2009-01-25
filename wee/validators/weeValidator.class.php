@@ -112,9 +112,8 @@ abstract class weeValidator implements Serializable
 
 	public function hasError()
 	{
-		$this->bHasValue
-			or burn('IllegalStateException',
-				_('No value has been attached to the validator yet.'));
+		$this->bHasValue or burn('IllegalStateException',
+				_WT('No value has been attached to the validator yet.'));
 
 		if (!$this->bValidated)
 		{

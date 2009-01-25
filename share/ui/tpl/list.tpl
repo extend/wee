@@ -1,5 +1,5 @@
 <div class="list-container">
-	<?php echo $pagination->toString()?> 
+	<?php echo $pagination->render()?> 
 
 	<table class="list">
 		<thead>
@@ -57,5 +57,5 @@
 		</tfoot><?php endif?> 
 	</table>
 
-	<?php echo $pagination->toString()?> 
+	<?php echo $pagination->render()?> 
 </div>

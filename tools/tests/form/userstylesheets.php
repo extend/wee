@@ -11,4 +11,4 @@ $oForm = new weeForm('mini');
 $oForm->setUserStylesheetsPath(dirname(__FILE__) . '/xslt/');
 
 $this->isMatching('/Test/', $oForm->toString(),
-	"The user stylesheet for submitbutton isn't loaded properly.");
+	_WT("The user stylesheet for submitbutton isn't loaded properly."));

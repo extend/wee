@@ -65,4 +65,4 @@ try {
 }
 
 $this->isTrue(weeURLValidator::test('http://example.com'),
-	'weeURIValidator fails to validate "http://example.com".');
+	_WT('weeURIValidator fails to validate "http://example.com".'));

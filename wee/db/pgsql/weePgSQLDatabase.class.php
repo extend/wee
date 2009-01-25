@@ -41,16 +41,19 @@ class weePgSQLDatabase extends weeDatabase
 	protected $iNumAffectedRows;
 
 	/**
-		Initialize the driver and connects to the database.
-		The arguments available may change between drivers.
+		Initialises a new pgsql database.
 
-		@param $aParams Arguments for database connection, identification, and class initialization
+		This database driver accepts the same parameters as the ones allowed in the connection string
+		passed to pg_connect.
+
+		@param	$aParams	The parameters of the database.
+		@see	http://php.net/pg_connect
 	*/
 
 	public function __construct($aParams = array())
 	{
 		function_exists('pg_connect') or burn('ConfigurationException',
-			'The PostgreSQL PHP extension is required by the PostgreSQL database driver.');
+			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'PostgreSQL'));
 
 		//TODO:maybe quote & escape values...
 		$sConnection = null;
@@ -58,10 +61,10 @@ class weePgSQLDatabase extends weeDatabase
 			$sConnection .= $sKey . '=' . $sValue . ' ';
 
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
-		$this->rLink === false and burn('DatabaseException', 'Failed to connect to database.');
+		$this->rLink === false and burn('DatabaseException',
+			_WT('Failed to connect to database with the following message:') . "\n" . pg_last_error());
 
 		// Set encoding
-
 		pg_set_client_encoding($this->rLink, 'UNICODE');
 	}
 
@@ -87,7 +90,8 @@ class weePgSQLDatabase extends weeDatabase
 	protected function doQuery($sQueryString)
 	{
 		$rResult = @pg_query($this->rLink, $sQueryString);
-		$rResult === false and burn('DatabaseException', 'Failed to execute the given query: ' . $this->getLastError());
+		$rResult === false and burn('DatabaseException', _WT('Failed to execute the given query:')
+			. "\n" . pg_last_error($this->rLink));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
@@ -117,19 +121,6 @@ class weePgSQLDatabase extends weeDatabase
 	}
 
 	/**
-		Gets the last error the database returned.
-		The drivers usually throw an exception when there's an error,
-		but you can get the error if you catch the exception and then call this method.
-
-		@return string The last error the database encountered
-	*/
-
-	public function getLastError()
-	{
-		return pg_last_error($this->rLink);
-	}
-
-	/**
 		Returns the name of the pgsql dbmeta class.
 
 		@param	mixed	The name of the pgsql dbmeta class.
@@ -142,11 +133,10 @@ class weePgSQLDatabase extends weeDatabase
 
 	/**
 		Returns the primary key index value.
-		Useful when you need to retrieve the row primary key value you just inserted.
-		This function may work a bit differently in each drivers.
 
-		@param	$sName	The primary key index name, if needed
-		@return	integer	The primary key index value
+		@param	$sName	The primary key index name, if needed.
+		@return	string	The primary key index value.
+		@throw	IllegalStateException	No value has been generated yet for the given sequence in this session.
 	*/
 
 	public function getPKId($sName = null)
@@ -154,15 +144,20 @@ class weePgSQLDatabase extends weeDatabase
 		if ($sName === null)
 			$sQuery = 'SELECT pg_catalog.lastval()';
 		else
-			$sQuery = $this->bindQuestionMarks(array(
-				'SELECT pg_catalog.currval(?)',
-				$sName
-			));
+			$sQuery = 'SELECT pg_catalog.currval(' . $this->escape($sName) . ')';
 
-		$r = pg_query($sQuery);
-		$r === false and burn('DatabaseException', 'Failed to retrieve the value of the sequence: ' . $this->getLastError());
+		// We need to get the SQLSTATE returned by PostgreSQL so we can't use pg_query here.
+		pg_send_query($this->rLink, $sQuery);
+		$r = pg_get_result($this->rLink);
 
-		return (int)pg_fetch_result($r, 0, 0);
+		$mSQLState = pg_result_error_field($r, PGSQL_DIAG_SQLSTATE);
+		if ($mSQLState == '55000')
+			burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PostgreSQL'));
+		elseif ($mSQLState !== null)
+			burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PostgreSQL')
+				. "\n" . pg_last_error($this->rLink));
+
+		return pg_fetch_result($r, 0, 0);
 	}
 
 	/**

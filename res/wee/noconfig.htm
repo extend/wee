@@ -21,13 +21,30 @@ ul li {display:inline;margin:0 2em}
 		<div id="contents">
 			<h2>No configuration file</h2>
 			<p>
-				The configuration file was not found. Please ensure that the file <code><?php echo WEE_CONF_FILE?></code> exist.
-				If you renamed this file, please do not forget to define the constant <code>WEE_CONF_FILE</code> with the path to your configuration file.
+				The configuration file was not found. Please ensure that the file <code><?php echo WEE_CONF_FILE?></code> exists.
+			</p>
+
+			<h2>Creating a configuration file</h2>
+			<p>
+				You can create a configuration file by copying the sample file available at <code>share/conf/sample.cnf</code>.
+				Copy it to <code>app/conf/wee.cnf</code> and <a href="http://wee.extend.ws/wiki/Documentation/Modules/Application/Configuration" title="Application Module: Configuration">modify it to suit your needs</a>.
+			</p>
+			<p>
+				You can choose to use a different filename for your configuration file.
+				In this case, please do not forget to define the constant <code>WEE_CONF_FILE</code> in your <code>index.php</code> file.
+				This constant defines the path to your configuration file.
+			</p>
+
+			<h2>Introductory tutorial</h2>
+			<p>
+				A tutorial describing <a href="http://wee.extend.ws/wiki/Documentation/Tutorials/Pastebin" title="Tutorials: Pastebin Application">how to write your very first application</a> is available for reading.
+				More tutorials can be found within the documentation.
 			</p>
 		</div>
 
 		<ul id="footer">
 			<li><a href="http://wee.extend.ws/" title="Home">home</a></li>
+			<li><a href="http://api.extend.ws/" title="Blog">api</a></li>
 			<li><a href="http://wee.extend.ws/wiki/Documentation" title="Documentation">documentation</a></li>
 			<li><a href="http://groups.google.com/group/wee-users" title="Mailing List">mailing list</a></li>
 			<li><a href="http://blog.extend.ws/" title="Blog">blog</a></li>

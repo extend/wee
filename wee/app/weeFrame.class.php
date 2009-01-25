@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Wrap a template, dispatch and handle events.
 */
 
-abstract class weeFrame implements Printable
+abstract class weeFrame
 {
 	/**
 		An event has been correctly dispatched.
@@ -167,6 +167,27 @@ abstract class weeFrame implements Printable
 	}
 
 	/**
+		Output the template, or the taconite object if it was used.
+	*/
+
+	public function render()
+	{
+		$this->iStatus != self::EVENT_DISPATCHED and burn('IllegalStateException',
+			_WT('An event must be dispatched before calling weeFrame::render.'));
+
+		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
+			return $this->oTaconite->render();
+
+		if (empty($this->oTpl))
+			$this->loadTemplate();
+
+		if (empty($this->oTaconite))
+			return $this->oTpl->render();
+
+		echo $this->oTaconite->applyTo($this->oTpl);
+	}
+
+	/**
 		Send an event to its respective frame.
 		If no context is given, current context is used.
 
@@ -222,37 +243,6 @@ abstract class weeFrame implements Printable
 
 	protected function setup($aEvent)
 	{
-	}
-
-	/**
-		Return the output of the template.
-
-		@warning Taconite not tested yet.
-		@return string Output of the template
-	*/
-
-	public function toString()
-	{
-		$this->iStatus != self::EVENT_DISPATCHED and burn('IllegalStateException',
-			_WT('An event must be dispatched before calling toString().'));
-
-		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
-		{
-			header('Content-Type: text/xml');
-
-			$sHeader  = '<?xml version="1.0" encoding="utf-8"?>';
-			$sHeader .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-
-			return $sHeader . $this->oTaconite->toString();
-		}
-
-		if (empty($this->oTpl))
-			$this->loadTemplate();
-
-		if (!empty($this->oTaconite))
-			return $this->oTaconite->applyTo($this->oTpl);
-
-		return $this->oTpl->toString();
 	}
 
 	/**

@@ -38,14 +38,13 @@ class weePgSQLResult extends weeDatabaseResult
 		Initialises a new pgsql result set.
 
 		@param	$rResult					The pgsql result resource.
-		@throw	InvalidArgumentException	$rResult is not a valid pgsql result resource.
+		@throw	InvalidArgumentException	The resource is not a valid pgsql result.
 	*/
 
 	public function __construct($rResult)
 	{
-		@get_resource_type($rResult) == 'pgsql result'
-			or burn('InvalidArgumentException',
-				_WT('$rResult is not a valid pgsql result resource.'));
+		@get_resource_type($rResult) == 'pgsql result' or burn('InvalidArgumentException',
+			sprintf(_WT('The given variable must be a resource of type "%s".'), 'pgsql result'));
 
 		$this->rResult = $rResult;
 	}
@@ -60,7 +59,7 @@ class weePgSQLResult extends weeDatabaseResult
 	{
 		$i = pg_num_rows($this->rResult);
 		$i == -1 and burn('DatabaseException',
-			'An error occurred while trying to count the number of rows returned by the query.');
+			_WT('An error occurred while trying to count the number of rows returned by the query.'));
 
 		return $i;
 	}
@@ -104,10 +103,9 @@ class weePgSQLResult extends weeDatabaseResult
 
 		$m = pg_fetch_all($this->rResult);
 
-		if ($m)
-		{
+		if ($m) {
 			if ($this->bMustEncodeData)
-				return weeOutput::encodeArray($m);
+				return weeOutput::instance()->encodeArray($m);
 			return $m;
 		}
 

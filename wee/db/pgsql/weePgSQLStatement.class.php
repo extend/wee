@@ -128,17 +128,15 @@ class weePgSQLStatement extends weeDatabaseStatement
 	{
 		$iParametersCount	= count($this->aParameters);
 		$iMapSize			= count($this->aParametersMap);
-		$iParametersCount == $iMapSize
-			or burn('IllegalStateException',
+		$iParametersCount == $iMapSize or burn('IllegalStateException',
 				sprintf(_WT('The prepared statement requires %d parameters, %d were given.'),
 					$iParametersCount, $iMapSize));
 
 		ksort($this->aParameters);
 		$rResult = @pg_execute($this->rLink, $this->sStatementName, $this->aParameters);
-		$rResult !== false
-			or burn('DatabaseException',
-				_WT('PostgreSQL failed to execute the prepared statement with the following message:'
-					. "\n" . pg_last_error($this->rLink)));
+		$rResult !== false or burn('DatabaseException',
+				_WT('PostgreSQL failed to execute the prepared statement with the following message:')
+					. "\n" . pg_last_error($this->rLink));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);

@@ -1,6 +1,4 @@
 <?php
 
-if (!empty($this))
-	return false;
-
-eval('class weeAutoload_test {}');
+class weeAutoload_test
+{}

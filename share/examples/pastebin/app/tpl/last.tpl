@@ -10,13 +10,13 @@
 </head>
 <body>
 	<div id="container">
-		<?foreach ($pastebins as $paste):?> 
+		<?php foreach ($pastebins as $paste):?> 
 			<h1>Pastebin Number #<?php echo $paste['data_id']?></h1>
 
 			<div class="timestamp">Posted on: <span><?php echo $paste['data_timestamp']?></span></div>
 			<pre class="pastebin"><?php echo str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', $paste['data_text'])?></pre>
 			<hr/>
-		<?endforeach?> 
+		<?php endforeach?> 
 
 		<div class="links"><a href="<?php echo APP_PATH?>index<?php echo PHP_EXT?>" title="Pastebin Demo">Post a new Pastebin!</a></div>
 	</div>

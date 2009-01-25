@@ -257,6 +257,20 @@ class weeTaconite implements Printable
 	}
 
 	/**
+		Output the taconite as text/xml.
+		This function sends the required header automatically.
+	*/
+
+	public function render()
+	{
+		header('Content-Type: text/xml');
+
+		echo '<?xml version="1.0" encoding="utf-8"?>',
+			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+			$this->oTaconite->toString();
+	}
+
+	/**
 		Select elements in the XML document.
 
 		@param	$sSelect	The selector.
@@ -277,7 +291,7 @@ class weeTaconite implements Printable
 
 	/**
 		Return the XML taconite string.
-		
+
 		@return string The XML taconite string.
 	*/
 

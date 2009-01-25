@@ -40,14 +40,13 @@ class weeMySQLResult extends weeDatabaseResult
 		Initialises a new mysql result set.
 
 		@param	$rResult					The mysql result resource.
-		@throw	InvalidArgumentException	$rResult is not a valid mysql result resource.
+		@throw	InvalidArgumentException	The resource is not a valid mysql result.
 	*/
 
 	public function __construct($rResult)
 	{
-		@get_resource_type($rResult) == 'mysql result'
-			or burn('InvalidArgumentException',
-				_WT('$rResult is not a valid mysql result resource.'));
+		@get_resource_type($rResult) == 'mysql result' or burn('InvalidArgumentException',
+			sprintf(_WT('The given variable must be a resource of type "%s".'), 'mysql result'));
 
 		$this->rResult = $rResult;
 	}
@@ -62,7 +61,7 @@ class weeMySQLResult extends weeDatabaseResult
 	{
 		$i = mysql_num_rows($this->rResult);
 		$i === false and burn('DatabaseException',
-			'An error occurred while trying to count the number of rows returned by the query.');
+			_WT('An error occurred while trying to count the number of rows in the result set.'));
 
 		return $i;
 	}

@@ -31,6 +31,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weePDOStatement extends weeDatabaseStatement
 {
 	/**
+		The database which prepared the database.
+	*/
+
+	protected $oDb;
+
+	/**
 		The number of rows affected by the last query.
 	*/
 
@@ -45,22 +51,15 @@ class weePDOStatement extends weeDatabaseStatement
 	/**
 		Initialises a pdo prepared statement.
 
-		@param	$oDb	The pdo database.
-		@param	$sQuery	The query.
+		@param	$oDb		The database which protected the database.
+		@param	$oStatement	The statement.
+		@param	$sQuery		The query.
 	*/
 
-	public function __construct(PDO $oDb, $sQuery)
+	public function __construct(weePDODatabase $oDb, PDOStatement $oStatement)
 	{
-		try
-		{
-			$this->oStatement = $oDb->prepare($sQuery);
-		}
-		catch (PDOException $e)
-		{
-			burn('DatabaseException',
-				_WT('PDO failed to prepare the query with the following message:')
-					. "\n" . $e->getMessage());
-		}
+		$this->oDb			= $oDb;
+		$this->oStatement	= $oStatement;
 	}
 
 	/**
@@ -83,11 +82,13 @@ class weePDOStatement extends weeDatabaseStatement
 
 	public function execute()
 	{
-		$this->oStatement->execute() or burn('DatabaseException',
-			_WT('PDO failed to execute the statement with the following message:')
-				. "\n" . array_value($this->oStatement->errorInfo(), 2));
+		$this->oStatement->execute();
+		
+		$a = $this->oStatement->errorInfo();
+		$a[0] == '0000' or burn('DatabaseException',
+			_WT('Failed to execute the statement with the following message:') . "\n" . $a[2]);
 
-		$this->iNumAffectedRows = $this->oStatement->rowCount();
+		$this->iNumAffectedRows = $this->oDb->doRowCount($this->oStatement, true);
 		if ($this->oStatement->columnCount())
 			return new weePDOResult($this->oStatement->fetchAll(PDO::FETCH_ASSOC));
 	}
@@ -97,10 +98,11 @@ class weePDOStatement extends weeDatabaseStatement
 		You can't use this method safely to check if your UPDATE executed successfully,
 		since the UPDATE statement does not always update rows that are already up-to-date.
 
-		There is a bug in PHP 5.2.6 (and possibly all the previous versions) that make
-		PDO unable to retrieve the number of affected rows when using the SQLite driver.
-		See http://bugs.php.net/bug.php?id=46007 for more details. This seems to be
-		fixed as of PHP 5.2.7.
+		You shouldn't use this method to check the number of deleted rows by a
+		"DELETE FROM sometable" statement without a WHERE clause when using SQLite 2 or 3
+		because it deletes and then recreates the table to increase performance,
+		reporting no affected rows. Use "DELETE FROM sometable WHERE 1" if you really
+		need the number of deleted rows.
 
 		@return	int	The number of affected rows in the last query.
 	*/

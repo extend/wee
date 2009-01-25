@@ -38,12 +38,6 @@ class weeTemplate implements Printable
 	protected $aData;
 
 	/**
-		Data in its encoded form.
-	*/
-
-	protected $aEncodedData;
-
-	/**
 		Filename of the template, including path and extension.
 	*/
 
@@ -65,10 +59,10 @@ class weeTemplate implements Printable
 	public function __construct($sTemplate, array $aData = array())
 	{
 		$this->sFilename	= TPL_PATH . $sTemplate . TPL_EXT;
-		file_exists($this->sFilename) or burn('FileNotFoundException',
-			'The file ' . $this->sFilename . " doesn't exist.");
-
 		$this->aData		= $aData;
+
+		file_exists($this->sFilename) or burn('FileNotFoundException',
+			sprintf(_WT('The file %s does not exist.'), $this->sFilename));
 	}
 
 	/**
@@ -81,6 +75,23 @@ class weeTemplate implements Printable
 	public function addLinkArgs($aArgs)
 	{
 		$this->aLinkArgs = $aArgs + $this->aLinkArgs;
+	}
+
+	/**
+		Flush the output buffer.
+
+		This effectively tries to push all the output so far to the browser.
+		All output will be sent, even buffered output.
+
+		Sometimes the buffer can't be sent directly to the browser, because
+		of the presence of certain modules or because of an old web server version.
+		@see http://php.net/flush For more information about possible flush problems.
+	*/
+
+	protected function flush()
+	{
+		ob_flush();
+		flush();
 	}
 
 	/**
@@ -97,7 +108,7 @@ class weeTemplate implements Printable
 		$aArgs = $aArgs + $this->aLinkArgs;
 
 		if (empty($aArgs))
-			return weeOutput::encodeValue($sLink);
+			return weeOutput::instance()->encode($sLink);
 
 		$aURL = explode('?', $sLink, 2);
 
@@ -117,7 +128,17 @@ class weeTemplate implements Printable
 			$sLink .= $sName . '=' . urlencode(weeOutput::instance()->decode($sValue)) . '&';
 		}
 
-		return weeOutput::encodeValue(substr($sLink, 0, -1));
+		return weeOutput::instance()->encode(substr($sLink, 0, -1));
+	}
+
+	/**
+		Output the template.
+	*/
+
+	public function render()
+	{
+		extract(weeOutput::instance()->encodeArray($this->aData));
+		require($this->sFilename);
 	}
 
 	/**
@@ -143,39 +164,30 @@ class weeTemplate implements Printable
 	}
 
 	/**
-		Creates a new template.
-		Use this to create a template inside another.
-
-		Beware: child classes should not override this function.
+		Output another template.
+		Use this to embed a template inside another.
 
 		@param $sTemplate	The template name.
 		@param $aData		Data to be used in the template.
-		@return	string		The output of the template.
 	*/
 
 	protected function template($sTemplate, array $aData = array())
 	{
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
 		$o->addLinkArgs($this->aLinkArgs);
-
-		return $o->toString();
+		$o->render();
 	}
 
 	/**
 		Returns the template as a string.
-
-		TODO:this will encode data for each sub-templates, optimize
 
 		@return string The template.
 	*/
 
 	public function toString()
 	{
-		$this->aEncodedData = $this->aData;
-		extract(weeOutput::encodeArray($this->aEncodedData));
-
 		ob_start();
-		require($this->sFilename);
+		$this->render();
 		return ob_get_clean();
 	}
 }

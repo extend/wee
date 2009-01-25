@@ -78,7 +78,7 @@ abstract class weeDatabase
 		@return	string		The query safely build
 	*/
 
-	public function bindNamedParameters($aArguments)
+	protected function bindNamedParameters($aArguments)
 	{
 		$sQueryString = $aArguments[0];
 
@@ -91,7 +91,7 @@ abstract class weeDatabase
 			// see http://blog.extend.ws/2008/03/01/arrayaccess-quirks/
 			is_array($aArguments[1]) ? array_key_exists($sName, $aArguments[1]) : isset($aArguments[1][$sName])
 				or burn('InvalidArgumentException',
-					sprintf(_WT('Could not bind the `%s` named parameter because its value was not given in the arguments.'), $sName));
+					sprintf(_WT('Could not bind the parameter "%s" because its value was not given in the arguments.'), $sName));
 
 			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
 		}
@@ -107,7 +107,7 @@ abstract class weeDatabase
 		@return	string		The query safely built
 	*/
 
-	public function bindQuestionMarks($aArguments)
+	protected function bindQuestionMarks($aArguments)
 	{
 		$aParts		= explode('?', $aArguments[0]);
 
@@ -115,7 +115,7 @@ abstract class weeDatabase
 		$iNbArgs	= sizeof($aArguments);
 
 		$iNbParts == $iNbArgs or burn('UnexpectedValueException',
-			'The number of placeholders in the query does not match the number of arguments.');
+			_WT('The number of placeholders in the query does not match the number of arguments.'));
 
 		$s = $aParts[0];
 		for ($i = 1; $i < sizeof($aArguments); $i++)
@@ -149,7 +149,6 @@ abstract class weeDatabase
 
 		When the given value is null, the SQL token "null" is returned.
 
-
 		@param	$mValue	The value to escape
 		@return	string	The escaped value.
 	*/
@@ -179,16 +178,6 @@ abstract class weeDatabase
 	*/
 
 	abstract public function escapeIdent($sValue);
-
-	/**
-		Gets the last error the database returned.
-		The drivers usually throw an exception when there's an error,
-		but you can get the error if you catch the exception and then call this method.
-
-		@return string The last error the database encountered
-	*/
-
-	abstract public function getLastError();
 
 	/**
 		Returns the name of the dbmeta class associated with this driver.
@@ -224,9 +213,8 @@ abstract class weeDatabase
 		if ($this->oMeta === null)
 		{
 			$sClass = $this->getMetaClass();
-			$sClass !== null
-				or burn('BadMethodCallException',
-					_WT('This database driver does not support dbmeta.'));
+			$sClass !== null or burn('BadMethodCallException',
+				_WT('This database driver does not support dbmeta.'));
 			$this->oMeta = new $sClass($this);
 		}
 
@@ -350,11 +338,11 @@ abstract class weeDatabase
 		$aArgs	= func_get_args();
 		$m		= call_user_func_array(array($this, 'query'), $aArgs);
 
-		$m instanceof weeDatabaseResult or burn('InvalidArgumentException', 'The query is not a SELECT query.');
-		count($m) == 1 or burn('UnexpectedValueException', 'The query did not return exactly one row.');
+		$m instanceof weeDatabaseResult or burn('InvalidArgumentException', _WT('The query is not a SELECT query.'));
+		count($m) == 1 or burn('UnexpectedValueException', _WT('The query did not return exactly one row.'));
 
 		$a = $m->fetch();
-		count($a) == 1 or burn('UnexpectedValueException', 'The queried row does not contain exactly one column.');
+		count($a) == 1 or burn('UnexpectedValueException', _WT('The queried row does not contain exactly one column.'));
 
 		// Small test to allow weeExplainSQLResult to work correctly with this method
 		if (is_array($a))

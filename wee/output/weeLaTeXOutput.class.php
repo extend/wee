@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeLaTeXOutput extends weeOutput
 {
 	/**
-		Decodes a given value.
+		Decode a given value.
 
 		@param	$mValue	The value to decode.
 		@return	string	The decoded value.
@@ -44,9 +44,9 @@ class weeLaTeXOutput extends weeOutput
 	}
 
 	/**
-		Encodes data to be displayed.
+		Encode data to be displayed.
 
-		Per latex tutorial, the following need escaping: # $ % & ~ _ ^ \ { }
+		According to the LaTeX tutorial, the following need escaping: # $ % & ~ _ ^ \ { }
 
 		@param	$mValue	Data to encode.
 		@return	string	Data encoded.
@@ -59,17 +59,5 @@ class weeLaTeXOutput extends weeOutput
 			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
 			$mValue
 		);
-	}
-
-	/**
-		Select weeLaTeXOutput as default output and return the object.
-
-		@return weeLaTeXOutput The weeLaTeXOutput object selected.
-	*/
-
-	public static function select()
-	{
-		weeOutput::$oInstance = new self;
-		return weeOutput::$oInstance;
 	}
 }

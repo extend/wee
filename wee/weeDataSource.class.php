@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for data source objects.
 	These object are required to encode the data when needed.
 
-	Use weeOutput::encodeValue or weeOutput::encodeArray to encode it.
+	Use weeOutput::instance()->encode or weeOutput::instance()->encodeArray to encode it.
 */
 
 abstract class weeDataSource

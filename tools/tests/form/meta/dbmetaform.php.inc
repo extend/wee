@@ -30,6 +30,7 @@ $oSet->setDb($oDb);
 
 try {
 	$oForm = new weeDbMetaForm($oSet, array());
+	$oForm->xml()->uri = '';
 
 	$sExpectedForm = '<form action="" class="block" method="post"><ol><li><fieldset><ol><li><label for="form_dmf_number">dmf_number</label> <input type="text" id="form_dmf_number" name="dmf_number"/></li><li><label for="form_dmf_text">dmf_text</label> <input type="text" id="form_dmf_text" name="dmf_text"/></li><li><label for="form_ref_id">ref_id</label> <select id="form_ref_id" name="ref_id"><option value="">NULL</option><option value="1">app</option><option value="2">pub</option><option value="3">res</option><option value="4">tools</option><option value="5">wee</option></select></li><li><fieldset class="buttonsfieldset"><ol><li><input type="submit"/></li></ol></fieldset></li></ol></fieldset></li></ol></form>' . "\n";
 	$this->isEqual($sExpectedForm, $oForm->toString(),

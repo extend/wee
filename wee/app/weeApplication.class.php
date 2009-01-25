@@ -79,8 +79,7 @@ class weeApplication
 			$oConfigFile = new weeConfigFile(WEE_CONF_FILE);
 			$this->aConfig = $oConfigFile->toArray();
 
-			if (!defined('DEBUG') && defined('WEE_CONF_CACHE'))
-			{
+			if (!defined('DEBUG') && defined('WEE_CONF_CACHE')) {
 				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->aConfig, true) . ';');
 				chmod(WEE_CONF_CACHE, 0600);
 			}
@@ -88,7 +87,8 @@ class weeApplication
 			// No configuration file. Stop here and display a friendly message.
 
 			if (defined('WEE_CLI'))
-				echo "The configuration file was not found.\nPlease consult the documentation for more information.\n";
+				echo _WT('The configuration file was not found.'), "\n",
+					_WT('Please consult the documentation for more information.'), "\n";
 			else {
 				header('HTTP/1.0 500 Internal Server Error');
 				require(ROOT_PATH . 'res/wee/noconfig.htm');
@@ -106,29 +106,10 @@ class weeApplication
 				weeAutoload::addPath(str_replace('//', ROOT_PATH, $s));
 		}
 
-		// Mail settings
-
-		if (!empty($this->aConfig['mail.debug.to']))
-			define('WEE_MAIL_DEBUG_TO', $this->aConfig['mail.debug.to']);
-
-		if (!empty($this->aConfig['mail.debug.reply-to']))
-			define('WEE_MAIL_DEBUG_REPLY_TO', $this->aConfig['mail.debug.reply-to']);
-
-		// Session settings
-
-		if (!empty($this->aConfig['session.check.ip']))
-			define('WEE_SESSION_CHECK_IP', 1);
-		if (!empty($this->aConfig['session.check.token']))
-			define('WEE_SESSION_CHECK_TOKEN', 1);
-
 		// Timezone settings
 
 		if (!empty($this->aConfig['app.timezone']))
 			date_default_timezone_set($this->aConfig['app.timezone']);
-
-		// Select output driver
-
-		call_user_func(array($this->aConfig['output.driver'], 'select'));
 
 		// Force selected drivers to start
 
@@ -157,7 +138,7 @@ class weeApplication
 	{
 		if (empty($this->aDrivers[$sName])) {
 			empty($this->aConfig[$sName . '.driver']) and burn('InvalidArgumentException',
-				sprintf('The driver %s was not found in the configuration.', $sName));
+				sprintf(_WT('The driver "%s" was not found in the configuration.'), $sName));
 
 			$aParams = $this->cnfArray($sName);
 			unset($aParams['driver']); // Redundant, remove it
@@ -177,9 +158,7 @@ class weeApplication
 
 	public function cnf($sName)
 	{
-		if (!array_key_exists($sName, $this->aConfig))
-			return null;
-		return $this->aConfig[$sName];
+		return array_value($this->aConfig, $sName);
 	}
 
 	/**
@@ -210,9 +189,9 @@ class weeApplication
 		Dispatch an event to its respective frame.
 
 		Event information can contain the following parameters:
-			- context: either http or xmlhttprequest
+			- context: either cli, http or xmlhttprequest
 			- frame: name of the destination frame
-			- method: request method used to access the event (e.g. GET, POST)
+			- method: request method used to access the event (e.g. get, post)
 			- name: name of the event
 			- get: $_GET array for this event
 			- post: $_POST array for this event
@@ -305,9 +284,9 @@ class weeApplication
 			static $iInstance = 0;
 			$iInstance++ == 0 or
 				burn('IllegalStateException',
-					_WT('Trying to instanciate weeApplication within its own constructor. ') .
-					_WT('This error can happen if you inherited a class created in the constructor ') .
-					_WT('and put logic that uses weeApplication in it (models, for example).'));
+					_WT('Trying to instanciate weeApplication within its own constructor. ' .
+						'This error can happen if you inherited a class created in the constructor ' .
+						'and put logic that uses weeApplication in it (models, for example).'));
 
 			function weeApp() { return weeApplication::instance(); }
 			self::$oSingleton = new self;
@@ -326,7 +305,7 @@ class weeApplication
 
 	protected function loadFrame($sFrame)
 	{
-		@is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
+		class_exists($sFrame) && is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
 			sprintf(_WT('The frame %s does not exist.'), $sFrame));
 
 		return new $sFrame($this);
@@ -356,8 +335,7 @@ class weeApplication
 			exit;
 		}
 
-		weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
-		echo $this->oFrame->toString();
+		$this->oFrame->render();
 	}
 
 	/**
@@ -370,18 +348,23 @@ class weeApplication
 	protected function translateEvent()
 	{
 		$aEvent = array(
-			//TODO:sometimes we may want to only accept xmlhttprequest when the
-			//request comes from a user who we know is using this application,
-			//and not some random other webserver using it for its own purpose...
-			'context'	=> (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http',
-			'method'	=> $_SERVER['REQUEST_METHOD'],
-
 			'get'		=> $_GET,
 			'post'		=> $_POST,
 
 			'name'		=> null,
 			'pathinfo'	=> null,
 		);
+
+		if (defined('WEE_CLI')) {
+			$aEvent['context']	= 'cli';
+			$aEvent['method']	= defined('STDIN') ? 'put' : 'get';
+		} else {
+			// TODO:sometimes we may want to only accept xmlhttprequest when the
+			// request comes from a user who we know is using this application,
+			// and not some random other webserver using it for its own purpose...
+			$aEvent['context']	= (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http';
+			$aEvent['method']	= strtolower($_SERVER['REQUEST_METHOD']);
+		}
 
 		$sPathInfo = substr(self::getPathInfo(), 1);
 

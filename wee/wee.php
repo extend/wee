@@ -20,7 +20,7 @@
 */
 
 if (!defined('ALLOW_INCLUSION')) die;
-if (version_compare(phpversion(), '5.0.0', '<')) die;
+if (version_compare(phpversion(), '5.2.0', '<')) die('PHP 5.2.x or greater is required.');
 
 // Prevent the script from using the default value for MAGIC_STRING
 
@@ -37,6 +37,11 @@ if (defined('DEBUG')) {
 	ini_set('display_errors', 0);
 }
 
+// Define the framework's version
+// Its format is compatible with PHP's version_compare function
+
+define('WEE_VERSION', '0.4.0');
+
 // Detect whether we are on Windows
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
@@ -47,27 +52,28 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
 if (PHP_SAPI == 'cli')
 	define('WEE_CLI', 1);
 
-// Paths and files extensions
+// Paths
 
-if (!defined('BASE_PATH')) {
-	$i = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
-		- (int)(isset($_SERVER['REDIRECT_URL']));
+if (!defined('BASE_PATH')) // Base path of boostrap file
+	define('BASE_PATH', str_repeat('../', substr_count(substr($_SERVER['PHP_SELF'],
+		strlen($_SERVER['SCRIPT_NAME'])), '/') - (int)(isset($_SERVER['REDIRECT_URL']))));
 
-	for ($s = null; $i > 0; $i--)
-		$s .= '../';
+if (!defined('ROOT_PATH')) // Path to application's root directory
+	define('ROOT_PATH', './');
 
-	define('BASE_PATH', $s);
+if (!defined('APP_PATH')) // Path to application's web directory
+	define('APP_PATH', BASE_PATH . (ROOT_PATH == './' ? '' : ROOT_PATH));
 
-	unset($i, $s);
-}
-if (!defined('ROOT_PATH'))	define('ROOT_PATH',	'./');
-if (!defined('APP_PATH')) {
-	if (ROOT_PATH == './')	define('APP_PATH', BASE_PATH);
-	else					define('APP_PATH', BASE_PATH . ROOT_PATH);
-}
-if (!defined('WEE_PATH'))	define('WEE_PATH', ROOT_PATH . 'wee/');
-if (!defined('PHP_EXT'))	define('PHP_EXT',  strrchr(__FILE__, '.'));
-if (!defined('CLASS_EXT'))	define('CLASS_EXT',	'.class' . PHP_EXT);
+if (!defined('WEE_PATH')) // Path to the framework's directory
+	define('WEE_PATH', ROOT_PATH . 'wee/');
+
+// Files extensions
+
+if (!defined('PHP_EXT')) // PHP files extension
+	define('PHP_EXT', strrchr(__FILE__, '.'));
+
+if (!defined('CLASS_EXT')) // PHP class files extension
+	define('CLASS_EXT', '.class' . PHP_EXT);
 
 // Define the LC_MESSAGES constant if not defined
 
@@ -282,28 +288,59 @@ function array_value($aArray, $sKey, $mIfNotSet = null)
 
 function rmdir_recursive($sPath, $bOnlyContents = false)
 {
-	is_dir($sPath) or burn('FileNotFoundException', "'$sPath' is not a directory.");
+	is_dir($sPath) or burn('FileNotFoundException', sprintf(_WT('"%s" is not a directory.'), $sPath));
 
 	$r = @opendir($sPath)
-		or burn('NotPermittedException', "'$sPath' directory cannot be opened.");
+		or burn('NotPermittedException', sprintf(_WT('The directory %s cannot be opened.'), $sPath));
 
 	while (($s = readdir($r)) !== false)
 		if ($s != '.' && $s !== '..') {
 			$s = $sPath . '/' . $s;
 			if (is_dir($s) && !is_link($s))
 				rmdir_recursive($s);
-			else {
-				@unlink($s)
-					or burn('NotPermittedException', "'$s' file cannot be deleted.");
-			}
+			else
+				@unlink($s) or burn('NotPermittedException', sprintf(_WT('The file %s cannot be deleted.'), $s));
 		}
 
 	closedir($r);
 
-	if (!$bOnlyContents) {
-		@rmdir($sPath)
-			or burn('NotPermittedException', "'$sPath' directory cannot be deleted.");
+	if (!$bOnlyContents)
+		@rmdir($sPath) or burn('NotPermittedException', sprintf(_WT('The directory %s cannot be deleted.'), $sPath));
+}
+
+/**
+	Send a header to the browser.
+	Tentatively prevents HTTP Response Splitting.
+
+	@param $sString		Header string.
+	@param $bReplace	Whether to replace any existing header Replace existing header if true.
+*/
+
+function safe_header($sString, $bReplace = true)
+{
+	headers_sent() and burn('IllegalStateException',
+		_WT('You cannot add another header to be sent to browser if they are already sent.'));
+	(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
+		_WT('Line breaks are not allowed in headers to prevent HTTP Response Splitting.'));
+	strpos($sString, "\0") !== false and burn('UnexpectedValueException',
+		_WT('NUL characters are not allowed in headers.'));
+
+	header($sString, $bReplace);
+}
+
+/**
+	Start the session.
+	The session is reinitialized if the name of the session is invalid.
+*/
+
+function safe_session_start()
+{
+	if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-z0-9-]+$/is', $_COOKIE[session_name()])) {
+		unset($_COOKIE[session_name()]);
+		setcookie(session_name(), '');
 	}
+
+	session_start();
 }
 
 /**

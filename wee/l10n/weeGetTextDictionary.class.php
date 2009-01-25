@@ -160,7 +160,7 @@ class weeGetTextDictionary
 
 		$i = call_user_func($this->mPluralFormIndexFunction, $i);
 		($i < 0 || $i >= $this->iPluralFormsCount) and burn('UnexceptedValueException',
-			$i . ' is not a valid plural form index.');
+			sprintf(_WT('%d is not a valid plural form index.'), $i));
 		return $i;
 	}
 
@@ -192,7 +192,7 @@ class weeGetTextDictionary
 
 		$iPluralForm = $this->getPluralFormIndex($i);
 		isset($this->aStrings[$sKey][$iPluralForm]) or burn('UnexceptedValueException',
-			$iPluralForm . ' is not a valid plural form index for the given strings.');
+			sprintf(_WT('%d is not a valid plural form index for the given strings.'), $iPluralForm));
 		return $this->aStrings[$sKey][$iPluralForm];
 	}
 }

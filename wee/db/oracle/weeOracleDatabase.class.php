@@ -56,7 +56,7 @@ class weeOracleDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('oci_new_connect') or burn('ConfigurationException',
-			'The OCI8 PHP extension is required by the Oracle database driver.');
+			_WT('The OCI8 PHP extension is required by the Oracle database driver.'));
 
 		if (!empty($aParams['encoding']))
 			putenv('NLS_LANG=' . $aParams['encoding']);
@@ -66,7 +66,7 @@ class weeOracleDatabase extends weeDatabase
 		if ($this->rLink === false)
 		{
 			$this->setLastError(oci_error());
-			burn('DatabaseException', 'Failed to connect to database.');
+			burn('DatabaseException', _WT('Failed to connect to database.'));
 		}
 	}
 
@@ -96,13 +96,13 @@ class weeOracleDatabase extends weeDatabase
 		if ($rStatement === false)
 		{
 			$this->setLastError(oci_error($this->rLink));
-			burn('DatabaseException', 'Failed to parse the given query.');
+			burn('DatabaseException', _WT('Failed to parse the given query.'));
 		}
 
 		if (!@oci_execute($rStatement, OCI_DEFAULT))
 		{
 			$this->setLastError(oci_error($rStatement));
-			burn('DatabaseException', 'Failed to execute the given query.');
+			burn('DatabaseException', _WT('Failed to execute the given query.'));
 		}
 
 		if (oci_num_fields($rStatement) > 0)
@@ -153,21 +153,21 @@ class weeOracleDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		empty($sName) and burn('InvalidArgumentException', 'The argument $sName is required.');
+		empty($sName) and burn('InvalidArgumentException', _WT('The argument $sName is required.'));
 
 		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escapeIdent($sName) . '.currval FROM DUAL');
 
 		if ($rStatement === false)
 		{
 			$this->setLastError(oci_error($rStatement));
-			burn('DatabaseException', 'Failed to parse the query to retrieve the value of the sequence.');
+			burn('DatabaseException', _WT('Failed to parse the query to retrieve the value of the sequence.'));
 		}
 
 		if (!@oci_execute($rStatement, OCI_DEFAULT))
 		{
 			$this->setLastError(oci_error($rStatement));
 			echo $this->getLastError();
-			burn('DatabaseException', 'Failed to retrieve the value of the sequence.');
+			burn('DatabaseException', _WT('Failed to retrieve the value of the sequence.'));
 		}
 
 		$a = oci_fetch_row($rStatement);
@@ -199,7 +199,7 @@ class weeOracleDatabase extends weeDatabase
 
 	public function prepare($sQueryString)
 	{
-		burn('BadMethodCallException', 'This method is not implemented yet.');
+		burn('BadMethodCallException', _WT('This method is not implemented yet.'));
 	}
 
 	/**

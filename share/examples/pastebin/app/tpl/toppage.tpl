@@ -12,19 +12,19 @@
 	<div id="container">
 		<h1>Pastebin Demo</h1>
 
-		<?if ($is_submitted):?> 
-			<?if (!empty($errors)):?> 
+		<?php if ($is_submitted):?> 
+			<?php if (!empty($errors)):?> 
 				<h2>Pastebin Error!</h2>
 
 				<div class="errors"><p><?php echo nl2br($errors)?></p></div>
-			<?else:?> 
+			<?php else:?> 
 				<h2>Pastebin Posted!</h2>
 
 				<div class="posted"><p>
 					The <a href="<?php echo APP_PATH?>index<?php echo PHP_EXT?>/view?id=<?php echo $posted_id?>">Pastebin #<?php echo $posted_id?></a> has been created.
 				</p></div>
-			<?endif?> 
-		<?else:?> 
+			<?php endif?> 
+		<?php else:?> 
 			<h2>What is it?</h2>
 
 			<p>Pastebin is a collaborative tool used to paste large chunks of text that can't be pasted
@@ -35,7 +35,7 @@
 			<p>Please be aware that code posted here is subject to various licenses. Do not use it if you don't
 			know where it comes from or if the license doesn't permit its reuse. If you post code, please add the
 			license in a comment to the code you post at the beginning of the code pasted.</p>
-		<?endif?> 
+		<?php endif?> 
 
 		<h2>Find a Pastebin</h2>
 

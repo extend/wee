@@ -42,19 +42,19 @@ try {
 	// Frames
 
 	$this->isTrue(isset($aEvent['frame']),
-		'The event does not have a frame');
+		_WT('The event does not have a frame'));
 
 	$this->isEqual('toppage', $aEvent['frame'],
-		'The default frame is not toppage.');
+		_WT('The default frame is not toppage.'));
 
 	// Custom toppage
 	$o->aConfig['app.toppage'] = 'pikachu';
 	$aEvent = $o->translateEvent();
 	$this->isEqual('pikachu', $aEvent['frame'],
-		'The event frame is not the configuration toppage frame.');
+		_WT('The event frame is not the configuration toppage frame.'));
 
 	$this->isFalse(isset($aEvent['name']),
-		'The toppage event should not have a name.');
+		_WT('The toppage event should not have a name.'));
 
 	// Request a frame
 	$_SERVER['REQUEST_URI']	= '/test.php/foo?test=get';
@@ -62,13 +62,13 @@ try {
 	$aEvent = $o->translateEvent();
 
 	$this->isEqual('foo', $aEvent['frame'],
-		'The frame is not the one requested.');
+		_WT('The frame is not the one requested.'));
 
 	$this->isFalse(isset($aEvent['name']),
-		'The event have a name.');
+		_WT('The event have a name.'));
 
 	$this->isTrue(empty($aEvent['pathinfo']),
-		'The pathinfo is not empty.');
+		_WT('The pathinfo is not empty.'));
 
 	// Request a specific event...
 	$_SERVER['REQUEST_URI']	= '/test.php/foo/bar?test=get';
@@ -76,16 +76,16 @@ try {
 	$aEvent = $o->translateEvent();
 
 	$this->isEqual('foo', $aEvent['frame'],
-		'The frame is not the one requested.');
+		_WT('The frame is not the one requested.'));
 
 	$this->isTrue(isset($aEvent['name']),
-		'The application has not returned any name for the event.');
+		_WT('The application has not returned any name for the event.'));
 
 	$this->isEqual('bar', $aEvent['name'],
-		'The event name is not correct.');
+		_WT('The event name is not correct.'));
 
 	$this->isTrue(empty($aEvent['pathinfo']),
-		'The pathinfo is not empty.');
+		_WT('The pathinfo is not empty.'));
 
 	// ...with extra parts in PATH_INFO
 	$_SERVER['REQUEST_URI']	= '/test.php/foo/bar/action/new?test=get';
@@ -93,54 +93,59 @@ try {
 	$aEvent = $o->translateEvent();
 
 	$this->isEqual('foo', $aEvent['frame'],
-		'The frame is not the one requested.');
+		_WT('The frame is not the one requested.'));
 
 	$this->isTrue(isset($aEvent['name']),
-		'The application does not return the name of the event when there is some extra parts in the path info.');
+		_WT('The application does not return the name of the event when there is some extra parts in the path info.'));
 
 	$this->isEqual('bar', $aEvent['name'],
-		'The event name returned by the application is not correct when there is some extra parts in the path info.');
+		_WT('The event name returned by the application is not correct when there is some extra parts in the path info.'));
 
 	$this->isTrue(isset($aEvent['pathinfo']),
-		'The event has no pathinfo.');
+		_WT('The event has no pathinfo.'));
 
 	$this->isEqual('action/new', $aEvent['pathinfo'],
-		'The pathinfo is not correct.');
-
-	// Context
-
-	$this->isTrue(isset($aEvent['context']),
-		'The event does not have a context.');
-
-	$this->isEqual('http', $aEvent['context'],
-		'The default context is not http.');
-
-	$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-	$aEvent = $o->translateEvent();
-	$this->isEqual('xmlhttprequest', $aEvent['context'],
-		'The event context is not xmlhttprequest even though the HTTP_X_REQUESTED_WITH server variable says so.');
+		_WT('The pathinfo is not correct.'));
 
 	// Request parameters
 
 	$this->isTrue(isset($aEvent['post']['test']),
-		'The event does not include the POST request parameters.');
+		_WT('The event does not include the POST request parameters.'));
 
 	$this->isEqual('post', $aEvent['post']['test'],
-		'The event does not have the correct value of the POST request parameter given to the application.');
+		_WT('The event does not have the correct value of the POST request parameter given to the application.'));
 
 	$this->isTrue(isset($aEvent['get']['test']),
-		'The event does not include the GET request parameters.');
+		_WT('The event does not include the GET request parameters.'));
 
 	$this->isEqual('get', $aEvent['get']['test'],
-		'The event does not have the correct value of the GET request parameter given to the application.');
+		_WT('The event does not have the correct value of the GET request parameter given to the application.'));
 
-	// Request Method
+	if (!defined('WEE_CLI')) {
+		// We cannot test context and method when running test suite from command line
+		// as they depend on the WEE_CLI constant.
 
-	$this->isTrue(isset($aEvent['method']),
-		_WT('weeApplication::translateEvent does not have a request method.'));
+		// Context
 
-	$this->isEqual('GET', $aEvent['method'],
-		_WT('weeApplication::translateEvent does not return the expected request method.'));
+		$this->isTrue(isset($aEvent['context']),
+			_WT('The event does not have a context.'));
+
+		$this->isEqual('http', $aEvent['context'],
+			_WT('The default context is not http.'));
+
+		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+		$aEvent = $o->translateEvent();
+		$this->isEqual('xmlhttprequest', $aEvent['context'],
+			_WT('The event context is not xmlhttprequest even though the HTTP_X_REQUESTED_WITH server variable says so.'));
+
+		// Request Method
+
+		$this->isTrue(isset($aEvent['method']),
+			_WT('weeApplication::translateEvent does not have a request method.'));
+
+		$this->isEqual('get', $aEvent['method'],
+			_WT('weeApplication::translateEvent does not return the expected request method.'));
+	}
 } catch (Exception $oException) {}
 
 $_SERVER	= $aFormerServer;

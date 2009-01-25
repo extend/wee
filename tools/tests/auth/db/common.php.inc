@@ -73,7 +73,7 @@ try {
 		'password'		=> $aInsertValues[4]['user_passwd'],
 	));
 
-	$this->fail('The credentials provided were incorrect and yet the authentication succeeded.');
+	$this->fail(_WT('The credentials provided were incorrect and yet the authentication succeeded.'));
 } catch (AuthenticationException $e) {
 }
 
@@ -83,13 +83,13 @@ try {
 		'password'		=> $aInsertValues[3]['user_passwd'],
 	));
 
-	$this->isTrue(empty($aData['user_passwd']), 'The password has not been removed from the data.');
+	$this->isTrue(empty($aData['user_passwd']), _WT('The password has not been removed from the data.'));
 
 	unset($aData['user_id'], $aInsertValues[3]['user_passwd']);
 	$this->isEqual($aInsertValues[3], $aData,
 		_WT('The data returned by the authentication is incorrect.'));
 } catch (AuthenticationException $e) {
-	$this->fail('The credentials provided were correct and yet the authentication failed.');
+	$this->fail(_WT('The credentials provided were correct and yet the authentication failed.'));
 }
 
 // Test the hash based authentication
@@ -100,7 +100,7 @@ try {
 		'password'		=> $oAuth->hash('failfailfailfailfailfailfailfail'),
 	));
 
-	$this->fail('The hashed credentials provided were incorrect and yet the authentication succeeded.');
+	$this->fail(_WT('The hashed credentials provided were incorrect and yet the authentication succeeded.'));
 } catch (AuthenticationException $e) {
 }
 
@@ -110,11 +110,11 @@ try {
 		'password'		=> $oAuth->hash($aInsertValues[5]['user_passwd']),
 	));
 
-	$this->isTrue(empty($aData['user_passwd']), 'The password has not been removed from the data.');
+	$this->isTrue(empty($aData['user_passwd']), _WT('The password has not been removed from the data.'));
 
 	unset($aData['user_id'], $aInsertValues[5]['user_passwd']);
 	$this->isEqual($aInsertValues[5], $aData,
 		_WT('The data returned by the authentication is incorrect.'));
 } catch (AuthenticationException $e) {
-	$this->fail('The hashed credentials provided were correct and yet the authentication failed.');
+	$this->fail(_WT('The hashed credentials provided were correct and yet the authentication failed.'));
 }

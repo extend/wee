@@ -68,16 +68,14 @@ abstract class weeDatabaseStatement
 	{
 		if (func_num_args() > 1)
 		{
-			is_string($aParameters)
-				or burn('InvalidArgumentException',
-					'The first argument of the bind method should be a string when called with two parameters.');
+			is_string($aParameters) or burn('InvalidArgumentException',
+				_WT('The first argument of the bind method should be a string when called with two parameters.'));
 
 			$aParameters = array($aParameters => func_get_arg(1));
 		}
 		else
-			is_array($aParameters)
-				or burn('InvalidArgumentException',
-					_WT('The given argument of the bind method is not an array.'));
+			is_array($aParameters) or burn('InvalidArgumentException',
+				_WT('The given argument of the bind method is not an array.'));
 
 		$this->doBind($aParameters);
 		return $this;

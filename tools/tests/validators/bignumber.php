@@ -146,63 +146,63 @@ try {
 // Integer (string)
 
 $this->isTrue(weeBigNumberValidator::test('656'),
-	'weeBigNumberValidator fails to validate the string "656".');
+	_WT('weeBigNumberValidator fails to validate the string "656".'));
 $this->isFalse(weeBigNumberValidator::test('1.0'),
-	'weeBigNumberValidator returns true for the string "1.0" when it should validate integers only.');
+	_WT('weeBigNumberValidator returns true for the string "1.0" when it should validate integers only.'));
 $this->isFalse(weeBigNumberValidator::test('1.1'),
-	'weeBigNumberValidator returns true for the string "1.1" when it should validate integers only.');
+	_WT('weeBigNumberValidator returns true for the string "1.1" when it should validate integers only.'));
 
 // Float (string)
 
 $this->isTrue(weeBigNumberValidator::test('0', array('format' => 'float')),
-	'weeBigNumberValidator fails to validate the string "0" when it should validate both integer and float.');
+	_WT('weeBigNumberValidator fails to validate the string "0" when it should validate both integer and float.'));
 $this->isTrue(weeBigNumberValidator::test('0.0', array('format' => 'float')),
-	'weeBigNumberValidator fails to validate the string "0.0" when it should validate both integer and float.');
+	_WT('weeBigNumberValidator fails to validate the string "0.0" when it should validate both integer and float.'));
 $this->isTrue(weeBigNumberValidator::test('1', array('format' => 'float')),
-	'weeBigNumberValidator fails to validate the string "1" when it should validate both integer and float.');
+	_WT('weeBigNumberValidator fails to validate the string "1" when it should validate both integer and float.'));
 $this->isTrue(weeBigNumberValidator::test('1.1', array('format' => 'float')),
-	'weeBigNumberValidator fails to validate the string "1.1" when it should validate both integer and float.');
+	_WT('weeBigNumberValidator fails to validate the string "1.1" when it should validate both integer and float.'));
 $this->isFalse(weeBigNumberValidator::test('1.1.1', array('format' => 'float')),
-	'weeBigNumberValidator returns true for the string "1.1.1".');
+	_WT('weeBigNumberValidator returns true for the string "1.1.1".'));
 
 // Bad values
 
 $this->isFalse(weeBigNumberValidator::test(''),
-	'weeBigNumberValidator returns true for the empty string.');
+	_WT('weeBigNumberValidator returns true for the empty string.'));
 $this->isFalse(weeBigNumberValidator::test('32f'),
-	'weeBigNumberValidator returns true for the string "32f".');
+	_WT('weeBigNumberValidator returns true for the string "32f".'));
 $this->isFalse(weeBigNumberValidator::test('xxx'),
-	'weeBigNumberValidator returns true for the string "xxx".');
+	_WT('weeBigNumberValidator returns true for the string "xxx".'));
 
 // Integer min/max
 
 $this->isTrue(weeBigNumberValidator::test('0', array('min' => '-10')),
-	'weeBigNumberValidator fails to validate 0 >= -10.');
+	_WT('weeBigNumberValidator fails to validate 0 >= -10.'));
 $this->isFalse(weeBigNumberValidator::test('0', array('min' => '10')),
-	'weeBigNumberValidator returns true for 0 >= 10.');
+	_WT('weeBigNumberValidator returns true for 0 >= 10.'));
 $this->isTrue(weeBigNumberValidator::test('0', array('max' => '10')),
-	'weeBigNumberValidator fails to validate 0 <= 10.');
+	_WT('weeBigNumberValidator fails to validate 0 <= 10.'));
 $this->isFalse(weeBigNumberValidator::test('0', array('max' => '-10')),
-	'weeBigNumberValidator returns true for 0 <= -10.');
+	_WT('weeBigNumberValidator returns true for 0 <= -10.'));
 
 // Float min/max
 
 $this->isTrue(weeBigNumberValidator::test('1.1', array('format' => 'float', 'min' => '0')),
-	'weeBigNumberValidator fails to validate 1.1 >= 0.');
+	_WT('weeBigNumberValidator fails to validate 1.1 >= 0.'));
 $this->isFalse(weeBigNumberValidator::test('1.1', array('format' => 'float', 'min' => '2')),
-	'weeBigNumberValidator returns true for 1.1 >= 2.');
+	_WT('weeBigNumberValidator returns true for 1.1 >= 2.'));
 $this->isFalse(weeBigNumberValidator::test('1.1', array('format' => 'float', 'max' => '0')),
-	'weeBigNumberValidator returns true for 1.1 <= 0.');
+	_WT('weeBigNumberValidator returns true for 1.1 <= 0.'));
 $this->isTrue(weeBigNumberValidator::test('1.1', array('format' => 'float', 'max' => '2')),
-	'weeBigNumberValidator fails to validate 1.1 <= 2.');
+	_WT('weeBigNumberValidator fails to validate 1.1 <= 2.'));
 $this->isTrue(weeBigNumberValidator::test('1.1', array('format' => 'float', 'min' => '1.0')),
-	'weeBigNumberValidator fails to validate 1.1 >= 1.0.');
+	_WT('weeBigNumberValidator fails to validate 1.1 >= 1.0.'));
 $this->isFalse(weeBigNumberValidator::test('1.1', array('format' => 'float', 'min' => '1.2')),
-	'weeBigNumberValidator returns true for 1.1 >= 1.2.');
+	_WT('weeBigNumberValidator returns true for 1.1 >= 1.2.'));
 $this->isFalse(weeBigNumberValidator::test('1.1', array('format' => 'float', 'max' => '1.0')),
-	'weeBigNumberValidator returns true for 1.1 <= 1.0.');
+	_WT('weeBigNumberValidator returns true for 1.1 <= 1.0.'));
 $this->isTrue(weeBigNumberValidator::test('1.1', array('format' => 'float', 'max' => '1.2')),
-	'weeBigNumberValidator fails to validate 1.1 <= 1.2.');
+	_WT('weeBigNumberValidator fails to validate 1.1 <= 1.2.'));
 
 // Big Numbers
 

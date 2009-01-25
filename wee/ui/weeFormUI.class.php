@@ -71,7 +71,7 @@ class weeFormUI extends weeUI
 
 	protected function defaultEvent($aEvent)
 	{
-		$sMethod = $this->oForm->getMethod();
+		$sMethod = (string)$this->oForm->xml()->method;
 		($sMethod == 'get' || $sMethod == 'post') or burn('InvalidArgumentException',
 			_WT('weeFormUI can only be used for GET or POST submit methods.'));
 

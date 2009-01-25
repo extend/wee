@@ -33,7 +33,7 @@ try
 
 	try {
 		$oMeta->table('lhc');
-		$this->fail('weeSQLiteDbMeta::table should throw an UnexpectedValueException when requesting a table which does not exist in the database.');
+		$this->fail(_WT('weeSQLiteDbMeta::table should throw an UnexpectedValueException when requesting a table which does not exist in the database.'));
 	} catch (UnexpectedValueException $e) {}
 
 	$oTable = $oMeta->table('dbmeta');

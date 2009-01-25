@@ -76,7 +76,7 @@ class weeFsSet extends weeSet
 
 		$aFiles = glob($sPath . '/*');
 		$aFiles === false and burn('UnexpectedValueException',
-			'An error occured while trying to retrieve a set of files.');
+			_WT('An error occured while trying to retrieve a set of files.'));
 
 		foreach ($aFiles as $iKey => $sFilename)
 			$aFiles[$iKey] = $this->fetch($sFilename);

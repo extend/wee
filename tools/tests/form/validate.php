@@ -15,6 +15,6 @@ $aPost = array(
 
 try {
 	$oForm->validate($aPost);
-	$this->fail('Form validation should have failed.');
+	$this->fail(_WT('Form validation should have failed.'));
 } catch (FormValidationException $e) {
 }

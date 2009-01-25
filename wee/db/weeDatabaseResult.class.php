@@ -103,10 +103,8 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 
 	public function fetch()
 	{
-		$this->count() == 1
-			or burn('DatabaseException',
-				_WT('The result set does not contain exactly one row.'));
-
+		$this->count() == 1 or burn('DatabaseException',
+			_WT('The result set does not contain exactly one row.'));
 		$this->rewind();
 		return $this->current();
 	}
@@ -182,7 +180,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 			if ($aRow instanceof weeDataSource)
 				return $aRow->encodeData();
 
-			return weeOutput::encodeArray($aRow);
+			return weeOutput::instance()->encodeArray($aRow);
 		}
 
 		return $aRow;
@@ -201,12 +199,13 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 
 		@param	$sClass	The class used to return row's data.
 		@return	$this	Used to chain methods.
+		@throw	InvalidArgumentException	The given class does not exist.
 	*/
 
 	public function rowClass($sClass)
 	{
-		empty($sClass) and burn('InvalidArgumentException', '$sClass must not be empty.');
-
+		class_exists($sClass) or burn('InvalidArgumentException',
+			sprintf(_WT('Class "%s" does not exist.'), $sClass));
 		$this->sRowClass = $sClass;
 		return $this;
 	}

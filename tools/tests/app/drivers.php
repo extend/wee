@@ -24,13 +24,13 @@ class weeApplication_drivers extends weeApplication
 $o = new weeApplication_drivers;
 
 $this->isTrue(empty($o->aDrivers),
-	'weeApplication::$aDrivers should be empty.');
+	_WT('weeApplication::$aDrivers should be empty.'));
 
 $oTestDriver = $o->test;
 $this->isFalse(empty($o->aDrivers),
-	'weeApplication::$aDrivers should not be empty.');
+	_WT('weeApplication::$aDrivers should not be empty.'));
 $this->isEqual($o->aDrivers['test'], $oTestDriver,
-	'The driver we got is different than the one we asked for.');
+	_WT('The driver we got is different than the one we asked for.'));
 
 try {
 	$o->unknownDriver;

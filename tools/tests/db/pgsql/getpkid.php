@@ -2,8 +2,6 @@
 
 require('connect.php.inc');
 
-// Create the test table
-
 $oDb->query('
 	CREATE TEMPORARY TABLE getpkid (
 		pk_id SERIAL NOT NULL,
@@ -11,20 +9,13 @@ $oDb->query('
 	);
 ');
 
-// Insert a row and check each time if our primary key id is incrementing
-// The name of the sequence used is the default name for the sequence when using SERIAL
+$mPK = 'getpkid_pk_id_seq';
 
-$oDb->query('INSERT INTO getpkid (pk_value) VALUES (?)', -1);
-$iPrevious = $oDb->getPKId('getpkid_pk_id_seq');
+try {
+	require(dirname(__FILE__) . '/../getpkid.php.inc');
+} catch (Exception $oException) {}
 
-for ($i = 0; $i < 100; $i++)
-{
-	$oDb->query('INSERT INTO getpkid (pk_value) VALUES (?)', $i);
-	$iCurrent = $oDb->getPKId('getpkid_pk_id_seq');
+$oDb->query('DROP TABLE getpkid');
 
-	$this->isEqual($iPrevious + 1, $iCurrent,
-		'The primary key id returned by getPKId (' . $iCurrent . ') ' .
-		'is not equal as the previous + 1 (' . $iPrevious . ' + 1).');
-
-	$iPrevious = $iCurrent;
-}
+if (isset($oException))
+	throw $oException;

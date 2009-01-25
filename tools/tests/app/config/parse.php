@@ -20,14 +20,14 @@ $o = new weeConfigFile_parse;
 try
 {
 	$o->parseLine('setting_missing_value');
-	$this->fail('weeConfigFile fails to throw an UnexpectedValueException when no equal sign is found');
+	$this->fail(_WT('weeConfigFile fails to throw an UnexpectedValueException when no equal sign is found'));
 }
 catch (UnexpectedValueException $e) {}
 
 try
 {
 	$o->parseLine('include');
-	$this->fail('weeConfigFile fails to throw an UnexpectedValueException when the include instruction is missing its parameter.');
+	$this->fail(_WT('weeConfigFile fails to throw an UnexpectedValueException when the include instruction is missing its parameter.'));
 }
 catch (UnexpectedValueException $e) {}
 
@@ -37,20 +37,20 @@ try
 
 	$o->parseLine('foo = bar');
 	$this->isEqual('bar', $o->aConfig['foo'],
-		'weeConfigFile fails to understand a setting assignment.');
+		_WT('weeConfigFile fails to understand a setting assignment.'));
 
 	try
 	{
 		$o->parseLine('include = neither_a_file_nor_an_inclusion');
 		$this->isEqual('neither_a_file_nor_an_inclusion', $o->aConfig['include'],
-			'weeConfigFile fails to set the value of the "include" setting.');
+			_WT('weeConfigFile fails to set the value of the "include" setting.'));
 	}
 	catch (FileNotFoundException $e)
 	{
-		$this->fail('weeConfigFile thinks the "include" setting assignement is an include instruction.');
+		$this->fail(_WT('weeConfigFile thinks the "include" setting assignement is an include instruction.'));
 	}
 }
 catch (UnexpectedValueException $e)
 {
-	$this->fail('weeConfigFile fails to properly parse a valid configuration line.');
+	$this->fail(_WT('weeConfigFile fails to properly parse a valid configuration line.'));
 }
