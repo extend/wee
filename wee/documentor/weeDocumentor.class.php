@@ -341,6 +341,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		static $aTypes = array(
 			'a' => 'array',
 			'b' => 'bool',
+			'e' => 'exception',
 			'f' => 'float',
 			'i' => 'int',
 			'm' => 'mixed',
