@@ -296,14 +296,12 @@ class weeUnitTestCase
 			xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
 		}
 
-		$b = require($this->sFilename);
+		require($this->sFilename);
 
 		if (defined('WEE_CODE_COVERAGE')) {
 			$this->addExtValue('weeCoveredCode', xdebug_get_code_coverage());
 			xdebug_stop_code_coverage();
 		}
-
-		return $b !== false;
 	}
 
 	/**

@@ -6,11 +6,14 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
 	<link type="text/css" rel="stylesheet" href="http://dev.jquery.com/view/trunk/qunit/testsuite.css" media="screen"/>
 	<script type="text/javascript">
+function run(t) {
+	var result = $.ajax({url:t,async:false}).responseText;
+	ok(result == 'success', result);
+}
+
 function batch(n, t) {
-	for (var i = 1; i <= n; i++) {
-		var result = $.ajax({url:t + '?step=' + i,async:false}).responseText;
-		ok(result == 'ok', result);
-	}
+	for (var i = 1; i <= n; i++)
+		run(t + '?step=' + i);
 }
 
 $(function() {
@@ -28,6 +31,29 @@ $(function() {
 	test('bad token', function() {batch(3, 'session/badtoken.php');});
 	test('set values', function() {batch(3, 'session/set.php');});
 	test('clear', function() {batch(4, 'session/clear.php');});
+
+	module('CLI');
+<?php
+define('DEBUG', 1);
+define('ALLOW_INCLUSION', 1);
+define('ROOT_PATH', '../../');
+require(ROOT_PATH . 'wee/wee.php');
+
+// Clean up the tmp directory
+
+exec('rm -rf ' . ROOT_PATH . 'app/tmp/*');
+
+// Run the test suite
+
+$o = new weeTestSuite('../tests/');
+
+$aTests = $o->toArray();
+unset($aTests[getcwd() . '/../tests/maketests.php']);
+$aTests = array_keys($aTests);
+
+foreach ($aTests as $i => $sPath):?>
+	test('<?php echo substr($sPath, strlen(getcwd() . '/../tests/'))?>', function() {run('cli.php?t=<?php echo $i?>');});
+<?php endforeach?>
 });
 	</script>
 </head>

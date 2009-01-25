@@ -26,4 +26,4 @@ try {
 	exit;
 }
 
-echo 'ok';
+echo 'success';
