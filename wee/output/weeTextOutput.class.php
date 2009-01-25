@@ -28,9 +28,9 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeTextOutput extends weeOutput
 {
 	/**
-		Decodes a given value.
+		Decode a given value.
 
-		In this output driver, this method always return its argument.
+		In this output driver, the method always return its argument.
 
 		@param	$mValue						The value to decode.
 		@return	string						The decoded value.
@@ -46,7 +46,7 @@ class weeTextOutput extends weeOutput
 	}
 
 	/**
-		Encodes data to be displayed.
+		Encode data to be displayed.
 
 		Text does not need to be encoded for text output.
 		However the value given will be stripped of all its
@@ -59,17 +59,5 @@ class weeTextOutput extends weeOutput
 	public function encode($mValue)
 	{
 		return str_replace("\0", '', $mValue);
-	}
-
-	/**
-		Select weeTextOutput as default output and return the object.
-
-		@return weeTextOutput				The weeTextOutput object selected.
-	*/
-
-	public static function select()
-	{
-		weeOutput::$oInstance = new self;
-		return weeOutput::$oInstance;
 	}
 }

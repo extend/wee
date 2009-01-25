@@ -42,7 +42,7 @@ class weeEmailTemplate extends weeTemplate
 	public $aHeaders = array();
 
 	/**
-		Returns the template as a string after extracting the headers
+		Return the template as a string after extracting the headers
 		from the template and making them accessible in $aHeaders.
 
 		@return string The template.
@@ -50,20 +50,15 @@ class weeEmailTemplate extends weeTemplate
 
 	public function toString()
 	{
-		// Switch to text output, get email string, switch back (if possible)
+		// Switch to text output, get email string, switch back
 
-		$oOutput = weeOutput::instance();
-		weeTextOutput::select();
-
+		$oOutput = weeOutput::select(new weeTextOutput);
 		$sEmail = parent::toString();
-
-		if (!is_null($oOutput))
-			weeOutput::setInstance($oOutput);
+		weeOutput::select($oOutput);
 
 		// Retrieve email headers
 
-		while (true)
-		{
+		while (true) {
 			$i = strpos($sEmail, "\n");
 			$sLine = substr($sEmail, 0, $i);
 			$sEmail = substr($sEmail, $i + 1);

@@ -249,8 +249,8 @@ final class weeException
 			ob_start('ob_gzhandler');
 
 		// Switch output to XHTML and encode the debug array
-		weeXHTMLOutput::select();
-		$aDebug = weeOutput::encodeArray($aDebug);
+		weeOutput::select(new weeXHTMLOutput);
+		$aDebug = weeOutput::instance()->encodeArray($aDebug);
 
 		require(self::$sErrorPagePath);
 	}

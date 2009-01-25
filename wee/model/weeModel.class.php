@@ -108,7 +108,7 @@ abstract class weeModel extends weeDataSource implements ArrayAccess, Iterator, 
 			sprintf(_WT('The value for offset "%s" was not found in the data.'), $offset));
 
 		if ($this->bMustEncodeData)
-			return weeOutput::encodeValue($this->aData[$offset]);
+			return weeOutput::instance()->encode($this->aData[$offset]);
 		return $this->aData[$offset];
 	}
 

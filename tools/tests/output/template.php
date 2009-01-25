@@ -1,6 +1,6 @@
 <?php
 
-weeXHTMLOutput::select();
+weeOutput::select(new weeXHTMLOutput);
 
 class weeTemplate_test extends weeTemplate {
 	public $aData = array();
@@ -23,7 +23,7 @@ $this->isEqual('/f&eacute;e', $o->mkLink('/fée'),
 	_WT('weeTemplate::mkLink should return the link encoded with no new content if no new parameter are to be added to the query string and it contains special characters.'));
 
 $this->isEqual('/foo&amp;/bar?&lt;=blah&amp;answer=42', $o->mkLink('/foo&/bar', array('<' => 'blah', 'answer' => 42)),
-	_WT('weeTemplate::mkLink should encode the link with the weeOutput::encodeValue method.'));
+	_WT('weeTemplate::mkLink should encode the link with the weeOutput::instance()->encode method.'));
 
 $this->isEqual('/foo/bar?b=2&amp;a=1', $o->mkLink('/foo/bar?a=1', array('b' => '2')),
 	_WT('weeTemplate::mkLink should add the given parameters to the base link even if it already contains a query string.'));
@@ -35,7 +35,7 @@ $this->isEqual('/foo/bar?space=a+b', $o->mkLink('/foo/bar', array('space' => 'a 
 	_WT('weeTemplate::mkLink should encode any URL parameter with the urlencode function.'));
 
 $this->isEqual('/foo/bar?entity=%26', $o->mkLink('/foo/bar', array('entity' => '&')),
-	_WT('weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::decode method before encoding them with the urlencode function.'));
+	_WT('weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::instance()->decode method before encoding them with the urlencode function.'));
 
 // weeTemplate::addLinkArgs
 

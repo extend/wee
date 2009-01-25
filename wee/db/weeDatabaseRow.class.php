@@ -110,7 +110,7 @@ abstract class weeDatabaseRow extends weeDataSource implements ArrayAccess, Iter
 			sprintf(_WT('The value for offset "%s" was not found in the data.'), $offset));
 
 		if ($this->bMustEncodeData)
-			return weeOutput::encodeValue($this->aRow[$offset]);
+			return weeOutput::instance()->encode($this->aRow[$offset]);
 		return $this->aRow[$offset];
 	}
 

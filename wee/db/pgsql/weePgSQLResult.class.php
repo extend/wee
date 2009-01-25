@@ -105,7 +105,7 @@ class weePgSQLResult extends weeDatabaseResult
 
 		if ($m) {
 			if ($this->bMustEncodeData)
-				return weeOutput::encodeArray($m);
+				return weeOutput::instance()->encodeArray($m);
 			return $m;
 		}
 

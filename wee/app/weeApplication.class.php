@@ -111,10 +111,6 @@ class weeApplication
 		if (!empty($this->aConfig['app.timezone']))
 			date_default_timezone_set($this->aConfig['app.timezone']);
 
-		// Select output driver
-
-		call_user_func(array($this->aConfig['output.driver'], 'select'));
-
 		// Force selected drivers to start
 
 		$aStart = $this->cnfArray('start');
@@ -339,7 +335,6 @@ class weeApplication
 			exit;
 		}
 
-		weeOutput::instance()->start(!empty($this->aConfig['output.gzip']));
 		$this->oFrame->render();
 	}
 

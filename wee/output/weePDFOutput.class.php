@@ -42,6 +42,16 @@ class weePDFOutput extends weeLaTeXOutput
 	protected $sOptions = '';
 
 	/**
+		Initialize the output driver.
+		This driver always enable output buffering regardless of the setting.
+	*/
+
+	public function __construct($aParams = array())
+	{
+		parent::__construct(array('buffer' => true) + $aParams);
+	}
+
+	/**
 		Fetch the buffered LaTeX, convert it to PDF and echo it.
 		It will then be handled by the weeOutput defined ob callback.
 
@@ -81,19 +91,7 @@ class weePDFOutput extends weeLaTeXOutput
 	}
 
 	/**
-		Select weePDFOutput as default output and return the object.
-
-		@return weePDFOutput The weePDFOutput object selected.
-	*/
-
-	public static function select()
-	{
-		weeOutput::$oInstance = new self;
-		return weeOutput::$oInstance;
-	}
-
-	/**
-		Sets the resulting PDF filename.
+		Set the resulting PDF filename.
 
 		@param $sPDFFilename PDF filename, including the ".pdf" part.
 	*/
@@ -105,7 +103,7 @@ class weePDFOutput extends weeLaTeXOutput
 	}
 
 	/**
-		Sets options to be given to PDFLaTeX.
+		Set options to be given to PDFLaTeX.
 
 		@param $sOptions The options sent to PDFLaTeX (default: none).
 		@see man pdflatex
@@ -115,16 +113,5 @@ class weePDFOutput extends weeLaTeXOutput
 	{
 		$this->sOptions = $sOptions;
 		return $this;
-	}
-
-	/**
-		Start the output.
-		Add an additional layer of output buffering for later PDF conversion.
-	*/
-
-	public function start($bGzipOutput = true)
-	{
-		parent::start($bGzipOutput);
-		ob_start();
 	}
 }

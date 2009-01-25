@@ -13,7 +13,7 @@ define('ROOT_PATH',	'../../../');
 define('TPL_PATH',	'./tpl/');
 
 require(ROOT_PATH . 'wee/wee.php');
-weeXHTMLOutput::select();
+weeOutput::select(new weeXHTMLOutput);
 
 // Generate and display the form
 

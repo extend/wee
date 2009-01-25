@@ -108,7 +108,7 @@ class weeTemplate implements Printable
 		$aArgs = $aArgs + $this->aLinkArgs;
 
 		if (empty($aArgs))
-			return weeOutput::encodeValue($sLink);
+			return weeOutput::instance()->encode($sLink);
 
 		$aURL = explode('?', $sLink, 2);
 
@@ -128,7 +128,7 @@ class weeTemplate implements Printable
 			$sLink .= $sName . '=' . urlencode(weeOutput::instance()->decode($sValue)) . '&';
 		}
 
-		return weeOutput::encodeValue(substr($sLink, 0, -1));
+		return weeOutput::instance()->encode(substr($sLink, 0, -1));
 	}
 
 	/**
@@ -137,7 +137,7 @@ class weeTemplate implements Printable
 
 	public function render()
 	{
-		extract(weeOutput::encodeArray($this->aData));
+		extract(weeOutput::instance()->encodeArray($this->aData));
 		require($this->sFilename);
 	}
 

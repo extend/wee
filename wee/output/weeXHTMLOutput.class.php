@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeXHTMLOutput extends weeOutput
 {
 	/**
-		Decodes a given value.
+		Decode a given value.
 
 		@param	$mValue	The value to decode.
 		@return	string	The decoded value.
@@ -40,7 +40,7 @@ class weeXHTMLOutput extends weeOutput
 	}
 
 	/**
-		Encodes data to be displayed.
+		Encode data to be displayed.
 
 		@param	$mValue	Data to encode.
 		@return	string	Data encoded.
@@ -49,17 +49,5 @@ class weeXHTMLOutput extends weeOutput
 	public function encode($mValue)
 	{
 		return htmlentities($mValue, ENT_COMPAT, 'utf-8');
-	}
-
-	/**
-		Select weeXHTMLOutput as default output and return the object.
-
-		@return weeXHTMLOutput The weeXHTMLOutput object selected.
-	*/
-
-	public static function select()
-	{
-		weeOutput::$oInstance = new self;
-		return weeOutput::$oInstance;
 	}
 }

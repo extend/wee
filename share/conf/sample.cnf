@@ -10,6 +10,7 @@ app.autoload.path	= //app/php
 # Force drivers to start before running the application
 
 start.locale	= 0
+start.output	= 1
 start.session	= 0
 
 # Database settings
@@ -29,7 +30,8 @@ locale.default	=
 # Output settings
 
 output.driver		= weeXHTMLOutput
-output.gzip			= 1
+output.buffer		= 0
+output.buffer.gzip	= 1
 
 # Session settings
 
