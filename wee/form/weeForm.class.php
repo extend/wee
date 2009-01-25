@@ -189,17 +189,6 @@ class weeForm implements Printable
 	}
 
 	/**
-		Return the form's submit method.
-
-		@return string The form's submit method. Usually 'get' or 'post'.
-	*/
-
-	public function getMethod()
-	{
-		return (string)$this->oXML->method;
-	}
-
-	/**
 		Create and initialize an helper for the specified widget.
 
 		@param $sHelper Class name of the helper you want to create.
@@ -391,6 +380,17 @@ class weeForm implements Printable
 
 		if ($oException->hasErrors())
 			throw $oException;
+	}
+
+	/**
+		Return the SimpleXML object for this form.
+
+		@return SimpleXML SimpleXML object defining the form.
+	*/
+
+	public function xml()
+	{
+		return $this->oXML;
 	}
 
 	/**
