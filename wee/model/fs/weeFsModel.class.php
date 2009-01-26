@@ -149,6 +149,9 @@ abstract class weeFsModel extends weeModel
 		defined('WEE_ON_WINDOWS') and burn('ConfigurationException',
 			_WT('This method is not available on Windows.'));
 
+		$this->bExists or burn('IllegalStateException',
+			_WT('The file could not be linked because it does not exist.'));
+
 		symlink($this->sFilename, $sLinkFilename);
 	}
 
