@@ -167,26 +167,34 @@ if (function_exists('gettext') && !defined('WEE_TRANSLATE')) {
 
 	function _T()
 	{
-		static $sLocale = null;
+		static $sLocale = 'C';
 		static $oDictionary = null;
 
 		$sCurrentLocale = setlocale(LC_MESSAGES, 0);
 		if ($sLocale != $sCurrentLocale) {
 			$sLocale = $sCurrentLocale;
+			$oDictionary = null;
 
-			$a = explode('.', $sLocale);
-			$oDictionary = new weeGetTextDictionary(APP_LOCALE_PATH . '/' . $a[0] . '/LC_MESSAGES/' . APP_LOCALE_DOMAIN . '.mo');
+			if ($sLocale != 'C') {
+				$a = explode('.', $sLocale, 2);
+				$sFile = APP_LOCALE_PATH . '/' . $a[0] . '/LC_MESSAGES/' . APP_LOCALE_DOMAIN . '.mo';
+				if (file_exists($sFile))
+					$oDictionary = new weeGetTextDictionary($sFile);
+			}
 		}
 
-		$aArgs = func_get_args();
+		$aArgs	= func_get_args();
+		$iCount = count($aArgs);
 
-		if (count($aArgs) == 1)
-			return $oDictionary->getTranslation($aArgs[0]);
+		if ($iCount == 1)
+			return $oDictionary !== null ? $oDictionary->getTranslation($aArgs[0]) : $aArgs[0];
 
-		count($aArgs) == 3 or burn('InvalidArgumentException',
-			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_T'));
+		$iCount == 3 or burn('InvalidArgumentException',
+			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_WT'));
 
-		return $oDictionary->getPluralTranslation($aArgs[0], $aArgs[1], $aArgs[2]);
+		if ($oDictionary !== null)
+			return $oDictionary->getPluralTranslation($aArgs[0], $aArgs[1], $aArgs[2]);
+		return $aArgs[2] > 1 ? $aArgs[1] : $aArgs[0];
 	}
 
 	/**
@@ -194,33 +202,41 @@ if (function_exists('gettext') && !defined('WEE_TRANSLATE')) {
 		This function do both gettext and ngettext depending on the number of arguments given.
 		This function is reserved for internal use.
 
-		@overload _T($sText) Translate the given text.
-		@overload _T($sText, $sPlural, $iCount) Plural version of text translation.
+		@overload _WT($sText) Translate the given text.
+		@overload _WT($sText, $sPlural, $iCount) Plural version of text translation.
 		@return string The translated text.
 	*/
 
 	function _WT()
 	{
-		static $sLocale = null;
-		static $oDictionary = null;
+		static $sLocale = 'C';
+		static $oDictionary;
 
 		$sCurrentLocale = setlocale(LC_MESSAGES, 0);
 		if ($sLocale != $sCurrentLocale) {
-			$sLocale = $sCurrentLocale;
+			$sLocale		= $sCurrentLocale;
+			$oDictionary	= null;
 
-			$a = explode('.', $sLocale);
-			$oDictionary = new weeGetTextDictionary(ROOT_PATH . 'share/locale/' . $a[0] . '/LC_MESSAGES/wee.mo');
+			if ($sLocale != 'C') {
+				$a = explode('.', $sLocale, 2);
+				$sFile = ROOT_PATH . 'share/locale/' . $a[0] . '/LC_MESSAGES/wee.mo';
+				if (file_exists($sFile))
+					$oDictionary = new weeGetTextDictionary($sFile);
+			}
 		}
 
-		$aArgs = func_get_args();
+		$aArgs	= func_get_args();
+		$iCount = count($aArgs);
 
-		if (count($aArgs) == 1)
-			return $oDictionary->getTranslation($aArgs[0]);
+		if ($iCount == 1)
+			return $oDictionary !== null ? $oDictionary->getTranslation($aArgs[0]) : $aArgs[0];
 
-		count($aArgs) == 3 or burn('InvalidArgumentException',
+		$iCount == 3 or burn('InvalidArgumentException',
 			sprintf(_WT('The %s function requires either 1 or 3 arguments.'), '_WT'));
 
-		return $oDictionary->getPluralTranslation($aArgs[0], $aArgs[1], $aArgs[2]);
+		if ($oDictionary !== null)
+			return $oDictionary->getPluralTranslation($aArgs[0], $aArgs[1], $aArgs[2]);
+		return $aArgs[2] > 1 ? $aArgs[1] : $aArgs[0];
 	}
 }
 
