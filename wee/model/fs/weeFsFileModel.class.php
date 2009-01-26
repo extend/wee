@@ -35,11 +35,7 @@ class weeFsFileModel extends weeFsModel
 
 	public function appendContents($sContents)
 	{
-		$iSize = @file_put_contents($this->sFilename, $sContents, FILE_APPEND);
-		$iSize === false and burn('UnexpectedValueException',
-			_WT('The file contents could not be appended (disk space low? permission denied?).'));
-
-		$this->aData['size'] += $iSize;
+		$this->aData['size'] += file_put_contents($this->sFilename, $sContents, FILE_APPEND);
 	}
 
 	/**
@@ -50,11 +46,7 @@ class weeFsFileModel extends weeFsModel
 
 	public function getContents()
 	{
-		$sContents = @file_get_contents($this->sFilename);
-		$sContents === false and burn('UnexpectedValueException',
-			_WT('The file contents could not be get (permission denied?).'));
-
-		return $sContents;
+		return file_get_contents($this->sFilename);
 	}
 
 	/**
@@ -80,12 +72,7 @@ class weeFsFileModel extends weeFsModel
 
 	public function setContents($sContents)
 	{
-		$iSize = file_put_contents($this->sFilename, $sContents);
-		$iSize === false and burn('UnexpectedValueException',
-			_WT('The file contents could not be set (disk space low? permission denied?).'));
-
-		$this->aData['size'] = $iSize;
-
+		$this->aData['size'] = file_put_contents($this->sFilename, $sContents);
 		$this->bExists = true;
 		$this->update();
 	}
