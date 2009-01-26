@@ -116,7 +116,7 @@ class weeTestSuite implements Mappable, Printable
 
 		if ($mResult === 'success' || $mResult === 'skip')
 			echo _WT($mResult), "\n";
-		elseif ($mResult instanceof ErrorTestException) {
+		elseif ($mResult instanceof ErrorException) {
 			echo _WT('error'), "\n",
 				_WT('Message: '), $mResult->getMessage(), "\n",
 				_WT('Level: '), weeException::getLevelName($mResult->getCode()), "\n",
