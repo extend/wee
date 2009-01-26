@@ -276,15 +276,6 @@ class weeTestSuite implements Mappable, Printable
 
 	public function run()
 	{
-		// Set a special error handler for our tests
-
-		$iFormerErrorReporting	= error_reporting(E_ALL | E_STRICT);
-		$mFormerErrorHandler	= set_error_handler(create_function(
-			'$iLevel, $sMessage, $sFile, $iLine',
-			'if (error_reporting())
-				throw new ErrorTestException($sMessage, $iLevel, $sFile, $iLine);'
-			));
-
 		// Run all the tests
 
 		foreach ($this->aResults as $sPath => $mResult) {
@@ -302,14 +293,6 @@ class weeTestSuite implements Mappable, Printable
 				$this->addResult($sPath, $o);
 			}
 		}
-
-		// Restores the previous error handler
-
-		error_reporting($iFormerErrorReporting);
-		if ($mFormerErrorHandler)
-			set_error_handler($mFormerErrorHandler);
-		else
-			restore_error_handler();
 	}
 
 	/**
