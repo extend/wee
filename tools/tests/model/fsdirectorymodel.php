@@ -1,21 +1,18 @@
 <?php
 
 $sDirname	= ROOT_PATH . 'app/tmp/fsdirectorymodel';
-$sDirname2	= ROOT_PATH . 'app/tmp/fsdirectorymodel/tmp2';
-$sDirname3	= ROOT_PATH . 'app/tmp/fsdirectorymodel/tmp2/tmp3';
+$sDirname2	= $sDirname . '/tmp2';
+$sDirname3	= $sDirname2 . '/tmp3';
 $sFilename	= $sDirname . '/file.txt';
 $sFilename2	= $sDirname2 . '/file.txt';
 $sFilename3	= $sDirname3 . '/file.txt';
 $aData 		= array ('filename' => $sDirname);
 
-$iRet = @mkdir($sDirname, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create (or recreate) the directory %s.'), $sDirname));
+!file_exists($sDirname) or burn('UnexpectedValueException',
+	_WT('The test could not be run because the test directory already exist. You should run "make fclean".'));
 
-$iRet = @mkdir($sDirname2, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname2));
-
-$iRet = @mkdir($sDirname3, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname3));
+@mkdir($sDirname3, 0755, true) or burn('UnexpectedValueException',
+	_WT('The test could not be run because the test directory could not be created.'));
 
 touch($sFilename);
 touch($sFilename2);
@@ -25,45 +22,44 @@ if (!defined('WEE_ON_WINDOWS')) {
 	// These tests are not compatible with Windows
 
 	chmod($sDirname, 0400);
-
-	try {
-		$o = new weeFsDirectoryModel($aData);
-
-		$o->deleteContents();
-		$this->isTrue(file_exists($sFilename), 
-			sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should not be deleted.'), $sDirname));
-
-		$this->fail(sprintf(_WT('weeFsDirectoryModel should throw an NotPermittedException when trying to delete the contents of %'), $sDirname));
-	} catch (NotPermittedException $e) {}
-
-	try {
-		$o = new weeFsDirectoryModel($aData);
-
-		$o->delete();
-		$this->isTrue(file_exists($sDirname),
-			sprintf(_WT('weeFsDirectoryModel::delete(), the directory %s should not be deleted.'), $sDirname));
-
-		$this->fail(sprintf(_WT('weeFsDirectoryModel should throw an NotPermittedException when trying to delete %'), $sDirname));
-	} catch (NotPermittedException $e) {}
-
-	exec(sprintf('chmod -R 755 %s', $sDirname));
-}
-
-try {
 	$o = new weeFsDirectoryModel($aData);
 
-	$o->deleteContents();
-	$this->isFalse(file_exists($sFilename), 
-		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname));
-	$this->isFalse(file_exists($sFilename2),
-		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname2));
-	$this->isFalse(file_exists($sFilename3),
-		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the contents in %s should be deleted.'), $sDirname3));
+	try {
+		$o->deleteContents();
+		$this->fail(_WT('weeFsDirectoryModel::deleteContents should trigger an error when trying to remove the contents of a directory without appropriate privileges.'));
+	} catch (ErrorException $e) {}
 
-	$o->delete();
-	$this->isFalse(file_exists($sDirname),
-		sprintf(_WT('weeFsDirectoryModel::deleteContents(), the directory %s should be deleted.'), $sDirname));
+	try {
+		$o->delete();
+		$this->fail(_WT('weeFsDirectoryModel::delete should trigger an error when trying to remove a directory without appropriate privileges.'));
+	} catch (ErrorException $e) {}
 
-} catch (InvalidArgumentException $e) {
-	$this->fail(_WT('weeFsDirectoryModel should not throw an InvalidArgumentException because the Filename was specified'));
+	chmod($sDirname, 0755);
 }
+
+$o = new weeFsDirectoryModel($aData);
+
+try {
+	$o->deleteContents();
+} catch (ErrorException $e) {
+	$this->fail(_WT('weeFsDirectoryModel::deleteContents should not trigger an error when removing the contents of a directory with appropriate privileges.'));
+}
+
+$this->isTrue(file_exists($sDirname),
+	_WT('weeFsDirectoryModel::deleteContents should not remove the given directory itself when its second argument is true.'));
+
+$oIt = new RecursiveDirectoryIterator($sDirname);
+
+$this->isTrue(count(iterator_to_array($oIt->getChildren())) == 0,
+	_WT('rmdir_recursive should empty the directory that was passed to it.'));
+
+touch($sFilename);
+
+try {
+	$o->delete();
+} catch (ErrorException $e) {
+	$this->fail(_WT('weeFsDirectoryModel::delete should not trigger an error when removing a directory with appropriate privileges.'));
+}
+
+$this->isFalse(file_exists($sDirname),
+	_WT('weeFsDirectoryModel::delete should remove the given directory itself.'));
