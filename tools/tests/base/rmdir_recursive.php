@@ -1,25 +1,22 @@
 <?php
 
 $sDirname	= ROOT_PATH . 'app/tmp/base';
-$sDirname2	= ROOT_PATH . 'app/tmp/base/tmp2';
-$sDirname3	= ROOT_PATH . 'app/tmp/base/tmp2/tmp3';
+$sDirname2	= $sDirname . '/tmp2';
+$sDirname3	= $sDirname2 . '/tmp3';
 $sFilename	= $sDirname . '/file.txt';
 $sFilename2	= $sDirname2 . '/file.txt';
 $sFilename3	= $sDirname3 . '/file.txt';
 
-$iRet = @mkdir($sDirname, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname));
+!file_exists($sDirname) or burn('UnexpectedValueException',
+	_WT('The test could not be run because the test directory already exist. You should run "make fclean".'));
 
-$iRet = @mkdir($sDirname2, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname2));
-
-$iRet = @mkdir($sDirname3, 0755);
-$iRet === false and burn('UnexpectedValueException', sprintf(_WT('Cannot create the directory %s.'), $sDirname3));
+@mkdir($sDirname3, 0755, true) or burn('UnexpectedValueException',
+	_WT('The test could not be run because the test directory could not be created.'));
 
 try {
-	rmdir_recursive($sFilename);
-	$this->fail(sprintf(_WT('rmdir_recursive should throw a FileNotFoundException when trying to delete %s'), $sFilename));
-} catch (FileNotFoundException $e) {}
+	rmdir_recursive($sDirname . '/NOT_FOUND');
+	$this->fail(_WT('rmdir_recursive should trigger an error when trying to remove a file which does not exist.'));
+} catch (ErrorException $e) {}
 
 touch($sFilename);
 touch($sFilename2);
@@ -31,19 +28,32 @@ if (!defined('WEE_ON_WINDOWS')) {
 	chmod($sDirname, 0000);
 	try {
 		rmdir_recursive($sDirname);
-		$this->fail(sprintf(_WT('rmdir_recursive should throw a NotPermittedException when trying to open %s.'), $sDirname));
-	} catch (NotPermittedException $e) {}
+		$this->fail(_WT('rmdir_recursive should trigger an error when trying to remove a directory without appropriate privileges.'));
+	} catch (ErrorException $e) {}
 	chmod($sDirname, 0755);
 }
 
 try {
 	rmdir_recursive($sDirname, true);
-} catch (NotPermittedException $e) {
-	$this->fail(sprintf(_WT('rmdir_recursive should not throw a NotPermittedException when trying to delete the contents of %s.'), $sDirname));
+} catch (ErrorException $e) {
+	$this->fail(_WT('rmdir_recursive should not trigger an error when removing the contents of a directory with appropriate privileges.'));
 }
+
+$this->isTrue(file_exists($sDirname),
+	_WT('rmdir_recursive should not remove the given directory itself when its second argument is true.'));
+
+$o = new RecursiveDirectoryIterator($sDirname);
+
+$this->isTrue(count(iterator_to_array($o->getChildren())) == 0,
+	_WT('rmdir_recursive should empty the directory that was passed to it.'));
+
+touch($sFilename);
 
 try {
 	rmdir_recursive($sDirname);
-} catch (NotPermittedException $e) {
-	$this->fail(sprintf(_WT('rmdir_recursive should not throw a NotPermittedException when trying to delete %s.'), $sDirname));
+} catch (ErrorException $e) {
+	$this->fail(_WT('rmdir_recursive should not trigger an error when removing a directory with appropriate privileges.'));
 }
+
+$this->isFalse(file_exists($sDirname),
+	_WT('rmdir_recursive should remove the given directory itself when its second argument is false.'));
