@@ -119,7 +119,7 @@ class weeTestSuite implements Mappable, Printable
 		elseif ($mResult instanceof ErrorException) {
 			echo _WT('error'), "\n",
 				_WT('Message: '), $mResult->getMessage(), "\n",
-				_WT('Level: '), weeException::getLevelName($mResult->getCode()), "\n",
+				_WT('Level: '), weeException::getLevelName($mResult->getSeverity()), "\n",
 				_WT('File: '), $mResult->getFile(), "\n",
 				_WT('Line: '), $mResult->getLine(), "\n";
 		} elseif ($mResult instanceof UnitTestException) {
