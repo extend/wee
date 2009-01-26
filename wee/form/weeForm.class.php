@@ -362,8 +362,7 @@ class weeForm implements Printable
 				foreach ($oNode->validator as $oValidatorNode)
 				{
 					$sClass = (string)$oValidatorNode['type'];
-					@is_subclass_of($sClass, 'weeValidator')
-						or burn('BadXMLException',
+					class_exists($sClass) && is_subclass_of($sClass, 'weeValidator') or burn('BadXMLException',
 							sprintf(_WT('Validator %s does not exist.'), $oValidatorNode['type']));
 
  					$aAttributes	= (array)$oValidatorNode->attributes();
