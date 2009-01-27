@@ -276,8 +276,6 @@ class weeTestSuite implements Mappable, Printable
 
 	public function run()
 	{
-		// Run all the tests
-
 		foreach ($this->aResults as $sPath => $mResult) {
 			try {
 				$oTest = new weeUnitTestCase($sPath);
