@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class for entries results.
 */
 
-class weeLDAPResult
+class weeLDAPResult 
 {
 	/**
 		LDAP link identifier. 
@@ -60,8 +60,8 @@ class weeLDAPResult
 	/**
 		Initialise the WeeLDAPResult object.
 
-		@param	$rLink	The connection link identifier 
-		@param	$rResult	The search result link identifier
+		@param $rLink The connection link identifier 
+		@param $rResult The search result link identifier
 	*/
 
 	public function __construct($rLink, $rResult)
@@ -78,13 +78,25 @@ class weeLDAPResult
 
 	public function __destruct()
 	{
-		@ldap_free_result($this->rResult);
+		ldap_free_result($this->rResult);
+	}
+
+	/**
+		Return the the current element.
+
+		@return weeLDAPEntry An instance of weeLDAPEntry.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
+	*/
+
+	public function current()
+	{
+		return new weeLDAPEntry($this->rLink, $this->rResult, $this->rEntry);
 	}
 
 	/**
 		Fetch the next entry.
 
-		@return	weeLDAPEntry	An instance of weeLDAPEntry.
+		@return weeLDAPEntry An instance of weeLDAPEntry.
 	*/
 
 	public function fetch()
@@ -107,57 +119,15 @@ class weeLDAPResult
 			$aEntries[i][j] = The jth attributes in the ith entry, also $aEntries[i]['attribute'].
 			$aEntries[i][j][k] = The kth value of the jth attribute in the ith entry, also $aEntries[i]['attribute'][k].
 
-		@return	array	An instance of weeLDAPEntry.
+		@return array An instance of weeLDAPEntry.
 	*/
 
 	public function fetchAll()
 	{
 		$aEntries = ldap_get_entries($this->rLink, $this->rResult);
-		$aEntries === false and burn('LDAPException', _WT(ldap_error($this->rLink)));	//TODO:Error message ?
+		$aEntries === false and burn('LDAPException', _WT('weeLDAPResult::fetchAll failed to get entries.'));	//TODO:Error message ?
 
 		return $aEntries;
-	}
-
-	/**
-		Return the number of entries found in the current result. 
-
-		@return	integer	Number of the entries found in the current result.
-		@throw	LDAPException	If an error occurs.
-	*/
-
-	public function numResults()
-	{
-		$iEntries	= ldap_count_entries($this->rLink, $this->rResult);
-		$iEntries	=== false and burn('LDAPException', _WT(ldap_error($this->rLink)));
-		
-		return $iEntries;
-	}
-
-	/**
-		Sort the entries found in the current result, by the specified filter. 
-
-		@return	bool	Whethe the entries have beens sorted.
-		@throw	LDAPException	If an error occurs.
-	*/
-
-	public function sort($sFilter)
-	{
-		$b	= ldap_sort($this->rLink, $this->rResult, $sFilter);
-		$b	=== false and burn('LDAPException', _WT(ldap_error($this->rLink)));
-		
-		return $b;
-	}
-
-	/**
-		Return the the current element.
-
-		@return	weeLDAPEntry	An instance of weeLDAPEntry.
-		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
-	*/
-
-	public function current()
-	{
-		return new weeLDAPEntry($this->rLink, $this->rResult, $this->rEntry);
 	}
 
 	/**
@@ -174,7 +144,7 @@ class weeLDAPResult
 	/**
 		Move forward to next element.
 
-		@return	weeLDAPEntry	An instance of weeLDAPEntry.
+		@return weeLDAPEntry An instance of weeLDAPEntry.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 
@@ -193,6 +163,37 @@ class weeLDAPResult
 	}
 
 	/**
+		Return the number of entries found in the current result. 
+
+		@return integer Number of the entries found in the current result.
+		@throw LDAPException If an error occurs.
+	*/
+
+	public function numResults()
+	{
+		$iEntries	= ldap_count_entries($this->rLink, $this->rResult);
+		$iEntries	=== false and burn('LDAPException', _WT('weeLDAPResult::numResults failed to count entries.'));
+		
+		return $iEntries;
+	}
+
+	/**
+		Return whether offset exists.
+
+		@param $i Offset index.
+		@return bool Whether the offset exists.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
+	*/
+
+	public function offsetExists($i)
+	{
+		if ($i >= 0 && $i <= $this->numResults())
+			return true;
+
+		return false;
+	}
+
+	/**
 		Rewind the Iterator to the first element.
 
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
@@ -205,31 +206,30 @@ class weeLDAPResult
 	}
 
 	/**
+		Sort the entries found in the current result, by the specified filter. 
+
+		@return bool Whether the entries have beens sorted.
+		@throw LDAPException If an error occurs.
+	*/
+
+	public function sort($sFilter)
+	{
+		$b	= ldap_sort($this->rLink, $this->rResult, $sFilter);
+		$b	=== false and burn('LDAPException', _WT('weeLDAPResult::sort failed to sort entries with the specified filter.'));
+
+		return $b;
+	}
+
+	/**
 		Check if there is a current element after calls to rewind() or next().
 
-		@return	bool	whether there is a current element after calls to rewind() or next();
+		@return bool whether there is a current element after calls to rewind() or next();
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 
 	public function valid()
 	{
 		return $this->rEntry !== false;
-	}
-
-	/**
-		Return whether offset exists.
-
-		@param	$i	Offset index.
-		@return	bool	Whether the offset exists.
-		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
-	*/
-
-	public function offsetExists($i)
-	{
-		if ($i >= 0 && $i <= $this->numResults())
-			return true;
-
-		return false;
 	}
 
 /*
