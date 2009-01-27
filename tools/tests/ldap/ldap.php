@@ -3,7 +3,7 @@
 function_exists('ldap_connect') or $this->skip();
 
 try {
-	require(ROOT_PATH . 'tools/tests/auth/ldap/init.php.inc');
+	require(ROOT_PATH . 'tools/tests/ldap/init.php.inc');
 
 	$sDN = 'dc=example, dc=com';
 	$this->isEqual(1, $o->search($sDN, 'c=FR')->numResults(),
