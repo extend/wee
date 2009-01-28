@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class for entries results.
 */
 
-class weeLDAPResult 
+class weeLDAPResult implements Iterator
 {
 	/**
 		LDAP link identifier. 
@@ -175,22 +175,6 @@ class weeLDAPResult
 		$iEntries	=== false and burn('LDAPException', _WT('weeLDAPResult::numResults failed to count entries.'));
 		
 		return $iEntries;
-	}
-
-	/**
-		Return whether offset exists.
-
-		@param $i Offset index.
-		@return bool Whether the offset exists.
-		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
-	*/
-
-	public function offsetExists($i)
-	{
-		if ($i >= 0 && $i <= $this->numResults())
-			return true;
-
-		return false;
 	}
 
 	/**
