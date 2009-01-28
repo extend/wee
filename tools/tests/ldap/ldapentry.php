@@ -31,7 +31,7 @@ try {
 	$oEntry->modAdd($oEntry->getDN(), $aEntry);
 
 	$as['telephoneNumber'][0] = "5555-1234";
-	$oEntry->modModify($oEntry->getDN(), $as); //restore
+	$oEntry->modUpdate($oEntry->getDN(), $as); //restore
 
 	$oEntry->save(); //TODO:Attributes are identical before and after saving, the server is updated but not the object => $rEntry?  re-search?
 

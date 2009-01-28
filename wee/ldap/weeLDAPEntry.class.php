@@ -227,7 +227,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function modModify($sDN, $aEntry)
+	public function modUpdate($sDN, $aEntry)
 	{
 		$b 	= ldap_mod_replace($this->rLink, $sDN, $aEntry);
 		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::modModify can not modify the attributes for the DN "%s"'), $sDN));

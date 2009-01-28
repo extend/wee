@@ -16,7 +16,7 @@ try {
 	$this->isEqual(2, $iResult,
 		sprintf(_WT('weeLDAP::ls did not get the expected result in the DN : "%s".'), $sDN));
 
-	$o->modify('cn=Anakin Skywalker, ou=customers, dc=example, dc=com', array(
+	$o->update('cn=Anakin Skywalker, ou=customers, dc=example, dc=com', array(
 		'telephonenumber' 	=> '5555-6666',
 		));
 

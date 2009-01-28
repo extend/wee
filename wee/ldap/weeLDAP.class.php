@@ -151,7 +151,7 @@ class weeLDAP
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function modify($sDN, $aEntry)
+	public function update($sDN, $aEntry)
 	{
 		$b = ldap_modify($this->rLink, $sDN, $aEntry);
 		$b === false and burn('LDAPException', sprintf(_WT('weeLDAP::modify failed to modify the specified entry in the DN "%s".'), $sDN));
