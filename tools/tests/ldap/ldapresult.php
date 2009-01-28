@@ -17,7 +17,7 @@ try {
 
 	$aEntries = $oResult->fetchAll();
 	$this->isEqual(2, $aEntries['count'], // customers & countries
-		sprintf(_WT('weeLDAPResult::fetchAll did not get the expected number of entries.'), $aEntries['count']));
+		_WT('weeLDAPResult::fetchAll did not get the expected number of entries.'));
 
 	$oResult->sort('ou');
 	$this->isEqual('ou=countries,dc=example,dc=com', $oResult->fetch()->getDN(),

@@ -8,79 +8,38 @@ try {
 	$sDN = 'ou=customers,dc=example,dc=com';
 	$oResult = $o->search($sDN, 'cn=*'); // customers & countries
 
-	if ($oResult->valid())
-		$oEntry = $oResult->current();
+	$oEntry = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
-	$a = $oEntry->getAttributes();
-	$this->isEqual(5, $a['count'],
-		sprintf(_WT('weeLDAPEntry::getAttributes should return 5 attributes got %s instead.'), $a['count']));
+	$aAttr = $oEntry->getAttributes(); // objectClass,sn,cn,telephoneNumber,description,
+	$this->isEqual(5, $aAttr['count'],
+		_WT('weeLDAPEntry::getAttributes did not get the expected number of entries.'));
 
-	$a = $oEntry->getExplodedDN(0);
-	$this->isEqual(4, $a['count'],
-		sprintf(_WT('weeLDAPEntry::getExplodedDN should return 4 attributes for %s got %s instead.'), $sDN, $a['count']));
+	$aAttr = array(0 => 'person', 'count' => 1); // current attribute = objectClass
+	$this->isEqual($aAttr, $oEntry->getAttributeValues(),
+		_WT('weeLDAPEntry::getAttributeValues did not get the expected values.'));
 
-	$sDN = $oEntry->getDN();
-	$this->isEqual('cn=Luke Skywalker,ou=customers,dc=example,dc=com', $sDN,
-		sprintf(_WT('weeLDAPEntry::getDN should return cn=Luke Skywalker,ou=customers,dc=example,dc=com got %s instead.'), $sDN));
+	$aDN = $oEntry->getExplodedDN(0);
+	$this->isEqual(4, $aDN['count'],
+		_WT('weeLDAPEntry::getExplodedDN did not split the DN.'));
 
-	$a  = array(0 => 'person', 'count' => 1);
-	$this->isEqual($a, $oEntry->getAttributeValues(),
-		sprintf(_WT('weeLDAPEntry::getAttributeValues did not get the expected values for the attribute %s.'), $oEntry->current()));
+	$this->isEqual('cn=Luke Skywalker,ou=customers,dc=example,dc=com', $oEntry->getDN(),
+		_WT('weeLDAPEntry::getDN did not get the expected DN.'));
 
 	$aEntry['telephoneNumber'][0] = "5555-6666";
 	$aEntry['telephoneNumber'][1] = "7777-1235";
 	$aEntry['telephoneNumber'][2] = "7777-12135";
 	$oEntry->modAdd($oEntry->getDN(), $aEntry);
 
-	//~ $oEntry->offsetGet('telephoneNumber'); //TODO:Attributes are identical befor à after saving, phpldapadmin is updated but not the object => $rEntry?  re-search?
-
 	$as['telephoneNumber'][0] = "5555-1234";
-	$oEntry->modModify($oEntry->getDN(), $as);//restore
+	$oEntry->modModify($oEntry->getDN(), $as); //restore
 
-	$oEntry->rewind();
-	$this->isEqual('objectClass', $oEntry->current(),
-		_WT('weeLDAPEntry::current should return the current attribute name.'));
+	$oEntry->save(); //TODO:Attributes are identical before and after saving, the server is updated but not the object => $rEntry?  re-search?
 
-	$oEntry->next();
-	$oEntry->next();
-	$this->isEqual('telephoneNumber', $oEntry->current(),
-		_WT('weeLDAPEntry::current should return the current attribute name.'));
+	$this->isNotNull($oEntry['telephoneNumber'], _WT('This attribute should exists.'));
 
-	$this->isEqual(2, $oEntry->key(),
-		_WT('weeLDAPEntry::key should return the index of the current attribute.'));
+	unset($oEntry['telephoneNumber']);
 
-	$oEntry->rewind();
-	$this->isEqual('objectClass', $oEntry->current(),
-		_WT('weeLDAPEntry::current should return the current attribute name.'));
-
-	while($oEntry->current())
-		$oEntry->next();
-
-	$this->isFalse($oEntry->valid(),
-		_WT('weeLDAPEntry::valid should return false.'));
-
-	$this->isTrue($oEntry->offsetExists('sn'),
-		_WT('weeLDAPEntry::offsetExists should return true.'));
-
-	$a  = array(0 => 'person', 'count' => 1);
-	$this->isEqual($a , $oEntry->offsetGet('objectClass'),
-		_WT('weeLDAPEntry::offsetGet the expected result was not found.'));
-
-	$oEntry->rewind();
-	$oEntry->next();
-	$oEntry->next(); //moving to telephoneNumber attribute.
-
-	$oEntry->offsetSet('telephoneNumber', array(0 => '911', 1 => '912'));
-
-	$oEntry->save(); //TODO:Attributes are identical befor à after saving, phpldapadmin is updated but not the object => $rEntry?  re-search?
-
-	//~ $a = $oEntry->offsetGet('telephoneNumber');
-	//~ $this->isEqual(2 , $a['count'],
-		//~ _WT('weeLDAPEntry::offsetGet the expected result was not found.'));
-
-	$oEntry->offsetUnset('telephoneNumber');
-	$this->isFalse($oEntry->offsetGet('telephoneNumber'),
-		_WT('weeLDAPEntry::offsetGet Should not find the result.'));
+	$this->isFalse($oEntry['telephoneNumber'], _WT('This attribute should not exists.'));
 
 } catch (LDAPException $e) {
 	$this->fail(sprintf(_WT('weeLDAP should not throw an LDAPException : %s.'), $o->getLastError()));
