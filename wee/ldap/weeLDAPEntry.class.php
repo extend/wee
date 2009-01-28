@@ -244,15 +244,10 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function next()
 	{
-		if ($this->i == -1)
-			$this->sCurrAttribute = ldap_first_attribute($this->rLink, $this->rEntry);
-		else
-			$this->sCurrAttribute = ldap_next_attribute($this->rLink, $this->rEntry);
+		$this->sCurrAttribute = ldap_next_attribute($this->rLink, $this->rEntry);
 
-		if ($this->sCurrAttribute === false) {
-			//~ $this->i = -1;?
+		if ($this->sCurrAttribute === false)
 			return false;
-		}
 
 		$this->i++;
 		$this->getAttributeValues();
@@ -299,7 +294,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function offsetSet($offset, $value)
 	{
 		is_array($value) or burn('InvalidArgumentException',
-			'The parameter must be an array.');
+			'The value parameter must be an array.');
 
 		foreach($value as $i => $v)
 			$this->aAttributes[$offset][$i] = $v;
@@ -327,8 +322,8 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function rewind()
 	{
-		$this->i = -1;
-		$this->next();
+		$this->i = 0;
+		$this->sCurrAttribute = ldap_first_attribute($this->rLink, $this->rEntry);
 	}
 
 	/**
@@ -339,7 +334,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function save()
 	{
-		//~ Clean the array.
+		//~ Clean the array for avoiding errors.
 		foreach($this->aAttributes as $k => $v){
 			if (is_string($k)) {
 				$tmp[$k] = $v;

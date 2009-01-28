@@ -20,9 +20,16 @@ try {
 		_WT('weeLDAPResult::fetchAll did not get the expected number of entries.'));
 
 	$oResult->sort('ou');
-	$this->isEqual('ou=countries,dc=example,dc=com', $oResult->fetch()->getDN(),
-		_WT('weeLDAPResult::sort did not sort the entries.'));
+	$aSorted = array(
+		0 => 'ou=countries,dc=example,dc=com',
+		1 => 'ou=customers,dc=example,dc=com',
+		);
 
+	foreach ($oResult as $key => $entry)
+		$aResult[$key] = $entry->getDN();
+
+	$this->isEqual($aSorted, $aResult,
+		_WT('weeLDAPResult::sort did not sort the entries.'));
 } catch (LDAPException $e) {
 	$this->fail(_WT('weeLDAP should not throw an LDAPException.'));
 }

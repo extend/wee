@@ -150,20 +150,17 @@ class weeLDAPResult implements Iterator
 
 	public function next()
 	{
-		if ($this->i == -1)
-			$this->rEntry	= ldap_first_entry($this->rLink, $this->rResult);
-		else
-			$this->rEntry	= ldap_next_entry($this->rLink, $this->rEntry);
+		$this->rEntry = ldap_next_entry($this->rLink, $this->rEntry);
 
-		$this->i++;
 		if ($this->rEntry === false)
 			return false;
+		$this->i++;
 
 		return new weeLDAPEntry($this->rLink, $this->rResult, $this->rEntry);
 	}
 
 	/**
-		Return the number of entries found in the current result. 
+		Return the number of entries found in the current result.
 
 		@return integer Number of the entries found in the current result.
 		@throw LDAPException If an error occurs.
@@ -185,8 +182,8 @@ class weeLDAPResult implements Iterator
 
 	public function rewind()
 	{
-		$this->i = -1;
-		$this->next();
+		$this->i = 0;
+		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
 	}
 
 	/**
