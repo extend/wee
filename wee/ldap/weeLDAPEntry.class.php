@@ -61,7 +61,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		Key of the current iterated element. 
 	*/
 
-	protected $i;
+	protected $iCurrentIndex;
 
 	/**
 		The Distinguished Name.
@@ -129,7 +129,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function getAttributeValues()
 	{
-		if (!$this->current())
+		if (!$this->valid())
 			return false;
 
 		$aValues = ldap_get_values($this->rLink, $this->rEntry, $this->sCurrAttribute);
@@ -181,7 +181,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function key()
 	{
-		return $this->i;
+		return $this->iCurrentIndex;
 	}
 
 	/**
@@ -249,7 +249,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		if ($this->sCurrAttribute === false)
 			return false;
 
-		$this->i++;
+		$this->iCurrentIndex++;
 		$this->getAttributeValues();
 	}
 
@@ -322,7 +322,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function rewind()
 	{
-		$this->i = 0;
+		$this->iCurrentIndex = 0;
 		$this->sCurrAttribute = ldap_first_attribute($this->rLink, $this->rEntry);
 	}
 

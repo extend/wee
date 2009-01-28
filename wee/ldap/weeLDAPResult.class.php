@@ -55,7 +55,7 @@ class weeLDAPResult implements Iterator
 		Key of the current iterated element.
 	*/
 
-	protected $i;
+	protected $iCurrentIndex;
 
 	/**
 		Initialise the WeeLDAPResult object.
@@ -138,7 +138,7 @@ class weeLDAPResult implements Iterator
 
 	public function key()
 	{
-		return $this->i;
+		return $this->iCurrentIndex;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class weeLDAPResult implements Iterator
 
 		if ($this->rEntry === false)
 			return false;
-		$this->i++;
+		$this->iCurrentIndex++;
 
 		return new weeLDAPEntry($this->rLink, $this->rResult, $this->rEntry);
 	}
@@ -182,7 +182,7 @@ class weeLDAPResult implements Iterator
 
 	public function rewind()
 	{
-		$this->i = 0;
+		$this->iCurrentIndex = 0;
 		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
 	}
 
