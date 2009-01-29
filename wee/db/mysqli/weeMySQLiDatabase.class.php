@@ -59,6 +59,8 @@ class weeMySQLiDatabase extends weeDatabase
 
 		$this->oDb = new mysqli;
 		$this->oDb->init();
+
+		// mysqli_real_connect returns false and triggers a warning if the connection failed.
 		@$this->oDb->real_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'))
 			or burn('DatabaseException',
 				_WT('Failed to connect to the database with the following message:') . "\n" . $this->oDb->connect_error);

@@ -45,6 +45,7 @@ class weeMySQLResult extends weeDatabaseResult
 
 	public function __construct($rResult)
 	{
+		// get_resource_type returns false and triggers a warning if its argument is not a resource.
 		@get_resource_type($rResult) == 'mysql result' or burn('InvalidArgumentException',
 			sprintf(_WT('The given variable must be a resource of type "%s".'), 'mysql result'));
 
@@ -83,6 +84,7 @@ class weeMySQLResult extends weeDatabaseResult
 
 	protected function doRewind()
 	{
+		// mysql_data_seek triggers a warning if the mysql result set is empty.
 		@mysql_data_seek($this->rResult, 0);
 	}
 }

@@ -212,6 +212,7 @@ class weeTestSuite implements Mappable, Printable
 			// and if there's any dead code remaining, we output it.
 
 			if (in_array(-2, $aLines)) {
+				// TODO: Find why this file call needs to be silenced.
 				$aFile = @file($sFilename, FILE_IGNORE_NEW_LINES);
 				if ($aFile !== false)
 					foreach ($aLines as $iLine => $iValue)
@@ -339,6 +340,9 @@ class weeTestSuite implements Mappable, Printable
 
 		// Count the number of test failed, succeeded and skipped and output a summary
 
+		// The array contains "skip" and "success" values but also instances of Exception,
+		// array_count_values triggers a warning when one of the values in the array cannot
+		// be used as a key.
 		$aCounts = @array_count_values($this->aResults);
 
 		if (!isset($aCounts['skip']))

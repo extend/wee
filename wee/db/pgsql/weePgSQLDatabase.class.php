@@ -60,6 +60,7 @@ class weePgSQLDatabase extends weeDatabase
 		foreach ($aParams as $sKey => $sValue)
 			$sConnection .= $sKey . '=' . $sValue . ' ';
 
+		// pg_connect triggers a warning if the connection failed.
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
 		$this->rLink === false and burn('DatabaseException',
 			_WT('Failed to connect to database with the following message:') . "\n" . pg_last_error());
@@ -89,6 +90,7 @@ class weePgSQLDatabase extends weeDatabase
 
 	protected function doQuery($sQueryString)
 	{
+		// pg_query triggers a warning when the query could not be executed.
 		$rResult = @pg_query($this->rLink, $sQueryString);
 		$rResult === false and burn('DatabaseException', _WT('Failed to execute the given query:')
 			. "\n" . pg_last_error($this->rLink));
