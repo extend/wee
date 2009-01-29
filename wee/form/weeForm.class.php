@@ -73,8 +73,14 @@ class weeForm implements Printable
 		file_exists($sFilename) or burn('FileNotFoundException',
 			sprintf(_WT('The file "%s" does not exist.'), $sFilename));
 
-		$this->oXML = simplexml_load_file($sFilename);
-		($this->oXML === false || !isset($this->oXML->widgets)) and burn('BadXMLException',
+		// simplexml_load_file triggers a warning if the file is not a well-formed XML.
+		$this->oXML = @simplexml_load_file($sFilename);
+		if ($this->oXML === false)
+			throw new BadXMLException(
+				sprintf(_WT('File "%s" is not a well-formed XML document.'), $sFilename),
+				libxml_get_last_error()
+			);
+		isset($this->oXML->widgets) or burn('BadXMLException',
 			sprintf(_WT('The file "%s" is not a valid form document.'), $sFilename));
 
 		if (!isset($this->oXML->formkey))
