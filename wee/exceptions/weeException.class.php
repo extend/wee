@@ -169,8 +169,13 @@ final class weeException
 			- If the exception is an instance of NotPermittedException, send a 403 Forbidden error
 			- Otherwise, send a 500 Internal Server Error
 
+		When DEBUG is enabled and the request is an HTTP request, send the exception to FirePHP
+		to ease debug through Firebug.
+
 		@param $eException The exception object.
 		@see http://php.net/set_exception_handler
+		@see http://www.firephp.org/
+		@see http://getfirebug.com/
 	*/
 
 	public static function handleException(Exception $eException)
@@ -205,11 +210,13 @@ final class weeException
 					'name'	=> get_class($eException),
 				);
 
+			if (defined('DEBUG'))
+				FirePHP::getInstance(true)->error($eException);
 			self::printErrorPage($aError + array(
 				'file'		=> $aTrace[0]['file'],
 				'line'		=> $aTrace[0]['line'],
 				'message'	=> $eException->getMessage(),
-				'trace'		=> $aTrace,
+				'trace'		=> self::formatTrace($aTrace),
 			));
 		}
 	}
