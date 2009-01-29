@@ -90,7 +90,7 @@ class weeLDAPResult implements Iterator
 
 	public function current()
 	{
-		return new weeLDAPEntry($this->rLink, $this->rResult, $this->rEntry);
+		return new weeLDAPEntry($this->rLink, $this->rEntry);
 	}
 
 	/**
@@ -156,7 +156,7 @@ class weeLDAPResult implements Iterator
 			return false;
 		$this->iCurrentIndex++;
 
-		return new weeLDAPEntry($this->rLink, $this->rResult, $this->rEntry);
+		return new weeLDAPEntry($this->rLink, $this->rEntry);
 	}
 
 	/**

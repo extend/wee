@@ -37,12 +37,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		LDAP link identifier of the result. 
 	*/
 
-	protected $rResult;
-
-	/**
-		LDAP link identifier of the current entry. 
-	*/
-
 	protected $rEntry;
 
 	/**
@@ -77,7 +71,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		@param $rEntry The entry link identifier.
 	*/
 
-	public function __construct($rLink, $rResult, $rEntry) //TODO:remove $rResult : search result
+	public function __construct($rLink, $rEntry)
 	{
 		$this->rEntry	= $rEntry;
 		$this->rLink	= $rLink;
