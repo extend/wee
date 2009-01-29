@@ -148,18 +148,18 @@ final class weeException
 	/**
 		Function called when an ErrorException has been caught by the exception handler.
 
-		@param	$oException	The ErrorException instance.
+		@param	$eException	The ErrorException instance.
 		@see	http://php.net/errorexception
 	*/
 
-	public static function handleErrorException(ErrorException $oException)
+	public static function handleErrorException(ErrorException $eException)
 	{
-		$sName	= self::getLevelName($oException->getSeverity());
-		$sTrace	= self::formatTrace($oException->getTrace());
+		$sName	= self::getLevelName($eException->getSeverity());
+		$sTrace	= self::formatTrace($eException->getTrace());
 
 		if (defined('WEE_CLI'))
 			self::printError('Error: ' . $sName . "\n"
-				. 'Message: ' . $oException->getMessage() . "\n"
+				. 'Message: ' . $eException->getMessage() . "\n"
 				. "Trace:\n" . $sTrace);
 		else {
 			header('HTTP/1.0 500 Internal Server Error');
@@ -167,11 +167,11 @@ final class weeException
 			self::printErrorPage(array(
 				'type'		=> 'error',
 				'name'		=> $sName,
-				'number'	=> $oException->getSeverity(),
-				'message'	=> $oException->getMessage(),
+				'number'	=> $eException->getSeverity(),
+				'message'	=> $eException->getMessage(),
 				'trace'		=> $aTrace,
-				'file'		=> $oException->getFile(),
-				'line'		=> $oException->getLine(),
+				'file'		=> $eException->getFile(),
+				'line'		=> $eException->getLine(),
 			));
 		}
 	}
@@ -187,28 +187,28 @@ final class weeException
 			- If the exception is an instance of NotPermittedException, send a 403 Forbidden error
 			- Otherwise, send a 500 Internal Server Error
 
-		@param $oException The exception object.
+		@param $eException The exception object.
 		@see http://php.net/set_exception_handler
 	*/
 
-	public static function handleException(Exception $oException)
+	public static function handleException(Exception $eException)
 	{
-		if ($oException instanceof ErrorException)
-			return self::handleErrorException($oException);
+		if ($eException instanceof ErrorException)
+			return self::handleErrorException($eException);
 
 		if (defined('WEE_CLI'))
-			self::printError('Exception: ' . get_class($oException) . "\n"
-				. 'Message: ' . $oException->getMessage() . "\n"
-				. "Trace:\n" . self::formatTrace($oException->getTrace()));
+			self::printError('Exception: ' . get_class($eException) . "\n"
+				. 'Message: ' . $eException->getMessage() . "\n"
+				. "Trace:\n" . self::formatTrace($eException->getTrace()));
 		else {
-			if ($oException instanceof RouteNotFoundException)
+			if ($eException instanceof RouteNotFoundException)
 				header('HTTP/1.0 404 Not Found');
-			elseif ($oException instanceof NotPermittedException)
+			elseif ($eException instanceof NotPermittedException)
 				header('HTTP/1.0 403 Forbidden');
 			else
 				header('HTTP/1.0 500 Internal Server Error');
 
-			$aTrace = $oException->getTrace();
+			$aTrace = $eException->getTrace();
 
 			// If burn was used, take the file and line where the burn call occurred
 			if (empty($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
@@ -218,15 +218,15 @@ final class weeException
 				);
 			else
 				$aFileAndLine = array(
-					'file'	=> $oException->getFile(),
-					'line'	=> $oException->getLine(),
+					'file'	=> $eException->getFile(),
+					'line'	=> $eException->getLine(),
 				);
 
 			self::printErrorPage(array(
 				'type'		=> 'exception',
-				'name'		=> get_class($oException),
-				'message'	=> $oException->getMessage(),
-				'trace'		=> self::formatTrace($oException->getTrace()),
+				'name'		=> get_class($eException),
+				'message'	=> $eException->getMessage(),
+				'trace'		=> self::formatTrace($eException->getTrace()),
 			) + $aFileAndLine);
 		}
 	}
