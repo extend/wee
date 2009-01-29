@@ -22,9 +22,29 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Exception thrown when an XML doesn't follow strictly its DTD schema.
+	Exception thrown when an error concerning XML handling occurs.
 */
 
 class BadXMLException extends LogicException
 {
+	/**
+		Initialize a new BadXMLException instance.
+
+		@param	$sMessage	The message of the exception.
+		@param	$oError		The libxml error associated to the exception.
+	*/
+
+	public function __construct($sMessage, LibXmlError $oError = null)
+	{
+		if ($oError) {
+			$sMessage .= "\n";
+			$sMessage .= sprintf(
+				_WT('libxml returned the following error (line %d, column %d):'),
+				$oError->line,
+				$oError->column
+			);
+			$sMessage .= "\n" . $oError->message;
+		}
+		parent::__construct($sMessage);
+	}
 }
