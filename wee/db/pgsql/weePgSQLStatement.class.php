@@ -71,8 +71,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 
 	public function __construct($rLink, $sQueryString)
 	{
-		// get_resource_type returns false and triggers a warning if its argument is not a resource.
-		@get_resource_type($rLink) == 'pgsql link' or burn('InvalidArgumentException',
+		is_resource($rLink) && get_resource_type($rLink) == 'pgsql link' or burn('InvalidArgumentException',
 			sprintf(_WT('The given variable must be a resource of type "%s".'), 'pgsql link'));
 
 		// Get parameters name and position

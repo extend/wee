@@ -49,8 +49,7 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function __construct($rResult)
 	{
-		// get_resource_type returns false and triggers a warning if its argument is not a resource.
-		@get_resource_type($rResult) == 'oci8 statement' or burn('InvalidArgumentException',
+		is_resource($rResult) && get_resource_type($rResult) == 'oci8 statement' or burn('InvalidArgumentException',
 			sprintf(_WT('The given variable must be a resource of type "%s".'), 'oci8 statement'));
 
 		// TODO: Check whether the silence operator is really required here.
