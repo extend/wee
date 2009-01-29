@@ -58,12 +58,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	protected $iCurrentIndex;
 
 	/**
-		The Distinguished Name.
-	*/
-
-	protected $sDN;
-
-	/**
 		Initialise the weeLDAPEntry object.
 
 		@param $rLink The connection link identifier 
@@ -99,7 +93,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function current()
 	{
-		return $this->sCurrAttribute;
+		return $this->aAttributes[$this->iCurrentIndex];
 	}
 
 	/**
@@ -132,10 +126,10 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function getDN()
 	{
-		$this->sDN	= ldap_get_dn($this->rLink, $this->rEntry);
-		$this->sDN	=== false and burn('LDAPException', _WT('weeLDAPEntry::getDN can not find the DN for the specified entry.'));
+		$sDN	= ldap_get_dn($this->rLink, $this->rEntry);
+		$sDN	=== false and burn('LDAPException', _WT('weeLDAPEntry::getDN can not find the DN for the specified entry.'));
 
-		return $this->sDN;
+		return $sDN;
 	}
 
 	/**
@@ -207,10 +201,12 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		is_array($value) or burn('InvalidArgumentException',
 			'The value parameter must be an array.');
 
-		foreach($value as $i => $v)
-			$this->aAttributes[$offset][$i] = $v;
+		foreach ($value as $iIndex => $sValue)
+			is_int($iIndex) or burn('LDAPException', 'The array of values is not valid. Indexes must be 0, 1...');
 
-		return true;
+		//TODO:consecutive indexes
+
+		$this->aAttributes[$offset] = $value;
 	}
 
 	/**
@@ -244,18 +240,8 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function save()
 	{
-		//~ Clean the array for avoiding errors.
-		foreach($this->aAttributes as $k => $v){
-			if (is_string($k)) {
-				$tmp[$k] = $v;
-				unset($tmp[$k]['count']);
-			}
-		}
-
-		unset($tmp['count']);
-
-		$b	= ldap_mod_replace($this->rLink, $this->getDN(), $tmp);
-		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::save can not save the attributes for the DN "%s".'), $sDN));
+		$b	= ldap_mod_replace($this->rLink, $this->getDN(), $this->aAttributes);
+		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::save can not save the attributes for the DN "%s".'), $this->getDN()));
 	}
 
 	/**
@@ -267,6 +253,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function valid() 
 	{
-		return $this->sCurrAttribute !== false;
+		return $this->aAttributes[$this->iCurrentIndex] !== false;
 	}
 }
