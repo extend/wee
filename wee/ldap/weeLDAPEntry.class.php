@@ -81,9 +81,19 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	{
 		$this->rEntry	= $rEntry;
 		$this->rLink	= $rLink;
-		$this->rResult	= $rResult;
 
-		$this->rewind();
+		$this->aAttributes	= ldap_get_attributes($this->rLink, $this->rEntry);
+		$this->aAttributes	=== false and burn('LDAPException', _WT('weeLDAPEntry::getAttributes failed to get the attributes of the current entry.'));
+
+		foreach ($this->aAttributes as $mAttrKey => $mAttrValue) {
+			if (is_string($mAttrKey)) {
+				$this->aAttributes[$mAttrKey] = $mAttrValue;
+				unset($this->aAttributes[$mAttrKey]['count']);
+			} else
+				unset($this->aAttributes[$mAttrKey]);
+		}
+
+		unset($this->aAttributes['count']);
 	}
 
 	/**
@@ -96,45 +106,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function current()
 	{
 		return $this->sCurrAttribute;
-	}
-
-	/**
-		Retrieve the attributes of the current entry.
-		The structure of the returned values is as follow :
-			$aAttributes['count'] = Number of returned attributes.
-
-			$aAttributes[i] = ith attribute, also $aAttributes['attribute'].
-			$aAttributes[i]['count'] = Numbers of values for the ith attribute, also $aAttributes['attribute']['count'].
-
-		@return array The attributes elements.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function getAttributes()
-	{
-		$this->aAttributes	= ldap_get_attributes($this->rLink, $this->rEntry);
-		$this->aAttributes	=== false and burn('LDAPException', _WT('weeLDAPEntry::getAttributes failed to get the attributes of the current entry.'));
-
-		return $this->aAttributes;
-	}
-
-	/**
-		Retrieve the values of the current attribute.
-		The structure of the returned value is as follow :
-			$aValues['count'] = Number of returned values.
-			$aValues[i] = Indexed values.
-
-		@return array The values elements.
-	*/
-
-	public function getAttributeValues()
-	{
-		if (!$this->valid())
-			return false;
-
-		$aValues = ldap_get_values($this->rLink, $this->rEntry, $this->sCurrAttribute);
-
-		return $aValues;
 	}
 
 	/**
@@ -185,57 +156,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Add one or more attributes to the specified DN.
-
-		@param $sDN The Distinguished Name.
-		@param $aEntry Entry attributes for the specified DN.
-		@return bool Whether the attributes where added.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function modAdd($sDN, $aEntry)
-	{
-		$b	= ldap_mod_add($this->rLink, $sDN, $aEntry);
-		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::modAdd can not add the attributes for the DN "%s".'), $sDN));
-
-		return $b;
-	}
-
-	/**
-		Delete one or more attributes of the specified DN.
-
-		@param $sDN The Distinguished Name.
-		@param $aEntry Entry attributes for the specified DN.
-		@return bool Whether the attributes where removed.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function modDelete($sDN, $aEntry)
-	{
-		$b	= ldap_mod_del($this->rLink, $sDN, $aEntry);
-		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::modDelete can not delete the attributes of the DN "%s"'), $sDN));
-
-		return $b;
-	}
-
-	/**
-		Modify one or more attributes of the specified DN.
-
-		@param $sDN The Distinguished Name.
-		@param $aEntry Entry attributes for the specified DN.
-		@return bool Whether the attributes where modified.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function modUpdate($sDN, $aEntry)
-	{
-		$b 	= ldap_mod_replace($this->rLink, $sDN, $aEntry);
-		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::modModify can not modify the attributes for the DN "%s"'), $sDN));
-
-		return $b;
-	}
-
-	/**
 		Move forward to next attribute, and get its values.
 
 		@return string The next attribute.
@@ -244,13 +164,10 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function next()
 	{
-		$this->sCurrAttribute = ldap_next_attribute($this->rLink, $this->rEntry);
-
 		if ($this->sCurrAttribute === false)
 			return false;
 
 		$this->iCurrentIndex++;
-		$this->getAttributeValues();
 	}
 
 	/**
@@ -323,7 +240,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function rewind()
 	{
 		$this->iCurrentIndex = 0;
-		$this->sCurrAttribute = ldap_first_attribute($this->rLink, $this->rEntry);
 	}
 
 	/**
@@ -346,9 +262,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 		$b	= ldap_mod_replace($this->rLink, $this->getDN(), $tmp);
 		$b	=== false and burn('LDAPException', sprintf(_WT('weeLDAPEntry::save can not save the attributes for the DN "%s".'), $sDN));
-
-		//~ Update the attributes elements of the entry after the replacement on the server.
-		$this->getAttributes();
 	}
 
 	/**
