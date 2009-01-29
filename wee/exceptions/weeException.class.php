@@ -239,9 +239,8 @@ final class weeException
 
 	protected static function printError($sError)
 	{
-		// ob_end_clean triggers a notice when output buffering is not active.
-		while (@ob_end_clean()) ;
-
+		while (ob_get_level())
+			ob_end_clean();
 		echo $sError . "\n";
 	}
 
@@ -254,8 +253,8 @@ final class weeException
 
 	public static function printErrorPage($aDebug)
 	{
-		// ob_end_clean triggers a notice when output buffering is not active.
-		while (@ob_end_clean()) ;
+		while (ob_get_level())
+			ob_end_clean();
 
 		if (empty(self::$sErrorPagePath))
 			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';
