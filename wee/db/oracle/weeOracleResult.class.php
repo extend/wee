@@ -49,10 +49,10 @@ class weeOracleResult extends weeDatabaseResult
 
 	public function __construct($rResult)
 	{
-		@get_resource_type($rResult) == 'oci8 statement'
-			or burn('InvalidArgumentException',
-				_WT('$rResult is not a valid oci8 statement resource.'));
+		is_resource($rResult) && get_resource_type($rResult) == 'oci8 statement' or burn('InvalidArgumentException',
+			sprintf(_WT('The given variable must be a resource of type "%s".'), 'oci8 statement'));
 
+		// TODO: Check whether the silence operator is really required here.
 		$this->iCount = @oci_fetch_all($rResult, $this->aRows, 0, -1, OCI_ASSOC + OCI_FETCHSTATEMENT_BY_ROW);
 		oci_free_statement($rResult);
 	}

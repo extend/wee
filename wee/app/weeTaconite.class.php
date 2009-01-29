@@ -218,6 +218,9 @@ class weeTaconite implements Printable
 		$sXMLDocument != '' or burn('InvalidArgumentException',
 			_WT('The given string must not be empty.'));
 
+		// Calls to DOMDocument::loadXML must be silenced because it triggers a warning when
+		// its argument is not a well-formed XML document.
+
 		$oDocument = new DOMDocument;
 		if (!@$oDocument->loadXML($sXMLDocument))
 			throw new BadXMLException(

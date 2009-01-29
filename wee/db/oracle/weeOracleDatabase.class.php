@@ -56,11 +56,12 @@ class weeOracleDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('oci_new_connect') or burn('ConfigurationException',
-			_WT('The OCI8 PHP extension is required by the Oracle database driver.'));
+			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'OCI8'));
 
 		if (!empty($aParams['encoding']))
 			putenv('NLS_LANG=' . $aParams['encoding']);
 
+		// oci_new_connect triggers a warning when the connection failed.
 		$this->rLink = @oci_new_connect(array_value($aParams, 'user'), array_value($aParams, 'password'), array_value($aParams, 'dbname'), 'UTF8');
 
 		if ($this->rLink === false)
@@ -99,6 +100,7 @@ class weeOracleDatabase extends weeDatabase
 			burn('DatabaseException', _WT('Failed to parse the given query.'));
 		}
 
+		// oci_execute triggers a warning when the statement could not be executed.
 		if (!@oci_execute($rStatement, OCI_DEFAULT))
 		{
 			$this->setLastError(oci_error($rStatement));
@@ -153,8 +155,6 @@ class weeOracleDatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		empty($sName) and burn('InvalidArgumentException', _WT('The argument $sName is required.'));
-
 		$rStatement = oci_parse($this->rLink, 'SELECT ' . $this->escapeIdent($sName) . '.currval FROM DUAL');
 
 		if ($rStatement === false)
@@ -163,6 +163,7 @@ class weeOracleDatabase extends weeDatabase
 			burn('DatabaseException', _WT('Failed to parse the query to retrieve the value of the sequence.'));
 		}
 
+		// oci_execute triggers a warning when the statement could not be executed.
 		if (!@oci_execute($rStatement, OCI_DEFAULT))
 		{
 			$this->setLastError(oci_error($rStatement));

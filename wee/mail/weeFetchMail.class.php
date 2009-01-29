@@ -75,8 +75,7 @@ class weeFetchMail
 			$sConnection .= $aParams['flags'];
 		$sConnection .= '}' . $aParams['mailbox'];
 
-		$this->rLink = @imap_open($sConnection, $aParams['user'], $aParams['password'], OP_READONLY, 1);
-		$this->rLink === false and burn('UnexpectedValueException', _WT('Failed to open the mailbox.'));
+		$this->rLink = imap_open($sConnection, $aParams['user'], $aParams['password'], OP_READONLY, 1);
 	}
 
 	/**

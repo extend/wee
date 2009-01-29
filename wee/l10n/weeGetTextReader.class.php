@@ -58,12 +58,7 @@ class weeGetTextReader
 
 	public function __construct($sFilename)
 	{
-		is_file($sFilename) or burn('FileNotFoundException',
-			sprintf(_WT('File "%s" does not exist.'), $sFilename));
-
-		$this->rHandle = @fopen($sFilename, 'r');
-		$this->rHandle !== false or burn('NotPermittedException',
-			sprintf(_WT('File "%s" could not be opened.'), $sFilename));
+		$this->rHandle = fopen($sFilename, 'r');
 
 		switch ($this->readInt())
 		{

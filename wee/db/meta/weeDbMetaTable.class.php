@@ -110,9 +110,8 @@ abstract class weeDbMetaTable extends weeDbMetaObject
 
 	protected function instantiateObject($sClass, array $aData)
 	{
-		@is_subclass_of($sClass, 'weeDbMetaTableObject')
-			or burn('InvalidArgumentException',
-				_WT('The class is not a subclass of weeDbMetaTableObject.'));
+		class_exists($sClass) && is_subclass_of($sClass, 'weeDbMetaTableObject') or burn('InvalidArgumentException',
+			sprintf(_WT('The class is not a subclass of %s.'), 'weeDbMetaTableObject'));
 
 		$oObject = new $sClass($this->meta(), $aData, $this);
 		return $oObject;
