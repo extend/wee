@@ -57,6 +57,21 @@ final class weeException
 	}
 
 	/**
+		Filter a trace returned by an exception.
+		Top stack traces from the burn function or other methods of this class are removed from the trace.
+
+		@param	$aTrace	The original trace.
+		@return	array	The filtered trace.
+	*/
+
+	protected static function filterTrace(array $aTrace)
+	{
+		while (isset($aTrace[0]['class']) ? $aTrace[0]['class'] == __CLASS__ : $aTrace[0]['function'] == 'burn')
+			array_shift($aTrace);
+		return $aTrace;
+	}
+
+	/**
 		Format the trace in a way similar to Exception::getTraceAsString but compatible
 		with both Exception::getTrace and debug_backtrace. Extraneous information is
 		automatically removed making the resulting string identical for both types of errors.
@@ -68,9 +83,6 @@ final class weeException
 	public static function formatTrace(array $aTrace)
 	{
 		$sTraceAsString = '';
-		while (isset($aTrace[0]['class']) ? $aTrace[0]['class'] == __CLASS__ : $aTrace[0]['function'] == 'burn')
-			array_shift($aTrace);
-
 		foreach ($aTrace as $i => $aCall) {
 			$sTraceAsString .= '#' . $i . ' ';
 			if (isset($aCall['file']))
@@ -83,9 +95,10 @@ final class weeException
 			$sTraceAsString .= $aCall['function'] . '(';
 
 			if (!empty($aCall['args'])) {
+				$sArgs = '';
 				foreach ($aCall as $mArg)
-					$sTraceAsString .= gettype($mArg) . ', ';
-				$sTraceAsString .= substr($sTraceAsString, 0, -2);
+					$sArgs .= gettype($mArg) . ', ';
+				$sTraceAsString .= substr($sArgs, 0, -2);
 			}
 
 			$sTraceAsString .= ")\n";
@@ -146,37 +159,6 @@ final class weeException
 	}
 
 	/**
-		Function called when an ErrorException has been caught by the exception handler.
-
-		@param	$eException	The ErrorException instance.
-		@see	http://php.net/errorexception
-	*/
-
-	public static function handleErrorException(ErrorException $eException)
-	{
-		$sName	= self::getLevelName($eException->getSeverity());
-		$sTrace	= self::formatTrace($eException->getTrace());
-
-		if (defined('WEE_CLI'))
-			self::printError('Error: ' . $sName . "\n"
-				. 'Message: ' . $eException->getMessage() . "\n"
-				. "Trace:\n" . $sTrace);
-		else {
-			header('HTTP/1.0 500 Internal Server Error');
-
-			self::printErrorPage(array(
-				'type'		=> 'error',
-				'name'		=> $sName,
-				'number'	=> $eException->getSeverity(),
-				'message'	=> $eException->getMessage(),
-				'trace'		=> $aTrace,
-				'file'		=> $eException->getFile(),
-				'line'		=> $eException->getLine(),
-			));
-		}
-	}
-
-	/**
 		Function called when an exception is thrown and isn't catched by the script.
 
 		It gets the exception's details and send them to the error page.
@@ -193,14 +175,16 @@ final class weeException
 
 	public static function handleException(Exception $eException)
 	{
-		if ($eException instanceof ErrorException)
-			return self::handleErrorException($eException);
+		if (defined('WEE_CLI')) {
+			$sError = $eException instanceof ErrorException
+				? sprintf(_WT('Error: %s'), self::getLevelName($eException->getSeverity()))
+				: sprintf(_WT('Exception: %s'), get_class($eException));
 
-		if (defined('WEE_CLI'))
-			self::printError('Exception: ' . get_class($eException) . "\n"
-				. 'Message: ' . $eException->getMessage() . "\n"
-				. "Trace:\n" . self::formatTrace($eException->getTrace()));
-		else {
+			$sError .= "\n" . sprintf(_WT('Message: %s'), $eException->getMessage()) . "\n";
+			$sError .= "\n" . _WT('Trace:') . "\n" . self::formatTrace(self::filterTrace($eException->getTrace()));
+
+			self::printError($sError);
+		} else {
 			if ($eException instanceof RouteNotFoundException)
 				header('HTTP/1.0 404 Not Found');
 			elseif ($eException instanceof NotPermittedException)
@@ -208,26 +192,25 @@ final class weeException
 			else
 				header('HTTP/1.0 500 Internal Server Error');
 
-			$aTrace = $eException->getTrace();
+			$aTrace = self::filterTrace($eException->getTrace());
 
-			// If burn was used, take the file and line where the burn call occurred
-			if (empty($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
-				$aFileAndLine = array(
-					'file'	=> $aTrace[0]['file'],
-					'line'	=> $aTrace[0]['line'],
+			if ($eException instanceof ErrorException)
+				$aError = array(
+					'type'	=> 'error',
+					'name'	=> self::getLevelName($eException->getSeverity()),
 				);
 			else
-				$aFileAndLine = array(
-					'file'	=> $eException->getFile(),
-					'line'	=> $eException->getLine(),
+				$aError = array(
+					'type'	=> 'exception',
+					'name'	=> get_class($eException),
 				);
 
-			self::printErrorPage(array(
-				'type'		=> 'exception',
-				'name'		=> get_class($eException),
+			self::printErrorPage($aError + array(
+				'file'		=> $aTrace[0]['file'],
+				'line'		=> $aTrace[0]['line'],
 				'message'	=> $eException->getMessage(),
-				'trace'		=> self::formatTrace($eException->getTrace()),
-			) + $aFileAndLine);
+				'trace'		=> $aTrace,
+			));
 		}
 	}
 
