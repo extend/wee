@@ -69,7 +69,8 @@ class weeLDAPResult implements Iterator
 		$this->rLink = $rLink;
 		$this->rResult = $rResult;
 
-		$this->rewind();
+		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
+		$this->rEntry = false and burn('LDAPException', _WT('Failed to get the first entry.'));
 	}
 
 	/**
@@ -154,9 +155,8 @@ class weeLDAPResult implements Iterator
 
 		if ($this->rEntry === false)
 			return false;
-		$this->iCurrentIndex++;
 
-		return new weeLDAPEntry($this->rLink, $this->rEntry);
+		$this->iCurrentIndex++;
 	}
 
 	/**
@@ -184,6 +184,7 @@ class weeLDAPResult implements Iterator
 	{
 		$this->iCurrentIndex = 0;
 		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
+		$this->rEntry === false and burn('LDAPException', _WT('Failed to get the first entry.'));
 	}
 
 	/**
