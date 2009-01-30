@@ -70,7 +70,8 @@ class weeLDAPResult implements Iterator
 		$this->rResult = $rResult;
 
 		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
-		$this->rEntry = false and burn('LDAPException', _WT('Failed to get the first entry.'));
+		if ($this->rEntry == false)
+			throw new LDAPException(_WT('Failed to get the first entry.') . "\n" . ldap_error(), ldap_errno());
 	}
 
 	/**
@@ -126,7 +127,8 @@ class weeLDAPResult implements Iterator
 	public function fetchAll()
 	{
 		$aEntries = ldap_get_entries($this->rLink, $this->rResult);
-		$aEntries === false and burn('LDAPException', _WT('weeLDAPResult::fetchAll failed to get entries.'));	//TODO:Error message ?
+		if ($aEntries == false)
+			throw new LDAPException(_WT('weeLDAPResult::fetchAll failed to get entries.') . "\n" . ldap_error(), ldap_errno());
 
 		return $aEntries;
 	}
@@ -153,7 +155,7 @@ class weeLDAPResult implements Iterator
 	{
 		$this->rEntry = ldap_next_entry($this->rLink, $this->rEntry);
 
-		if ($this->rEntry === false)
+		if ($this->rEntry == false)
 			return false;
 
 		$this->iCurrentIndex++;
@@ -168,9 +170,10 @@ class weeLDAPResult implements Iterator
 
 	public function numResults()
 	{
-		$iEntries	= ldap_count_entries($this->rLink, $this->rResult);
-		$iEntries	=== false and burn('LDAPException', _WT('weeLDAPResult::numResults failed to count entries.'));
-		
+		$iEntries = ldap_count_entries($this->rLink, $this->rResult);
+		if ($iEntries == false)
+			throw new LDAPException(_WT('weeLDAPResult::numResults failed to count entries.') . "\n" . ldap_error(), ldap_errno());
+
 		return $iEntries;
 	}
 
@@ -183,8 +186,10 @@ class weeLDAPResult implements Iterator
 	public function rewind()
 	{
 		$this->iCurrentIndex = 0;
+
 		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
-		$this->rEntry === false and burn('LDAPException', _WT('Failed to get the first entry.'));
+		if ($this->rEntry == false)
+			throw new LDAPException(_WT('Failed to get the first entry.') . "\n" . ldap_error(), ldap_errno());
 	}
 
 	/**
@@ -196,8 +201,9 @@ class weeLDAPResult implements Iterator
 
 	public function sort($sFilter)
 	{
-		$b	= ldap_sort($this->rLink, $this->rResult, $sFilter);
-		$b	=== false and burn('LDAPException', _WT('weeLDAPResult::sort failed to sort entries with the specified filter.'));
+		$b = ldap_sort($this->rLink, $this->rResult, $sFilter);
+		if ($b == false)
+			throw new LDAPException(_WT('weeLDAPResult::sort failed to sort entries.') . "\n" . ldap_error(), ldap_errno());
 
 		return $b;
 	}

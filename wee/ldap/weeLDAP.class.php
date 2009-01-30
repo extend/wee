@@ -56,11 +56,18 @@ class weeLDAP
 		empty($aParams['host']) and burn('InvalidArgumentException', 'The `host` parameter must not be empty.');
 
 		$this->rLink = ldap_connect(array_value($aParams,'host'), array_value($aParams, 'port', 389));
-		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s".'), array_value($aParams,'host')));
+		if ($this->rLink == false)
+			throw new LDAPException(
+				sprintf(_WT('Can not connect to "%s" :'), array_value($aParams,'host')) . "\n" . ldap_error($this->rLink),
+				ldap_errno($this->rLink)
+			);
 
 		$b = ldap_bind($this->rLink, array_value($aParams, 'rdn', null), array_value($aParams, 'password', null));
-		$b === false and burn('LDAPException', sprintf(_WT('Can not bind the RDN "%s".'), array_value($aParams, 'rdn', null)));
-
+		if ($b == false)
+			throw new LDAPException(
+				sprintf(_WT('Can not bind the RDN "%s".'), array_value($aParams,'rdn'), null) . "\n" . ldap_error($this->rLink),
+				ldap_errno($this->rLink)
+			);
 	}
 
 	/**
@@ -87,7 +94,8 @@ class weeLDAP
 		is_array($aEntry) or burn('InvalidArgumentException', 'The `aEntry` parameter must be an array.');
 
 		$b = ldap_add($this->rLink, $sDN, $aEntry); 
-		//~ $b === false and burn('LDAPException', _WT('weeLDAP::add failed to add the entry attributes for the specifed DN.'));
+		if ($b == false)
+			throw new LDAPException(_WT('Can not add entry to the specified DN "%s".') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return $b;
 	}
@@ -105,7 +113,8 @@ class weeLDAP
 	public function compare($sDN, $sAttribute, $sValue)
 	{
 		$b = ldap_compare($this->rLink, $sDN, $sAttribute, $sValue);
-		$b === -1 and burn('LDAPException', sprintf(_WT('weeLDAP::compare failed for the value of "%s" attribute in the DN "%s".'), $sAttribute, $sDN));
+		if ($b === -1)
+			throw new LDAPException(_WT('weeLDAP::compare failed to compare the value of the attribute.') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return $b;
 	}
@@ -121,7 +130,8 @@ class weeLDAP
 	public function delete($sDN)
 	{
 		$b = ldap_delete($this->rLink, $sDN);
-		//~ $b === false and burn('LDAPException', sprintf(_WT('weeLDAP::delete failed to delete "%s".'), $sDN));
+		if ($b == false)
+			throw new LDAPException(_WT('weeLDAP::delete failed to delete the DN.') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return $b;
 	}
@@ -138,7 +148,8 @@ class weeLDAP
 	public function ls($sDN, $sFilter)
 	{
 		$r = ldap_list($this->rLink, $sDN, $sFilter);
-		$r === false and burn('LDAPException', sprintf(_WT('weeLDAP::ls failed to list "%s" with the filter "%s".'), $sDN, $sFilter));
+		if ($r == false)
+			throw new LDAPException(_WT('weeLDAP::ls failed to list the DN.') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return new weeLDAPResult($this->rLink, $r);
 	}
@@ -154,7 +165,8 @@ class weeLDAP
 	public function update($sDN, $aEntry)
 	{
 		$b = ldap_modify($this->rLink, $sDN, $aEntry);
-		$b === false and burn('LDAPException', sprintf(_WT('weeLDAP::modify failed to modify the specified entry in the DN "%s".'), $sDN));
+		if ($b == false)
+			throw new LDAPException(_WT('weeLDAP::modify failed to modify the specified entry.') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return $b;
 	}
@@ -170,7 +182,8 @@ class weeLDAP
 	public function read($sDN, $sFilter = 'objectClass=*')
 	{
 		$r = ldap_read($this->rLink, $sDN, $sFilter);
-		$r === false and burn('LDAPException', sprintf(_WT('weeLDAP::read failed to read an entry in the DN "%s" with the filter "%s".'), $sDN, $sFilter));
+		if ($r == false)
+			throw new LDAPException(sprintf(_WT('weeLDAP::read failed to read in the DN "%s".'), $sDN) . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return new weeLDAPResult($this->rLink, $r);
 	}
@@ -187,7 +200,8 @@ class weeLDAP
 	public function search($sDN, $sFilter)
 	{
 		$r = ldap_search($this->rLink, $sDN, $sFilter);
-		$r === false and burn('LDAPException', sprintf(_WT('weeLDAP::search failed to perfom search with the specied filter in the DN "%s".'), $sDN));
+		if ($r == false)
+			throw new LDAPException(_WT('weeLDAP::search failed to perfom search.') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return new weeLDAPResult($this->rLink, $r);
 	}
@@ -204,8 +218,9 @@ class weeLDAP
 
 	public function setDN($sFromDN, $sToDN, $bDeleteOldRDN = true)
 	{
-		$b	= ldap_rename($this->rLink, $sFromDN, $sToDN, null, $bDeleteOldRDN);
-		$b	=== false	and burn('LDAPException', sprintf(_WT('weeLDAP::setDN failed to rename the entry "%s".'), $sFromDN));
+		$b = ldap_rename($this->rLink, $sFromDN, $sToDN, null, $bDeleteOldRDN);
+		if ($b == false)
+			throw new LDAPException(_WT('weeLDAP::setDN failed to rename the entry.') . "\n" . ldap_error($this->rLink), ldap_errno($this->rLink));
 
 		return $b;
 	}
