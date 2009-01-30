@@ -90,7 +90,8 @@ class weeTemplate implements Printable
 
 	protected function flush()
 	{
-		ob_flush();
+		if (ob_get_level() > 0)
+			ob_flush();
 		flush();
 	}
 
