@@ -35,6 +35,12 @@ abstract class weeDatabase
 	protected $oMeta;
 
 	/**
+		The name of the underlying DBMS.
+	*/
+
+	protected $sDBMS;
+
+	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -193,6 +199,24 @@ abstract class weeDatabase
 	*/
 
 	abstract public function getPKId($sName = null);
+
+	/**
+		Determine the name of the underlying DBMS.
+
+		This method can be used in two different ways:
+		- If no argument is given then the underlying DBMS' name is returned.
+		- Otherwise a boolean is returned indicating whether the argument is equal to the underlying DBMS' name.
+
+		@param  $sDBMS  The DBMS' name to compare to.
+		@return mixed   Whether the database is from the given DBMS or the name of the DBMS.
+	*/
+
+	public function is($sDBMS = null)
+	{
+		$this->sDBMS !== null or burn('IllegalStateException',
+			sprintf(_WT('Property $%s is missing.'), 'sDBMS'));
+		return $sDBMS === null ? $this->sDBMS : $this->sDBMS == $sDBMS;
+	}
 
 	/**
 		Returns the meta object associated with this database.

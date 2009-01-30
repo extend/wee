@@ -22,7 +22,7 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	SQLite database driver.
+	SQLite 2 database driver.
 */
 
 class weeSQLiteDatabase extends weeDatabase
@@ -32,6 +32,12 @@ class weeSQLiteDatabase extends weeDatabase
 	*/
 
 	protected $oDb;
+
+	/**
+		The name of the underlying DBMS (sqlite2).
+	*/
+
+	protected $sDBMS = 'sqlite2';
 
 	/**
 		Initialises a new sqlite database.

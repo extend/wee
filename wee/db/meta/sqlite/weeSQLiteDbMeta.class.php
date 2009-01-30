@@ -28,6 +28,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeSQLiteDbMeta extends weeDbMeta
 {
 	/**
+		The DBMS handled by this class (sqlite and sqlite2).
+	*/
+
+	protected $mDBMS = array('sqlite', 'sqlite2');
+
+	/**
 		Returns the name of the table class.
 
 		@return	string	The name of the table class.

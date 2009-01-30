@@ -35,13 +35,26 @@ abstract class weeDbMeta
 	protected $oDb;
 
 	/**
+		The DBMS handled by this class.
+
+		Can be either a string or an array of strings.
+	*/
+
+	protected $mDBMS;
+
+	/**
 		Initializes a new database meta.
 
-		@param	$oDb		The database to query.
+		@param	$oDb	The database to query.
+		@throw	InvalidArgumentException	The underlying DBMS of the given database is not handled by the class.
 	*/
 
 	public function __construct(weeDatabase $oDb)
 	{
+		$this->mDBMS !== null or burn('IllegalStateException',
+			sprintf(_WT('Property $%s is missing.'), 'mDBMS'));
+		(is_string($this->mDBMS) ? $oDb->is($this->mDBMS) : in_array($oDb->is(), $this->mDBMS)) or burn('InvalidArgumentException',
+			_WT('The underlying DBMS of the given database is not handled by this class.'));
 		$this->oDb = $oDb;
 	}
 

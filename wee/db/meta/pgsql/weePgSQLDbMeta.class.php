@@ -29,6 +29,12 @@ class weePgSQLDbMeta extends weeDbMeta
 	implements weeDbMetaSchemaProvider
 {
 	/**
+		The DBMS handled by this class (pgsql).
+	*/
+
+	protected $mDBMS = 'pgsql';
+
+	/**
 		Returns the current schema of the database.
 
 		@return	weePgSQLDbMetaSchema		The current schema.

@@ -34,6 +34,12 @@ class weePgSQLDatabase extends weeDatabase
 	protected $rLink;
 
 	/**
+		The name of the underlying DBMS (pgsql).
+	*/
+
+	protected $sDBMS = 'pgsql';
+
+	/**
 		Number of affected rows for the previous query.
 		Stocked here to prevent errors if getPKId is called.
 	*/

@@ -34,6 +34,12 @@ class weeMySQLiDatabase extends weeDatabase
 	protected $oDb;
 
 	/**
+		The name of the underlying DBMS (mysql).
+	*/
+
+	protected $sDBMS = 'mysql';
+
+	/**
 		Initialises a new mysqli database.
 
 		This database driver accepts the following parameters:

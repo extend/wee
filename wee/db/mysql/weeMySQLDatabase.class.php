@@ -34,6 +34,12 @@ class weeMySQLDatabase extends weeDatabase
 	protected $rLink;
 
 	/**
+		The name of the underlying DBMS (mysql).
+	*/
+
+	protected $sDBMS = 'mysql';
+
+	/**
 		Initialises a new mysql database.
 
 		This database driver accepts the following parameters:

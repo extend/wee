@@ -40,6 +40,12 @@ class weeOracleDatabase extends weeDatabase
 	protected $rLink;
 
 	/**
+		The name of the underlying DBMS (oracle).
+	*/
+
+	protected $sDBMS = 'oracle';
+
+	/**
 		Number of affected rows for the previous query.
 		Stocked here to prevent errors if getPKId is called.
 	*/

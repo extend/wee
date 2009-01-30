@@ -34,12 +34,6 @@ class weePDODatabase extends weeDatabase
 	protected $oDb;
 
 	/**
-		The name of the PDO driver.
-	*/
-
-	protected $sDriverName;
-
-	/**
 		The number of rows affected by the last query.
 	*/
 
@@ -76,7 +70,8 @@ class weePDODatabase extends weeDatabase
 				. "\n" . $e->getMessage());
 		}
 
-		$this->sDriverName = $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$sDriver = $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$this->sDBMS = $sDriver == 'oci' ? 'oracle' : $sDriver;
 	}
 
 	/**
@@ -126,7 +121,7 @@ class weePDODatabase extends weeDatabase
 	{
 		$iRowCount = $oStatement->rowCount();
 
-		if ($this->sDriverName == 'sqlite2') {
+		if ($this->sDBMS == 'sqlite2') {
 			if ($bIsPrepared && !isset($iNumAffectedRows))
 				// A prepared statement is executed for the first time, begin tracking of the number of
 				// affected rows reported by SQLite 2.
@@ -155,7 +150,7 @@ class weePDODatabase extends weeDatabase
 
 	public function escapeIdent($sValue)
 	{
-		switch ($this->sDriverName)
+		switch ($this->sDBMS)
 		{
 			case 'mysql':
 				// see weeMySQLDatabase::escapeIdent
@@ -165,7 +160,7 @@ class weePDODatabase extends weeDatabase
 
 				return '`' . str_replace('`', '``', $sValue) . '`';
 
-			case 'oci':
+			case 'oracle':
 				// see weeOracleDatabase::escapeIdent
 				$iLength = strlen($sValue);
 				strpos($sValue, '"') === false && $iLength > 0 && $iLength <= 30 or burn('InvalidArgumentException',
@@ -189,19 +184,8 @@ class weePDODatabase extends weeDatabase
 				return '"' . str_replace('"', '""', $sValue) . '"';
 
 			default:
-				burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDriverName));
+				burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDBMS));
 		}
-	}
-
-	/**
-		Returns the name of the PDO driver used by the database.
-
-		@return	string	The name of the PDO driver.
-	*/
-
-	public function getDriverName()
-	{
-		return $this->sDriverName;
 	}
 
 	/**
@@ -219,7 +203,7 @@ class weePDODatabase extends weeDatabase
 			'sqlite2'	=> 'weeSQLiteDbMeta'
 		);
 
-		return array_value($aDbMetaMap, $this->getDriverName());
+		return array_value($aDbMetaMap, $this->sDBMS);
 	}
 
 	/**
@@ -234,13 +218,13 @@ class weePDODatabase extends weeDatabase
 
 	public function getPKId($sName = null)
 	{
-		if ($this->sDriverName == 'mysql' || substr($this->sDriverName, 0, 6) == 'sqlite') {
+		if ($this->sDBMS == 'mysql' || substr($this->sDBMS, 0, 6) == 'sqlite') {
 			$s = $this->oDb->lastInsertId($sName);
 			$s != '0' or burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
 			return $s;
 		}
 
-		if ($this->sDriverName == 'pgsql' && $sName === null) {
+		if ($this->sDBMS == 'pgsql' && $sName === null) {
 			$o = $this->oDb->query('SELECT pg_catalog.lastval()');
 			$a = $this->oDb->errorInfo();
 			if ($a[0] == '55000')
