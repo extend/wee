@@ -71,11 +71,11 @@ try {
 	$this->isFalse($o->isWritable(), 
 		sprintf(_WT("The file %s should not be writable."), $sFilename));
 
-	if (!defined('WEE_ON_WINDOWS')) {
-		$o->makeLink('');
-		$this->isFalse(is_link(''), _WT('The symbolic link "" (empty) should not exists'));
-	}
-
+	if (!defined('WEE_ON_WINDOWS'))
+		try {
+			$o->makeLink(ROOT_PATH . 'app/tmp/blah');
+			$this->fail(_WT('weeFsModel::makeLink should throw an IllegalStateException when the file does not exist.'));
+		} catch (IllegalStateException $e) {}
 } catch (InvalidArgumentException $e) {
 	$this->fail(_WT('weeFsModel should not throw an InvalidArgumentException because the filename was specified'));
 }

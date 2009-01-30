@@ -63,7 +63,7 @@ class weeRSSFeed extends weeFeed
 			case 'updated':
 				$sName = $sName == 'published' ? 'pubDate' : 'lastBuildDate';
 				if (ctype_digit($mValue))
-					$mValue = @date('r', $mValue);
+					$mValue = date('r', $mValue);
 
 				$oXMLWriter->startElement($sName);
 				$oXMLWriter->text($mValue);

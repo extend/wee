@@ -71,9 +71,8 @@ class weePgSQLStatement extends weeDatabaseStatement
 
 	public function __construct($rLink, $sQueryString)
 	{
-		@get_resource_type($rLink) == 'pgsql link'
-			or burn('InvalidArgumentException',
-				_WT('$rLink is not a valid pgsql link resource.'));
+		is_resource($rLink) && get_resource_type($rLink) == 'pgsql link' or burn('InvalidArgumentException',
+			sprintf(_WT('The given variable must be a resource of type "%s".'), 'pgsql link'));
 
 		// Get parameters name and position
 
@@ -133,6 +132,8 @@ class weePgSQLStatement extends weeDatabaseStatement
 					$iParametersCount, $iMapSize));
 
 		ksort($this->aParameters);
+
+		// pg_execute triggers a warning if the statement could not be executed.
 		$rResult = @pg_execute($this->rLink, $this->sStatementName, $this->aParameters);
 		$rResult !== false or burn('DatabaseException',
 				_WT('PostgreSQL failed to execute the prepared statement with the following message:')

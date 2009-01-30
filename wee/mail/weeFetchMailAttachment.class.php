@@ -75,7 +75,6 @@ class weeFetchMailAttachment
 
 		@param	$sDestination	The path of the destination file.
 		@param	$sNewFilename	The destination filename. If null, it is the same filename as given in the email.
-		@return	bool			Whether the file was successfully saved.
 	*/
 
 	public function saveTo($sDestination, $sNewFilename = null)
@@ -83,6 +82,6 @@ class weeFetchMailAttachment
 		if (is_null($sNewFilename))
 			$sNewFilename = $this->sFilename;
 
-		return false !== @file_put_contents($sDestination . '/' . $sNewFilename, $this->sData);
+		file_put_contents($sDestination . '/' . $sNewFilename, $this->sData);
 	}
 }

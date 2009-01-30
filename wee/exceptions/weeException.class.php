@@ -57,6 +57,21 @@ final class weeException
 	}
 
 	/**
+		Filter a trace returned by an exception.
+		Top stack traces from the burn function or other methods of this class are removed from the trace.
+
+		@param	$aTrace	The original trace.
+		@return	array	The filtered trace.
+	*/
+
+	protected static function filterTrace(array $aTrace)
+	{
+		while (isset($aTrace[0]['class']) ? $aTrace[0]['class'] == __CLASS__ : $aTrace[0]['function'] == 'burn')
+			array_shift($aTrace);
+		return $aTrace;
+	}
+
+	/**
 		Format the trace in a way similar to Exception::getTraceAsString but compatible
 		with both Exception::getTrace and debug_backtrace. Extraneous information is
 		automatically removed making the resulting string identical for both types of errors.
@@ -65,26 +80,25 @@ final class weeException
 		@return string The trace formatted as string.
 	*/
 
-	public static function formatTrace($aTrace)
+	public static function formatTrace(array $aTrace)
 	{
 		$sTraceAsString = '';
-
-		$iFrom = 0 + (int)(empty($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
-			+ 2 * (array_value($aTrace[0], 'class') == 'weeException' && array_value($aTrace[0], 'function') == 'handleError');
-
-		for ($i = $iFrom; $i < count($aTrace); $i++) {
-			$sTraceAsString .= '#' . ($i - $iFrom) . ' ';
-			if (empty($aTrace[$i]['file']))
-				$sTraceAsString .= '(PHP internals): ';
+		foreach ($aTrace as $i => $aCall) {
+			$sTraceAsString .= '#' . $i . ' ';
+			if (isset($aCall['file']))
+				$sTraceAsString .= $aCall['file'] . '(' . $aCall['line'] . '): ';
 			else
-				$sTraceAsString .= array_value($aTrace[$i], 'file', '?') . '(' . array_value($aTrace[$i], 'line', '?') . '): ';
-			$sTraceAsString .= array_value($aTrace[$i], 'class') . array_value($aTrace[$i], 'type') . $aTrace[$i]['function'] . '(';
+				$sTraceAsString .= '(PHP internals): ';
 
-			if (!empty($aTrace[$i]['args'])) {
-				foreach ($aTrace[$i]['args'] as $mArg)
-					$sTraceAsString .= getType($mArg) . ', ';
+			if (isset($aCall['class']))
+				$sTraceAsString .= $aCall['class'] . $aCall['type'];
+			$sTraceAsString .= $aCall['function'] . '(';
 
-				$sTraceAsString = substr($sTraceAsString, 0, -2);
+			if (!empty($aCall['args'])) {
+				$sArgs = '';
+				foreach ($aCall as $mArg)
+					$sArgs .= gettype($mArg) . ', ';
+				$sTraceAsString .= substr($sArgs, 0, -2);
 			}
 
 			$sTraceAsString .= ")\n";
@@ -129,40 +143,19 @@ final class weeException
 
 		If the request is an HTTP request, a 500 Internal Server Error code is sent.
 
-		@param	$iNumber	Contains the level of the error raised, as an integer.
+		@param	$iLevel		Contains the level of the error raised, as an integer.
 		@param	$sMessage	Contains the error message, as a string.
 		@param	$sFile		Contains the filename that the error was raised in, as a string.
 		@param	$iLine		Contains the line number the error was raised at, as an integer.
 		@see http://php.net/set_error_handler
 	*/
 
-	public static function handleError($iNumber, $sMessage, $sFile, $iLine)
+	public static function handleError($iLevel, $sMessage, $sFile, $iLine)
 	{
 		// Return directly if @ was used: this error has been masked.
 		if (error_reporting() == 0)
 			return;
-
-		$sName = self::getLevelName($iNumber);
-
-		if (defined('WEE_CLI'))
-			self::printError('Error: ' . $sName . "\n"
-				. 'Message: ' . $sMessage . "\n"
-				. "Trace:\n" . self::formatTrace(debug_backtrace()));
-		else {
-			header('HTTP/1.0 500 Internal Server Error');
-
-			self::printErrorPage(array(
-				'type'		=> 'error',
-				'name'		=> $sName,
-				'number'	=> $iNumber,
-				'message'	=> $sMessage,
-				'trace'		=> self::formatTrace(debug_backtrace()),
-				'file'		=> $sFile,
-				'line'		=> $iLine,
-			));
-		}
-
-		exit($iNumber);
+		throw new ErrorException($sMessage, 0, $iLevel, $sFile, $iLine);
 	}
 
 	/**
@@ -176,44 +169,55 @@ final class weeException
 			- If the exception is an instance of NotPermittedException, send a 403 Forbidden error
 			- Otherwise, send a 500 Internal Server Error
 
-		@param $oException The exception object.
+		When DEBUG is enabled and the request is an HTTP request, send the exception to FirePHP
+		to ease debug through Firebug.
+
+		@param $eException The exception object.
 		@see http://php.net/set_exception_handler
+		@see http://www.firephp.org/
+		@see http://getfirebug.com/
 	*/
 
-	public static function handleException($oException)
+	public static function handleException(Exception $eException)
 	{
-		if (defined('WEE_CLI'))
-			self::printError('Exception: ' . get_class($oException) . "\n"
-				. 'Message: ' . $oException->getMessage() . "\n"
-				. "Trace:\n" . self::formatTrace($oException->getTrace()));
-		else {
-			if ($oException instanceof RouteNotFoundException)
+		if (defined('WEE_CLI')) {
+			$sError = $eException instanceof ErrorException
+				? sprintf(_WT('Error: %s'), self::getLevelName($eException->getSeverity()))
+				: sprintf(_WT('Exception: %s'), get_class($eException));
+
+			$sError .= "\n" . sprintf(_WT('Message: %s'), $eException->getMessage()) . "\n";
+			$sError .= "\n" . _WT('Trace:') . "\n" . self::formatTrace(self::filterTrace($eException->getTrace()));
+
+			self::printError($sError);
+		} else {
+			if ($eException instanceof RouteNotFoundException)
 				header('HTTP/1.0 404 Not Found');
-			elseif ($oException instanceof NotPermittedException)
+			elseif ($eException instanceof NotPermittedException)
 				header('HTTP/1.0 403 Forbidden');
 			else
 				header('HTTP/1.0 500 Internal Server Error');
 
-			$aTrace = $oException->getTrace();
+			$aTrace = self::filterTrace($eException->getTrace());
 
-			// If burn was used, take the file and line where the burn call occurred
-			if (empty($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
-				$aFileAndLine = array(
-					'file'	=> $aTrace[0]['file'],
-					'line'	=> $aTrace[0]['line'],
+			if ($eException instanceof ErrorException)
+				$aError = array(
+					'type'	=> 'error',
+					'name'	=> self::getLevelName($eException->getSeverity()),
 				);
 			else
-				$aFileAndLine = array(
-					'file'	=> $oException->getFile(),
-					'line'	=> $oException->getLine(),
+				$aError = array(
+					'type'	=> 'exception',
+					'name'	=> get_class($eException),
 				);
 
-			self::printErrorPage(array(
-				'type'		=> 'exception',
-				'name'		=> get_class($oException),
-				'message'	=> $oException->getMessage(),
-				'trace'		=> self::formatTrace($oException->getTrace()),
-			) + $aFileAndLine);
+			if (defined('DEBUG'))
+				FirePHP::getInstance(true)->error($eException);
+			self::printErrorPage($aError + array(
+				'file'		=> $aTrace[0]['file'],
+				'line'		=> $aTrace[0]['line'],
+				'message'	=> $eException->getMessage(),
+				'trace'		=> self::formatTrace($aTrace),
+			));
 		}
 	}
 
@@ -225,8 +229,8 @@ final class weeException
 
 	protected static function printError($sError)
 	{
-		while (@ob_end_clean()) ;
-
+		while (ob_get_level())
+			ob_end_clean();
 		echo $sError . "\n";
 	}
 
@@ -239,7 +243,8 @@ final class weeException
 
 	public static function printErrorPage($aDebug)
 	{
-		while (@ob_end_clean()) ;
+		while (ob_get_level())
+			ob_end_clean();
 
 		if (empty(self::$sErrorPagePath))
 			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';

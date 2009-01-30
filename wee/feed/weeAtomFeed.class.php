@@ -71,7 +71,7 @@ class weeAtomFeed extends weeFeed
 			case 'published':
 			case 'updated':
 				if (ctype_digit($mValue))
-					$mValue = @date('c', $mValue);
+					$mValue = date('c', $mValue);
 
 				$oXMLWriter->startElement($sName);
 				$oXMLWriter->text($mValue);

@@ -32,6 +32,10 @@ $(function() {
 	test('set values', function() {batch(3, 'session/set.php');});
 	test('clear', function() {batch(4, 'session/clear.php');});
 
+	module('Session (storage: database table)');
+	test('set values', function() {batch(4, 'session/dbtableset.php');});
+	test('clear', function() {batch(5, 'session/dbtableclear.php');});
+
 	module('CLI');
 <?php
 define('DEBUG', 1);

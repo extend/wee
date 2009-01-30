@@ -116,10 +116,10 @@ class weeTestSuite implements Mappable, Printable
 
 		if ($mResult === 'success' || $mResult === 'skip')
 			echo _WT($mResult), "\n";
-		elseif ($mResult instanceof ErrorTestException) {
+		elseif ($mResult instanceof ErrorException) {
 			echo _WT('error'), "\n",
 				_WT('Message: '), $mResult->getMessage(), "\n",
-				_WT('Level: '), weeException::getLevelName($mResult->getCode()), "\n",
+				_WT('Level: '), weeException::getLevelName($mResult->getSeverity()), "\n",
 				_WT('File: '), $mResult->getFile(), "\n",
 				_WT('Line: '), $mResult->getLine(), "\n";
 		} elseif ($mResult instanceof UnitTestException) {
@@ -212,6 +212,7 @@ class weeTestSuite implements Mappable, Printable
 			// and if there's any dead code remaining, we output it.
 
 			if (in_array(-2, $aLines)) {
+				// TODO: Find why this file call needs to be silenced.
 				$aFile = @file($sFilename, FILE_IGNORE_NEW_LINES);
 				if ($aFile !== false)
 					foreach ($aLines as $iLine => $iValue)
@@ -276,17 +277,6 @@ class weeTestSuite implements Mappable, Printable
 
 	public function run()
 	{
-		// Set a special error handler for our tests
-
-		$iFormerErrorReporting	= error_reporting(E_ALL | E_STRICT);
-		$mFormerErrorHandler	= set_error_handler(create_function(
-			'$iLevel, $sMessage, $sFile, $iLine',
-			'if (error_reporting())
-				throw new ErrorTestException($sMessage, $iLevel, $sFile, $iLine);'
-			));
-
-		// Run all the tests
-
 		foreach ($this->aResults as $sPath => $mResult) {
 			try {
 				$oTest = new weeUnitTestCase($sPath);
@@ -302,14 +292,6 @@ class weeTestSuite implements Mappable, Printable
 				$this->addResult($sPath, $o);
 			}
 		}
-
-		// Restores the previous error handler
-
-		error_reporting($iFormerErrorReporting);
-		if ($mFormerErrorHandler)
-			set_error_handler($mFormerErrorHandler);
-		else
-			restore_error_handler();
 	}
 
 	/**
@@ -358,6 +340,9 @@ class weeTestSuite implements Mappable, Printable
 
 		// Count the number of test failed, succeeded and skipped and output a summary
 
+		// The array contains "skip" and "success" values but also instances of Exception,
+		// array_count_values triggers a warning when one of the values in the array cannot
+		// be used as a key.
 		$aCounts = @array_count_values($this->aResults);
 
 		if (!isset($aCounts['skip']))

@@ -97,7 +97,7 @@ abstract class weeFrame
 
 	public function __construct($oController = null)
 	{
-		is_null($oController) && !is_callable('weeApp') and burn('InvalidParameterException',
+		is_null($oController) && !is_callable('weeApp') and burn('InvalidArgumentException',
 			_WT('You need to specify a controller that weeFrame can use to dispatch events.'));
 
 		$this->oController = is_null($oController) ? weeApp() : $oController;
@@ -280,7 +280,7 @@ abstract class weeFrame
 	public function update($sMethod, $sWhere, $sWith = null)
 	{
 		if (empty($this->oTaconite))
-			$this->oTaconite = weeTaconite::create();
+			$this->oTaconite = new weeTaconite;
 
 		$this->oTaconite->addTag($sMethod, $sWhere, $sWith);
 	}

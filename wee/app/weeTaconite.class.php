@@ -213,14 +213,29 @@ class weeTaconite implements Printable
 		if ($sXMLDocument instanceof Printable)
 			$sXMLDocument = $sXMLDocument->toString();
 
+		// DOMDocument triggers a warning when its argument is empty but it is not triggered by libxml itself
+		// so we cannot use libxml_get_last_error in this case.
+		$sXMLDocument != '' or burn('InvalidArgumentException',
+			_WT('The given string must not be empty.'));
+
+		// Calls to DOMDocument::loadXML must be silenced because it triggers a warning when
+		// its argument is not a well-formed XML document.
+
 		$oDocument = new DOMDocument;
-		@$oDocument->loadXML($sXMLDocument) or burn('BadXMLException',
-			_WT('The given string is not a well-formed XML document.'));
+		if (!@$oDocument->loadXML($sXMLDocument))
+			throw new BadXMLException(
+				_WT('The given string is not a well-formed XML document.'),
+				libxml_get_last_error()
+			);
+
 		$this->oXPath = new DOMXPath($oDocument);
 
 		$oXML = new DOMDocument;
-		@$oXML->loadXML($this->toString()) or burn('BadXMLException',
-			_WT('The string returned by weeTaconite::toString is not a well-formed XML document.'));
+		if (!@$oXML->loadXML($this->toString()))
+			throw new BadXMLException(
+				_WT('The string returned by weeTaconite::toString is not a well-formed XML document.'),
+				libxml_get_last_error()
+			);
 
 		foreach ($oXML->documentElement->childNodes as $oAction)
 		{
@@ -243,17 +258,6 @@ class weeTaconite implements Printable
 
 		$s = $oDocument->saveXML();
 		return rtrim(substr($s, strpos($s, '?>') + 3));
-	}
-
-	/**
-		Convenience function for creating taconite objects in one line.
-
-		@return weeTaconite A new weeTaconite object.
-	*/
-
-	public static function create()
-	{
-		return new self;
 	}
 
 	/**

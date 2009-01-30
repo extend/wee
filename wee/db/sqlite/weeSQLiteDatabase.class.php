@@ -91,6 +91,7 @@ class weeSQLiteDatabase extends weeDatabase
 
 	protected function doQuery($sQuery)
 	{
+		// SQLiteDatabase::query triggers a warning when the query could not be executed.
 		$m = @$this->oDb->query($sQuery, SQLITE_ASSOC, $sLastError);
 
 		if ($m === false)

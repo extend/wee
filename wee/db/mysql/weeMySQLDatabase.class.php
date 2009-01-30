@@ -60,6 +60,7 @@ class weeMySQLDatabase extends weeDatabase
 		function_exists('mysql_connect') or burn('ConfigurationException',
 			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'MySQL'));
 
+		// mysql_connect is silenced because it triggers a warning when the connection failed.
 		$this->rLink = @mysql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'), true);
 		$this->rLink !== false or burn('DatabaseException',
 				_WT('Failed to connect to the database with the following message:') . "\n" . mysql_error());
