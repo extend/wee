@@ -31,7 +31,7 @@ class weeMySQLiDatabase extends weeDatabase
 		The MySQLi database object.
 	*/
 
-	public $oDb;
+	protected $oDb;
 
 	/**
 		Initialises a new mysqli database.
