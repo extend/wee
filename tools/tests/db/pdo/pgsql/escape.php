@@ -13,12 +13,12 @@ $sFormerLocale = setlocale(LC_NUMERIC, 'C');
 
 try {
 	$this->isEqual("'7.5'", $oDb->escape(7.5),
-		_WT('weeSQLiteDatabase::escape does not return the expected escaped float when the locale is "C".'));
+		_WT('weePgSQLDatabase::escape does not return the expected escaped float when the locale is "C".'));
 
 	setlocale(LC_NUMERIC, 'fr_FR');
 
 	$this->isEqual("'7.5'", $oDb->escape(7.5),
-		_WT('weeSQLiteDatabase::escape does not return the expected escaped float when the locale is "fr_FR".'));
+		_WT('weePgSQLDatabase::escape does not return the expected escaped float when the locale is "fr_FR".'));
 }
 catch (Exception $oException) {}
 
@@ -31,6 +31,17 @@ $this->isEqual("'that''s all folks!'", $oDb->escape("that's all folks!"),
 
 $this->isEqual('null', $oDb->escape(null),
 	_WT('null is not properly escaped.'));
+
+// see http://wee.extend.ws/ticket/73
+try {
+	$this->isEqual("'1'", $oDb->escape(true),
+		_WT('escape does not correctly escape true values.'));
+
+	$this->isEqual("'0'", $oDb->escape(false),
+		_WT('escape does not correctly escape false values.'));
+} catch (ErrorException $e) {
+	$this->fail(_WT('escape should not trigger an error when trying to escape boolean values.'));
+}
 
 // Test the method weePDODatabase::escapeIdent
 

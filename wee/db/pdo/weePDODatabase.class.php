@@ -83,6 +83,9 @@ class weePDODatabase extends weeDatabase
 
 	protected function doEscape($mValue)
 	{
+		// see http://wee.extend.ws/ticket/73
+		if ($this->sDBMS == 'pgsql' && is_bool($mValue))
+			$mValue = (int)$mValue;
 		return $this->oDb->quote($mValue);
 	}
 

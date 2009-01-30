@@ -112,7 +112,8 @@ class weePgSQLStatement extends weeDatabaseStatement
 	{
 		foreach ($aParameters as $m => $mValue)
 			if (isset($this->aParametersMap[$m]))
-				$this->aParameters[$this->aParametersMap[$m]] = $mValue;
+				// see http://wee.extend.ws/ticket/73
+				$this->aParameters[$this->aParametersMap[$m]] = is_bool($mValue) ? (int)$mValue : $mValue;
 	}
 
 	/**
