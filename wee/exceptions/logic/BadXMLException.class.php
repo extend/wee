@@ -36,6 +36,7 @@ class BadXMLException extends LogicException
 
 	public function __construct($sMessage, LibXmlError $oError = null)
 	{
+		$iCode = 0;
 		if ($oError) {
 			$sMessage .= "\n";
 			$sMessage .= sprintf(
@@ -44,7 +45,8 @@ class BadXMLException extends LogicException
 				$oError->column
 			);
 			$sMessage .= "\n" . $oError->message;
+			$iCode = $oError->code;
 		}
-		parent::__construct($sMessage);
+		parent::__construct($sMessage, $iCode);
 	}
 }
