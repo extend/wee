@@ -22,37 +22,31 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class for managing an LDAP entry and its attributes. 
+	Class for managing attributes of an LDAP entry.
 */
 
 class weeLDAPEntry implements ArrayAccess, Iterator
 {
 	/**
-		LDAP link identifier. 
+		LDAP connection link identifier.
 	*/
 
 	protected $rLink;
 
 	/**
-		LDAP link identifier of the result. 
+		LDAP link identifier of the entry.
 	*/
 
 	protected $rEntry;
 
 	/**
-		Current attribute. 
-	*/
-
-	protected $sCurrAttribute;
-
-	/**
-		The attributes for the current entry. 
+		The attributes for the current entry.
 	*/
 
 	protected $aAttributes;
 
 	/**
-		Key of the current iterated element. 
+		Key of the current iterated element.
 	*/
 
 	protected $iCurrentIndex;
@@ -61,7 +55,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		Initialise the weeLDAPEntry object.
 
 		@param $rLink The connection link identifier 
-		@param $rResult The search result link identifier.
 		@param $rEntry The entry link identifier.
 	*/
 
@@ -85,9 +78,9 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Return the the current attribute.
+		Return the values of the current attribute.
 
-		@return string The current attribute.
+		@return array The attribute values.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 
@@ -97,10 +90,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Split the DN of the current entry.
-		The structure of the returned value is as follow :
-			$aExplodedDN['count'] = Number of returned values.
-			$aExplodedDN[i] = Indexed DN elements.
+		Split the DN of the entry.
 
 		@param $iOnlyValue Whether the RDNs are returned with only value or with their attributes. Set it to 0 to have a result like dc=example, set it to 1 to have only example.
 		@return array The DN elements splitted.
@@ -118,7 +108,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Find a DN of the current entry.
+		Get the DN of the entry.
 
 		@return string The DN of the current entry.
 		@throw LDAPException If an error occurs.
@@ -144,7 +134,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Move forward to next attribute, and get its values.
+		Move forward to next attribute.
 
 		@return string The next attribute.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
@@ -233,7 +223,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Save the attribute and its values to the current state.
+		Save the attributes and their values to the server for the current entry.
 
 		@throw LDAPException If an error occurs.
 	*/
