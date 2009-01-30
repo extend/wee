@@ -35,13 +35,6 @@ abstract class weeDatabase
 	protected $oMeta;
 
 	/**
-		Number of calls to the query method.
-		For informational and debugging purpose only.
-	*/
-
-	protected $iNumQueries = 0;
-
-	/**
 		Initialize the driver and connects to the database.
 		The arguments available may change between drivers.
 
@@ -232,19 +225,6 @@ abstract class weeDatabase
 	abstract public function numAffectedRows();
 
 	/**
-		Return the number of successfull queries.
-		Only the queries executed using the query method are recorded.
-		For informational and debugging purpose only.
-
-		@return integer The number of queries since the creation of the class
-	*/
-
-	public function numQueries()
-	{
-		return $this->iNumQueries;
-	}
-
-	/**
 		Prepares an SQL query statement.
 
 		By default, returns an instance of weeDatabaseDummyStatement,
@@ -303,8 +283,6 @@ abstract class weeDatabase
 
 	public function query($mQueryString)
 	{
-		$this->iNumQueries++;
-
 		if (func_num_args() > 1)
 		{
 			if (strpos($mQueryString, '?') !== false)
