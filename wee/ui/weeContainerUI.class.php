@@ -105,4 +105,48 @@ class weeContainerUI extends weeUI
 	{
 		return empty($this->sId) ? '' : $this->sId . '-';
 	}
+
+	/**
+		TODO
+	*/
+
+	public function getTaconite()
+	{
+		// TODO: return directly if it was already fetched
+
+		foreach ($this->aFrames as $oFrame) {
+			$oChildTaconite = $oFrame->getTaconite();
+
+			if (empty($oChildTaconite))
+				continue;
+
+			$this->oTaconite->add($oChildTaconite->getTags());
+		}
+
+		return $this->oTaconite;
+	}
+
+	public function noChildTaconite()
+	{
+		foreach ($this->aFrames as $oFrame)
+			$oFrame->noTaconite();
+	}
+
+	public function noTaconite()
+	{
+		$this->noChildTaconite();
+		parent::noTaconite();
+	}
+
+	public function render()
+	{
+		if ($this->sContext == 'xmlhttprequest' && !$this->bNoTaconite) {
+			if (empty($this->oTaconite))
+				$this->oTaconite = new weeTaconite;
+
+			$this->getTaconite();
+		}
+
+		parent::render();
+	}
 }

@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Configurable list of items.
 */
 
-class weeListUI extends weeUI
+class weeListUI extends weeContainerUI
 {
 	/**
 		Name of the template for the frame.
@@ -119,7 +119,7 @@ class weeListUI extends weeUI
 	{
 		$oPagination = new weePaginationUI($this->oController);
 		$oPagination->setTotal($this->iTotal);
-		$oPagination->dispatchEvent($aEvent);
+		$this->addFrame('pagination', $oPagination);
 
 		$aColumns = $this->aColumns;
 
@@ -144,10 +144,11 @@ class weeListUI extends weeUI
 			'list' => $this->aList,
 			'global_actions' => $this->aGlobalActions,
 			'items_actions' => $this->aItemsActions,
-			'pagination' => $oPagination,
 			'orderby' => $this->sOrderBy,
 			'orderdirection' => $this->sOrderDirection,
 		));
+
+		parent::defaultEvent($aEvent);
 	}
 
 	/**

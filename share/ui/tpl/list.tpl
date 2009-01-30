@@ -1,5 +1,5 @@
 <div class="list-container">
-	<?php echo $pagination->render()?> 
+	<?php reset($frames)->render()?> 
 
 	<table class="list">
 		<thead>
@@ -57,5 +57,5 @@
 		</tfoot><?php endif?> 
 	</table>
 
-	<?php echo $pagination->render()?> 
+	<?php reset($frames)->render()?> 
 </div>

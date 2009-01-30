@@ -39,11 +39,35 @@ class weeUI extends weeFrame implements weeFailSafeRouting
 
 	protected $oContainer;
 
+	protected $bNoTaconite = false;
+
 	/**
 		TODO
 	*/
 
 	protected $sId;
+
+	public function getTaconite()
+	{
+		return $this->oTaconite;
+	}
+
+	public function noTaconite()
+	{
+		$this->bNoTaconite = true;
+	}
+
+	public function render()
+	{
+		if ($this->sContext == 'xmlhttprequest') {
+			if ($this->bNoTaconite)
+				$this->oTaconite = null;
+			elseif (empty($this->oTaconite))
+				$this->oTaconite = new weeTaconite;
+		}
+
+		parent::render();
+	}
 
 	/**
 		TODO

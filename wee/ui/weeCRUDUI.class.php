@@ -108,6 +108,11 @@ class weeCRUDUI extends weeContainerUI
 		), $this->iCountPerPage, $iCount);
 
 		parent::defaultEvent($aEvent);
+
+		if ($aEvent['context'] == 'xmlhttprequest') {
+			$this->noChildTaconite();
+			$this->update('replace', '#' . $this->getChildIdPrefix() . 'index', $this->oTpl);
+		}
 	}
 
 	/**
