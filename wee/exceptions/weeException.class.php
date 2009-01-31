@@ -66,7 +66,7 @@ final class weeException
 
 	protected static function filterTrace(array $aTrace)
 	{
-		while (isset($aTrace[0]['class']) ? $aTrace[0]['class'] == __CLASS__ : $aTrace[0]['function'] == 'burn')
+		while (isset($aTrace[0]['class']) && $aTrace[0]['class'] == __CLASS__ || !isset($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
 			array_shift($aTrace);
 		return $aTrace;
 	}
@@ -180,44 +180,59 @@ final class weeException
 
 	public static function handleException(Exception $eException)
 	{
-		if (defined('WEE_CLI')) {
-			$sError = $eException instanceof ErrorException
-				? sprintf(_WT('Error: %s'), self::getLevelName($eException->getSeverity()))
-				: sprintf(_WT('Exception: %s'), get_class($eException));
+		try {
+			if (defined('WEE_CLI')) {
+				$sError = $eException instanceof ErrorException
+					? sprintf(_WT('Error: %s'), self::getLevelName($eException->getSeverity()))
+					: sprintf(_WT('Exception: %s'), get_class($eException));
 
-			$sError .= "\n" . sprintf(_WT('Message: %s'), $eException->getMessage()) . "\n";
-			$sError .= "\n" . _WT('Trace:') . "\n" . self::formatTrace(self::filterTrace($eException->getTrace()));
+				$sError .= "\n" . sprintf(_WT('Message: %s'), $eException->getMessage()) . "\n";
+				$sError .= "\n" . _WT('Trace:') . "\n" . self::formatTrace(self::filterTrace($eException->getTrace()));
 
-			self::printError($sError);
-		} else {
-			if ($eException instanceof RouteNotFoundException)
-				header('HTTP/1.0 404 Not Found');
-			elseif ($eException instanceof NotPermittedException)
-				header('HTTP/1.0 403 Forbidden');
-			else
-				header('HTTP/1.0 500 Internal Server Error');
+				self::printError($sError);
+			} else {
+				if ($eException instanceof RouteNotFoundException)
+					header('HTTP/1.0 404 Not Found');
+				elseif ($eException instanceof NotPermittedException)
+					header('HTTP/1.0 403 Forbidden');
+				else
+					header('HTTP/1.0 500 Internal Server Error');
 
-			$aTrace = self::filterTrace($eException->getTrace());
+				if (defined('DEBUG'))
+					FirePHP::getInstance(true)->error($eException);
 
-			if ($eException instanceof ErrorException)
-				$aError = array(
-					'type'	=> 'error',
-					'name'	=> self::getLevelName($eException->getSeverity()),
-				);
-			else
-				$aError = array(
-					'type'	=> 'exception',
-					'name'	=> get_class($eException),
-				);
+				$aTrace = self::filterTrace($eException->getTrace());
 
+				if ($eException instanceof ErrorException)
+					$aError = array(
+						'type'	=> 'error',
+						'name'	=> self::getLevelName($eException->getSeverity()),
+					);
+				else
+					$aError = array(
+						'type'	=> 'exception',
+						'name'	=> get_class($eException),
+					);
+
+				if (isset($aTrace[0]['file']))
+					$aError += array(
+						'file'	=> $aTrace[0]['file'],
+						'line'	=> $aTrace[0]['line'],
+					);
+				else
+					$aError += array(
+						'file'	=> $eException->getFile(),
+						'line'	=> $eException->getLine(),
+					);
+
+				self::printErrorPage($aError + array(
+					'message'	=> $eException->getMessage(),
+					'trace'		=> self::formatTrace($aTrace),
+				));
+			}
+		} catch (Exception $e) {
 			if (defined('DEBUG'))
-				FirePHP::getInstance(true)->error($eException);
-			self::printErrorPage($aError + array(
-				'file'		=> $aTrace[0]['file'],
-				'line'		=> $aTrace[0]['line'],
-				'message'	=> $eException->getMessage(),
-				'trace'		=> self::formatTrace($aTrace),
-			));
+				echo $e;
 		}
 	}
 
