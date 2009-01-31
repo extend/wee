@@ -21,10 +21,8 @@ try {
 		));
 
 	$oEntry = $o->ls('ou=customers, dc=example, dc=com', 'cn=Anakin Skywalker')->fetch();
-	$aAttr = $oEntry->getAttributes();
-	
-	$this->isEqual('5555-6666', $aAttr['telephoneNumber'][0],
-		_WT('weeLDAP::modify should did not modify the telephonenumber attribute.'));
+	$this->isEqual('5555-6666', $oEntry['telephoneNumber'][0],
+		_WT('weeLDAP::modify did not modify the telephonenumber attribute.'));
 
 	$sDN = 'ou=countries, dc=example, dc=com';
 	$aEntries = $o->read($sDN)->fetchAll();
