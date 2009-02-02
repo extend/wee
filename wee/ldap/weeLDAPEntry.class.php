@@ -70,6 +70,10 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 				ldap_errno($this->rLink)
 			);
 
+		// Clean the array $aAttributes.
+		// Remove the "count" elements and attribute indexes, for avoiding LDAPException in weeLDAPEntry::save.
+		// The array will be like: array('attribute1' => array(value1, value2), 'attribute2' => ...) instead of the array returned by ldap_get_attributes.
+
 		foreach ($this->aAttributes as $mAttrKey => $mAttrValue) {
 			if (is_string($mAttrKey)) {
 				$this->aAttributes[$mAttrKey] = $mAttrValue;
@@ -179,10 +183,10 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function offsetSet($offset, $value)
 	{
 		is_array($value) or burn('InvalidArgumentException',
-			'The value parameter must be an array.');
+			_WT('The value parameter must be an array.'));
 
 		foreach ($value as $iIndex => $sValue)
-			is_int($iIndex) or burn('LDAPException', 'The array of values is not valid. Indexes must be 0, 1...');
+			is_int($iIndex) or burn('LDAPException', _WT('The array of values is not valid. Indexes must be 0, 1...'));
 
 		//TODO:consecutive indexes
 
