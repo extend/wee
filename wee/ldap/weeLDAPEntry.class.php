@@ -136,9 +136,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function next()
 	{
-		if ($this->sCurrAttribute === false)
-			return false;
-
 		$this->iCurrentIndex++;
 	}
 
@@ -152,22 +149,19 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function offsetExists($offset)
 	{
-		return empty($this->aAttributes[$offset]) ? false : true;
+		return !empty($this->aAttributes[$offset]);
 	}
 
 	/**
 		Return attribute at given offset.
 
 		@param $offset Offset index.
-		@return bool Attribute at given offset
+		@return mixed Attribute at given offset
 		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
 	*/
 
 	public function offsetGet($offset)
 	{
-		if (!$this->offsetExists($offset))
-			return false;
-
 		return $this->aAttributes[$offset];
 	}
 
@@ -241,6 +235,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function valid() 
 	{
-		return $this->aAttributes[$this->iCurrentIndex] !== false;
+		return !empty($this->aAttributes[$this->iCurrentIndex]);
 	}
 }

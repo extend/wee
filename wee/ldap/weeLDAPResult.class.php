@@ -78,15 +78,6 @@ class weeLDAPResult implements Iterator
 	}
 
 	/**
-		Free up the memory allocated internally to store the result.
-	*/
-
-	public function __destruct()
-	{
-		ldap_free_result($this->rResult);
-	}
-
-	/**
 		Return the the current element.
 
 		@return weeLDAPEntry An instance of weeLDAPEntry.
@@ -160,10 +151,6 @@ class weeLDAPResult implements Iterator
 	public function next()
 	{
 		$this->rEntry = ldap_next_entry($this->rLink, $this->rEntry);
-
-		if ($this->rEntry === false)
-			return false;
-
 		$this->iCurrentIndex++;
 	}
 
@@ -229,6 +216,6 @@ class weeLDAPResult implements Iterator
 
 	public function valid()
 	{
-		return $this->rEntry !== false;
+		return !empty($this->rEntry);
 	}
 }
