@@ -94,24 +94,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	}
 
 	/**
-		Split the DN of the entry.
-
-		@param $iOnlyValue Whether the RDNs are returned with only value or with their attributes. Set it to 0 to have a result like dc=example, set it to 1 to have only example.
-		@return array The DN elements splitted.
-		@throw InvalidArgumentException The $iOnlyValue must be set to 0 or 1.
-	*/
-
-	public function getExplodedDN($iOnlyValue)
-	{
-		if ($iOnlyValue != 0 && $iOnlyValue != 1) burn('InvalidArgumentException', 
-			_WT('iOnlyValue must be set to 0 to get RDNs with the attributes, to get only values set it to 1.'));
-
-		$aExplodedDN = ldap_explode_dn($this->getDN(), $iOnlyValue);
-
-		return $aExplodedDN;
-	}
-
-	/**
 		Get the DN of the entry.
 
 		@return string The DN of the current entry.

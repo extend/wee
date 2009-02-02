@@ -10,10 +10,6 @@ try {
 
 	$oEntry = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
-	$aSplitedDN = array('count'=> 4, 'Luke Skywalker', 'customers', 'example', 'com');
-	$this->isEqual($aSplitedDN, $oEntry->getExplodedDN(1),
-		_WT('weeLDAPEntry::getExplodedDN did not split the DN.'));
-
 	$this->isEqual('cn=Luke Skywalker,ou=customers,dc=example,dc=com', $oEntry->getDN(),
 		_WT('weeLDAPEntry::getDN did not get the expected DN.'));
 
