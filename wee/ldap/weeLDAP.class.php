@@ -71,15 +71,6 @@ class weeLDAP
 	}
 
 	/**
-		Unbind from LDAP directory.
-	*/
-
-	public function __destruct()
-	{
-		ldap_unbind($this->rLink);
-	}
-
-	/**
 		Add an entry to a specific DN.
 
 		@param $sDN The Distinguished Name.
