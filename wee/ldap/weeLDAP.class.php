@@ -131,27 +131,6 @@ class weeLDAP
 	}
 
 	/**
-		Performs the search for a specified filter at the level immediately below the DN given in parameter, like the shell command ls.
-
-		@param $sDN The Distinguished Name of an LDAP entity.
-		@param $sFilter The filter for the search.
-		@return weeLDAPResult The object containing the result.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function ls($sDN, $sFilter)
-	{
-		$r = ldap_list($this->rLink, $sDN, $sFilter);
-		if ($r === false)
-			throw new LDAPException(
-				_WT('weeLDAP::ls failed to list the DN.') . "\n" . ldap_error($this->rLink),
-				ldap_errno($this->rLink)
-			);
-
-		return new weeLDAPResult($this->rLink, $r);
-	}
-
-	/**
 		Modify the existing entries in the LDAP directory.
 
 		@param $sDN The Distinguished Name of an LDAP entity.
@@ -189,17 +168,22 @@ class weeLDAP
 	}
 
 	/**
-		Perform the search for a specified filter in the entire directory.
+		Perform the search for a specified filter in the directory.
 
 		@param $sDN The Distinguished Name of an LDAP entity.
 		@param $sFilter The filter for the search.
+		@param $bRecursive Whether to include subdirectories.
 		@return weeLDAPResult The object containing the search result.
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function search($sDN, $sFilter)
+	public function search($sDN, $sFilter, $bRecursive = false)
 	{
-		$r = ldap_search($this->rLink, $sDN, $sFilter);
+		if ($bRecursive)
+			$r = ldap_search($this->rLink, $sDN, $sFilter);
+		else
+			$r = ldap_list($this->rLink, $sDN, $sFilter);
+
 		if ($r === false)
 			throw new LDAPException(
 				_WT('weeLDAP::search failed to perfom search.') . "\n" . ldap_error($this->rLink), 

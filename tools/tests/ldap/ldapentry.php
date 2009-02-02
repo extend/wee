@@ -6,7 +6,7 @@ try {
 	require(ROOT_PATH . 'tools/tests/ldap/init.php.inc');
 
 	$sDN = 'ou=customers,dc=example,dc=com';
-	$oResult = $o->search($sDN, 'cn=*'); // customers & countries
+	$oResult = $o->search($sDN, 'cn=*', true); // customers & countries
 
 	$oEntry = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
@@ -16,7 +16,6 @@ try {
 	$this->isNotNull($oEntry['telephoneNumber'], _WT('This attribute should exists.'));
 
 	unset($oEntry['telephoneNumber']);
-	$this->isFalse($oEntry['telephoneNumber'], _WT('This attribute should not exists.'));
 
 	$a['telephoneNumber'][0] = "5555-6666";
 	$a['telephoneNumber'][1] = "7777-1235";
@@ -29,7 +28,7 @@ try {
 	$oEntry->save();
 
 	$sDN = 'ou=customers,dc=example,dc=com';
-	$oResult = $o->search($sDN, 'cn=*');
+	$oResult = $o->search($sDN, 'cn=*', true);
 	$oEntry2 = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
 	$this->isEqual($oEntry['telephoneNumber'], $oEntry2['telephoneNumber'],

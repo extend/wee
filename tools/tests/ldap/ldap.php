@@ -12,7 +12,7 @@ try {
 		sprintf(_WT('weeLDAP::compare should return true because the "%s" attribute of the DN "%s" is "%s".'), $sAttr, $sDN, $sValue));
 
 	$sDN = 'dc=example, dc=com';
-	$iResult = $o->ls($sDN, 'ou=*')->numResults();
+	$iResult = $o->search($sDN, 'ou=*', false)->numResults();
 	$this->isEqual(2, $iResult,
 		sprintf(_WT('weeLDAP::ls did not get the expected result in the DN : "%s".'), $sDN));
 
@@ -20,7 +20,7 @@ try {
 		'telephonenumber' 	=> '5555-6666',
 		));
 
-	$oEntry = $o->ls('ou=customers, dc=example, dc=com', 'cn=Anakin Skywalker')->fetch();
+	$oEntry = $o->search('ou=customers, dc=example, dc=com', 'cn=Anakin Skywalker', false)->fetch();
 	$this->isEqual('5555-6666', $oEntry['telephoneNumber'][0],
 		_WT('weeLDAP::modify did not modify the telephonenumber attribute.'));
 
