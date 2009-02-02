@@ -177,7 +177,7 @@ class weeLDAP
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function search($sDN, $sFilter, $bRecursive = false)
+	public function search($sDN, $sFilter, $bRecursive = true)
 	{
 		if ($bRecursive)
 			$r = ldap_search($this->rLink, $sDN, $sFilter);

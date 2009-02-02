@@ -20,7 +20,7 @@ try {
 		'telephonenumber' 	=> '5555-6666',
 		));
 
-	$oEntry = $o->search('ou=customers, dc=example, dc=com', 'cn=Anakin Skywalker', false)->fetch();
+	$oEntry = $o->search('ou=customers, dc=example, dc=com', 'cn=Anakin Skywalker')->fetch();
 	$this->isEqual('5555-6666', $oEntry['telephoneNumber'][0],
 		_WT('weeLDAP::modify did not modify the telephonenumber attribute.'));
 

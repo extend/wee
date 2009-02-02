@@ -6,7 +6,7 @@ try {
 	require(ROOT_PATH . 'tools/tests/ldap/init.php.inc');
 
 	$sDN = 'dc=example,dc=com';
-	$oResult = $o->search($sDN, 'ou=*');
+	$oResult = $o->search($sDN, 'ou=*', false);
 
 	$oEntry = $oResult->fetch();
 	$this->isEqual($oEntry->getDN(), 'ou=customers,dc=example,dc=com',

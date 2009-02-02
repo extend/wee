@@ -6,7 +6,7 @@ try {
 	require(ROOT_PATH . 'tools/tests/ldap/init.php.inc');
 
 	$sDN = 'ou=customers,dc=example,dc=com';
-	$oResult = $o->search($sDN, 'cn=*', true); // customers & countries
+	$oResult = $o->search($sDN, 'cn=*'); // customers & countries
 
 	$oEntry = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
@@ -28,7 +28,7 @@ try {
 	$oEntry->update();
 
 	$sDN = 'ou=customers,dc=example,dc=com';
-	$oResult = $o->search($sDN, 'cn=*', true);
+	$oResult = $o->search($sDN, 'cn=*');
 	$oEntry2 = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
 	$this->isEqual($oEntry['telephoneNumber'], $oEntry2['telephoneNumber'],
