@@ -64,8 +64,11 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		$this->rLink	= $rLink;
 
 		$this->aAttributes = ldap_get_attributes($this->rLink, $this->rEntry);
-		if ($this->aAttributes == false)
-			throw new LDAPException(_WT('weeLDAPEntry::getAttributes failed to get the attributes of the current entry.') . "\n" . ldap_error(), ldap_errno());
+		if ($this->aAttributes === false)
+			throw new LDAPException(
+				_WT('weeLDAPEntry::getAttributes failed to get the attributes of the current entry.') . "\n" . ldap_error(),
+				ldap_errno($this->rLink)
+			);
 
 		foreach ($this->aAttributes as $mAttrKey => $mAttrValue) {
 			if (is_string($mAttrKey)) {
@@ -118,8 +121,11 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function getDN()
 	{
 		$sDN = ldap_get_dn($this->rLink, $this->rEntry);
-		if ($sDN == false)
-			throw new LDAPException(_WT('weeLDAPEntry::getDN can not find the DN for the specified entry.') . "\n" . ldap_error(), ldap_errno());
+		if ($sDN === false)
+			throw new LDAPException(
+				_WT('weeLDAPEntry::getDN can not find the DN for the specified entry.') . "\n" . ldap_error(), 
+				ldap_errno($this->rLink)
+			);
 
 		return $sDN;
 	}
@@ -233,8 +239,11 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function save()
 	{
 		$b = ldap_mod_replace($this->rLink, $this->getDN(), $this->aAttributes);
-		if ($b == false)
-			throw new LDAPException(_WT('weeLDAPEntry::save can not save the attributes for the current DN".') . "\n" . ldap_error(), ldap_errno());
+		if ($b === false)
+			throw new LDAPException(
+				_WT('weeLDAPEntry::save can not save the attributes for the current DN".') . "\n" . ldap_error(),
+				ldap_errno($this->rLink)
+			);
 	}
 
 	/**
