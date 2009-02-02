@@ -28,13 +28,13 @@
 	$o->delete($sDN);
 
 	$sDN = 'ou=customers, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'ou' => 'customers',
 		'objectClass' => 'organizationalUnit',
 		));
 
 	$sDN = 'cn=Luke Skywalker, ou=customers, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'objectClass'		=> 'person',
 		'sn' 				=> 'Skywalker',
 		'telephonenumber' 	=> '5555-1234',
@@ -43,7 +43,7 @@
 		));
 
 	$sDN = 'cn=Anakin Skywalker, ou=customers, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'objectClass'		=> 'person',
 		'sn' 				=> 'Skywalker',
 		'telephonenumber' 	=> '5555-1234',
@@ -52,43 +52,43 @@
 		));
 
 	$sDN = 'ou=countries, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'ou' => 'countries',
 		'objectClass' => 'organizationalUnit',
 		));
 
 	$sDN = 'c=FR, ou=countries, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'c' => 'FR',
 		'objectClass' => 'country'
 		));
 
 	$sDN = 'l=Paris, c=FR, ou=countries, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'l' => 'Paris',
 		'objectClass' => 'locality'
 		));
 
 	$sDN = 'l=Marseille, c=FR, ou=countries, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'l' => 'Marseille',
 		'objectClass' => 'locality'
 		));
 
 	$sDN = 'c=US, ou=countries, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'c' => 'US',
 		'objectClass' => 'country'
 		));
 
 	$sDN = 'l=Miami, c=US, ou=countries, dc=example, dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'l' 				=> 'Miami',
 		'objectClass'		=> 'locality',
 		));
 
 	$sDN = 'l=Washington,c=US,ou=countries,dc=example,dc=com';
-	$o->add($sDN, array(
+	$o->insert($sDN, array(
 		'l' 				=> 'Washington',
 		'objectClass'		=> 'locality',
 	));

@@ -25,7 +25,7 @@ try {
 	$this->isEqual($oEntry['telephoneNumber'], $a['telephoneNumber'],
 		_WT('This expected values for the telephoneNumber attribute of the entry were not found.'));
 
-	$oEntry->save();
+	$oEntry->update();
 
 	$sDN = 'ou=customers,dc=example,dc=com';
 	$oResult = $o->search($sDN, 'cn=*', true);

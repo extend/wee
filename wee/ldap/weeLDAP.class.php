@@ -79,7 +79,7 @@ class weeLDAP
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function add($sDN, $aEntry)
+	public function insert($sDN, $aEntry)
 	{
 		is_array($aEntry) or burn('InvalidArgumentException', 'The aEntry parameter must be an array.');
 
@@ -101,7 +101,7 @@ class weeLDAP
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function compare($sDN, $sAttribute, $sValue)
+	public function isEqual($sDN, $sAttribute, $sValue)
 	{
 		$b = ldap_compare($this->rLink, $sDN, $sAttribute, $sValue);
 		if ($b === -1)
@@ -137,7 +137,7 @@ class weeLDAP
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function update($sDN, $aEntry)
+	public function modify($sDN, $aEntry)
 	{
 		$b = ldap_modify($this->rLink, $sDN, $aEntry);
 		if ($b === false)
@@ -155,7 +155,7 @@ class weeLDAP
 		@return weeLDAPResult The object containing the result.
 	*/
 
-	public function read($sDN, $sFilter = 'objectClass=*')
+	public function fetch($sDN, $sFilter = 'objectClass=*')
 	{
 		$r = ldap_read($this->rLink, $sDN, $sFilter);
 		if ($r === false)
@@ -202,7 +202,7 @@ class weeLDAP
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function setDN($sFromDN, $sToDN, $bDeleteOldRDN = true)
+	public function rename($sFromDN, $sToDN, $bDeleteOldRDN = true)
 	{
 		$b = ldap_rename($this->rLink, $sFromDN, $sToDN, null, $bDeleteOldRDN);
 		if ($b === false)

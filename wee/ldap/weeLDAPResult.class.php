@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class for entries results.
 */
 
-class weeLDAPResult implements Iterator
+class weeLDAPResult implements Iterator, Countable
 {
 	/**
 		LDAP link identifier. 
@@ -159,9 +159,10 @@ class weeLDAPResult implements Iterator
 
 		@return integer Number of the entries found in the current result.
 		@throw LDAPException If an error occurs.
+		@see http://www.php.net/~helly/php/ext/spl/interfaceCountable.html
 	*/
 
-	public function numResults()
+	public function count()
 	{
 		$iEntries = ldap_count_entries($this->rLink, $this->rResult);
 		if ($iEntries === false)

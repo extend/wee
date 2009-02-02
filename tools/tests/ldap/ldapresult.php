@@ -12,7 +12,7 @@ try {
 	$this->isEqual($oEntry->getDN(), 'ou=customers,dc=example,dc=com',
 		_WT('weeLDAPResult::fetch did not get the expected entry.'));
 
-	$this->isEqual(2, $oResult->numResults(),
+	$this->isEqual(2, $oResult->count(),
 		_WT('weeLDAPResult::numResults did not get the expected number of entries.'));
 
 	$aEntries = $oResult->fetchAll();

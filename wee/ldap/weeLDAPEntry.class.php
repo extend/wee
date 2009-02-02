@@ -216,7 +216,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function save()
+	public function update()
 	{
 		$b = ldap_mod_replace($this->rLink, $this->getDN(), $this->aAttributes);
 		if ($b === false)
