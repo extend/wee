@@ -90,15 +90,21 @@ class weeLDAPResult implements Iterator, Countable
 	}
 
 	/**
-		Fetch the next entry.
+		Fetch the first entry.
 
 		@return weeLDAPEntry An instance of weeLDAPEntry.
 	*/
 
 	public function fetch()
 	{
-		$this->rewind();
-		return $this->current();
+		$this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
+		if ($this->rEntry === false)
+			throw new LDAPException(
+				_WT('Failed to get the first entry.') . "\n" . ldap_error(), 
+				ldap_errno($this->rLink)
+			);
+
+		return new weeLDAPEntry($this->rLink, $this->rEntry);
 	}
 
 	/**
