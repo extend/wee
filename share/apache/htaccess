@@ -1,6 +1,15 @@
+# disable MultiViews if enabled
+# @see http://httpd.apache.org/docs/2.0/mod/mod_negotiation.html#multiviews
+
+Options -MultiViews
+
 # rewrite URLs so that all files not
 # found are handled by our index file
 
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.+)$ index.php/$1 [QSA,L]
+
+# on some configurations the full path
+# to the boostrap file is required, e.g.
+# /index.php or /path/to/index.php
