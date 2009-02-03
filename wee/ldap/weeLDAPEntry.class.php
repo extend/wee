@@ -170,7 +170,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 		@param $offset Offset name.
 		@param $value New value for this offset.
-		@throw InvalidArgumentException	The value must be an array.
+		@throw InvalidArgumentException The value must be an array with consecutive indices 0, 1, ...
 		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
 	*/
 
@@ -179,10 +179,12 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		is_array($value) or burn('InvalidArgumentException',
 			_WT('The value parameter must be an array.'));
 
+		// Check whether the value array is valid.
+		// ldap_mod_replace in weeLDAPEntry::save need an array value with consecutive indices 0, 1, ...
+		$iValid = 0;
 		foreach ($value as $iIndex => $sValue)
-			is_int($iIndex) or burn('LDAPException', _WT('The array of values is not valid. Indexes must be 0, 1...'));
-
-		//TODO:consecutive indexes
+			if ($iIndex !== $iValid++)
+				burn('InvalidArgumentException', _WT('The value array is not valid. It must have consecutive indices 0, 1, ...'));
 
 		$this->aAttributes[$offset] = $value;
 	}
