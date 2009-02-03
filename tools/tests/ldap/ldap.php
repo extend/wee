@@ -25,9 +25,9 @@ try {
 		_WT('weeLDAP::modify did not modify the telephonenumber attribute.'));
 
 	$sDN = 'ou=countries, dc=example, dc=com';
-	$aEntries = $o->fetch($sDN)->fetchAll();
+	$oEntries = $o->search($sDN, 'objectClass=*', false)->fetchAll();
 
-	$this->isEqual(2, $aEntries[0]['count'], //FR & US
+	$this->isEqual(2, count($oEntries), //FR & US
 		sprintf(_WT('weeLDAP::read should find entries, in the DN : "%s".'), $sDN));
 
 	$sDN = 'dc=example, dc=com';

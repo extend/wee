@@ -110,28 +110,17 @@ class weeLDAPResult implements Iterator, Countable
 	/**
 		Fetch all entries from the current result.
 
-		weeLDAPResult::search read also the attributes and multiple values.
-		The structure of the returned value is as follow :
-
-			$aEntries['count'] = Number of entries in the result.
-			$aEntries[i]['count'] = Number of attributes in the ith entry, also $aEntries[i]['count'].
-			$aEntries[i][j]['count'] = Number of values for the jth attribute in ith entry, also $aEntries[i]['attribute']['count'].
-
-			$aEntries[i] = The ith entry in the result.
-			$aEntries[i][j] = The jth attributes in the ith entry, also $aEntries[i]['attribute'].
-			$aEntries[i][j][k] = The kth value of the jth attribute in the ith entry, also $aEntries[i]['attribute'][k].
-
-		@return array An instance of weeLDAPEntry.
+		@return array Instances of weeLDAPEntry.
 	*/
 
 	public function fetchAll()
 	{
-		$aEntries = ldap_get_entries($this->rLink, $this->rResult);
-		if ($aEntries === false)
-			throw new LDAPException(
-				_WT('weeLDAPResult::fetchAll failed to get entries.') . "\n" . ldap_error(),
-				ldap_errno($this->rLink)
-			);
+		$iEntry = 0;
+		for ($this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
+			$this->rEntry !== false;
+			$this->rEntry = ldap_next_entry($this->rLink, $this->rEntry)) {
+			$aEntries[$iEntry++] = new weeLDAPEntry($this->rLink, $this->rEntry);
+		}
 
 		return $aEntries;
 	}

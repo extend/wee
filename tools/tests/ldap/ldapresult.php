@@ -16,7 +16,7 @@ try {
 		_WT('weeLDAPResult::numResults did not get the expected number of entries.'));
 
 	$aEntries = $oResult->fetchAll();
-	$this->isEqual(2, $aEntries['count'], // customers & countries
+	$this->isEqual(2, count($aEntries), // customers & countries
 		_WT('weeLDAPResult::fetchAll did not get the expected number of entries.'));
 
 	$oResult->sort('ou');
