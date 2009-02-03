@@ -106,7 +106,7 @@ class weeLDAP
 		$b = ldap_compare($this->rLink, $sDN, $sAttribute, $sValue);
 		if ($b === -1)
 			throw new LDAPException(
-				_WT('weeLDAP::compare failed to compare the value of the attribute.') . "\n" . ldap_error($this->rLink), 
+				_WT('Failed to compare the value of the attribute.') . "\n" . ldap_error($this->rLink), 
 				ldap_errno($this->rLink)
 			);
 
@@ -125,7 +125,7 @@ class weeLDAP
 		$b = ldap_delete($this->rLink, $sDN);
 		if ($b === false)
 			throw new LDAPException(
-				_WT('weeLDAP::delete failed to delete the DN.') . "\n" . ldap_error($this->rLink), 
+				_WT('Failed to delete the DN.') . "\n" . ldap_error($this->rLink), 
 				ldap_errno($this->rLink)
 			);
 	}
@@ -142,7 +142,7 @@ class weeLDAP
 		$b = ldap_modify($this->rLink, $sDN, $aEntry);
 		if ($b === false)
 			throw new LDAPException(
-				_WT('weeLDAP::modify failed to modify the specified entry.') . "\n" . ldap_error($this->rLink),
+				_WT('Failed to modify the entry.') . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
@@ -160,7 +160,7 @@ class weeLDAP
 		$r = ldap_read($this->rLink, $sDN, $sFilter);
 		if ($r === false)
 			throw new LDAPException(
-				sprintf(_WT('weeLDAP::read failed to read in the DN "%s".'), $sDN) . "\n" . ldap_error($this->rLink),
+				_WT('Failed to read in the specified DN.') . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 
@@ -186,7 +186,7 @@ class weeLDAP
 
 		if ($r === false)
 			throw new LDAPException(
-				_WT('weeLDAP::search failed to perfom search.') . "\n" . ldap_error($this->rLink), 
+				_WT('Failed to search in the specified DN.') . "\n" . ldap_error($this->rLink), 
 				ldap_errno($this->rLink)
 			);
 
@@ -207,7 +207,7 @@ class weeLDAP
 		$b = ldap_rename($this->rLink, $sFromDN, $sToDN, null, $bDeleteOldRDN);
 		if ($b === false)
 			throw new LDAPException(
-				_WT('weeLDAP::setDN failed to rename the entry.') . "\n" . ldap_error($this->rLink), 
+				_WT('Failed to rename the entry.') . "\n" . ldap_error($this->rLink), 
 				ldap_errno($this->rLink)
 			);
 	}

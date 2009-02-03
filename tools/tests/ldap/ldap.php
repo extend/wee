@@ -9,12 +9,14 @@ try {
 	$sAttr = 'objectClass';
 	$sValue = 'person';
 	$this->isTrue($o->isEqual($sDN, $sAttr, $sValue),
-		sprintf(_WT('weeLDAP::compare should return true because the "%s" attribute of the DN "%s" is "%s".'), $sAttr, $sDN, $sValue));
+		_WT('weeLDAP::isEqual should return true.'));
 
-	$sDN = 'dc=example, dc=com';
-	$iResult = $o->search($sDN, 'ou=*', false)->count();
-	$this->isEqual(2, $iResult,
-		sprintf(_WT('weeLDAP::ls did not get the expected result in the DN : "%s".'), $sDN));
+	$sDN = 'ou=countries, dc=example, dc=com';
+	$this->isEqual(2, count($o->search($sDN, 'objectClass=*', false)),
+		_WT('weeLDAPResult::count should return 2.'));
+
+	$this->isEqual(7, count($o->search($sDN, 'objectClass=*')),
+		_WT('weeLDAPResult::count should return 7.'));
 
 	$o->modify('cn=Anakin Skywalker, ou=customers, dc=example, dc=com', array(
 		'telephonenumber' 	=> '5555-6666',
@@ -22,18 +24,13 @@ try {
 
 	$oEntry = $o->search('ou=customers, dc=example, dc=com', 'cn=Anakin Skywalker')->fetch();
 	$this->isEqual('5555-6666', $oEntry['telephoneNumber'][0],
-		_WT('weeLDAP::modify did not modify the telephonenumber attribute.'));
+		_WT('The expected value for the first value of the telephoneNumber attribute was not found.'));
 
 	$sDN = 'ou=countries, dc=example, dc=com';
 	$oEntries = $o->search($sDN, 'objectClass=*', false)->fetchAll();
 
 	$this->isEqual(2, count($oEntries), //FR & US
-		sprintf(_WT('weeLDAP::read should find entries, in the DN : "%s".'), $sDN));
-
-	$sDN = 'dc=example, dc=com';
-	$this->isEqual(2, $o->search($sDN, 'ou=*')->count(),
-		sprintf(_WT('weeLDAP::search did not find the expected result in the DN : "%s".'), $sDN));
-
+		sprintf(_WT('Bad number of entries, in the DN : "%s".'), $sDN));
 } catch (LDAPException $e) {
 	$this->fail(_WT('weeLDAP should not throw an LDAPException.'));
 }

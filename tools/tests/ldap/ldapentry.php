@@ -11,9 +11,9 @@ try {
 	$oEntry = $oResult->fetch(); //cn=Luke Skywalker,ou=customers,dc=example,dc=com
 
 	$this->isEqual('cn=Luke Skywalker,ou=customers,dc=example,dc=com', $oEntry->getDN(),
-		_WT('weeLDAPEntry::getDN did not get the expected DN.'));
+		_WT('Did not get the expected DN.'));
 
-	$this->isNotNull($oEntry['telephoneNumber'], _WT('This attribute should exists.'));
+	$this->isNotNull($oEntry['telephoneNumber'], _WT('This attribute should exist.'));
 
 	unset($oEntry['telephoneNumber']);
 

@@ -10,14 +10,14 @@ try {
 
 	$oEntry = $oResult->fetch();
 	$this->isEqual($oEntry->getDN(), 'ou=customers,dc=example,dc=com',
-		_WT('weeLDAPResult::fetch did not get the expected entry.'));
+		_WT('Failed to get the expected entry.'));
 
-	$this->isEqual(2, $oResult->count(),
-		_WT('weeLDAPResult::numResults did not get the expected number of entries.'));
+	$this->isEqual(2, count($oResult),
+		_WT('Bad number of entries.'));
 
 	$aEntries = $oResult->fetchAll();
 	$this->isEqual(2, count($aEntries), // customers & countries
-		_WT('weeLDAPResult::fetchAll did not get the expected number of entries.'));
+		_WT('Bad number of entries.'));
 
 	$oResult->sort('ou');
 	$aSorted = array(
@@ -29,7 +29,7 @@ try {
 		$aResult[$key] = $entry->getDN();
 
 	$this->isEqual($aSorted, $aResult,
-		_WT('weeLDAPResult::sort did not sort the entries.'));
+		_WT('The entries were not sorted.'));
 } catch (LDAPException $e) {
 	$this->fail(_WT('weeLDAP should not throw an LDAPException.'));
 }
