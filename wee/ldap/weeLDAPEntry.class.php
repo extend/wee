@@ -54,7 +54,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	/**
 		Initialise the weeLDAPEntry object.
 
-		@param $rLink The connection link identifier 
+		@param $rLink The connection link identifier.
 		@param $rEntry The entry link identifier.
 	*/
 
@@ -156,7 +156,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		Return attribute at given offset.
 
 		@param $offset Offset index.
-		@return mixed Attribute at given offset
+		@return mixed Attribute at given offset.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
 	*/
 
@@ -231,7 +231,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	/**
 		Check if there is a current attribute after calls to rewind() or next().
 
-		@return bool Whether there is a current attribute after calls to rewind() or next();
+		@return bool Whether there is a current attribute after calls to rewind() or next().
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 

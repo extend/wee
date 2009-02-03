@@ -28,19 +28,19 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeLDAPResult implements Iterator, Countable
 {
 	/**
-		LDAP link identifier. 
+		LDAP link identifier.
 	*/
 
 	protected $rLink;
 
 	/**
-		LDAP link identifier of the result. 
+		LDAP link identifier of the result.
 	*/
 
 	protected $rResult;
 
 	/**
-		LDAP link identifier of the current entry. 
+		LDAP link identifier of the current entry.
 	*/
 
 	protected $rEntry;
@@ -60,8 +60,8 @@ class weeLDAPResult implements Iterator, Countable
 	/**
 		Initialise the WeeLDAPResult object.
 
-		@param $rLink The connection link identifier 
-		@param $rResult The search result link identifier
+		@param $rLink The connection link identifier.
+		@param $rResult The search result link identifier.
 	*/
 
 	public function __construct($rLink, $rResult)
@@ -78,7 +78,7 @@ class weeLDAPResult implements Iterator, Countable
 	}
 
 	/**
-		Return the the current element.
+		Return the current element.
 
 		@return weeLDAPEntry An instance of weeLDAPEntry.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
@@ -205,7 +205,7 @@ class weeLDAPResult implements Iterator, Countable
 	/**
 		Check if there is a current element after calls to rewind() or next().
 
-		@return bool whether there is a current element after calls to rewind() or next();
+		@return bool whether there is a current element after calls to rewind() or next().
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 

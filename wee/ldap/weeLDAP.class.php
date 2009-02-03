@@ -22,19 +22,19 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class for accessing LDAP-based directories. 
+	Class for accessing LDAP-based directories.
 */
 
 class weeLDAP
 {
 	/**
-		LDAP link identifier. 
+		LDAP link identifier.
 	*/
 
 	protected $rLink;
 
 	/**
-		Establishes a simple connection to an LDAP server on a specified hostname and port, and binds to the LDAP directory with specified RDN and password.
+		Establish a simple connection to an LDAP server on a specified hostname and port, and bind to the LDAP directory with specified RDN and password.
 		For binding anonymously, you don't need to specify RDN and password.
 
 		Parameters:
@@ -92,9 +92,9 @@ class weeLDAP
 	}
 
 	/**
-		Compares the value of the attribute of an entry for a specific DN.
+		Compare the value of the attribute of an entry for a specific DN.
 
-		@param $sDN The Distinguished Name of an LDAP entity. 
+		@param $sDN The Distinguished Name of an LDAP entity.
 		@param $sAttribute The attribute name.
 		@param $sValue The compared value.
 		@return bool Whether the value matched.
@@ -114,9 +114,9 @@ class weeLDAP
 	}
 
 	/**
-		Deletes an entry in the LDAP directory. 
+		Delete an entry in the LDAP directory.
 
-		@param $sDN The Distinguished Name of an LDAP entity. 
+		@param $sDN The Distinguished Name of an LDAP entity.
 		@throw LDAPException If an error occurs.
 	*/
 
@@ -150,7 +150,7 @@ class weeLDAP
 	/**
 		Read an entry.
 
-		@param $sDN The Distinguished Dame of an LDAP entity.
+		@param $sDN The Distinguished Name of an LDAP entity.
 		@param $sFilter The filter for the read by default objectClass=*.
 		@return weeLDAPResult The object containing the result.
 	*/
@@ -197,14 +197,14 @@ class weeLDAP
 		Rename the entry.
 
 		@param $sFromDN The actual Distinguished Name.
-		@param $sToDN The new Distinguished Name.
+		@param $sToRDN The new Relative Distinguished Name.
 		@param $bDeleteOldRDN Whether the old DN has to be deleted.
 		@throw LDAPException If an error occurs.
 	*/
 
-	public function rename($sFromDN, $sToDN, $bDeleteOldRDN = true)
+	public function rename($sFromDN, $sToRDN, $bDeleteOldRDN = true)
 	{
-		$b = ldap_rename($this->rLink, $sFromDN, $sToDN, null, $bDeleteOldRDN);
+		$b = ldap_rename($this->rLink, $sFromDN, $sToRDN, null, $bDeleteOldRDN);
 		if ($b === false)
 			throw new LDAPException(
 				_WT('Failed to rename the entry.') . "\n" . ldap_error($this->rLink), 
