@@ -115,11 +115,10 @@ class weeLDAPResult implements Iterator, Countable
 
 	public function fetchAll()
 	{
-		$iEntry = 0;
 		for ($this->rEntry = ldap_first_entry($this->rLink, $this->rResult);
 			$this->rEntry !== false;
 			$this->rEntry = ldap_next_entry($this->rLink, $this->rEntry)) {
-			$aEntries[$iEntry++] = new weeLDAPEntry($this->rLink, $this->rEntry);
+			$aEntries[] = new weeLDAPEntry($this->rLink, $this->rEntry);
 		}
 
 		return $aEntries;
