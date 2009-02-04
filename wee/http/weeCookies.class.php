@@ -51,20 +51,6 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Delete the specified cookie.
-
-		@param $sName Name of the cookie to delete.
-	*/
-
-	public function delete($sName)
-	{
-		headers_sent() and burn('IllegalStateException',
-			_WT('You cannot delete a cookie if headers are already sent.'));
-
-		setcookie($sName, '', 0, $this->sCookiePath);
-	}
-
-	/**
 		Return the default cookie path.
 
 		This method will return APP_PATH if a custom APP_PATH has been defined.
@@ -121,7 +107,7 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Set a new value for the given offset.
+		Send a cookie to the browser.
 
 		This aliases weeCookies::set with a default 3rd parameter.
 		This do NOT add the value directly in the cookies array.
@@ -138,9 +124,8 @@ class weeCookies implements ArrayAccess
 	}
 
 	/**
-		Unset offset.
+		Delete the specified cookie.
 
-		This aliases weeCookies::delete and sends a header to delete the cookie.
 		This do NOT remove the value directly from the cookies array.
 		The value will be deleted on the next request from this user.
 
@@ -150,7 +135,10 @@ class weeCookies implements ArrayAccess
 
 	public function offsetUnset($offset)
 	{
-		$this->delete($offset);
+		headers_sent() and burn('IllegalStateException',
+			_WT('You cannot delete a cookie if headers are already sent.'));
+
+		setcookie($offset, '', 0, $this->sCookiePath);
 	}
 
 	/**

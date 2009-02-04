@@ -10,7 +10,7 @@ try {
 	$o = new weeCookies;
 
 	if ($iStep == 1) {
-		$o->delete('testcookie', 'this is a test');
+		unset($o['testcookie']);
 		$o->set('timecookie', 'this is going to expire in a week', 1);
 	} else {
 		isset($o['testcookie']) and burn('UnitTestException',
