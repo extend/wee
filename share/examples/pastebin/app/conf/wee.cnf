@@ -13,6 +13,11 @@ start.locale	= 0
 start.output	= 1
 start.session	= 0
 
+# Cookies settings
+
+cookies.driver	= weeCookies
+cookies.path	=
+
 # Database settings
 
 db.driver	= weePgSQLDatabase

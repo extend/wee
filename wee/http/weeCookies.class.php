@@ -47,7 +47,7 @@ class weeCookies implements ArrayAccess
 
 	public function __construct($aParams = array())
 	{
-		$this->sCookiePath = array_key_exists('path', $aParams) ? $aParams['path'] : $this->getDefaultPath();
+		$this->sCookiePath = empty($aParams['path']) ? $this->getDefaultPath() : $aParams['path'];
 	}
 
 	/**
