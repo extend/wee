@@ -28,7 +28,7 @@ if (!defined('UPLOAD_ERR_CANT_WRITE'))	define('UPLOAD_ERR_CANT_WRITE', 7);
 	A better handling of files uploaded using forms.
 */
 
-class weeUploadedFiles implements Iterator
+class weeUploads implements Iterator
 {
 	/**
 		True if the filter specified by $sFilter is valid, false otherwise.
@@ -120,6 +120,24 @@ class weeUploadedFiles implements Iterator
 	}
 
 	/**
+		Returns the specified file.
+		Throws an exception if the name given points to an array of files.
+
+		@param	$sName	The name of the file.
+		@return	weeUploadedfile	A new file object for the requested file.
+	*/
+
+	public function fetch($sName)
+	{
+		empty($_FILES[$sName]) and burn('InvalidArgumentException',
+			sprintf(_WT('File "%s" was not found in the uploaded files.'), $sName));
+		is_array($_FILES[$sName]['name']) and burn('InvalidArgumentException',
+			sprintf(_WT('"%s" is an array of files. You cannot retrieve it using weeUploads::fetch.'), $sName));
+
+		return $this->createFile($_FILES[$sName]);
+	}
+
+	/**
 		Filters through the files uploaded.
 		Use filter if you want to iterate only through an array of files sharing the same name.
 
@@ -132,24 +150,6 @@ class weeUploadedFiles implements Iterator
 		$this->bFilterValid	= !is_null($sName) && array_key_exists($sName, $_FILES);
 		$this->sFilter		= $sName;
 		return $this;
-	}
-
-	/**
-		Returns the specified file.
-		Throws an exception if the name given points to an array of files.
-
-		@param	$sName	The name of the file.
-		@return	weeUploadedfile	A new file object for the requested file.
-	*/
-
-	public function get($sName)
-	{
-		empty($_FILES[$sName]) and burn('InvalidArgumentException',
-			sprintf(_WT('File "%s" was not found in the uploaded files.'), $sName));
-		is_array($_FILES[$sName]['name']) and burn('InvalidArgumentException',
-			sprintf(_WT('"%s" is an array of files. You cannot retrieve it using weeUploadedFiles::get.'), $sName));
-
-		return $this->createFile($_FILES[$sName]);
 	}
 
 	/**

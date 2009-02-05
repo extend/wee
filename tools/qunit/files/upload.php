@@ -10,7 +10,7 @@ function_exists('curl_init') or burn('ConfigurationException',
 	'The cURL PHP extension is required to run this test.');
 
 try {
-	$o = new weeUploadedFiles;
+	$o = new weeUploads;
 	$sURL = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '&upload=1';
 
 	if ($iStep == 1) {
@@ -33,7 +33,7 @@ try {
 			$o->exists('test') or burn('UnitTestException',
 				_WT('The uploaded file "test" do not exist.'));
 
-			$oFile = $o->get('test');
+			$oFile = $o->fetch('test');
 
 			$oFile->isOK() or burn('UnitTestException',
 				sprintf(_WT('Upload error: %s'), $oFile->getError()));
