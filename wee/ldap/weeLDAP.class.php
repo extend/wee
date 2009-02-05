@@ -56,11 +56,8 @@ class weeLDAP
 		empty($aParams['host']) and burn('InvalidArgumentException', 'The host parameter must not be empty.');
 
 		$this->rLink = ldap_connect(array_value($aParams,'host'), array_value($aParams, 'port', 389));
-		if ($this->rLink === false)
-			throw new LDAPException(
-				sprintf(_WT('Can not connect to "%s" :'), array_value($aParams,'host')) . "\n" . ldap_error($this->rLink),
-				ldap_errno($this->rLink)
-			);
+		$this->rLink === false and burn('LDAPException', 
+			sprintf(_WT('Can not connect to "%s" :'), array_value($aParams,'host')));
 
 		$b = ldap_bind($this->rLink, array_value($aParams, 'rdn', null), array_value($aParams, 'password', null));
 		if ($b === false)
