@@ -83,11 +83,7 @@ class weeLDAP
 		$aFromDN = split(',', $sFromDN, 2);
 		$oFromEntry = $this->search($aFromDN[1], $aFromDN[0], false)->fetch();
 
-		// Creating new entry with the attributes of $sFromDN entry
-		foreach ($oFromEntry as $sAttrKey => $aAttrValue)
-			$aFromEntryAttr[$sAttrKey] = $aAttrValue;
-
-		$this->insert($sToDN, $aFromEntryAttr);
+		$this->insert($sToDN, $oFromEntry->toArray());
 	}
 
 	/**

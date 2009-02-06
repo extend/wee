@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Class for managing attributes of an LDAP entry.
 */
 
-class weeLDAPEntry implements ArrayAccess, Iterator
+class weeLDAPEntry implements ArrayAccess, Iterator, Mappable
 {
 	/**
 		LDAP connection link identifier.
@@ -210,6 +210,17 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 	public function rewind()
 	{
 		reset($this->aAttributes);
+	}
+
+	/**
+		Return all the attributes of the current entry as an array.
+
+		@return array The attributes as an array.
+	*/
+
+	public function toArray()
+	{
+		return $this->aAttributes;
 	}
 
 	/**
