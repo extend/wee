@@ -94,7 +94,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function current()
 	{
-		return $this->aAttributes[$this->iCurrentIndex];
+		return current($this->aAttributes);
 	}
 
 	/**
@@ -124,7 +124,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function key()
 	{
-		return $this->iCurrentIndex;
+		return key($this->aAttributes);
 	}
 
 	/**
@@ -136,7 +136,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function next()
 	{
-		$this->iCurrentIndex++;
+		next($this->aAttributes);//return?
 	}
 
 	/**
@@ -183,7 +183,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 		// ldap_mod_replace in weeLDAPEntry::save need an array value with consecutive indices 0, 1, ...
 		$iValid = 0;
 		foreach ($value as $iIndex => $sValue)
-			if ($iIndex !== $iValid++)
+			$iIndex === $iValid++ or
 				burn('InvalidArgumentException', _WT('The value array is not valid. It must have consecutive indices 0, 1, ...'));
 
 		$this->aAttributes[$offset] = $value;
@@ -209,7 +209,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function rewind()
 	{
-		$this->iCurrentIndex = 0;
+		reset($this->aAttributes);
 	}
 
 	/**
@@ -237,6 +237,6 @@ class weeLDAPEntry implements ArrayAccess, Iterator
 
 	public function valid() 
 	{
-		return !empty($this->aAttributes[$this->iCurrentIndex]);
+		return $this->current() !== false;
 	}
 }
