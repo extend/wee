@@ -68,6 +68,66 @@ class weeLDAP
 	}
 
 	/**
+		Copy the entry.
+
+		@param $sFromDN The actual Distinguished Name.
+		@param $sToDN The new Distinguished Name.
+		@throw InvalidArgumentException The DNs must be different.
+	*/
+
+	public function copy($sFromDN, $sToDN)
+	{
+		$sFromDN === $sToDN and burn('InvalidArgumentException', 
+			'The DN source and destination must be different');
+
+		$aFromDN = split(',', $sFromDN, 2);
+		$oFromEntry = $this->search($aFromDN[1], $aFromDN[0], false)->fetch();
+
+		// Creating new entry with the attributes of $sFromDN entry
+		foreach ($oFromEntry as $sAttrKey => $aAttrValue)
+			$aFromEntryAttr[$sAttrKey] = $aAttrValue;
+
+		$this->insert($sToDN, $aFromEntryAttr);
+	}
+
+	/**
+		Delete an entry in the LDAP directory.
+
+		@param $sDN The Distinguished Name of an LDAP entity.
+		@throw LDAPException If an error occurs.
+	*/
+
+	public function delete($sDN)
+	{
+		$b = ldap_delete($this->rLink, $sDN);
+		if ($b === false)
+			throw new LDAPException(
+				_WT('Failed to delete the DN.') . "\n" . ldap_error($this->rLink), 
+				ldap_errno($this->rLink)
+			);
+	}
+
+	/**
+		Read an entry.
+
+		@param $sDN The Distinguished Name of an LDAP entity.
+		@param $sFilter The filter for the read by default objectClass=*.
+		@return weeLDAPResult The object containing the result.
+	*/
+
+	public function fetch($sDN, $sFilter = 'objectClass=*')
+	{
+		$r = ldap_read($this->rLink, $sDN, $sFilter);
+		if ($r === false)
+			throw new LDAPException(
+				_WT('Failed to read in the specified DN.') . "\n" . ldap_error($this->rLink),
+				ldap_errno($this->rLink)
+			);
+
+		return new weeLDAPResult($this->rLink, $r);
+	}
+
+	/**
 		Add an entry to a specific DN.
 
 		@param $sDN The Distinguished Name.
@@ -111,23 +171,6 @@ class weeLDAP
 	}
 
 	/**
-		Delete an entry in the LDAP directory.
-
-		@param $sDN The Distinguished Name of an LDAP entity.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function delete($sDN)
-	{
-		$b = ldap_delete($this->rLink, $sDN);
-		if ($b === false)
-			throw new LDAPException(
-				_WT('Failed to delete the DN.') . "\n" . ldap_error($this->rLink), 
-				ldap_errno($this->rLink)
-			);
-	}
-
-	/**
 		Modify the existing entries in the LDAP directory.
 
 		@param $sDN The Distinguished Name of an LDAP entity.
@@ -145,23 +188,51 @@ class weeLDAP
 	}
 
 	/**
-		Read an entry.
+		Move the entry.
 
-		@param $sDN The Distinguished Name of an LDAP entity.
-		@param $sFilter The filter for the read by default objectClass=*.
-		@return weeLDAPResult The object containing the result.
+		@param $sFromDN The actual Distinguished Name.
+		@param $sToDN The new Distinguished Name.
+		@throw ConfigurationException The server must be configured to use LDAPv3.
+		@throw UnexpectedValueException If an error occurs.
+		@throw LDAPException If an error occurs.
 	*/
 
-	public function fetch($sDN, $sFilter = 'objectClass=*')
+	public function move($sFromDN, $sToDN)
 	{
-		$r = ldap_read($this->rLink, $sDN, $sFilter);
-		if ($r === false)
+		if (ldap_get_option($this->rLink, LDAP_OPT_PROTOCOL_VERSION, $iVersion)) {
+				$iVersion === 3 or burn('ConfigurationException', 
+					'This feature works only with LDAPv3. You may have to set the protocol version option prior to binding, to use LDAPv3.');
+		} else
 			throw new LDAPException(
-				_WT('Failed to read in the specified DN.') . "\n" . ldap_error($this->rLink),
+				_WT('Failed to get the protocol version.') . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 
-		return new weeLDAPResult($this->rLink, $r);
+		$aToRDN = split(',', $sToDN, 2);
+		$b = ldap_rename($this->rLink, $sFromDN, $aToRDN[0], $aToRDN[1], true);
+		if ($b === false)
+			throw new LDAPException(
+				_WT('Failed to move the entry.') . "\n" . ldap_error($this->rLink), 
+				ldap_errno($this->rLink)
+			);
+	}
+
+	/**
+		Rename the entry.
+
+		@param $sFromDN The actual Distinguished Name.
+		@param $sToRDN The new Relative Distinguished Name.
+		@throw LDAPException If an error occurs.
+	*/
+
+	public function rename($sFromDN, $sToRDN)
+	{
+		$b = ldap_rename($this->rLink, $sFromDN, $sToRDN, null, true);
+		if ($b === false)
+			throw new LDAPException(
+				_WT('Failed to rename the entry.') . "\n" . ldap_error($this->rLink), 
+				ldap_errno($this->rLink)
+			);
 	}
 
 	/**
@@ -186,26 +257,7 @@ class weeLDAP
 				_WT('Failed to search in the specified DN.') . "\n" . ldap_error($this->rLink), 
 				ldap_errno($this->rLink)
 			);
-
+ 
 		return new weeLDAPResult($this->rLink, $r);
-	}
-
-	/**
-		Rename the entry.
-
-		@param $sFromDN The actual Distinguished Name.
-		@param $sToRDN The new Relative Distinguished Name.
-		@param $bDeleteOldRDN Whether the old DN has to be deleted.
-		@throw LDAPException If an error occurs.
-	*/
-
-	public function rename($sFromDN, $sToRDN, $bDeleteOldRDN = true)
-	{
-		$b = ldap_rename($this->rLink, $sFromDN, $sToRDN, null, $bDeleteOldRDN);
-		if ($b === false)
-			throw new LDAPException(
-				_WT('Failed to rename the entry.') . "\n" . ldap_error($this->rLink), 
-				ldap_errno($this->rLink)
-			);
 	}
 }
