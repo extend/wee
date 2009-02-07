@@ -170,6 +170,7 @@ class weeLDAP
 		Modify the existing entries in the LDAP directory.
 
 		@param $sDN The Distinguished Name of an LDAP entity.
+		@param $aEntry Entry attributes for the specified DN.
 		@throw LDAPException If an error occurs.
 	*/
 

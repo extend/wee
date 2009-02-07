@@ -130,13 +130,12 @@ class weeLDAPEntry implements ArrayAccess, Iterator, Mappable
 	/**
 		Move forward to next attribute.
 
-		@return string The next attribute.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 
 	public function next()
 	{
-		next($this->aAttributes);//return?
+		next($this->aAttributes);
 	}
 
 	/**
@@ -156,7 +155,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator, Mappable
 		Return attribute at given offset.
 
 		@param $offset Offset index.
-		@return mixed Attribute at given offset.
+		@return array Attribute values at given offset.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceArrayAccess.html
 	*/
 

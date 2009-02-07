@@ -45,12 +45,6 @@ class weeLDAPResult implements Iterator, Countable
 
 	protected $rEntry;
 
-	//~ /**
-		//~ LDAP link identifier of the reference for the current entry. 
-	//~ */
-
-	//~ protected $rReference;
-
 	/**
 		Key of the current iterated element.
 	*/
@@ -62,6 +56,7 @@ class weeLDAPResult implements Iterator, Countable
 
 		@param $rLink The connection link identifier.
 		@param $rResult The search result link identifier.
+		@throw LDAPException If an error occurs.
 	*/
 
 	public function __construct($rLink, $rResult)
@@ -93,6 +88,7 @@ class weeLDAPResult implements Iterator, Countable
 		Fetch the first entry.
 
 		@return weeLDAPEntry An instance of weeLDAPEntry.
+		@throw LDAPException If an error occurs.
 	*/
 
 	public function fetch()
@@ -171,6 +167,7 @@ class weeLDAPResult implements Iterator, Countable
 	/**
 		Rewind the Iterator to the first element.
 
+		@throw LDAPException If an error occurs.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 
