@@ -21,8 +21,11 @@ ul li {display:inline;margin:0 2em}
 		<div id="contents">
 			<h2>No configuration file</h2>
 			<p>
-				The configuration file was not found. Please ensure that the file <code><?php echo WEE_CONF_FILE?></code> exists.
+				The configuration file was not found. Please ensure that the file <code><?php echo WEE_CONF_FILE?></code> and all the included files exist.
 			</p>
+
+			<h2>Exception Message</h2>
+			<p><?php echo $e->getMessage()?></p>
 
 			<h2>Creating a configuration file</h2>
 			<p>

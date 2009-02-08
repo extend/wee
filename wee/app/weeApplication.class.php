@@ -90,6 +90,9 @@ class weeApplication
 				echo _WT('The configuration file was not found.'), "\n",
 					_WT('Please consult the documentation for more information.'), "\n";
 			else {
+				if (defined('DEBUG'))
+					FirePHP::getInstance(true)->fb($e);
+
 				header('HTTP/1.0 500 Internal Server Error');
 				require(ROOT_PATH . 'res/wee/noconfig.htm');
 			}
