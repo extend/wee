@@ -34,7 +34,7 @@ class weeCRUDUI extends weeContainerUI
 		Frame's parameters.
 	*/
 
-	protected $aParams = array('countperpage' => 25);
+	protected $aParams = array('countperpage' => 3);
 
 	/**
 		Displays a list of all items in the set and gives links to the Create, Update and Delete events.
@@ -44,14 +44,17 @@ class weeCRUDUI extends weeContainerUI
 
 	protected function defaultEvent($aEvent)
 	{
+		$iCount = $this->aParams['set']->count();
+
 		// Initialize the list frame
 
 		$oList = new weeListUI($this->oController);
 		$this->addFrame('index', $oList);
 
-		// Set the 'columns' and 'primary' parameters
-
-		$oList->setParams($this->aParams + $this->aParams['set']->getMeta());
+		$oList->setParams($this->aParams
+			+ $this->aParams['set']->getMeta()
+			+ array('total' => $iCount)
+		);
 
 		// Set the standard action links
 
@@ -83,21 +86,13 @@ class weeCRUDUI extends weeContainerUI
 			));
 		}
 
-		// Obtain the page information and make sure it's in range
-
-		$iPage = (int)array_value($aEvent['get'], 'page', 0);
-		$iCount = $this->aParams['set']->count();
-		$iTotal = (int)ceil($iCount / $this->aParams['countperpage']) - 1;
-
-		($iPage < 0 || $iPage > $iTotal) and burn('OutOfRangeException',
-			_WT('The page number is out of range.'));
-
 		// Set the list data
 
-		$oList->setList($this->aParams['set']->fetchSubset(
-			$iPage * $this->aParams['countperpage'],
-			$this->aParams['countperpage']
-		), $this->aParams['countperpage'], $iCount);
+		$iFrom = (int)array_value($aEvent['get'], 'from', 0);
+		($iFrom < 0 || $iFrom >= $iCount) and burn('OutOfRangeException',
+			_WT('The parameter "from" is out of range.'));
+
+		$oList->setList($this->aParams['set']->fetchSubset($iFrom, $this->aParams['countperpage']));
 
 		// Call containers default event
 

@@ -23,6 +23,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Pagination UI frame.
+
+	@see http://developer.yahoo.com/ypatterns/pattern.php?pattern=itempagination
 */
 
 class weePaginationUI extends weeUI
@@ -43,10 +45,10 @@ class weePaginationUI extends weeUI
 		Frame's parameters.
 	*/
 
-	protected $aParams = array();
+	protected $aParams = array('countperpage' => 25);
 
 	/**
-		Retrieve the page number from $aEvent['get']['page'],
+		Retrieve the page number from $aEvent['get']['from'],
 		and use it to configure the pagination component.
 
 		@param $aEvent Event information.
@@ -58,14 +60,15 @@ class weePaginationUI extends weeUI
 		$iTotal < 0 and burn('IllegalStateException',
 			_WT('The $iTotal property should not be < 0.'));
 
-		$iPage = (int)array_value($aEvent['get'], 'page', 0);
-		($iPage < 0 || $iPage > $iTotal) and burn('OutOfRangeException',
-			_WT('The page number is out of range.'));
+		$iFrom = (int)array_value($aEvent['get'], 'from', 0);
+		($iFrom < 0 || $iFrom >= $iTotal) and burn('OutOfRangeException',
+			_WT('The parameter "from" is out of range.'));
 
 		$this->set(array(
-			'current_page'	=> $iPage,
-			'total_pages'	=> $iTotal,
-			'nav_link'		=> array_value($this->aParams, 'url'),
+			'countperpage'	=> $this->aParams['countperpage'],
+			'from'			=> $iFrom,
+			'total'			=> $iTotal,
+			'url'			=> array_value($this->aParams, 'url'),
 		));
 	}
 
@@ -73,8 +76,9 @@ class weePaginationUI extends weeUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- total:	Total number of pages.
-			- url:		The base URL for the navigation links.
+			- countperpage:	Number of items per page. Defaults to 25.
+			- total:		Total number of items.
+			- url:			The base URL for the navigation links.
 
 		@param $aParams Frame's parameters.
 	*/

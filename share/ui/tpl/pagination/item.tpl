@@ -1,23 +1,27 @@
 <ul class="item-pagination">
-	<li class="page">Page <?php echo $current_page + 1?> of <?php echo $total_pages + 1?></li>
-	<li class="first<?php if ($current_page <= 0) echo ' disabled'?>">
-		<?php if ($current_page > 0):?><a href="<?php echo $this->mkLink($nav_link, array('page' => 0))?>"><?php else:?><span><?php endif?> 
+	<li class="page"><?php echo sprintf(_WT('%d-%d of %d'), $from + 1, min($from + $countperpage, $total), $total)?></li>
+	<li class="first<?php if ($from == 0) echo ' disabled'?>">
+		<?php if ($from > 0):?><a href="<?php echo $this->mkLink($url, array('from' => 0))?>"><?php else:?><span><?php endif?> 
 		<?php echo _WT('First')?> 
-		<?php if ($current_page > 0):?></a><?php else:?></span><?php endif?> 
+		<?php if ($from > 0):?></a><?php else:?></span><?php endif?> 
 	</li>
-	<li class="prev<?php if ($current_page <= 0) echo ' disabled'?>">
-		<?php if ($current_page > 0):?><a href="<?php echo $this->mkLink($nav_link, array('page' => $current_page - 1))?>"><?php else:?><span><?php endif?> 
+	<li class="prev<?php if ($from == 0) echo ' disabled'?>">
+		<?php if ($from > 0):?><a href="<?php echo $this->mkLink($url, array('from' => max(0, $from - $countperpage)))?>"><?php else:?><span><?php endif?> 
 		<?php echo _WT('Prev')?> 
-		<?php if ($current_page > 0):?></a><?php else:?></span><?php endif?> 
+		<?php if ($from > 0):?></a><?php else:?></span><?php endif?> 
 	</li>
-	<li class="next<?php if ($current_page >= $total_pages) echo ' disabled'?>">
-		<?php if ($current_page < $total_pages):?><a href="<?php echo $this->mkLink($nav_link, array('page' => $current_page + 1))?>"><?php else:?><span><?php endif?> 
+	<li class="next<?php if ($from >= $total - $countperpage) echo ' disabled'?>">
+		<?php if ($from < $total - $countperpage):?><a href="<?php echo $this->mkLink($url, array('from' => $from + $countperpage))?>"><?php else:?><span><?php endif?> 
 		<?php echo _WT('Next')?> 
-		<?php if ($current_page < $total_pages):?></a><?php else:?></span><?php endif?> 
+		<?php if ($from < $total - $countperpage):?></a><?php else:?></span><?php endif?> 
 	</li>
-	<li class="last<?php if ($current_page >= $total_pages) echo ' disabled'?>">
-		<?php if ($current_page < $total_pages):?><a href="<?php echo $this->mkLink($nav_link, array('page' => $total_pages))?>"><?php else:?><span><?php endif?> 
+	<li class="last<?php if ($from >= $total - $countperpage) echo ' disabled'?>">
+		<?php if ($from < $total - $countperpage):?><a href="<?php
+			$mod = $total % $countperpage;
+			if ($mod == 0)
+				$mod = $countperpage;
+			echo $this->mkLink($url, array('from' => $total - $mod))?>"><?php else:?><span><?php endif?> 
 		<?php echo _WT('Last')?> 
-		<?php if ($current_page < $total_pages):?></a><?php else:?></span><?php endif?> 
+		<?php if ($from < $total - $countperpage):?></a><?php else:?></span><?php endif?> 
 	</li>
 </ul>

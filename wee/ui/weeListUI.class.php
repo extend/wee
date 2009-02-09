@@ -58,12 +58,6 @@ class weeListUI extends weeContainerUI
 	protected $aParams = array('orderdirection' => 'asc');
 
 	/**
-		Total number of items in the list.
-	*/
-
-	protected $iTotal;
-
-	/**
 		Add a new global action.
 
 		A global action is identified by the following parameters:
@@ -105,7 +99,7 @@ class weeListUI extends weeContainerUI
 		// Initialize the pagination frame
 
 		$oPagination = new weePaginationUI($this->oController);
-		$oPagination->setParams(array('total' => $this->iTotal));
+		$oPagination->setParams($this->aParams);
 		$this->addFrame('pagination', $oPagination);
 
 		// Retrieve the columns to display in the list
@@ -144,9 +138,11 @@ class weeListUI extends weeContainerUI
 
 		Parameters can include:
 			- columns:			Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
+			- countperpage:		Number of items per page.
 			- orderby:			The column to use to sort the rows.
 			- orderdirection:	The direction of the column sort. Defaults to 'asc'.
 			- primary:			The key identifying each item uniquely. A key can be either one or more columns stored in an array.
+			- total:			Total number of items.
 
 		@param $aParams Frame's parameters.
 	*/
@@ -157,21 +153,13 @@ class weeListUI extends weeContainerUI
 	}
 
 	/**
-		Set the data associated with the list, along with the number of items that
-		are displayed per pages and the total number of items available.
+		Set the data associated with the list.
 
 		@param $aList The data to be listed.
-		@param $iCountPerPage Number of items displayed per page. Optional.
-		@param $iTotal Total number of items available. Optional.
 	*/
 
-	public function setList($aList, $iCountPerPage = null, $iTotal = null)
+	public function setList($aList)
 	{
 		$this->aList = $aList;
-
-		if (empty($iTotal))
-			$this->iTotal = 0;
-		else
-			$this->iTotal = (int)ceil($iTotal / $iCountPerPage) - 1;
 	}
 }
