@@ -61,7 +61,7 @@ class weePaginationUI extends weeUI
 			_WT('The $iTotal property should not be < 0.'));
 
 		$iFrom = (int)array_value($aEvent['get'], 'from', 0);
-		($iFrom < 0 || $iFrom >= $iTotal) and burn('OutOfRangeException',
+		($iFrom < 0 || ($iTotal > 0 && $iFrom >= $iTotal)) and burn('OutOfRangeException',
 			_WT('The parameter "from" is out of range.'));
 
 		$this->set(array(

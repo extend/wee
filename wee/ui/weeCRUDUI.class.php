@@ -89,7 +89,7 @@ class weeCRUDUI extends weeContainerUI
 		// Set the list data
 
 		$iFrom = (int)array_value($aEvent['get'], 'from', 0);
-		($iFrom < 0 || $iFrom >= $iCount) and burn('OutOfRangeException',
+		($iFrom < 0 || ($iCount > 0 && $iFrom >= $iCount)) and burn('OutOfRangeException',
 			_WT('The parameter "from" is out of range.'));
 
 		$oList->setList($this->aParams['set']->fetchSubset($iFrom, $this->aParams['countperpage']));
