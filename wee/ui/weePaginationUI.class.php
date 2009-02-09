@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -64,11 +64,8 @@ class weePaginationUI extends weeUI
 
 		$iPage = (int)array_value($aEvent['get'], 'page', 0);
 
-		// TODO:burn instead
-		if ($iPage < 0)
-			$iPage = 0;
-		elseif ($iPage > $this->iTotal)
-			$iPage = $this->iTotal;
+		($iPage < 0 || $iPage > $this->iTotal) and burn('OutOfRangeException',
+			_WT('The page number is out of range.'));
 
 		$this->set(array(
 			'current_page' => $iPage,

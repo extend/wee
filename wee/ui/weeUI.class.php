@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -34,28 +34,40 @@ class weeUI extends weeFrame implements weeFailSafeRouting
 	protected $sBaseTemplatePrefix = 'ui/';
 
 	/**
-		TODO
+		Whether the frame should render taconite in xmlhttprequest context.
 	*/
-
-	protected $oContainer;
 
 	protected $bNoTaconite = false;
 
 	/**
-		TODO
+		ID for the frame.
 	*/
 
 	protected $sId;
+
+	/**
+		Return the taconite object for this frame.
+
+		@param weeTaconite Taconite for this frame.
+	*/
 
 	public function getTaconite()
 	{
 		return $this->oTaconite;
 	}
 
+	/**
+		Tells this frame to not use taconite.
+	*/
+
 	public function noTaconite()
 	{
 		$this->bNoTaconite = true;
 	}
+
+	/**
+		Output the template, or the taconite object if it was used.
+	*/
 
 	public function render()
 	{
@@ -70,18 +82,9 @@ class weeUI extends weeFrame implements weeFailSafeRouting
 	}
 
 	/**
-		TODO
-	*/
+		Set the ID for the frame.
 
-	public function setContainer($oContainer)
-	{
-		$oContainer instanceof weeContainerUI or burn('InvalidArgumentException',
-			_WT('The container must be an instance of weeContainerUI.'));
-
-		$this->oContainer = $oContainer;
-	}
-
-	/**
+		@param $sId ID for the frame.
 	*/
 
 	public function setId($sId)

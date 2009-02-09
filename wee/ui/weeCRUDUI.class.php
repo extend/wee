@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -131,6 +131,11 @@ class weeCRUDUI extends weeContainerUI
 		$oFormUI->setSubmitCallback(array($this, $sCallbackMethod));
 
 		parent::defaultEvent($aEvent);
+
+		if ($aEvent['context'] == 'xmlhttprequest') {
+			$this->noChildTaconite();
+			$this->update('replace', '#' . $this->getChildIdPrefix() . 'index', $this->oTpl);
+		}
 	}
 
 	/**
@@ -159,6 +164,9 @@ class weeCRUDUI extends weeContainerUI
 		$this->sBaseTemplate = 'delete';
 		$this->sBaseTemplatePrefix = 'ui/crud/';
 		$this->oSet->delete($aEvent['post']);
+
+		if ($aEvent['context'] == 'xmlhttprequest')
+			$this->update('eval', null, 'alert("Item deleted successfully.");'); // TODO: better, and remove the row
 	}
 
 	/**

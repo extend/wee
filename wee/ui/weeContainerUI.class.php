@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -69,18 +69,20 @@ class weeContainerUI extends weeUI
 			$mFrame = new $mFrame;
 		}
 
-		$mFrame->setContainer($this);
 		$mFrame->setId($this->getChildIdPrefix() . $sName);
 		$this->aFrames[$this->getChildIdPrefix() . $sName] = $mFrame;
 	}
 
 	/**
-		TODO
+		Return a child UI frame.
+
+		@param $sName Identifier for the given frame.
+		@return weeUI UI frame.
 	*/
 
 	public function child($sName)
 	{
-		return $this->aFrames[$sName];
+		return $this->aFrames[$this->getChildIdPrefix() . $sName];
 	}
 
 	/**
@@ -98,7 +100,9 @@ class weeContainerUI extends weeUI
 	}
 
 	/**
-		TODO
+		Return the prefix for the child frame identifiers.
+
+		@return Prefix for child frame identifiers.
 	*/
 
 	protected function getChildIdPrefix()
@@ -107,12 +111,17 @@ class weeContainerUI extends weeUI
 	}
 
 	/**
-		TODO
+		Return the taconite object for this frame and all its children.
+
+		@param weeTaconite Taconite for this frame and all its children.
 	*/
 
 	public function getTaconite()
 	{
-		// TODO: return directly if it was already fetched
+		$oTaconite = new weeTaconite;
+
+		if (!empty($this->oTaconite))
+			$oTaconite->add($this->oTaconite->getTags());
 
 		foreach ($this->aFrames as $oFrame) {
 			$oChildTaconite = $oFrame->getTaconite();
@@ -120,11 +129,16 @@ class weeContainerUI extends weeUI
 			if (empty($oChildTaconite))
 				continue;
 
-			$this->oTaconite->add($oChildTaconite->getTags());
+			$oTaconite->add($oChildTaconite->getTags());
 		}
 
-		return $this->oTaconite;
+		return $oTaconite;
 	}
+
+	/**
+		Tells the child frames to not use taconite.
+		Use this when you want to return the rendered template in your taconite response.
+	*/
 
 	public function noChildTaconite()
 	{
@@ -132,20 +146,24 @@ class weeContainerUI extends weeUI
 			$oFrame->noTaconite();
 	}
 
+	/**
+		Tells this frame and all its children to not use taconite.
+	*/
+
 	public function noTaconite()
 	{
 		$this->noChildTaconite();
 		parent::noTaconite();
 	}
 
+	/**
+		Output the template, or the taconite object if it was used.
+	*/
+
 	public function render()
 	{
-		if ($this->sContext == 'xmlhttprequest' && !$this->bNoTaconite) {
-			if (empty($this->oTaconite))
-				$this->oTaconite = new weeTaconite;
-
-			$this->getTaconite();
-		}
+		if ($this->sContext == 'xmlhttprequest' && !$this->bNoTaconite)
+			$this->oTaconite = $this->getTaconite();
 
 		parent::render();
 	}

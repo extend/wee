@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -60,10 +60,15 @@ class weeListUI extends weeContainerUI
 	protected $aList;
 
 	/**
-		TODO
+		Column name to order by.
 	*/
 
 	protected $sOrderBy;
+
+	/**
+		Direction of the order by.
+	*/
+
 	protected $sOrderDirection;
 
 	/**
@@ -130,7 +135,7 @@ class weeListUI extends weeContainerUI
 			reset($this->aList);
 			$aItem = current($this->aList);
 
-//TODO:toArray
+			//TODO:toArray?
 
 			is_array($aItem) or burn('IllegalStateException',
 				_WT('You must set the columns explicitely if the list of items contains objects.'));
@@ -164,13 +169,11 @@ class weeListUI extends weeContainerUI
 	}
 
 	/**
-		TODO
+		Define in which order the rows should be ordered.
 	*/
 
 	public function setOrder($sOrderBy = null, $sOrderDirection = 'asc')
 	{
-		// TODO:check parameters
-
 		$this->sOrderBy = $sOrderBy;
 		$this->sOrderDirection = $sOrderDirection;
 	}

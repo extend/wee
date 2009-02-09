@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,12 @@ class weeDbMetaFormUI extends weeFormUI
 	*/
 
 	protected $oSet;
+
+	/**
+		Process the event and if any data was sent, validate and submit it.
+
+		@param $aEvent Event information.
+	*/
 
 	protected function defaultEvent($aEvent)
 	{

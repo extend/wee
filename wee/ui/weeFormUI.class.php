@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2008 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -95,7 +95,13 @@ class weeFormUI extends weeUI
 		}
 	}
 
-	//TODO:setFormFilename
+	/**
+	*/
+
+	public function setFormFilename($sFormFilename)
+	{
+		$this->sFilename = $sFormFilename;
+	}
 
 	/**
 		Sets the setup callback method.
@@ -128,7 +134,7 @@ class weeFormUI extends weeUI
 	protected function setup($aEvent)
 	{
 		$this->sAction = (empty($aEvent['name'])) ? 'add' : $aEvent['name'];
-		$this->oForm = new weeForm($this->sFilename, $aEvent['name']);
+		$this->oForm = new weeForm($this->sFilename, $this->sAction);
 
 		if (!empty($this->mSetupCallback))
 			call_user_func($this->mSetupCallback, $this->oForm, $this->sAction);
