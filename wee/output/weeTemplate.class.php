@@ -99,9 +99,9 @@ class weeTemplate implements Printable
 		Create a link using a base url (which may or may not contain parameters)
 		and the values predefined previously and/or given by the $aArgs arguments.
 
-		@param	$sLink Base url.
+		@param	$sLink Base URL, in its non-encoded form.
 		@param	$aArgs Parameters to be added.
-		@return string Link newly created with the given parameters added at the end.
+		@return string Link newly created with the given parameters added.
 	*/
 
 	protected function mkLink($sLink, $aArgs = array())

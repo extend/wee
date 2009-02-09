@@ -254,7 +254,8 @@ abstract class weeFrame
 
 	protected function translateEventName($sName)
 	{
-		if (empty($sName))
+		//TODO:test weeFailSafeRouting
+		if (empty($sName) || ($this instanceof weeFailSafeRouting && !is_callable(array($this, 'event' . $sName))))
 			return 'defaultEvent';
 		return 'event' . $sName;
 	}
@@ -279,7 +280,7 @@ abstract class weeFrame
 	public function update($sMethod, $sWhere, $sWith = null)
 	{
 		if (empty($this->oTaconite))
-			$this->oTaconite = weeTaconite::create();
+			$this->oTaconite = new weeTaconite;
 
 		$this->oTaconite->addTag($sMethod, $sWhere, $sWith);
 	}

@@ -37,10 +37,18 @@ class weeTaconite implements Printable
 	protected $sXML;
 
 	/**
-		The XPath object attached to the XML document created in applyTo()
+		Append a taconite string to this object.
+
+		@param $mTaconite The taconite string or object to append.
 	*/
 
-	protected $oXPath;
+	public function add($mTaconite)
+	{
+		if (is_object($mTaconite))
+			$mTaconite = $mTaconite->getTags();
+
+		$this->sXML .= $mTaconite;
+	}
 
 	/**
 		Add a tag to the taconite document.
@@ -228,7 +236,7 @@ class weeTaconite implements Printable
 				libxml_get_last_error()
 			);
 
-		$this->oXPath = new DOMXPath($oDocument);
+		$oXPath = new DOMXPath($oDocument);
 
 		$oXML = new DOMDocument;
 		if (!@$oXML->loadXML($this->toString()))
@@ -241,17 +249,15 @@ class weeTaconite implements Printable
 		{
 			//TODO:Ignore some of the selects that we can't handle (yet)
 			//TODO:not all actions have a select attribute
-			
+
 			$sFunc = 'applyTag' . ucwords($oAction->nodeName);
 			if (!is_callable(array($this, $sFunc)))
 				continue;
 
-			$aElements = $this->select($oAction->getAttribute('select'), $oDocument);
+			$aElements = $this->select($oAction->getAttribute('select'), $oDocument, $oXPath);
 			foreach ($aElements as $oElement)
 				$this->$sFunc($oAction, $oElement);
 		}
-
-		unset($this->oXPath);
 
 		// We cannot use LIBXML_NOXMLDECL here because it's not supported by
 		// DOMDocument::saveXML.
@@ -261,14 +267,14 @@ class weeTaconite implements Printable
 	}
 
 	/**
-		Convenience function for creating taconite objects in one line.
+		Return the taconite string (excluding the <taconite/>s tags).
 
-		@return weeTaconite A new weeTaconite object.
+		@return The taconite string.
 	*/
 
-	public static function create()
+	public function getTags()
 	{
-		return new self;
+		return $this->sXML;
 	}
 
 	/**
@@ -282,7 +288,7 @@ class weeTaconite implements Printable
 
 		echo '<?xml version="1.0" encoding="utf-8"?>',
 			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
-			$this->oTaconite->toString();
+			$this->toString();
 	}
 
 	/**
@@ -290,16 +296,17 @@ class weeTaconite implements Printable
 
 		@param	$sSelect	The selector.
 		@param	$oDocument	The XML document.
+		@param	$oXPath		The XPATH object for this document.
 		@return	DOMNodeList	The selected elements.
 	*/
 
-	protected function select($sSelect, DOMDocument $oDocument)
+	protected function select($sSelect, DOMDocument $oDocument, DOMXPath $oXPath)
 	{
 		if ($sSelect[0] == '#')
-			return $this->oXPath->query('//*[@id="' . xmlspecialchars(substr($sSelect, 1)) . '"]');
+			return $oXPath->query('//*[@id="' . xmlspecialchars(substr($sSelect, 1)) . '"]');
 
 		if (strpos($sSelect, '/') !== false)
-			return $this->oXPath->query($sSelect);
+			return $oXPath->query($sSelect);
 
 		return $oDocument->getElementsByTagName($sSelect);
 	}
