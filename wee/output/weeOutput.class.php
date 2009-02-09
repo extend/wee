@@ -97,7 +97,7 @@ abstract class weeOutput
 		@return	array	Data array encoded.
 	*/
 
-	public function encodeArray(&$a)
+	public function encodeArray($a)
 	{
 		foreach ($a as $mName => $mValue) {
 			if ($mValue instanceof weeDataSource)

@@ -68,7 +68,7 @@ class weePaginationUI extends weeUI
 			'countperpage'	=> $this->aParams['countperpage'],
 			'from'			=> $iFrom,
 			'total'			=> $iTotal,
-			'url'			=> array_value($this->aParams, 'url'),
+			'url'			=> array_value($this->aParams, 'url', $_SERVER['REQUEST_URI']),
 		));
 	}
 

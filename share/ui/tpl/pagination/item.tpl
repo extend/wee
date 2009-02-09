@@ -1,4 +1,4 @@
-<ul class="item-pagination">
+<ul class="item-pagination"><?php $url = weeOutput::instance()->decode(urldecode($url));?> 
 	<li class="page"><?php echo sprintf(_WT('%d-%d of %d'), $from + 1, min($from + $countperpage, $total), $total)?></li>
 	<li class="first<?php if ($from == 0) echo ' disabled'?>">
 		<?php if ($from > 0):?><a href="<?php echo $this->mkLink($url, array('from' => 0))?>"><?php else:?><span><?php endif?> 
