@@ -34,7 +34,7 @@ class weeCRUDUI extends weeContainerUI
 		Frame's parameters.
 	*/
 
-	protected $aParams = array('countperpage' => 3);
+	protected $aParams = array('countperpage' => 25);
 
 	/**
 		Displays a list of all items in the set and gives links to the Create, Update and Delete events.
