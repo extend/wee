@@ -31,22 +31,10 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeCRUDUI extends weeContainerUI
 {
 	/**
-		Number of items to display per page in the default event.
+		Frame's parameters.
 	*/
 
-	protected $iCountPerPage;
-
-	/**
-		Columns to display for each item in the default event.
-	*/
-
-	protected $aListColumns = array();
-
-	/**
-		Target set of the CRUD operations.
-	*/
-
-	protected $oSet;
+	protected $aParams = array('countperpage' => 25);
 
 	/**
 		Displays a list of all items in the set and gives links to the Create, Update and Delete events.
@@ -56,58 +44,66 @@ class weeCRUDUI extends weeContainerUI
 
 	protected function defaultEvent($aEvent)
 	{
-		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
-
-		$iPage = (int)array_value($aEvent['get'], 'page', 0);
-		$iCount = $this->oSet->count();
-		$iTotal = (int)ceil($iCount / $this->iCountPerPage) - 1;
-
-		if ($iPage < 0 || $iCount == 0)
-			$iPage = 0;
-		elseif ($iPage > $iTotal)
-			$iPage = $iTotal;
+		// Initialize the list frame
 
 		$oList = new weeListUI($this->oController);
 		$this->addFrame('index', $oList);
 
-		$aMeta = $this->oSet->getMeta();
-		$oList->setPrimaryKey($aMeta['primary']);
+		// Set the 'columns' and 'primary' parameters
 
-		if (empty($this->aListColumns))
-			// TODO: if no custom columns were provided, get the correct labels for reference sets
-			$oList->setColumns($aMeta['columns']);
-		else
-			$oList->setColumns($this->aListColumns);
+		$oList->setParams($this->aParams + $this->aParams['set']->getMeta());
+
+		// Set the standard action links
 
 		$oList->addGlobalAction(array(
-			'label' => _WT('Create'),
-			'link' => APP_PATH . $aEvent['frame'] . '/add',
-			'method' => 'get',
+			'label'		=> _WT('Create'),
+			'link'		=> APP_PATH . $aEvent['frame'] . '/add',
+			'method'	=> 'get',
 		));
 
 		$oList->addItemAction(array(
-			'label' => _WT('Update'),
-			'link' => APP_PATH . $aEvent['frame'] . '/update',
-			'method' => 'get',
+			'label'		=> _WT('Update'),
+			'link'		=> APP_PATH . $aEvent['frame'] . '/update',
+			'method'	=> 'get',
 		));
 
 		$oList->addItemAction(array(
-			'label' => _WT('Delete'),
-			'link' => APP_PATH . $aEvent['frame'] . '/delete',
-			'method' => 'post',
+			'label'		=> _WT('Delete'),
+			'link'		=> APP_PATH . $aEvent['frame'] . '/delete',
+			'method'	=> 'post',
 		));
 
-		if (!empty($aEvent['get']['orderby']) && in_array($aEvent['get']['orderby'], $this->aListColumns)) {
-			$this->oSet->orderBy(array($aEvent['get']['orderby'] => array_value($aEvent['get'], 'orderdirection', 'asc')));
-			$oList->setOrder($aEvent['get']['orderby'], array_value($aEvent['get'], 'orderdirection', 'asc'));
+		// Set the custom list ordering
+
+		if (!empty($aEvent['get']['orderby']) && (empty($this->aParams['columns']) || in_array($aEvent['get']['orderby'], $this->aParams['columns']))) {
+			$this->aParams['set']->orderBy(array($aEvent['get']['orderby'] => array_value($aEvent['get'], 'orderdirection', 'asc')));
+			$oList->setParams(array(
+				'orderby' => $aEvent['get']['orderby'],
+				'orderdirection' => array_value($aEvent['get'], 'orderdirection', 'asc'),
+			));
 		}
 
-		$oList->setList($this->oSet->fetchSubset(
-			$iPage * $this->iCountPerPage,
-			$this->iCountPerPage
-		), $this->iCountPerPage, $iCount);
+		// Obtain the page information and make sure it's in range
+
+		$iPage = (int)array_value($aEvent['get'], 'page', 0);
+		$iCount = $this->aParams['set']->count();
+		$iTotal = (int)ceil($iCount / $this->aParams['countperpage']) - 1;
+
+		($iPage < 0 || $iPage > $iTotal) and burn('OutOfRangeException',
+			_WT('The page number is out of range.'));
+
+		// Set the list data
+
+		$oList->setList($this->aParams['set']->fetchSubset(
+			$iPage * $this->aParams['countperpage'],
+			$this->aParams['countperpage']
+		), $this->aParams['countperpage'], $iCount);
+
+		// Call containers default event
 
 		parent::defaultEvent($aEvent);
+
+		// Enable AJAX responses - replace the frame by the updated template
 
 		if ($aEvent['context'] == 'xmlhttprequest') {
 			$this->noChildTaconite();
@@ -122,13 +118,13 @@ class weeCRUDUI extends weeContainerUI
 		@param $sCallbackMethod Function called when the form is submitted.
 	*/
 
-	protected function doFormEvent($aEvent, $sCallbackMethod)
+	protected function doFormEvent($aEvent, $sSubmitCallback)
 	{
 		$oFormUI = new weeDbMetaFormUI($this->oController);
 		$this->addFrame('form', $oFormUI);
 
-		$oFormUI->setDbSet($this->oSet);
-		$oFormUI->setSubmitCallback(array($this, $sCallbackMethod));
+		$oFormUI->setParams($this->aParams);
+		$oFormUI->setCallbacks(array('submit' => array($this, $sSubmitCallback)));
 
 		parent::defaultEvent($aEvent);
 
@@ -146,7 +142,6 @@ class weeCRUDUI extends weeContainerUI
 
 	protected function eventAdd($aEvent)
 	{
-		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
 		$this->doFormEvent($aEvent, 'insertRecordCallback');
 	}
 
@@ -158,12 +153,12 @@ class weeCRUDUI extends weeContainerUI
 
 	protected function eventDelete($aEvent)
 	{
-		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
-		empty($aEvent['post']) and burn('InvalidArgumentException', _WT('The event delete must be called using a POST request.'));
+		empty($aEvent['post']) and burn('InvalidArgumentException',
+			_WT('The event delete must be called using a POST request.'));
 
 		$this->sBaseTemplate = 'delete';
 		$this->sBaseTemplatePrefix = 'ui/crud/';
-		$this->oSet->delete($aEvent['post']);
+		$this->aParams['set']->delete($aEvent['post']);
 
 		if ($aEvent['context'] == 'xmlhttprequest')
 			$this->update('eval', null, 'alert("Item deleted successfully.");'); // TODO: better, and remove the row
@@ -177,7 +172,6 @@ class weeCRUDUI extends weeContainerUI
 
 	protected function eventUpdate($aEvent)
 	{
-		empty($this->oSet) and burn('IllegalStateException', _WT('You must provide a set using the setSet method before sending an event.'));
 		$this->doFormEvent($aEvent, 'updateRecordCallback');
 	}
 
@@ -190,36 +184,39 @@ class weeCRUDUI extends weeContainerUI
 
 	public function insertRecordCallback($aData)
 	{
-		$this->oSet->insert($aData);
+		$this->aParams['set']->insert($aData);
 	}
 
 	/**
-		Defines the set where all the CRUD operations will be performed.
+		Define the frame's parameters.
 
-		@param $mSet Object or class name of the set.
-		@param $iCountPerPage TODO:move that in its own method, it's stupid otherwise
+		Parameters can include:
+			- columns:		Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
+			- countperpage:	Number of items per page in the list for the default event. Defaults to 25.
+			- set:			The set where all the CRUD operations will be performed.
+
+		@param $aParams Frame's parameters.
 	*/
 
-	public function setDbSet($mSet, $iCountPerPage = 25)
+	public function setParams($aParams)
 	{
-		if (is_string($mSet))
-			$mSet = new $mSet;
+		if (isset($aParams['set']) && is_string($aParams['set']))
+			$aParams['set'] = new $aParams['set'];
 
-		$mSet instanceof weeDbSet or burn('InvalidArgumentException', _WT('$mSet must be an insteance of weeDbSet.'));
-
-		$this->oSet = $mSet;
-		$this->iCountPerPage = $iCountPerPage;
+		$this->aParams = $aParams + $this->aParams;
 	}
 
 	/**
-		Defines the columns to display in the list in the default event.
+		Setup the frame.
+		This method is called before each event method call.
 
-		@param $aColumns Array of 'label' => 'name' of the columns to be shown.
+		@param $aEvent Event information
 	*/
 
-	public function setListColumns($aColumns)
+	protected function setup($aEvent)
 	{
-		$this->aListColumns = $aColumns;
+		empty($this->aParams['set']) and burn('IllegalStateException',
+			_WT('You must provide a set using the method "setParams" before sending an event.'));
 	}
 
 	/**
@@ -231,7 +228,7 @@ class weeCRUDUI extends weeContainerUI
 
 	public function updateRecordCallback($aData)
 	{
-		$sModel = $this->oSet->getModelName();
+		$sModel = $this->aParams['set']->getModelName();
 		$oRecord = new $sModel($aData);
 		$oRecord->update();
 	}

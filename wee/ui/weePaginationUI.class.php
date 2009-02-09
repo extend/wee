@@ -40,16 +40,10 @@ class weePaginationUI extends weeUI
 	protected $sBaseTemplatePrefix = 'ui/pagination/';
 
 	/**
-		Base link for all pagination links.
+		Frame's parameters.
 	*/
 
-	protected $sLink;
-
-	/**
-		Total number of pages.
-	*/
-
-	protected $iTotal = 0;
+	protected $aParams = array();
 
 	/**
 		Retrieve the page number from $aEvent['get']['page'],
@@ -60,41 +54,33 @@ class weePaginationUI extends weeUI
 
 	protected function defaultEvent($aEvent)
 	{
-		$this->iTotal < 0 and burn('IllegalStateException', _WT('The $iTotal property should not be < 0.'));
+		$iTotal = (int)array_value($this->aParams, 'total', 0);
+		$iTotal < 0 and burn('IllegalStateException',
+			_WT('The $iTotal property should not be < 0.'));
 
 		$iPage = (int)array_value($aEvent['get'], 'page', 0);
-
-		($iPage < 0 || $iPage > $this->iTotal) and burn('OutOfRangeException',
+		($iPage < 0 || $iPage > $iTotal) and burn('OutOfRangeException',
 			_WT('The page number is out of range.'));
 
 		$this->set(array(
-			'current_page' => $iPage,
-			'total_pages' => $this->iTotal,
-			'nav_link' => $this->sLink,
+			'current_page'	=> $iPage,
+			'total_pages'	=> $iTotal,
+			'nav_link'		=> array_value($this->aParams, 'url'),
 		));
 	}
 
 	/**
-		Define the base link used by all pagination links.
+		Define the frame's parameters.
 
-		@param $sLink Base link.
+		Parameters can include:
+			- total:	Total number of pages.
+			- url:		The base URL for the navigation links.
+
+		@param $aParams Frame's parameters.
 	*/
 
-	public function setLink($sLink)
+	public function setParams($aParams)
 	{
-		$this->sLink = $sLink;
-	}
-
-	/**
-		Define the total number of pages.
-
-		@param $iTotal Total number of pages.
-	*/
-
-	public function setTotal($iTotal)
-	{
-		$iTotal < 0 and burn('InvalidParameterException', _WT('The $iTotal property should not be < 0.'));
-
-		$this->iTotal = $iTotal;
+		$this->aParams = $aParams + $this->aParams;
 	}
 }

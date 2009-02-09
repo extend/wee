@@ -40,10 +40,10 @@ class weeFormUI extends weeUI
 	protected $sBaseTemplate = 'form';
 
 	/**
-		The filename of the form XML (without path and extension).
+		Callback methods associated with this frame.
 	*/
 
-	protected $sFilename;
+	protected $aCallbacks = array();
 
 	/**
 		The form object.
@@ -52,16 +52,10 @@ class weeFormUI extends weeUI
 	protected $oForm;
 
 	/**
-		Method called after setting up the frame, at the end of the `setup` method.
+		Frame's parameters.
 	*/
 
-	protected $mSetupCallback;
-
-	/**
-		Method called when data submitted by the form is valid.
-	*/
-
-	protected $mSubmitCallback;
+	protected $aParams = array();
 
 	/**
 		Process the event and if any data was sent, validate and submit it.
@@ -90,39 +84,38 @@ class weeFormUI extends weeUI
 				$this->submit($aData);
 			} catch (FormValidationException $e) {
 				$this->oForm->fill($aData);
-				$this->set('errors', $e->toString());
+				$this->set('errors', $e);
 			}
 		}
 	}
 
 	/**
+		Set callback methods.
+
+		Possible callbacks are:
+			- setup:	Called at the end of the method `setup`.
+			- submit:	Called when valid data has been submitted.
+
+		@param $aCallbacks Array containing (name => callback) associations.
 	*/
 
-	public function setFormFilename($sFormFilename)
+	public function setCallbacks($aCallbacks = array())
 	{
-		$this->sFilename = $sFormFilename;
+		$this->aCallbacks = $aCallbacks + $this->aCallbacks;
 	}
 
 	/**
-		Sets the setup callback method.
+		Define the frame's parameters.
 
-		@param $mSetupCallback Callback method called at the end of `setup`.
+		Parameters can include:
+			- filename: Form's filename.
+
+		@param $aParams Frame's parameters.
 	*/
 
-	public function setSetupCallback($mSetupCallback = null)
+	public function setParams($aParams)
 	{
-		$this->mSetupCallback = $mSetupCallback;
-	}
-
-	/**
-		Sets the submit callback method.
-
-		@param $mSubmitCallback Callback method called when valid data has been submitted.
-	*/
-
-	public function setSubmitCallback($mSubmitCallback = null)
-	{
-		$this->mSubmitCallback = $mSubmitCallback;
+		$this->aParams = $aParams + $this->aParams;
 	}
 
 	/**
@@ -133,11 +126,14 @@ class weeFormUI extends weeUI
 
 	protected function setup($aEvent)
 	{
-		$this->sAction = (empty($aEvent['name'])) ? 'add' : $aEvent['name'];
-		$this->oForm = new weeForm($this->sFilename, $this->sAction);
+		empty($this->aParams['filename']) and burn('IllegalStateException',
+			_WT('You must provide a form filename using the method "setParams" before sending an event.'));
 
-		if (!empty($this->mSetupCallback))
-			call_user_func($this->mSetupCallback, $this->oForm, $this->sAction);
+		$this->sAction = (empty($aEvent['name'])) ? 'add' : $aEvent['name'];
+		$this->oForm = new weeForm($this->aParams['filename'], $this->sAction);
+
+		if (!empty($this->aCallbacks['setup']))
+			call_user_func($this->aCallbacks['setup'], $this->oForm, $this->sAction);
 	}
 
 	/**
@@ -148,7 +144,7 @@ class weeFormUI extends weeUI
 
 	protected function submit($aData)
 	{
-		if (!empty($this->mSubmitCallback))
-			call_user_func($this->mSubmitCallback, $aData);
+		if (!empty($this->aCallbacks['submit']))
+			call_user_func($this->aCallbacks['submit'], $aData);
 	}
 }

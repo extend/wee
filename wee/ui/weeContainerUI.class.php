@@ -66,7 +66,7 @@ class weeContainerUI extends weeUI
 			@is_subclass_of($mFrame, 'weeFrame') or burn('UnexpectedValueException',
 				sprintf(_WT('The frame %s does not exist.'), $mFrame));
 
-			$mFrame = new $mFrame;
+			$mFrame = new $mFrame($this->oController);
 		}
 
 		$mFrame->setId($this->getChildIdPrefix() . $sName);
@@ -121,7 +121,7 @@ class weeContainerUI extends weeUI
 		$oTaconite = new weeTaconite;
 
 		if (!empty($this->oTaconite))
-			$oTaconite->add($this->oTaconite->getTags());
+			$oTaconite->add($this->oTaconite);
 
 		foreach ($this->aFrames as $oFrame) {
 			$oChildTaconite = $oFrame->getTaconite();
@@ -129,7 +129,7 @@ class weeContainerUI extends weeUI
 			if (empty($oChildTaconite))
 				continue;
 
-			$oTaconite->add($oChildTaconite->getTags());
+			$oTaconite->add($oChildTaconite);
 		}
 
 		return $oTaconite;

@@ -34,14 +34,6 @@ class weeListUI extends weeContainerUI
 	protected $sBaseTemplate = 'list';
 
 	/**
-		Columns to display in the list.
-
-		Use the format 'label' => 'name', with 'label' optional.
-	*/
-
-	protected $aColumns = array();
-
-	/**
 		List of global actions associated with the list.
 	*/
 
@@ -60,22 +52,10 @@ class weeListUI extends weeContainerUI
 	protected $aList;
 
 	/**
-		Column name to order by.
+		Frame's parameters.
 	*/
 
-	protected $sOrderBy;
-
-	/**
-		Direction of the order by.
-	*/
-
-	protected $sOrderDirection;
-
-	/**
-		Columns identifying an item, used for the items actions links.
-	*/
-
-	protected $aPrimaryKey;
+	protected $aParams = array('orderdirection' => 'asc');
 
 	/**
 		Total number of items in the list.
@@ -122,20 +102,21 @@ class weeListUI extends weeContainerUI
 
 	protected function defaultEvent($aEvent)
 	{
+		// Initialize the pagination frame
+
 		$oPagination = new weePaginationUI($this->oController);
-		$oPagination->setTotal($this->iTotal);
+		$oPagination->setParams(array('total' => $this->iTotal));
 		$this->addFrame('pagination', $oPagination);
 
-		$aColumns = $this->aColumns;
+		// Retrieve the columns to display in the list
 
+		$aColumns = array_value($this->aParams, 'columns');
 		if (empty($aColumns)) {
 			is_array($this->aList) or burn('IllegalStateException',
 				_WT('You must set the columns explicitely if the list of items contains objects.'));
 
-			reset($this->aList);
-			$aItem = current($this->aList);
-
-			//TODO:toArray?
+			$aItem = reset($this->aList);
+			// TODO: Mappable?
 
 			is_array($aItem) or burn('IllegalStateException',
 				_WT('You must set the columns explicitely if the list of items contains objects.'));
@@ -143,51 +124,36 @@ class weeListUI extends weeContainerUI
 			$aColumns = array_keys($aItem);
 		}
 
+		// Send values to the template
+
 		$this->set(array(
-			'columns' => $aColumns,
-			'primary' => $this->aPrimaryKey,
-			'list' => $this->aList,
-			'global_actions' => $this->aGlobalActions,
-			'items_actions' => $this->aItemsActions,
-			'orderby' => $this->sOrderBy,
-			'orderdirection' => $this->sOrderDirection,
+			'columns'			=> $aColumns,
+			'primary'			=> array_value($this->aParams, 'primary'),
+			'list'				=> $this->aList,
+			'global_actions'	=> $this->aGlobalActions,
+			'items_actions'		=> $this->aItemsActions,
+			'orderby'			=> array_value($this->aParams, 'orderby'),
+			'orderdirection'	=> $this->aParams['orderdirection'],
 		));
 
 		parent::defaultEvent($aEvent);
 	}
 
 	/**
-		Define the columns to display in the list.
-		Columns use the format 'label' => 'name', with 'label' optional.
+		Define the frame's parameters.
 
-		@params $aColumns Columns to be displayed in the list.
+		Parameters can include:
+			- columns:			Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
+			- orderby:			The column to use to sort the rows.
+			- orderdirection:	The direction of the column sort. Defaults to 'asc'.
+			- primary:			The key identifying each item uniquely. A key can be either one or more columns stored in an array.
+
+		@param $aParams Frame's parameters.
 	*/
 
-	public function setColumns($aColumns)
+	public function setParams($aParams)
 	{
-		$this->aColumns = $aColumns;
-	}
-
-	/**
-		Define in which order the rows should be ordered.
-	*/
-
-	public function setOrder($sOrderBy = null, $sOrderDirection = 'asc')
-	{
-		$this->sOrderBy = $sOrderBy;
-		$this->sOrderDirection = $sOrderDirection;
-	}
-
-	/**
-		Define the key identifying each item uniquely.
-		A key can be either one or more columns.
-
-		@param $aPrimaryKey Key identifying each item uniquely.
-	*/
-
-	public function setPrimaryKey($aPrimaryKey)
-	{
-		$this->aPrimaryKey = $aPrimaryKey;
+		$this->aParams = $aParams + $this->aParams;
 	}
 
 	/**

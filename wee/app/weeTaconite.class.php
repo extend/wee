@@ -37,12 +37,17 @@ class weeTaconite implements Printable
 	protected $sXML;
 
 	/**
-		TODO
+		Append a taconite string to this object.
+
+		@param $mTaconite The taconite string or object to append.
 	*/
 
-	public function add($sXML)
+	public function add($mTaconite)
 	{
-		$this->sXML .= $sXML;
+		if (is_object($mTaconite))
+			$mTaconite = $mTaconite->getTags();
+
+		$this->sXML .= $mTaconite;
 	}
 
 	/**
@@ -262,7 +267,9 @@ class weeTaconite implements Printable
 	}
 
 	/**
-		TODO
+		Return the taconite string (excluding the <taconite/>s tags).
+
+		@return The taconite string.
 	*/
 
 	public function getTags()

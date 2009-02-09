@@ -28,37 +28,20 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeDbMetaFormUI extends weeFormUI
 {
 	/**
-		Set associated with the dbmeta form.
+		Define the frame's parameters.
+
+		Parameters can include:
+			- set: Set used for the form.
+
+		@param $aParams Frame's parameters.
 	*/
 
-	protected $oSet;
-
-	/**
-		Process the event and if any data was sent, validate and submit it.
-
-		@param $aEvent Event information.
-	*/
-
-	protected function defaultEvent($aEvent)
+	public function setParams($aParams)
 	{
-		if (array_value($aEvent['get'], 'output') == 'xml')
-			$this->set('xmloutput', $this->oForm->toXML());
+		if (isset($aParams['set']) && is_string($aParams['set']))
+			$aParams['set'] = new $aParams['set'];
 
-		return parent::defaultEvent($aEvent);
-	}
-
-	/**
-		Defines the set to use with the dbmeta form.
-
-		@param $mSet An object or a class name for the set.
-	*/
-
-	public function setDbSet($mSet)
-	{
-		if (!is_object($mSet))
-			$mSet = new $mSet;
-
-		$this->oSet = $mSet;
+		$this->aParams = $aParams + $this->aParams;
 	}
 
 	/**
@@ -69,17 +52,22 @@ class weeDbMetaFormUI extends weeFormUI
 
 	protected function setup($aEvent)
 	{
-		$this->set('debug', defined('DEBUG'));
+		empty($this->aParams['set']) and burn('IllegalStateException',
+			_WT('You must provide a set using the method "setParams" before sending an event.'));
 
 		$this->sAction = (empty($aEvent['name'])) ? 'add' : $aEvent['name'];
-		$this->oForm = new weeDbMetaForm($this->oSet, array(
+		$this->oForm = new weeDbMetaForm($this->aParams['set'], array(
 			'action' => $aEvent['name'],
 			'formkey' => true,
 			'method' => 'post',
 		));
 
+		$this->set('debug', defined('DEBUG'));
+		if (array_value($aEvent['get'], 'output') == 'xml')
+			$this->set('xmloutput', $this->oForm->toXML());
+
 		if ($this->sAction == 'update')
-			$this->oForm->fill($this->oSet->fetch($aEvent['get']));
+			$this->oForm->fill($this->aParams['set']->fetch($aEvent['get']));
 
 		if (!empty($this->mSetupCallback))
 			call_user_func($this->mSetupCallback, $this->oForm, $this->sAction);
@@ -95,9 +83,9 @@ class weeDbMetaFormUI extends weeFormUI
 	{
 		if (empty($this->mSubmitCallback)) {
 			if ($this->sAction == 'add')
-				$this->oSet->insert($aData);
+				$this->aParams['set']->insert($aData);
 			elseif ($this->sAction == 'upd') {
-				$sModelName = $this->oSet->getModelName();
+				$sModelName = $this->aParams['set']->getModelName();
 				$oModel = new $sModelName($aData);
 				$oModel->update();
 			}
