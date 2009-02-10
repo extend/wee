@@ -1,10 +1,8 @@
 <?php
 
 class weeTaconite_testSelect extends weeTaconite {
-	public $oXPath;
-
-	public function select($sSelect, DOMDocument $oDocument) {
-		return parent::select($sSelect, $oDocument);
+	public function select($sSelect, DOMDocument $oDocument, DOMXPath $oXPath) {
+		return parent::select($sSelect, $oDocument, $oXPath);
 	}
 }
 
@@ -19,9 +17,9 @@ $oDoc->loadXML('
 	</root>
 ');
 
-$o->oXPath = new DOMXPath($oDoc);
+$oXPath = new DOMXPath($oDoc);
 
-$oList = $o->select('#foobar', $oDoc);
+$oList = $o->select('#foobar', $oDoc, $oXPath);
 
 $this->isEqual(1, $oList->length,
 	_WT('weeTaconite::select does not return the correct number of elements for the id selection.'));
@@ -29,7 +27,7 @@ $this->isEqual(1, $oList->length,
 $this->isEqual('tag', $oList->item(0)->tagName,
 	_WT('weeTaconite::select does not return the correct element for the id selection.'));
 
-$oList = $o->select('//ul/li', $oDoc);
+$oList = $o->select('//ul/li', $oDoc, $oXPath);
 
 $this->isEqual(2, $oList->length,
 	_WT('weeTaconite::select does not return the correct number of elements for the xpath selection.'));
@@ -41,7 +39,7 @@ foreach ($oList as $oElement)
 $this->isEqual(array('li', 'li'), $aTagNames,
 	_WT('weeTaconite::select does not return the correct elements for the xpath selection.'));
 
-$oList = $o->select('answer', $oDoc);
+$oList = $o->select('answer', $oDoc, $oXPath);
 
 $this->isEqual(1, $oList->length,
 	_WT('weeTaconite::select does not return the correct number of elements for the tag selection.'));
