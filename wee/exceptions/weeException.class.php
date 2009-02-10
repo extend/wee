@@ -96,7 +96,7 @@ final class weeException
 
 			if (!empty($aCall['args'])) {
 				$sArgs = '';
-				foreach ($aCall as $mArg)
+				foreach ($aCall['args'] as $mArg)
 					$sArgs .= gettype($mArg) . ', ';
 				$sTraceAsString .= substr($sArgs, 0, -2);
 			}
