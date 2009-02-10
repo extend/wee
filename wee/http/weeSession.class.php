@@ -44,7 +44,7 @@ class weeSession implements ArrayAccess
 			- 'check.ip': whether to check for the client's IP on each request
 			- 'check.token': whether to check for the session token on each request
 
-		@params $aParams A list of parameters to configure the session class.
+		@param $aParams A list of parameters to configure the session class.
 		@see weeSession::isSessionInvalid
 	*/
 

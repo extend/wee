@@ -42,7 +42,7 @@ class weeCookies implements ArrayAccess
 		An optional single parameter is allowed:
 		- path: cookie path used when setting or deleting the cookies
 
-		@params $aParams A list of parameters to configure the cookies class.
+		@param $aParams A list of parameters to configure the cookies class.
 	*/
 
 	public function __construct($aParams = array())

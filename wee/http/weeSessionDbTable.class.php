@@ -65,7 +65,7 @@ class weeSessionDbTable extends weeSession
 		Along with the parameters defined by weeSession::construct, another
 		parameter "table" identify which table should be used to store sessions.
 
-		@params $aParams A list of parameters to configure the session class.
+		@param $aParams A list of parameters to configure the session class.
 		@see weeSession::__construct
 	*/
 
