@@ -3,15 +3,15 @@
  *     Nathaniel T. Schutta: http://taconite.sourceforge.net/
  *
  * Examples and documentation at: http://malsup.com/jquery/taconite/
- * Copyright (c) 2007-2008 M. Alsup
+ * Copyright (c) 2007-2009 M. Alsup
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
  * Thanks to Kenton Simpson for contributing many good ideas!
  *
- * $Id: jquery.taconite.js 5910 2008-10-23 04:00:18Z malsup $
- * @version: 3.03  10/22/2008
- * @requires jQuery v1.2.3 or later
+ * $Id: jquery.taconite.js 2457 2007-07-23 02:43:46Z malsup $
+ * @version: 3.05  24-JAN-2009
+ * @requires jQuery v1.2.6 or later
  */
 
 (function($) {
@@ -19,7 +19,7 @@
 $.taconite = function(xml) { processDoc(xml); };
 
 $.taconite.debug = 0;  // set to true to enable debug logging to Firebug
-$.taconite.version = '3.03';
+$.taconite.version = '3.05';
 $.taconite.defaults = {
     cdataWrap: 'div'
 };
@@ -30,7 +30,7 @@ if (typeof $.fn.replace == 'undefined')
 if (typeof $.fn.replaceContent == 'undefined')
     $.fn.replaceContent = function(a) { return this.empty().append(a); };
 
-$.expr[':'].taconiteTag = 'a.taconiteTag';
+$.expr[':'].taconiteTag = function(a) { return a.taconiteTag === 1; };
 
 $.taconite._httpData = $.httpData; // original jQuery httpData function
 
@@ -110,14 +110,14 @@ function go(xml) {
         var doc;
         log('attempting string to document conversion');
         try {
-            if($.browser.msie) {
+            if (window.DOMParser) {
+                var parser = new DOMParser();
+                doc = parser.parseFromString(s, 'text/xml');
+            }
+            else {
                 doc = $("<xml>")[0];
                 doc.async = 'false';
                 doc.loadXML(s);
-            }
-            else {
-                var parser = new DOMParser();
-                doc = parser.parseFromString(s, 'text/xml');
             }
         }
         catch(e) {
@@ -218,6 +218,11 @@ function go(xml) {
         function handleCDATA(s) {
             var el = document.createElement(cdataWrap);
             el.innerHTML = s;
+            
+            // remove wrapper node if possible
+            var $el = $(el), $ch = $el.children();
+            if ($ch.size() == 1)
+                return $ch[0];
             return el;
         };
         
@@ -238,7 +243,8 @@ function go(xml) {
             }
             if (!e) {
                 e = document.createElement(tag);
-                copyAttrs(e, node, tag == 'option' && $.browser.safari);
+                // copyAttrs(e, node, tag == 'option' && $.browser.safari);
+                copyAttrs(e, node);
             }
             
             // IE fix; colspan must be explicitly set
