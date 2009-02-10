@@ -128,7 +128,6 @@ abstract class weeFeed implements Printable
 		$aValidElements = array(
 			'author',
 			'category',
-			'id',
 			'link',
 			'logo',
 			'rights',
@@ -153,7 +152,6 @@ abstract class weeFeed implements Printable
 		$aValidElements = array(
 			'author',
 			'category',
-			'id',
 			'link',
 			'published',
 			'summary',
@@ -163,4 +161,10 @@ abstract class weeFeed implements Printable
 
 		return in_array($sElement, $aValidElements);
 	}
+
+	/**
+		Output the feed and send the required Content-Type header.
+	*/
+
+	public abstract function render();
 }

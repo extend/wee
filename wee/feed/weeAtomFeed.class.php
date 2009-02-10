@@ -114,6 +114,17 @@ class weeAtomFeed extends weeFeed
 	}
 
 	/**
+		Output the feed as application/atom+xml.
+		This method sends the required header automatically.
+	*/
+
+	public function render()
+	{
+		header('Content-Type: application/atom+xml');
+		echo $this->toString();
+	}
+
+	/**
 		Returns the feed in XML format.
 
 		@return string The XML for this feed.

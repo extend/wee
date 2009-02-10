@@ -114,6 +114,17 @@ class weeRSSFeed extends weeFeed
 	}
 
 	/**
+		Output the feed as application/rss+xml.
+		This method sends the required header automatically.
+	*/
+
+	public function render()
+	{
+		header('Content-Type: application/rss+xml');
+		echo $this->toString();
+	}
+
+	/**
 		Returns the feed in XML format.
 
 		@return string The XML for this feed.
