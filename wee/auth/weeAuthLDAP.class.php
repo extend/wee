@@ -68,22 +68,19 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticate($aCredentials)
 	{
-		$sFunc = $this->aParams['password_treatment'];
-		$aCredentials['hash'] = $sFunc($aCredentials['password']);
-		unset($aCredentials['password']);
-
-		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn='. $aCredentials['identifier']);
+		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $aCredentials['identifier']); // TODO: escape this yl!
 
 		count($oResults) === 0 and burn('AuthenticationException',
-			_WT('The provided credentials were incorrect.'));
+			_WT('The credentials provided were incorrect.'));
 
 		count($oResults) === 1 or burn('UnexpectedValueException',
 			_WT('The authentication query returned more than 1 result.'));
 
 		$oEntry = $oResults->fetch();
+		$sFunc = $this->aParams['password_treatment'];
 
-		$oEntry['userPassword'][0] === $aCredentials['hash']
-			or burn('AuthenticationException', _WT('The provided credentials were incorrect.'));
+		$sFunc($aCredentials['password']) === $oEntry['userPassword'][0]
+			or burn('AuthenticationException', _WT('The credentials provided were incorrect.'));
 
 		unset($oEntry['userPassword']);
 		return $oEntry;
@@ -105,10 +102,10 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticateHash($aCredentials)
 	{
-		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn='. $aCredentials['identifier']);
+		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $aCredentials['identifier']); // TODO: escape this too yl!
 
 		count($oResults) === 0 and burn('AuthenticationException',
-			_WT('The provided credentials were incorrect.'));
+			_WT('The credentials provided were incorrect.'));
 
 		count($oResults) === 1 or burn('UnexpectedValueException',
 			_WT('The authentication query returned more than 1 result.'));
@@ -117,7 +114,7 @@ class weeAuthLDAP extends weeAuth
 		$sFunc = $this->aParams['hash_treatment'];
 
 		$aCredentials['password'] === $sFunc($oEntry['userPassword'][0] . MAGIC_STRING)
-			or burn('AuthenticationException', _WT('The provided credentials were incorrect.'));
+			or burn('AuthenticationException', _WT('The credentials provided were incorrect.'));
 
 		unset($oEntry['userPassword']);
 		return $oEntry;
