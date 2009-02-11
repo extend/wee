@@ -53,24 +53,17 @@ class weeContainerUI extends weeUI
 		there might be an exception triggered when the event doesn't exist in it.
 
 		@param $sName Identifier for the given frame.
-		@param $mFrame Frame to be added to the container. Can either be a class name or a weeFrame object.
+		@param $oFrame Frame to be added to the container.
 	*/
 
-	public function addFrame($sName, $mFrame)
+	public function addFrame($sName, $oFrame)
 	{
 		empty($sName) and burn('InvalidArgumentException', _WT('$sName must not be empty.'));
 		empty($this->aFrames[$sName]) or burn('IllegalStateException',
 			sprintf(_WT('The frame named %s was already added to the container.'), $sName));
 
-		if (!is_object($mFrame)) {
-			is_subclass_of($mFrame, 'weeFrame') or burn('UnexpectedValueException',
-				sprintf(_WT('The frame %s does not exist.'), $mFrame));
-
-			$mFrame = new $mFrame($this->oController);
-		}
-
-		$mFrame->setId($this->getChildIdPrefix() . $sName);
-		$this->aFrames[$this->getChildIdPrefix() . $sName] = $mFrame;
+		$oFrame->setId($this->getChildIdPrefix() . $sName);
+		$this->aFrames[$this->getChildIdPrefix() . $sName] = $oFrame;
 	}
 
 	/**
