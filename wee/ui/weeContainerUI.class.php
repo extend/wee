@@ -63,7 +63,7 @@ class weeContainerUI extends weeUI
 			sprintf(_WT('The frame named %s was already added to the container.'), $sName));
 
 		if (!is_object($mFrame)) {
-			@is_subclass_of($mFrame, 'weeFrame') or burn('UnexpectedValueException',
+			is_subclass_of($mFrame, 'weeFrame') or burn('UnexpectedValueException',
 				sprintf(_WT('The frame %s does not exist.'), $mFrame));
 
 			$mFrame = new $mFrame($this->oController);
