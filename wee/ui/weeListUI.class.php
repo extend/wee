@@ -131,6 +131,13 @@ class weeListUI extends weeContainerUI
 		));
 
 		parent::defaultEvent($aEvent);
+
+		// Enable AJAX responses - replace the frame by the updated template
+
+		if ($aEvent['context'] == 'xmlhttprequest') {
+			$this->noChildTaconite();
+			$this->update('replaceContent', '#' . $this->sId, $this->oTpl);
+		}
 	}
 
 	/**

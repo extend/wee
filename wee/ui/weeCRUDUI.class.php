@@ -97,13 +97,6 @@ class weeCRUDUI extends weeContainerUI
 		// Call containers default event
 
 		parent::defaultEvent($aEvent);
-
-		// Enable AJAX responses - replace the frame by the updated template
-
-		if ($aEvent['context'] == 'xmlhttprequest') {
-			$this->noChildTaconite();
-			$this->update('replace', '#' . $this->getChildIdPrefix() . 'index', $this->oTpl);
-		}
 	}
 
 	/**
