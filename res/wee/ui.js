@@ -20,7 +20,7 @@
 // This is more proof of concept than anything serious for now
 
 function ajaxify() {
-	$('div.list-container a').click(function(){
+	$('div.list-container th a').click(function(){
 		$.get($(this).attr('href'), function() {ajaxify();});
 		return false;
 	});
