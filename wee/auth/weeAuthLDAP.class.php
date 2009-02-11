@@ -49,8 +49,8 @@ class weeAuthLDAP extends weeAuth
 		if (empty($aParams['password_treatment']))
 			$aParams['password_treatment'] = 'md5';
 		else
-			is_callable($aParams['password_treatment'])
-				or burn('InvalidArgumentException', _WT('The "password_treatment" parameter must be a valid callback.'));
+			is_callable($aParams['password_treatment']) or burn('InvalidArgumentException',
+				_WT('The parameter "password_treatment" must be a valid callback.'));
 
 		parent::__construct($aParams);
 	}
@@ -73,15 +73,17 @@ class weeAuthLDAP extends weeAuth
 		unset($aCredentials['password']);
 
 		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn='. $aCredentials['identifier']);
-		if (count($oResults) === 0)
-			throw new AuthenticationException('The credentials provided were incorrect.');
+
+		count($oResults) === 0 and burn('AuthenticationException',
+			_WT('The provided credentials were incorrect.'));
 
 		count($oResults) === 1 or burn('UnexpectedValueException',
 			_WT('The authentication query returned more than 1 result.'));
 
 		$oEntry = $oResults->fetch();
-		if ($oEntry['userPassword'][0] !== $aCredentials['hash'])
-			throw new AuthenticationException('The credentials provided were incorrect.');
+
+		$oEntry['userPassword'][0] === $aCredentials['hash']
+			or burn('AuthenticationException', _WT('The provided credentials were incorrect.'));
 
 		unset($oEntry['userPassword']);
 		return $oEntry;
@@ -105,7 +107,7 @@ class weeAuthLDAP extends weeAuth
 	{
 		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn='. $aCredentials['identifier']);
 
-		count($oResults) !== 0 or burn('AuthenticationException',
+		count($oResults) === 0 and burn('AuthenticationException',
 			_WT('The provided credentials were incorrect.'));
 
 		count($oResults) === 1 or burn('UnexpectedValueException',
