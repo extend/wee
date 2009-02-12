@@ -195,13 +195,18 @@ class weeSession implements ArrayAccess
 	/**
 		Copy data directly from an array.
 
-		@param $aData Array containing the data to copy from.
+		The data must be either an array, a traversable object or an instance of Mappable.
+
+		@param	$aData	The data to copy.
+		@throw	InvalidArgumentException	The data is not of a correct type.
 	*/
 
 	public function setFromArray($aData)
 	{
-		(is_array($aData) || $aData instanceof Iterator) or burn('InvalidArgumentException',
-			_WT('The $aData parameter must be an array or an Iterator object.'));
+		if ($aData instanceof Mappable)
+			$aData = $aData->toArray();
+		is_array($aData) || $aData instanceof Traversable or burn('InvalidArgumentException',
+			_WT('Argument must be either an array, a traversable object or an instance of Mappable.'));
 
 		foreach ($aData as $sKey => $mValue)
 			$_SESSION[$sKey] = $mValue;

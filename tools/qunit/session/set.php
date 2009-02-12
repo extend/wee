@@ -19,6 +19,11 @@ try {
 
 		isset($o['array']) or burn('UnitTestException',
 			_WT('The session value "array" was not found.'));
+
+		$o->setFromArray(array('answer' => 42));
+
+		isset($o['answer']) or burn('UnitTestException',
+			_WT('The session value "answer" was not found.'));
 	} elseif ($iStep == 2) {
 		isset($o['test']) or burn('UnitTestException',
 			_WT('The session value "test" was not found.'));
@@ -31,6 +36,12 @@ try {
 
 		$o['array'] == $aArray or burn('UnitTestException',
 			_WT('The session value "array" is incorrect.'));
+
+		isset($o['answer']) or burn('UnitTestException',
+			_WT('The session value "answer" was not found.'));
+
+		$o['answer'] == 42 or burn('UnitTestException',
+			_WT('The session value "answer" is incorrect.'));
 
 		// Prepare for next step
 		$o['test'] = 'answer';
