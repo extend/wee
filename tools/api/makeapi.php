@@ -40,6 +40,8 @@ file_put_contents(
 		->docFunc('_WT')
 		->docFunc('array_value')
 		->docFunc('rmdir_recursive')
+		->docFunc('safe_header')
+		->docFunc('safe_session_start')
 		->docFunc('xmlspecialchars')
 		->toString()
 );
