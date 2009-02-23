@@ -1,7 +1,4 @@
-Web:Extend, aka 'wee', is a PHP5 framework designed to allow developers
-to write less, but better code easily. It is not a huge, bloated framework,
-it does not generate code, it just lets you write understandable code
-in a few lines.
+Web:Extend is a simple yet powerful PHP5 API that makes web development easy.
 
 Web:Extend is currently beta software. It is used by a few people in
 production environments but you should be aware that it has not been
