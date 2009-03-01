@@ -191,15 +191,17 @@ final class weeException
 
 				self::printError($sError);
 			} else {
-				if ($eException instanceof RouteNotFoundException)
-					header('HTTP/1.0 404 Not Found');
-				elseif ($eException instanceof NotPermittedException)
-					header('HTTP/1.0 403 Forbidden');
-				else
-					header('HTTP/1.0 500 Internal Server Error');
+				if (!headers_sent()) {
+					if ($eException instanceof RouteNotFoundException)
+						header('HTTP/1.0 404 Not Found');
+					elseif ($eException instanceof NotPermittedException)
+						header('HTTP/1.0 403 Forbidden');
+					else
+						header('HTTP/1.0 500 Internal Server Error');
 
-				if (defined('DEBUG'))
-					FirePHP::getInstance(true)->error($eException);
+					if (defined('DEBUG'))
+						FirePHP::getInstance(true)->error($eException);
+				}
 
 				$aTrace = self::filterTrace($eException->getTrace());
 
