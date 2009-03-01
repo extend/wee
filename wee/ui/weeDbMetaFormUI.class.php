@@ -84,7 +84,7 @@ class weeDbMetaFormUI extends weeFormUI
 		if (empty($this->mSubmitCallback)) {
 			if ($this->sAction == 'add')
 				$this->aParams['set']->insert($aData);
-			elseif ($this->sAction == 'upd') {
+			elseif ($this->sAction == 'update') {
 				$sModelName = $this->aParams['set']->getModelName();
 				$oModel = new $sModelName($aData);
 				$oModel->update();
