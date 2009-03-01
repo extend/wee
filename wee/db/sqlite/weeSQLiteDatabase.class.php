@@ -40,6 +40,12 @@ class weeSQLiteDatabase extends weeDatabase
 	protected $sDBMS = 'sqlite2';
 
 	/**
+		The number of affected rows by the last query.
+	*/
+
+	protected $iNumAffectedRows;
+
+	/**
 		Initialises a new sqlite database.
 
 		This driver accepts the following parameters:
@@ -107,6 +113,7 @@ class weeSQLiteDatabase extends weeDatabase
 			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $sLastError);
 		}
 
+		$this->iNumAffectedRows = $this->oDb->changes();
 		if ($m->numFields())
 			return new weeSQLiteResult($m);
 	}
@@ -170,6 +177,18 @@ class weeSQLiteDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		return $this->oDb->changes();
+		return $this->iNumAffectedRows;
+	}
+
+	/**
+		Prepares an SQL query statement.
+
+		@param	$sQuery				The query string.
+		@return	weeSQLiteStatement	The prepared statement.
+	*/
+
+	public function prepare($sQuery)
+	{
+		return new weeSQLiteStatement($this, $sQuery, $this->oDb);
 	}
 }

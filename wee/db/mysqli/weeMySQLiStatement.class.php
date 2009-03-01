@@ -22,25 +22,25 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class for MySQL prepared statements handling.
+	Class for MySQLi prepared statements handling.
 
-	Instances of this class are returned by weeMySQLDatabase's prepare method and
+	Instances of this class are returned by weeMySQLiDatabase's prepare method and
 	should not be instantiated manually.
 */
 
-class weeMySQLStatement extends weeDatabaseStatement
+class weeMySQLiStatement extends weeDatabaseStatement
 {
 	/**
-		The mysql database object.
+		The database associated with the statement.
 	*/
 
 	protected $oDb;
 
 	/**
-		The mysql link resource.
+		The mysqli object.
 	*/
 
-	protected $rLink;
+	protected $oMySQLi;
 
 	/**
 		Number of affected rows for the previous query.
@@ -68,16 +68,10 @@ class weeMySQLStatement extends weeDatabaseStatement
 
 		@param	$oDb	The mysql link resource.
 		@param	$sQuery	The query.
-		@throw	InvalidArgumentException	The database is not an instance of weeMySQLDatabase nor weeMySQLiDatabase.
 	*/
 
-	public function __construct(weeDatabase $oDb, $rLink, $sQuery)
+	public function __construct(weeDatabase $oDb, mysqli $oMySQLi, $sQuery)
 	{
-		is_resource($rLink) && get_resource_type($rLink) == 'mysql link' or burn('InvalidArgumentException',
-			sprintf(_WT('The given variable must be a resource of type "%s".'), 'mysql link'));
-		$oDb->is('mysql') or burn('InvalidArgumentException',
-			_WT('The underlying DBMS of the given database is not handled by this class.'));
-
 		preg_match_all('/:([\w_]+)/', $sQuery, $aMatches, PREG_OFFSET_CAPTURE);
 
 		$s			= '';
@@ -92,11 +86,11 @@ class weeMySQLStatement extends weeDatabaseStatement
 
 		$this->sStatementName	= 'st_' . md5($sQuery);
 		$this->oDb				= $oDb;
-		$this->rLink			= $rLink;
+		$this->oMySQLi			= $oMySQLi;
 
 		$s = 'PREPARE ' . $this->sStatementName . ' FROM ' . $this->oDb->escape($s);
-		mysql_unbuffered_query($s, $this->rLink) !== false or burn('DatabaseException',
-			_WT('Failed to prepare the given query with the following message:') . "\n" . mysql_error($this->rLink));
+		$oMySQLi->real_query($s) or burn('DatabaseException',
+			_WT('Failed to prepare the given query with the following message:') . $oMySQLi->error);
 	}
 
 	/**
@@ -112,9 +106,9 @@ class weeMySQLStatement extends weeDatabaseStatement
 				if (is_bool($mValue))
 					$mValue = (int)$mValue;
 				$sQuery = 'SET @_wee_' . md5($this->sStatementName . '_' . $sName) . ' = ' . $this->oDb->escape($mValue);
-				mysql_unbuffered_query($sQuery, $this->rLink) !== false or burn('DatabaseException',
+				$this->oMySQLi->real_query($sQuery) or burn('DatabaseException',
 					sprintf(_WT('Failed to bind parameter "%s" with the following message:'), $sName)
-					. "\n" . mysql_error($this->rLink));
+					. "\n" . $this->oMySQLi->error);
 			}
 	}
 
@@ -134,13 +128,13 @@ class weeMySQLStatement extends weeDatabaseStatement
 			$sQuery = substr($sQuery, 0, -2);
 		}
 
-		$mResult = mysql_query($sQuery, $this->rLink);
+		$mResult = $this->oMySQLi->query($sQuery);
 		$mResult !== false or burn('DatabaseException',
-			_WT('Failed to execute the statement with the following message:') . "\n" . mysql_error($this->rLink));
+			_WT('Failed to execute the statement with the following message:') . "\n" . $this->oMySQLi->error);
 
-		$this->iNumAffectedRows	= mysql_affected_rows($this->rLink);
+		$this->iNumAffectedRows	= $this->oMySQLi->affected_rows;
 		if ($mResult !== true)
-			return new weeMySQLResult($mResult);
+			return new weeMySQLiResult($mResult);
 	}
 
 	/**

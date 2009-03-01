@@ -251,20 +251,11 @@ abstract class weeDatabase
 	/**
 		Prepares an SQL query statement.
 
-		By default, returns an instance of weeDatabaseDummyStatement,
-		which is a fallback fake implementation of prepared statements.
-
-		When possible, a real weeDatabaseStatement subclass should be
-		written.
-
-		@param	$sQuery						The query string.
-		@return	weeDatabaseDummyStatement	The prepared statement.
+		@param	$sQuery					The query string.
+		@return	weeDatabaseStatement	The prepared statement.
 	*/
 
-	public function prepare($sQuery)
-	{
-		return new weeDatabaseDummyStatement($this, $sQuery);
-	}
+	abstract public function prepare($sQuery);
 
 	/**
 		Build and execute an SQL query.

@@ -32,7 +32,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	should not be instantiated manually.
 */
 
-class weeDatabaseDummyStatement extends weeDatabaseStatement
+abstract class weeDatabaseDummyStatement extends weeDatabaseStatement
 {
 	/**
 		The database object.
@@ -57,12 +57,6 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 	*/
 
 	protected $sFirstPart;
-
-	/**
-		The number of affected rows by the last execution of the statement.
-	*/
-
-	protected $iNumAffectedRows;
 
 	/**
 		The parameters to bind to the prepared statement.
@@ -117,6 +111,15 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 	}
 
 	/**
+		Does the database-dependent work of the execute method.
+
+		@param	$sQuery				The query to execute.
+		@return	weeDatabaseResult	A result set for SELECT queries.
+	*/
+
+	abstract protected function doQuery($sQuery);
+
+	/**
 		Executes the prepared statement.
 
 		@return	mixed	An instance of weeDatabaseResult if the query returned rows or null.
@@ -134,21 +137,6 @@ class weeDatabaseDummyStatement extends weeDatabaseStatement
 			$sQuery .= $this->oDb->escape($this->aParameters[$sName]) . $this->aQueryParts[$i];
 		}
 
-		$m = $this->oDb->query($sQuery);
-		$this->iNumAffectedRows = $this->oDb->numAffectedRows();
-		return $m;
-	}
-
-	/**
-		Returns the number of affected rows in the last INSERT, UPDATE or DELETE query.
-		You can't use this method safely to check if your UPDATE executed successfully,
-		since the UPDATE statement does not always update rows that are already up-to-date.
-
-		@return	int		The number of affected rows by the last execution of the statement.
-	*/
-
-	public function numAffectedRows()
-	{
-		return $this->iNumAffectedRows;
+		return $this->doQuery($sQuery);
 	}
 }

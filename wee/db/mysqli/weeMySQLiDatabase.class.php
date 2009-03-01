@@ -40,6 +40,12 @@ class weeMySQLiDatabase extends weeDatabase
 	protected $sDBMS = 'mysql';
 
 	/**
+		The number of affected rows during the last query.
+	*/
+
+	protected $iNumAffectedRows;
+
+	/**
 		Initialises a new mysqli database.
 
 		This database driver accepts the following parameters:
@@ -104,6 +110,7 @@ class weeMySQLiDatabase extends weeDatabase
 		$m !== false or burn('DatabaseException',
 			_WT('Failed to execute the given query with the following message:') . "\n" . $this->oDb->error);
 
+		$this->iNumAffectedRows = $this->oDb->affected_rows;
 		if ($m !== true)
 			return new weeMySQLiResult($m);
 	}
@@ -165,7 +172,7 @@ class weeMySQLiDatabase extends weeDatabase
 
 	public function numAffectedRows()
 	{
-		return $this->oDb->affected_rows;
+		return $this->iNumAffectedRows;
 	}
 
 	/**
@@ -177,7 +184,7 @@ class weeMySQLiDatabase extends weeDatabase
 
 	public function prepare($sQuery)
 	{
-		return new weeMySQLStatement($this, $sQuery);
+		return new weeMySQLiStatement($this, $this->oDb, $sQuery);
 	}
 
 	/**

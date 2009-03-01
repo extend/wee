@@ -42,6 +42,8 @@ $oDb->query('
 ');
 
 try {
+	$mNumAffectedRows = $oDb->numAffectedRows();
+
 	// see http://wee.extend.ws/ticket/73
 	$oBooleanStat = $oDb->prepare('SELECT * FROM prepstat WHERE ps_boolean = :bool');
 	try {
@@ -58,6 +60,10 @@ try {
 
 	foreach ($aInsertValues as $i => $aRow)
 		$oInsertStat->bind($aRow + array('ps_id' => $i))->execute();
+
+	// see http://wee.extend.ws/ticket/74
+	$this->isEqual($mNumAffectedRows, $oDb->numAffectedRows(),
+		_WT('weeDatabaseStatement::execute should not modify the value returned by weeDatabase::numAffectedRows.'));
 
 	// Get the number of rows
 

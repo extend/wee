@@ -21,6 +21,7 @@ if (!class_exists('weeDatabase_testBindNamedParameters', false)) {
 		public function getLastError() {}
 		public function getPKId($sName = null) {}
 		public function numAffectedRows($sName = null) {}
+		public function prepare($sQuery) {}
 	}
 }
 
