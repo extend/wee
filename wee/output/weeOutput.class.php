@@ -61,7 +61,7 @@ abstract class weeOutput
 		if (defined('WEE_GZIP') || ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
 			ob_start();
 		else {
-			$this->header('Content-Encoding: gzip');
+			safe_header('Content-Encoding: gzip');
 			ob_start('ob_gzhandler');
 
 			// Flag indicating we sent a gzip header
