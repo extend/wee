@@ -39,8 +39,9 @@ form.block ol.errors li				{color:red;list-style:decimal}
 form.block input[type="text"],
 form.block input[type="password"]	{min-width:20em}
 
-form.block fieldset.buttonsfieldset ol	{margin:0;text-align:right}
-form.block fieldset.buttonsfieldset li	{display:inline;margin-right:1em}
+form.block fieldset.buttonsfieldset {border-bottom:1px solid #bbb}
+form.block fieldset.buttonsfieldset ol	{margin:.5em 0;text-align:right}
+form.block fieldset.buttonsfieldset li	{border:0;display:inline;margin-right:1em}
 
 form.block fieldset.checklist ol,
 form.block fieldset.scrollablechecklist ol,
