@@ -239,6 +239,8 @@ class weeApplication
 
 		if (isset($_SERVER['PATH_INFO']))
 			$sPathInfo = $_SERVER['PATH_INFO'];
+		elseif (isset($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] != $_SERVER['PHP_SELF'])
+			$sPathInfo = $_SERVER['ORIG_PATH_INFO'];
 		elseif (isset($_SERVER['REDIRECT_URL']))
 			$sPathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
 

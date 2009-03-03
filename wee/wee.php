@@ -55,8 +55,8 @@ if (PHP_SAPI == 'cli')
 // Paths
 
 if (!defined('BASE_PATH')) // Base path of boostrap file
-	define('BASE_PATH', str_repeat('../', substr_count(substr($_SERVER['PHP_SELF'],
-		strlen($_SERVER['SCRIPT_NAME'])), '/') - (int)(isset($_SERVER['REDIRECT_URL']))));
+	define('BASE_PATH', str_repeat('../', substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
+		- (int)(isset($_SERVER['REDIRECT_URL']) && $_SERVER['REDIRECT_URL'] != $_SERVER['PHP_SELF'])));
 
 if (!defined('ROOT_PATH')) // Path to application's root directory
 	define('ROOT_PATH', './');
