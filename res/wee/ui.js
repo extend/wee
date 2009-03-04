@@ -19,14 +19,9 @@
 
 // This is more proof of concept than anything serious for now
 
-function ajaxify() {
-	$('div.list-container th a').click(function(){
-		$.get($(this).attr('href'), function() {ajaxify();});
+$(function() {
+	$('div.list-container th a').live('click', function(){
+		$.get($(this).attr('href'));
 		return false;
 	});
-	$('div.list-container form').ajaxForm();
-}
-
-$(function() {
-	ajaxify();
 });
