@@ -70,7 +70,7 @@ class weeDbMetaFormUI extends weeFormUI
 			$this->oForm->fill($this->aParams['set']->fetch($aEvent['get']));
 
 		if (!empty($this->mSetupCallback))
-			call_user_func($this->mSetupCallback, $this->oForm, $this->sAction);
+			call_user_func($this->mSetupCallback, $aEvent, $this->oForm, $this->sAction);
 	}
 
 	/**

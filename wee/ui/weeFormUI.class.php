@@ -84,6 +84,7 @@ class weeFormUI extends weeUI
 				$this->submit($aData);
 			} catch (FormValidationException $e) {
 				$this->oForm->fill($aData);
+				$this->oForm->fillErrors($e);
 				$this->set('errors', $e);
 			}
 		}
@@ -133,7 +134,7 @@ class weeFormUI extends weeUI
 		$this->oForm = new weeForm($this->aParams['filename'], $this->sAction);
 
 		if (!empty($this->aCallbacks['setup']))
-			call_user_func($this->aCallbacks['setup'], $this->oForm, $this->sAction);
+			call_user_func($this->aCallbacks['setup'], $aEvent, $this->oForm, $this->sAction);
 	}
 
 	/**
