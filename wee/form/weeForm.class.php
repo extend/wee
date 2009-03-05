@@ -191,6 +191,10 @@ class weeForm implements Printable
 		foreach ($aWidgets as $oWidget)
 			$aNames[(string)$oWidget] = null;
 
+		// Do not filter the form key if it is enabled
+		if ((int)$this->oXML->formkey)
+			$aNames['wee_formkey'] = null;
+
 		return array_intersect_key($aData, $aNames);
 	}
 
@@ -317,7 +321,7 @@ class weeForm implements Printable
 	{
 		$oException = new FormValidationException(_WT('The validation of the form failed. You can retrieve error messages as a string using toString or an array using toArray.'));
 
-		if (!defined('DEBUG') && (bool)$this->oXML->formkey)
+		if ((bool)$this->oXML->formkey)
 		{
 			if (session_id() == '')
 				safe_session_start();
