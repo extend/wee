@@ -35,4 +35,5 @@ table.list th, table.list td {padding:.2em}
 table.list tfoot {text-align:right}
 tr.empty-list {font-style:italic;text-align:center}
 td.items-actions li, td.items-actions form {display:inline}
-td.tree li {list-style:disc;margin-left:1.1em}
+div.items-actions {display:inline;font-size:.9em;margin-left:1em}
+div.items-actions form {display:inline}
