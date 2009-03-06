@@ -23,6 +23,7 @@ form.block ol						{margin:0;padding:0}
 form.block li						{list-style:none;margin:0;padding:.5em 0}
 form.block legend					{font-weight:bold;padding-right:0.2em}
 form.block label					{display:inline-block;padding-left:1em;vertical-align:top;width:14em}
+form.block ol ol ol label			{width:auto}
 form.block label+*					{margin-left:1em}
 form.block>ol>li					{margin:.5em 0}
 form.block>ol>li+li					{margin-top:0}
