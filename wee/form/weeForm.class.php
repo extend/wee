@@ -92,6 +92,9 @@ class weeForm implements Printable
 
 		// Delete elements with wrong action
 		$this->removeNodes('//*[@action!="' . xmlspecialchars($sAction) . '"]');
+
+		// Replace the external tags with their respective nodes
+		$this->loadExternals();
 	}
 
 	/**
@@ -212,6 +215,100 @@ class weeForm implements Printable
 
 		$oXML = $this->xpathOne('//widget[name="' . xmlspecialchars($sWidget) . '"]');
 		return new $sHelper($oXML);
+	}
+
+	/**
+		Load external sources.
+
+		Currently the only external source type available is the 'set' source type.
+		@see weeForm::loadExternalsFromSet
+		@todo Write unit tests.
+	*/
+
+	protected function loadExternals()
+	{
+		$aExternals = $this->xpath('//external');
+
+		foreach ($aExternals as $oNode) {
+			empty($oNode['type']) and burn('BadXMLException',
+				_WT('An "external" node is missing its "type" attribute.'));
+
+			$sMethod = 'loadExternalsFrom' . (string)$oNode['type'];
+			is_callable(array($this, $sMethod)) or burn('BadXMLException',
+				sprintf(_WT('The "external" node type "%s" is invalid.'), (string)$oNode['type']));
+
+			$this->$sMethod($oNode);
+		}
+	}
+
+	/**
+		Load external definitions for the set source type.
+
+		The 'set' source type is using the format class::method and will instantiate
+		the class before calling the method (it's not a static call!). This source
+		type allows adding option groups and items directly taken from a set.
+
+		@param $oNode The external node.
+	*/
+
+	protected function loadExternalsFromSet($oNode)
+	{
+		list($sClass, $sMethod) = explode('::', (string)$oNode['source']);
+		class_exists($sClass) or burn('BadXMLException',
+			sprintf(_WT('The set class "%s" do not exist.'), $sClass));
+
+		$oNode = dom_import_simplexml($oNode);
+
+		// We use a container node for convenience
+		$oExternal = $oNode->ownerDocument->createElement('root');
+
+		$oSet = new $sClass;
+		$this->loadSetExternalsFromArray($oExternal, $oSet->$sMethod());
+
+		// Only insert the contents of the convenience node
+		// We apparently must copy the object before because a DOMNodeList is alive
+		// and some operations can remove nodes from the list (like insertBefore).
+		// @see http://fr3.php.net/manual/en/domnodelist.item.php#76718 and below
+
+		$aNodes = array();
+		for ($i = 0; $i < $oExternal->childNodes->length; $i++)
+			$aNodes[] = $oExternal->childNodes->item($i);
+
+		foreach ($aNodes as $oNewNode)
+			$oNode->parentNode->insertBefore($oNewNode, $oNode);
+
+		// Remove the external itself
+		$oNode->parentNode->removeChild($oNode);
+	}
+
+	/**
+		Load the array returned by the external source set.
+
+		@param $oExternal Load the items into this node.
+		@param $aItems The items to load.
+	*/
+
+	protected function loadSetExternalsFromArray($oExternal, $aItems)
+	{
+		foreach ($aItems as $aItem) {
+			$sName = array_value($aItem, 'name', 'item');
+			unset($aItem['name']);
+
+			$oNewNode = $oExternal->ownerDocument->createElement($sName);
+
+			// First load the children nodes
+			if ($sName == 'group') {
+				$this->loadSetExternalsFromArray($oNewNode, $aItem['children']);
+				unset($aItem['children']);
+			}
+
+			// Then the attributes
+			foreach ($aItem as $sName => $sValue)
+				$oNewNode->setAttribute($sName, $sValue);
+
+			// And finally append it
+			$oExternal->appendChild($oNewNode);
+		}
 	}
 
 	/**
