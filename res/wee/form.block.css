@@ -46,7 +46,7 @@ form.block fieldset.buttonsfieldset li	{border:0;display:inline;margin-right:1em
 form.block fieldset.checklist ol,
 form.block fieldset.scrollablechecklist ol,
 form.block fieldset.radiobox ol				{margin-left:16.3em}
-form.block fieldset.radiobox li.group label	{margin-left:2em}
+form.block fieldset.radiobox li.group li label	{margin-left:1em}
 form.block fieldset.radiobox li.group ol	{margin:0}
 
 form.block fieldset.scrollablechecklist	ol			{border:1px solid gray;display:inline-block;max-height:16em;overflow:auto;width:20em}
