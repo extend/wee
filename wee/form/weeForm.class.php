@@ -268,7 +268,7 @@ class weeForm implements Printable
 		// Only insert the contents of the convenience node
 		// We apparently must copy the object before because a DOMNodeList is alive
 		// and some operations can remove nodes from the list (like insertBefore).
-		// @see http://fr3.php.net/manual/en/domnodelist.item.php#76718 and below
+		// @see http://php.net/manual/en/domnodelist.item.php#76718 and below
 
 		$aNodes = array();
 		for ($i = 0; $i < $oExternal->childNodes->length; $i++)
@@ -359,6 +359,36 @@ class weeForm implements Printable
 		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
 		foreach ($aKeys as $sName)
 		{
+			// For global errors (namely errors with an empty string as widget name), we create
+			// an ordered list at the beginning of the form and put the errors inside it.
+
+			if (empty($sName)) {
+				$a = $this->xpath('//widgets/ol[class="errors"]');
+
+				if (!empty($a))
+					$oErrorDiv = $a[0];
+				else {
+					$oNode = $this->xpathOne('//widgets');
+					$oNode = dom_import_simplexml($oNode);
+
+					$oErrorOl = $oNode->ownerDocument->createElement('ol');
+					$oErrorOl->setAttribute('class', 'errors');
+
+					$oNode->insertBefore($oErrorOl, $oNode->firstChild);
+					$oErrorOl = simplexml_import_dom($oErrorOl);
+				}
+
+				if (is_array($this->aErrors[$sName]))
+					foreach ($this->aErrors[$sName] as $sMsg)
+						$oErrorOl->addChild('li', $sMsg);
+				else
+					$oErrorOl->addChild('li', $this->aErrors[$sName]);
+
+				continue;
+			}
+
+			// If it isn't a global error we fill values and errors normally
+
 			ctype_print($sName) or burn('InvalidArgumentException', _WT('The widget name must be printable.'));
 
 			$a = $this->oXML->xpath('//widget[name="' . xmlspecialchars($sName) . '"]');
@@ -424,14 +454,14 @@ class weeForm implements Printable
 				safe_session_start();
 
 			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
-				$oException->addError('', _WT('Invalid form key.'));
+				$oException->addError('', _WT('Invalid form key. You probably already submitted this form.'));
 			else
 			{
 				// If form key was generated more than 6 hours ago, it is considered invalid
 
 				$aTime = explode(' ', $_SESSION['session_formkeys'][$aData['wee_formkey']]);
 				if (time() > $aTime[1] + 3600 * 6)
-					$oException->addError('', _WT('Form key out of date.'));
+					$oException->addError('', _WT('Form key out of date. Please try submitting the form again.'));
 			}
 
 			// Form has been submitted, unset the form key
