@@ -35,11 +35,11 @@
 		</xsl:attribute>
 
 		<xsl:if test="$formkey">
-			<input type="hidden" name="wee_formkey">
+			<div><input type="hidden" name="wee_formkey">
 				<xsl:attribute name="value">
 					<xsl:value-of select="$formkey"/>
 				</xsl:attribute>
-			</input>
+			</input></div>
 		</xsl:if>
 
 		<xsl:call-template name="container">
