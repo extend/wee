@@ -74,15 +74,28 @@ class weeDbMetaForm extends weeForm
 		Add a widget to the form.
 
 		@param $sType Widget's type.
-		@param $sName Widget's name and label.
+		@param $oCol Column's metadata information.
 	*/
 
-	protected function addWidget($sType, $sName, $sLabel)
+	protected function addWidget($sType, $oCol)
 	{
+		$sName = $oCol->name();
+		$sLabel = (!empty($aOptions['label-from-comment']) && $oCol instanceof weeDbMetaCommentable) ? $oCol->comment() : null;
+		if (empty($sLabel))
+			$sLabel = $sName;
+
 		$oChild = $this->oXML->widgets->widget->addChild('widget');
 		$oChild->addAttribute('type', $sType);
 		$oChild->addChild('name', $sName);
 		$oChild->addChild('label', $sLabel);
+
+		if (!$oCol->isNullable() && !$oCol->hasDefault())
+			$oChild->addAttribute('required', 'required');
+
+		if ($sType == 'choice') {
+			$oValidator = $oChild->addChild('validator');
+			$oValidator->addAttribute('type', 'weeOptionValidator');
+		}
 	}
 
 	/**
@@ -125,23 +138,20 @@ class weeDbMetaForm extends weeForm
 
 		foreach ($aMeta['colsobj'] as $oCol) {
 			$sColumn = $oCol->name();
-			$sLabel = (!empty($aOptions['label-from-comment']) && $oCol instanceof weeDbMetaCommentable) ? $oCol->comment() : null;
-			if (empty($sLabel))
-				$sLabel = $sColumn;
 
 			if (in_array($sColumn, $aMeta['primary'])) {
 				if (!empty($aOptions['show-pkey']))
-					$this->addWidget('textbox', $sColumn, $sLabel);
+					$this->addWidget('textbox', $oCol);
 				elseif ($aOptions['action'] == 'update')
-					$this->addWidget('hidden', $sColumn, $sLabel);
+					$this->addWidget('hidden', $oCol);
 			} elseif (strpos($sColumn, '_is_'))
-				$this->addWidget('checkbox', $sColumn, $sLabel);
-			elseif (strpos($sColumn, '_password'))
-				$this->addWidget('password', $sColumn, $sLabel);
+				$this->addWidget('checkbox', $oCol);
+			elseif (strpos($sColumn, 'password'))
+				$this->addWidget('password', $oCol);
 			elseif (empty($aRefSets[$sColumn]))
-				$this->addWidget('textbox', $sColumn, $sLabel);
+				$this->addWidget('textbox', $oCol);
 			else {
-				$this->addWidget('choice', $sColumn, $sLabel);
+				$this->addWidget('choice', $oCol);
 
 				$sLabelColumn = $aRefSets[$sColumn]['key'];
 				foreach ($aRefSets[$sColumn]['meta']['columns'] as $sRefColumn)
