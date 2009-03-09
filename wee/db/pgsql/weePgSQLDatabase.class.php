@@ -50,16 +50,23 @@ class weePgSQLDatabase extends weeDatabase
 		Initialises a new pgsql database.
 
 		This database driver accepts the same parameters as the ones allowed in the connection string
-		passed to pg_connect.
+		passed to pg_connect plus "encoding", which is the encoding used by the client as specified
+		by pg_set_client_encoding.
+
+		The default encoding is UNICODE.
 
 		@param	$aParams	The parameters of the database.
 		@see	http://php.net/pg_connect
+		@see	http://php.net/pg_set_client_encoding
 	*/
 
 	public function __construct($aParams = array())
 	{
 		function_exists('pg_connect') or burn('ConfigurationException',
 			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'PostgreSQL'));
+
+		$sEncoding = array_value($aParams, 'encoding', 'UNICODE');
+		unset($aParams['encoding']);
 
 		//TODO:maybe quote & escape values...
 		$sConnection = null;
@@ -71,8 +78,8 @@ class weePgSQLDatabase extends weeDatabase
 		$this->rLink === false and burn('DatabaseException',
 			_WT('Failed to connect to database with the following message:') . "\n" . pg_last_error());
 
-		// Set encoding
-		pg_set_client_encoding($this->rLink, 'UNICODE');
+		pg_set_client_encoding($this->rLink, $sEncoding) != -1 or burn('InvalidArgumentException',
+			sprintf(_WT('Encoding "%s" is invalid.'), $sEncoding));
 	}
 
 	/**
