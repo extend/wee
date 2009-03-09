@@ -108,7 +108,7 @@ class weeLDAP
 
 		@param $sDN The Distinguished Name of an LDAP entity.
 		@param $sFilter The filter for the read by default objectClass=*.
-		@return weeLDAPResult The object containing the result.
+		@return weeLDAPEntry An instance of weeLDAPEntry.
 	*/
 
 	public function fetch($sDN, $sFilter = 'objectClass=*')
@@ -120,7 +120,14 @@ class weeLDAP
 				ldap_errno($this->rLink)
 			);
 
-		return new weeLDAPResult($this->rLink, $r);
+		$rEntry = ldap_first_entry($this->rLink, $r);
+		if ($rEntry === false)
+			throw new LDAPException(
+				_WT('Failed to get the first entry.') . "\n" . ldap_error($this->rLink), 
+				ldap_errno($this->rLink)
+			);
+
+		return new weeLDAPEntry($this->rLink, $rEntry);
 	}
 
 	/**
