@@ -479,7 +479,7 @@ class weeForm implements Printable
 				// If we don't have any data we check the required flag
 				// If it's not required we skip, otherwise we note an error
 
-				if (!array_key_exists((string)$oNode->name, $aData) ||
+				if (!isset($aData[(string)$oNode->name]) ||
 					(is_string($aData[(string)$oNode->name]) && !strlen($aData[(string)$oNode->name])) ||
 					(is_array($aData[(string)$oNode->name]) && empty($aData[(string)$oNode->name])))
 				{
