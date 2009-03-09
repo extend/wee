@@ -134,7 +134,11 @@ class weeDbMetaForm extends weeForm
 					$this->addWidget('textbox', $sColumn, $sLabel);
 				elseif ($aOptions['action'] == 'update')
 					$this->addWidget('hidden', $sColumn, $sLabel);
-			} elseif (empty($aRefSets[$sColumn]))
+			} elseif (strpos($sColumn, '_is_'))
+				$this->addWidget('checkbox', $sColumn, $sLabel);
+			elseif (strpos($sColumn, '_password'))
+				$this->addWidget('password', $sColumn, $sLabel);
+			elseif (empty($aRefSets[$sColumn]))
 				$this->addWidget('textbox', $sColumn, $sLabel);
 			else {
 				$this->addWidget('choice', $sColumn, $sLabel);
