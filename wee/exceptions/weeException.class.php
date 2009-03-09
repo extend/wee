@@ -66,7 +66,8 @@ final class weeException
 
 	protected static function filterTrace(array $aTrace)
 	{
-		while (isset($aTrace[0]['class']) && $aTrace[0]['class'] == __CLASS__ || !isset($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
+		while (isset($aTrace[0]['class']) && $aTrace[0]['class'] == __CLASS__
+				|| !isset($aTrace[0]['file']) && !isset($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
 			array_shift($aTrace);
 		return $aTrace;
 	}
@@ -216,12 +217,17 @@ final class weeException
 						'name'	=> get_class($eException),
 					);
 
-				if (isset($aTrace[0]['file']))
-					$aError += array(
-						'file'	=> $aTrace[0]['file'],
-						'line'	=> $aTrace[0]['line'],
-					);
-				else
+				if ($eException->getFile() == __FILE__ || !substr_compare($eException->getFile(), "eval()'d code", -13)) {
+					foreach ($aTrace as $a) {
+						if (substr_compare($a['file'], "eval()'d code", -13)) {
+							$aError += array(
+								'file' => $a['file'],
+								'line' => $a['line'],
+							);
+							break;
+						}
+					}
+				} else
 					$aError += array(
 						'file'	=> $eException->getFile(),
 						'line'	=> $eException->getLine(),
