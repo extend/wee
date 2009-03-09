@@ -230,7 +230,7 @@ class weeMySQLDbMetaTable extends weeDbMetaTable
 	public function primaryKey()
 	{
 		$oQuery = $this->db()->query("
-			SELECT		CONSTRAINT_NAME AS name, CONSTRAINT_TYPE AS type
+			SELECT		TABLE_NAME AS `table`, CONSTRAINT_NAME AS name
 				FROM	information_schema.TABLE_CONSTRAINTS
 				WHERE	TABLE_NAME		= ?
 					AND	TABLE_SCHEMA	= DATABASE()

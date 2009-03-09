@@ -37,6 +37,11 @@ try
 
 	$this->isEqual(array('a', 'c'), $oPrimaryKey->columnsNames(),
 		_WT('weeMySQLDbMetaPrimaryKey::columnsNames does not correctly return all the columns of the primary key.'));
+
+	// weeMySQLDbMetaPrimaryKey::tableName
+
+	$this->isEqual('test1', $oPrimaryKey->tableName(),
+		_WT('weeMySQLDbMetaPrimaryKey::tableName does not correctly return the name of the table of the primary key.'));
 }
 catch (Exception $oException) {}
 
