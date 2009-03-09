@@ -73,7 +73,7 @@ class weeOptionValidator extends weeFormValidator
 				$mValue = (string)$mValue;
 		}
 
-		is_string($mValue) or is_int($mValue) or is_float($mValue)
+		is_null($mValue) || is_string($mValue) || is_int($mValue) || is_float($mValue)
 			or burn('DomainException',
 				_WT('$mValue is not of a correct type.'));
 
