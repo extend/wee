@@ -30,6 +30,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeDbMetaForm extends weeForm
 {
 	/**
+		Options for this dbmeta form object.
+
+		@see weeDbMetaForm::__construct
+	*/
+
+	protected $aOptions = array();
+
+	/**
 		Initializes the form.
 
 		Options include:
@@ -49,24 +57,26 @@ class weeDbMetaForm extends weeForm
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
 			_WT('The XSL PHP extension is required by weeForm.'));
 
-		if (!isset($aOptions['action']))
-			$aOptions['action'] = 'add';
-		if (!isset($aOptions['formkey']))
-			$aOptions['formkey'] = true;
-		if (!isset($aOptions['label-from-comment']))
-			$aOptions['label-from-comment'] = true;
+		$this->aOptions = $aOptions;
 
-		in_array($aOptions['action'], array('add', 'update'))  or burn('InvalidArgumentException',
+		if (!isset($this->aOptions['action']))
+			$this->aOptions['action'] = 'add';
+		if (!isset($this->aOptions['formkey']))
+			$this->aOptions['formkey'] = true;
+		if (!isset($this->aOptions['label-from-comment']))
+			$this->aOptions['label-from-comment'] = true;
+
+		in_array($this->aOptions['action'], array('add', 'update'))  or burn('InvalidArgumentException',
 			_WT('Invalid action name. Valid action names are "add" or "update".'));
 
-		$this->loadFromSet($oSet, $aOptions);
+		$this->loadFromSet($oSet);
 
-		if (empty($aOptions['uri']))
+		if (empty($this->aOptions['uri']))
 			$this->oXML->addChild('uri', (!empty($_SERVER['REQUEST_URI']) ? xmlspecialchars($_SERVER['REQUEST_URI']) : null));
 		else
-			$this->oXML->addChild('uri', xmlspecialchars($aOptions['uri']));
+			$this->oXML->addChild('uri', xmlspecialchars($this->aOptions['uri']));
 
-		if (!empty($aOptions['formkey']))
+		if (!empty($this->aOptions['formkey']))
 			$this->oXML->addChild('formkey', 1);
 	}
 
@@ -80,7 +90,7 @@ class weeDbMetaForm extends weeForm
 	protected function addWidget($sType, $oCol)
 	{
 		$sName = $oCol->name();
-		$sLabel = (!empty($aOptions['label-from-comment']) && $oCol instanceof weeDbMetaCommentable) ? $oCol->comment() : null;
+		$sLabel = (!empty($this->aOptions['label-from-comment']) && $oCol instanceof weeDbMetaCommentable) ? $oCol->comment() : null;
 		if (empty($sLabel))
 			$sLabel = $sName;
 
@@ -124,33 +134,21 @@ class weeDbMetaForm extends weeForm
 		Create the form from a set metadata. Called by the class' constructor.
 
 		@param $oSet The set to build the form for.
-		@param $aOptions Options to control the building of the form.
 	*/
 
-	protected function loadFromSet($oSet, $aOptions)
+	protected function loadFromSet($oSet)
 	{
 		$aMeta = $oSet->getMeta();
 		$aRefSets = $this->loadRefSets($oSet);
 
 		$this->oXML = simplexml_load_string('<form><method>'
-			. xmlspecialchars(array_value($aOptions, 'method', 'post'))
+			. xmlspecialchars(array_value($this->aOptions, 'method', 'post'))
 			. '</method><widgets><widget type="fieldset"/></widgets></form>');
 
 		foreach ($aMeta['colsobj'] as $oCol) {
 			$sColumn = $oCol->name();
 
-			if (in_array($sColumn, $aMeta['primary'])) {
-				if (!empty($aOptions['show-pkey']))
-					$this->addWidget('textbox', $oCol);
-				elseif ($aOptions['action'] == 'update')
-					$this->addWidget('hidden', $oCol);
-			} elseif (strpos($sColumn, '_is_'))
-				$this->addWidget('checkbox', $oCol);
-			elseif (strpos($sColumn, 'password'))
-				$this->addWidget('password', $oCol);
-			elseif (empty($aRefSets[$sColumn]))
-				$this->addWidget('textbox', $oCol);
-			else {
+			if (!empty($aRefSets[$sColumn])) {
 				$this->addWidget('choice', $oCol);
 
 				$sLabelColumn = $aRefSets[$sColumn]['key'];
@@ -164,6 +162,21 @@ class weeDbMetaForm extends weeForm
 				$oHelper->addOption(array('label' => 'NULL', 'value' => ''));
 				foreach ($aRefSets[$sColumn]['set']->fetchAll() as $aRow)
 					$oHelper->addOption(array('label' => $aRow[$sLabelColumn], 'value' => $aRow[$aRefSets[$sColumn]['key']]));
+			} else {
+				$sWidget = 'textbox';
+
+				if (in_array($sColumn, $aMeta['primary'])) {
+					if ($this->aOptions['action'] != 'update')
+						continue;
+					if (empty($this->aOptions['show-pkey']))
+						$sWidget = 'hidden';
+				}
+				elseif (strpos($sColumn, '_is_'))
+					$sWidget = 'checkbox';
+				elseif (strpos($sColumn, 'password'))
+					$sWidget = 'password';
+
+				$this->addWidget($sWidget, $oCol);
 			}
 		}
 
@@ -171,7 +184,7 @@ class weeDbMetaForm extends weeForm
 		$oFieldset->addAttribute('type', 'fieldset');
 		$oFieldset->addChild('class', 'buttonsfieldset');
 
-		if ($aOptions['action'] == 'update') {
+		if ($this->aOptions['action'] == 'update') {
 			$oButton = $oFieldset->addChild('widget');
 			$oButton->addAttribute('type', 'resetbutton');
 		}
