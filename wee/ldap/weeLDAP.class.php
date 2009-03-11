@@ -66,6 +66,33 @@ class weeLDAP
 				ldap_errno($this->rLink)
 			);
 	}
+ 
+	/**
+		Escape the given string.
+
+		@param $sValue The string to escape.
+		@return string The escaped string.
+	*/
+
+	public function escape($sValue)
+	{
+		if (empty($sValue)) return false;
+
+		$aSearch = array('\\', '+', '"', '>', '<', ';', ',');
+		$aReplace = array('\\\\', '\+', '\"',  '\>', '\<', '\;', '\,');
+
+		$sValue = str_replace($aSearch, $aReplace, $sValue);
+
+		if ($sValue[0] === ' ' || $sValue[0] === '#')
+			$sValue = '\\' . $sValue;
+
+		if ($sValue[strlen($sValue) - 1] === ' ' && strlen($sValue) > 2) {
+			$sValue[strlen($sValue) - 1] = '\\';
+			$sValue = $sValue . ' ';
+		}
+
+		return $sValue;
+	}
 
 	/**
 		Copy the entry.
