@@ -68,7 +68,7 @@ class weeLDAP
 	}
  
 	/**
-		Escape the given string.
+		Escape the value of the component of a DN string.
 
 		@param $sValue The string to escape.
 		@return string The escaped string.
