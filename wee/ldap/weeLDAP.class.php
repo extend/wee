@@ -76,20 +76,21 @@ class weeLDAP
 
 	public function escape($sValue)
 	{
-		if (empty($sValue)) return false;
+		if (empty($sValue)) return $sValue;
 
-		$aSearch = array('\\', '+', '"', '>', '<', ';', ',');
-		$aReplace = array('\\\\', '\+', '\"',  '\>', '\<', '\;', '\,');
+		$sValue = str_replace(
+			array('\\', '+', '"', '>', '<', ';', ','), 
+			array('\\\\', '\+', '\"',  '\>', '\<', '\;', '\,'),
+			$sValue
+		);
 
-		$sValue = str_replace($aSearch, $aReplace, $sValue);
+		if ($sValue[strlen($sValue) - 1] === ' ') {
+			$sValue[strlen($sValue) - 1] = '\\';
+			$sValue .= ' ';
+		}
 
 		if ($sValue[0] === ' ' || $sValue[0] === '#')
 			$sValue = '\\' . $sValue;
-
-		if ($sValue[strlen($sValue) - 1] === ' ' && strlen($sValue) > 2) {
-			$sValue[strlen($sValue) - 1] = '\\';
-			$sValue = $sValue . ' ';
-		}
 
 		return $sValue;
 	}
