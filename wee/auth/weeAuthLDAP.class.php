@@ -68,7 +68,7 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticate($aCredentials)
 	{
-		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $aCredentials['identifier']); // TODO: escape this yl!
+		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $this->aParams['ldap']->escapeFilter($aCredentials['identifier']));
 
 		count($oResults) === 0 and burn('AuthenticationException',
 			_WT('The credentials provided were incorrect.'));
@@ -102,7 +102,7 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticateHash($aCredentials)
 	{
-		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $aCredentials['identifier']); // TODO: escape this too yl!
+		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $this->aParams['ldap']->escapeFilter($aCredentials['identifier']));
 
 		count($oResults) === 0 and burn('AuthenticationException',
 			_WT('The credentials provided were incorrect.'));
