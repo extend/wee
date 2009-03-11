@@ -5,7 +5,7 @@
 try
 {
 	$oDb = new weeOracleDatabase(array(
-		'dsn'		=> 'oci:bname=kaboom',
+		'dsn'		=> 'oci:dbname=kaboom',
 		'user'		=> 'wee',
 		'password'	=> 'wee',
 	));
