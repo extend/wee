@@ -86,6 +86,27 @@ try {
 	$this->isTrue($o->isEqual($sDN, $sAttr, $sValue),
 		_WT('weeLDAP::isEqual should return true.'));
 
+
+	$aEntry = array (
+		'ou'			=> array('customers'),
+		'objectClass'	=> array('organizationalUnit'),
+	);
+
+	$this->isEqual($aEntry, $o->fetch('ou=customers, dc=example, dc=com')->toArray(),
+		_WT('The arrays should be equal.'));
+
+	$aEntry = array (
+		'objectClass'		=> array('person'),
+		'sn'				=> array('Skywalker'),
+		'telephoneNumber'	=> array('5555-1234'),
+		'description'		=> array('Master of the New Jedi Order.'),
+		'cn'				=> array('Anakin Skywalker'),
+		'userPassword'		=> array(md5('Anakin Skywalker')),
+	);
+
+	$this->isEqual($aEntry, $o->fetch('cn=Anakin Skywalker, ou=customers, dc=example, dc=com', 'cn=*')->toArray(),
+		_WT('The arrays should be equal.'));
+
 	$sDN = 'ou=countries, dc=example, dc=com';
 	$this->isEqual(2, count($o->search($sDN, 'objectClass=*', false)),
 		_WT('weeLDAPResult::count should return 2.'));
