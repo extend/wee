@@ -77,7 +77,42 @@ try {
 	);
 
 	foreach ($aEscape as $sValue => $sResult)
-		$this->isEqual($o->escape($sValue), $sResult,
+		$this->isEqual($sResult, $o->escape($sValue),
+			_WT('The strings should be equal.'));
+
+	$aEscape = array(
+		'*'			=> '\2A',
+		'**'		=> '\2A\2A',
+		'('			=> '\28',
+		'(('		=> '\28\28',
+		')'			=> '\29',
+		'))'		=> '\29\29',
+		'\\'		=> '\5C',
+		'\\\\'		=> '\5C\5C',
+		"\0"		=> '\00',
+		'A*'		=> 'A\2A',
+		'A('		=> 'A\28',
+		'A)'		=> 'A\29',
+		'A\\'		=> 'A\5C',
+		"A\0"		=> 'A\00',
+		'*A'		=> '\2AA',
+		'(A'		=> '\28A',
+		')A'		=> '\29A',
+		'\A'		=> '\5CA',
+		"\0A"		=> '\00A',
+		'A*(astar)'	=> 'A\2A\28astar\29',
+		'(42*42)'	=> '\2842\2A42\29',
+		'es\\cape'	=> 'es\5Ccape',
+		"es\0cape"	=> 'es\00cape',
+		'es*cape'	=> 'es\2Acape',
+		'es(cape'	=> 'es\28cape',
+		'es)cape'	=> 'es\29cape',
+		'es\cape'	=> 'es\5Ccape',
+		"*()\\\0"	=> '\2A\28\29\5C\00',
+	);
+
+	foreach ($aEscape as $sValue => $sResult)
+		$this->isEqual($sResult, $o->escapeFilter($sValue),
 			_WT('The strings should be equal.'));
 
 	$sDN = 'cn=Anakin Skywalker, ou=customers, dc=example, dc=com';
@@ -85,7 +120,6 @@ try {
 	$sValue = 'person';
 	$this->isTrue($o->isEqual($sDN, $sAttr, $sValue),
 		_WT('weeLDAP::isEqual should return true.'));
-
 
 	$aEntry = array (
 		'ou'			=> array('customers'),

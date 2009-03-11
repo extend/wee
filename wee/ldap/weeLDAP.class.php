@@ -96,6 +96,26 @@ class weeLDAP
 	}
 
 	/**
+		Escape the given filter.
+
+		@param $sFilter The filter to escape.
+		@return string The escaped filter.
+	*/
+
+	public function escapeFilter($sFilter)
+	{
+		if (empty($sFilter)) return $sFilter;
+
+		$sFilter = str_replace(
+			array('\\', '*', '(', ')', "\0"), 
+			array('\5C', '\2A', '\28', '\29', '\00'),
+			$sFilter
+		);
+
+		return $sFilter;
+	}
+
+	/**
 		Copy the entry.
 
 		@param $sFromDN The actual Distinguished Name.
