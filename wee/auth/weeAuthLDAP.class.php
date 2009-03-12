@@ -33,8 +33,10 @@ class weeAuthLDAP extends weeAuth
 		Parameters:
 			ldap: The weeLDAP object getted after authentication to the LDAP server.
 			base_dn: The base DN for making search.
-			password_treatment: The callback applied to the password value of the 'userPassword' attribute of the entry. Defaults to 'md5'.
-			hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'md5'.
+			password_treatment: The callback applied to the password value of the 'userPassword' attribute of the entry. Defaults to 'sha1'.
+			hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
+			host: The LDAP server.
+			port: The port to connect. Defaults to 389.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -44,10 +46,12 @@ class weeAuthLDAP extends weeAuth
 		empty($aParams['ldap']) and burn('InvalidArgumentException',
 			_WT('You must provide a parameter "ldap" containing the instance of weeLDAP.'));
 		empty($aParams['base_dn']) and burn('InvalidArgumentException',
-			_WT('You must provide a parameter "base_dn" containing the base DN.')); //TODO message
+			_WT('You must provide a parameter "base_dn" containing the base DN.'));
+		empty($aParams['host']) and burn('InvalidArgumentException',
+			_WT('You must provide a parameter "host" containing the hostname.'));
 
 		if (empty($aParams['password_treatment']))
-			$aParams['password_treatment'] = 'md5';
+			$aParams['password_treatment'] = 'sha1';
 		else
 			is_callable($aParams['password_treatment']) or burn('InvalidArgumentException',
 				_WT('The parameter "password_treatment" must be a valid callback.'));
@@ -76,10 +80,14 @@ class weeAuthLDAP extends weeAuth
 		count($oResults) === 1 or burn('UnexpectedValueException',
 			_WT('The authentication query returned more than 1 result.'));
 
-		$oEntry = $oResults->fetch();
-		$sFunc = $this->aParams['password_treatment'];
+		$oEntry	= $oResults->fetch();
+		$sFunc	= $this->aParams['password_treatment'];
 
-		$sFunc($aCredentials['password']) === $oEntry['userPassword'][0]
+		empty($oEntry['userPassword']) and burn('UnexpectedValueException',
+			sprintf(_WT('No password found for the identifier %s.'), $aCredentials['identifier']));
+
+		$rLink	= ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
+		ldap_bind($rLink, $oEntry->getDN(), $sFunc($aCredentials['password']))
 			or burn('AuthenticationException', _WT('The credentials provided were incorrect.'));
 
 		unset($oEntry['userPassword']);
@@ -102,16 +110,19 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticateHash($aCredentials)
 	{
-		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $this->aParams['ldap']->escapeFilter($aCredentials['identifier']));
+		defined('MAGIC_STRING') or burn('IllegalStateException',
+			_WT('You cannot hash a passphrase without defining the MAGIC_STRING constant first.'));
 
-		count($oResults) === 0 and burn('AuthenticationException',
-			_WT('The credentials provided were incorrect.'));
+		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $this->aParams['ldap']->escapeFilter($aCredentials['identifier']));
 
 		count($oResults) === 1 or burn('UnexpectedValueException',
 			_WT('The authentication query returned more than 1 result.'));
 
 		$oEntry = $oResults->fetch();
 		$sFunc = $this->aParams['hash_treatment'];
+
+		empty($oEntry['userPassword']) and burn('UnexpectedValueException',
+			sprintf(_WT('No password found for the identifier %s.'), $aCredentials['identifier']));
 
 		$aCredentials['password'] === $sFunc($oEntry['userPassword'][0] . MAGIC_STRING)
 			or burn('AuthenticationException', _WT('The credentials provided were incorrect.'));
