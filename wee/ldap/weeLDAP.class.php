@@ -34,16 +34,10 @@ class weeLDAP
 	protected $rLink;
 
 	/**
-		The LDAP server.
+		The parameter's data.
 	*/
 
-	protected $sHost;
-
-	/**
-		The port to connect.
-	*/
-
-	protected $iPort;
+	protected $aParams;
 
 	/**
 		Create a copy of an weeLDAP object and establish a new simple connection to the current LDAP server.
@@ -53,9 +47,15 @@ class weeLDAP
 
 	public function __clone()
 	{
-		$this->rLink = ldap_connect($this->sHost, $this->iPort);
-		$this->rLink === false and burn('LDAPException', 
-			sprintf(_WT('Can not connect to "%s" :'), $this->sHost));
+		$this->rLink = ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
+		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->aParams['host']));
+
+		$b = ldap_bind($this->rLink, array_value($this->aParams, 'rdn'), array_value($this->aParams, 'password'));
+		if ($b === false)
+			throw new LDAPException(
+				sprintf(_WT('Can not bind the RDN "%s".'), array_value($this->aParams, 'rdn')) . "\n" . ldap_error($this->rLink),
+				ldap_errno($this->rLink)
+			);
 	}
 
 	/**
@@ -78,18 +78,16 @@ class weeLDAP
 	{
 		function_exists('ldap_connect') or burn('ConfigurationException', 'LDAP support is missing.');
 
+		$this->aParams = $aParams;
 		empty($aParams['host']) and burn('InvalidArgumentException', 'The host parameter must not be empty.');
 
-		$this->sHost = array_value($aParams,'host');
-		$this->iPort = array_value($aParams,'port', 389);
+		$this->rLink = ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
+		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->aParams['host']));
 
-		$this->rLink = ldap_connect($this->sHost, $this->iPort);
-		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->sHost));
-
-		$b = ldap_bind($this->rLink, array_value($aParams, 'rdn', null), array_value($aParams, 'password', null));
+		$b = ldap_bind($this->rLink, array_value($this->aParams, 'rdn'), array_value($this->aParams, 'password'));
 		if ($b === false)
 			throw new LDAPException(
-				sprintf(_WT('Can not bind the RDN "%s".'), array_value($aParams,'rdn', null)) . "\n" . ldap_error($this->rLink),
+				sprintf(_WT('Can not bind the RDN "%s".'), array_value($this->aParams, 'rdn')) . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
