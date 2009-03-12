@@ -45,7 +45,7 @@ $o->insert($sDN, array(
 	'telephonenumber' 	=> '5555-1234',
 	'description'		=> array('The Grand Master of the New Jedi Order.','other description'),
 	'cn' 				=> 'Luke Skywalker',
-	'userPassword'		=> md5('Luke Skywalker'),
+	'userPassword'		=> sha1('Luke Skywalker'),
 ));
 
 $sDN = 'cn=Anakin Skywalker, ou=customers, dc=example, dc=com';
@@ -55,7 +55,7 @@ $o->insert($sDN, array(
 	'telephonenumber' 	=> '5555-1234',
 	'description'		=> 'Master of the New Jedi Order.',
 	'cn' 				=> 'Anakin Skywalker',
-	'userPassword'		=> md5('Anakin Skywalker'),
+	'userPassword'		=> sha1('Anakin Skywalker'),
 ));
 
 $sDN = 'ou=countries, dc=example, dc=com';
