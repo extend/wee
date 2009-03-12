@@ -92,9 +92,9 @@ class weePDODatabase extends weeDatabase
 	/**
 		Executes an SQL query.
 
-		@param	$sQuery				The query to execute.
-		@return	weePDOResult		For queries that return rows, the result object.
-		@throw	DatabaseException	Failed to execute the query.
+		@param	$sQuery	The query to execute.
+		@return	weeDataseDummyResult	For queries that return rows, the result object.
+		@throw	DatabaseException		Failed to execute the query.
 	*/
 
 	protected function doQuery($sQuery)
@@ -105,7 +105,7 @@ class weePDODatabase extends weeDatabase
 
 		$this->iNumAffectedRows = $this->doRowCount($m);
 		if ($m->columnCount())
-			return new weePDOResult($m->fetchAll(PDO::FETCH_ASSOC));
+			return new weeDatabaseDummyResult($m->fetchAll(PDO::FETCH_ASSOC));
 	}
 
 	/**

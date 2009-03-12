@@ -81,7 +81,7 @@ class weePDOStatement extends weeDatabaseStatement
 	/**
 		Executes the prepared statement.
 
-		@return	mixed	An instance of weePDOResult if the query returned rows or null.
+		@return	mixed	An instance of weeDatabaseDummyResult if the query returned rows or null.
 	*/
 
 	public function execute()
@@ -94,7 +94,7 @@ class weePDOStatement extends weeDatabaseStatement
 
 		$this->iNumAffectedRows = $this->oDb->doRowCount($this->oStatement, true);
 		if ($this->oStatement->columnCount())
-			return new weePDOResult($this->oStatement->fetchAll(PDO::FETCH_ASSOC));
+			return new weeDatabaseDummyResult($this->oStatement->fetchAll(PDO::FETCH_ASSOC));
 	}
 
 	/**

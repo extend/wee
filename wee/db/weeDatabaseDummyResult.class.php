@@ -22,13 +22,11 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Class for PDO query results handling.
-
-	Instances of this class are returned by weePDODatabase's query method and
-	should not be instantiated manually.
+	A dummy database result to use with drivers where we directly store the rows
+	of the result set in a PHP array, such as Oracle and PDO.
 */
 
-class weePDOResult extends weeDatabaseResult
+class weeDatabaseDummyResult extends weeDatabaseResult
 {
 	/**
 		The rows of the result set.
@@ -37,7 +35,7 @@ class weePDOResult extends weeDatabaseResult
 	protected $aRows;
 
 	/**
-		Initialises a new pdo result set.
+		Initialises a new oracle result set.
 
 		@param	$aRows	The rows of the result set.
 	*/
@@ -50,7 +48,7 @@ class weePDOResult extends weeDatabaseResult
 	/**
 		Return the number of results returned by the query.
 
-		@return	int			The number of results.
+		@return	int		The number of results.
 	*/
 
 	public function count()
@@ -61,7 +59,7 @@ class weePDOResult extends weeDatabaseResult
 	/**
 		Fetches the data of the next row of the result set.
 
-		@return	mixed		An array containing the data of the next row or false if there is no current row.
+		@return	mixed	An array containing the data of the next row or false if there is no current row.
 	*/
 
 	protected function doFetch()
