@@ -32,14 +32,17 @@ $aInsertValues = array(
 // Create the test table
 
 $oDb->query('
-	CREATE TEMPORARY TABLE prepstat (
+	CREATE ' . ($oDb->is('oracle') ? 'GLOBAL' : '') . ' TEMPORARY TABLE prepstat (
 		ps_id INTEGER PRIMARY KEY,
 		ps_integer INTEGER,
 		ps_varchar CHARACTER VARYING(50),
-		ps_timestamp TIMESTAMP,
-		ps_boolean BOOLEAN
-	);
+		ps_timestamp TIMESTAMP(0),
+		ps_boolean ' . ($oDb->is('oracle') ? 'INTEGER' : 'BOOLEAN') . '
+	)
 ');
+
+if ($oDb->is('oracle'))
+	$oDb->query("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
 
 try {
 	$mNumAffectedRows = $oDb->numAffectedRows();
@@ -80,7 +83,7 @@ try {
 		SELECT ps_integer FROM prepstat WHERE ps_boolean = :bool
 	')->bind('bool', true)->execute()->fetch();
 
-	$this->isEqual(4242, $aImplicitTest['ps_integer'],
+	$this->isEqual(4242, reset($aImplicitTest),
 		_WT('"SELECT ps_integer FROM prepstat WHERE ps_boolean=1" should return 4242.'));
 
 	// weeStatement::numAffectedRows

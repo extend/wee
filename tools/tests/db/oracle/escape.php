@@ -13,7 +13,7 @@ $this->isEqual("'7.5'", $oDb->escape(7.5),
 $this->isEqual("'7.5'", $oDb->escape(7.50),
 	_WT('Escaping of the float 7.50 is wrong.'));
 
-$this->isEqual("'that\'s all folks!'", $oDb->escape("that's all folks!"),
+$this->isEqual("'that''s all folks!'", $oDb->escape("that's all folks!"),
 	_WT('Escaping of the string "that\'s all folks" is wrong.'));
 
 $this->isEqual('null', $oDb->escape(null),
