@@ -34,7 +34,32 @@ class weeLDAP
 	protected $rLink;
 
 	/**
-		Establish a simple connection to an LDAP server on a specified hostname and port, and bind to the LDAP directory with specified RDN and password.
+		The LDAP server.
+	*/
+
+	protected $sHost;
+
+	/**
+		The port to connect.
+	*/
+
+	protected $iPort;
+
+	/**
+		Create a copy of an weeLDAP object and establish a new simple connection to the current LDAP server.
+
+		@throw LDAPException If an error occurs during the connection.
+	*/
+
+	public function __clone()
+	{
+		$this->rLink = ldap_connect($this->sHost, $this->iPort);
+		$this->rLink === false and burn('LDAPException', 
+			sprintf(_WT('Can not connect to "%s" :'), $this->sHost));
+	}
+
+	/**
+		Establish a simple connection to an LDAP server on a specified hostname and port, and bind to the LDAP directory with the specified RDN and password.
 		For binding anonymously, you don't need to specify RDN and password.
 
 		Parameters:
@@ -55,14 +80,16 @@ class weeLDAP
 
 		empty($aParams['host']) and burn('InvalidArgumentException', 'The host parameter must not be empty.');
 
-		$this->rLink = ldap_connect(array_value($aParams,'host'), array_value($aParams, 'port', 389));
-		$this->rLink === false and burn('LDAPException', 
-			sprintf(_WT('Can not connect to "%s" :'), array_value($aParams,'host')));
+		$this->sHost = array_value($aParams,'host');
+		$this->iPort = array_value($aParams,'port', 389);
+
+		$this->rLink = ldap_connect($this->sHost, $this->iPort);
+		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->sHost));
 
 		$b = ldap_bind($this->rLink, array_value($aParams, 'rdn', null), array_value($aParams, 'password', null));
 		if ($b === false)
 			throw new LDAPException(
-				sprintf(_WT('Can not bind the RDN "%s".'), array_value($aParams,'rdn'), null) . "\n" . ldap_error($this->rLink),
+				sprintf(_WT('Can not bind the RDN "%s".'), array_value($aParams,'rdn', null)) . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
@@ -265,6 +292,24 @@ class weeLDAP
 		if ($b === false)
 			throw new LDAPException(
 				_WT('Failed to move the entry.') . "\n" . ldap_error($this->rLink), 
+				ldap_errno($this->rLink)
+			);
+	}
+
+	/**
+		Rebind to the LDAP directory with the specified RDN and password.
+
+		@param $sRDN The Relative Distinguished Name.
+		@param $sPassword The password to use.
+		@throw LDAPException If an error occurs.
+	*/
+
+	public function rebind($sRDN = null, $sPassword = null)
+	{
+		$b = ldap_bind($this->rLink, $sRDN, $sPassword);
+		if ($b === false)
+			throw new LDAPException(
+				sprintf(_WT('Can not bind the RDN "%s".'), $sRDN) . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
