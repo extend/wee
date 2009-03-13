@@ -448,12 +448,14 @@ class weeForm implements Printable
 	{
 		$oException = new FormValidationException(_WT('The validation of the form failed. You can retrieve error messages as a string using toString or an array using toArray.'));
 
-		if ((bool)$this->oXML->formkey)
+		if ((int)$this->oXML->formkey)
 		{
 			if (session_id() == '')
 				safe_session_start();
 
-			if (empty($aData['wee_formkey']) || empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
+			if (empty($aData['wee_formkey']))
+				$oException->addError('', _WT('Missing form key. Please try submitting the form again.'));
+			elseif (empty($_SESSION['session_formkeys'][$aData['wee_formkey']]))
 				$oException->addError('', _WT('Invalid form key. You probably already submitted this form.'));
 			else
 			{
@@ -466,7 +468,8 @@ class weeForm implements Printable
 
 			// Form has been submitted, unset the form key
 
-			unset($_SESSION['session_formkeys'][$aData['wee_formkey']]);
+			if (!empty($aData['wee_formkey']))
+				unset($_SESSION['session_formkeys'][$aData['wee_formkey']]);
 		}
 
 		// Select widgets which use validators or are required and validates data

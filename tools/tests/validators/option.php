@@ -22,8 +22,9 @@ $o = new weeOptionValidator;
 
 try {
 	$o->setValue(null);
-	$this->fail(_WT('weeOptionValidator::setValue should throw a DomainException when the value is null.'));
-} catch (DomainException $e) {}
+} catch (DomainException $e) {
+	$this->fail(_WT('weeOptionValidator::setValue should not throw a DomainException when the value is null.'));
+}
 
 try {
 	$o->setValue(array());
