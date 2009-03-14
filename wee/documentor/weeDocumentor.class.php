@@ -370,7 +370,8 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse docComments to retrieve the comment and the modifiers.
 
 		@param $sDocComment The docComment.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
+		@lol ahahahah
 	*/
 
 	protected function parseDocComment($sDocComment, &$aParsedData)
@@ -391,7 +392,10 @@ abstract class weeDocumentor implements Mappable, Printable
 				$sFunc	= 'parseDocComment' . ucwords($a[0]);
 				$sLine	= isset($a[1]) ? $a[1] : '';
 
-				$this->$sFunc($sLine, $aParsedData);
+				if (is_callable(array($this, $sFunc)))
+					$this->$sFunc($sLine, $aParsedData);
+				else
+					weeLog(sprintf(_WT('Skipping Unknown doc comment modifier "%s".'), $a[0]));
 			}
 		}
 
@@ -402,7 +406,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @bug line from the docComment.
 
 		@param $sLine The @bug line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentBug($sLine, &$aParsedData)
@@ -417,7 +421,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @deprecated line from the docComment.
 
 		@param $sLine The @overload line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentDeprecated($sLine, &$aParsedData)
@@ -429,7 +433,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @overload line from the docComment.
 
 		@param $sLine The @overload line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentOverload($sLine, &$aParsedData)
@@ -451,7 +455,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @param line from the docComment.
 
 		@param $sLine The @param line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentParam($sLine, &$aParsedData)
@@ -473,7 +477,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		If more than one is found, only the last one is used.
 
 		@param $sLine The @return line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentReturn($sLine, &$aParsedData)
@@ -490,7 +494,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @see line from the docComment.
 
 		@param $sLine The @see line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentSee($sLine, &$aParsedData)
@@ -505,7 +509,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @throw line from the docComment.
 
 		@param $sLine The @throw line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentThrow($sLine, &$aParsedData)
@@ -520,7 +524,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @todo line from the docComment.
 
 		@param $sLine The @todo line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentTodo($sLine, &$aParsedData)
@@ -535,7 +539,7 @@ abstract class weeDocumentor implements Mappable, Printable
 		Parse a @warning line from the docComment.
 
 		@param $sLine The @warning line.
-		@param aParsedData Array where the parsed data is saved.
+		@param $aParsedData Array where the parsed data is saved.
 	*/
 
 	protected function parseDocCommentWarning($sLine, &$aParsedData)
