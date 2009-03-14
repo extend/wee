@@ -1,4 +1,4 @@
-<?php
+<?php // encoding: utf-8
 
 weeOutput::select(new weeXHTMLOutput);
 
@@ -19,7 +19,7 @@ $o = new weeTemplate_test;
 $this->isEqual('/foo', $o->mkLink('/foo'),
 	_WT('weeTemplate::mkLink should return the link as-is if no new parameter are to be added to the query string.'));
 
-$this->isEqual('/f&eacute;e', $o->mkLink('/fée'),
+$this->isEqual('/fée', $o->mkLink('/fée'),
 	_WT('weeTemplate::mkLink should return the link encoded with no new content if no new parameter are to be added to the query string and it contains special characters.'));
 
 $this->isEqual('/foo&amp;/bar?&lt;=blah&amp;answer=42', $o->mkLink('/foo&/bar', array('<' => 'blah', 'answer' => 42)),

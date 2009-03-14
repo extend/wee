@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeXHTMLOutput extends weeOutput
 {
 	/**
-		Encoding used by the encode/decode methods.
+		Encoding used by the encode method.
 	*/
 
 	protected $sEncoding = 'utf-8';
@@ -54,7 +54,7 @@ class weeXHTMLOutput extends weeOutput
 
 	public function decode($mValue)
 	{
-		return html_entity_decode($mValue, ENT_COMPAT, $this->sEncoding);
+		return htmlspecialchars_decode($mValue, ENT_COMPAT);
 	}
 
 	/**
@@ -66,6 +66,6 @@ class weeXHTMLOutput extends weeOutput
 
 	public function encode($mValue)
 	{
-		return htmlentities($mValue, ENT_COMPAT, $this->sEncoding);
+		return htmlspecialchars($mValue, ENT_COMPAT, $this->sEncoding);
 	}
 }
