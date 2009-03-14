@@ -28,6 +28,24 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeXHTMLOutput extends weeOutput
 {
 	/**
+		Encoding used by the encode/decode methods.
+	*/
+
+	protected $sEncoding = 'utf-8';
+
+	/**
+		Initialize the output driver. Start output buffering if requested.
+	*/
+
+	public function __construct($aParams = array())
+	{
+		parent::__construct($aParams);
+
+		if (!empty($aParams['encoding']))
+			$this->sEncoding = $aParams['encoding'];
+	}
+
+	/**
 		Decode a given value.
 
 		@param	$mValue	The value to decode.
@@ -36,7 +54,7 @@ class weeXHTMLOutput extends weeOutput
 
 	public function decode($mValue)
 	{
-		return html_entity_decode($mValue, ENT_COMPAT, 'utf-8');
+		return html_entity_decode($mValue, ENT_COMPAT, $this->sEncoding);
 	}
 
 	/**
@@ -48,6 +66,6 @@ class weeXHTMLOutput extends weeOutput
 
 	public function encode($mValue)
 	{
-		return htmlentities($mValue, ENT_COMPAT, 'utf-8');
+		return htmlentities($mValue, ENT_COMPAT, $this->sEncoding);
 	}
 }

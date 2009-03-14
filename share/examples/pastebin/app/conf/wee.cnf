@@ -25,6 +25,7 @@ db.host		= localhost
 db.user		= wee
 db.password	= wee
 db.dbname	= wee_examples
+# db.encoding	= 
 
 # Locale settings
 
@@ -37,6 +38,7 @@ locale.default	=
 output.driver		= weeXHTMLOutput
 output.buffer		= 0
 output.buffer.gzip	= 1
+# output.encoding		= 
 
 # Session settings
 
