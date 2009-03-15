@@ -10,8 +10,6 @@ try {
 		)
 	');
 
-	$oDb->query('CREATE SEQUENCE GETPKID_SEQ');
-
 	$oDb->query('
 		CREATE TRIGGER GETPKID_TRIGGER
 		BEFORE INSERT ON GETPKID FOR EACH ROW
@@ -21,6 +19,8 @@ try {
 			END IF;
 		END;
 	');
+
+	$oDb->query('CREATE SEQUENCE GETPKID_SEQ');
 } catch (DatabaseException $e) {
 	// This is expected to fail if the temporary table already exist
 }
