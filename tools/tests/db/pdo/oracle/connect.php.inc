@@ -1,16 +1,11 @@
 <?php
 
-// Connect
-
-try
-{
-	$oDb = new weeOracleDatabase(array(
+try {
+	$oDb = new weePDODatabase(array(
 		'dsn'		=> 'oci:dbname=kaboom',
 		'user'		=> 'wee',
 		'password'	=> 'wee',
 	));
-}
-catch (Exception $o)
-{
+} catch (Exception $e) {
 	$this->skip();
 }
