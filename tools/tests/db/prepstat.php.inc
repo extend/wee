@@ -32,7 +32,7 @@ $aInsertValues = array(
 // Create the test table
 
 $oDb->query('
-	CREATE ' . ($oDb->is('oracle') ? 'GLOBAL' : '') . ' TEMPORARY TABLE prepstat (
+	CREATE TABLE prepstat (
 		ps_id INTEGER PRIMARY KEY,
 		ps_integer INTEGER,
 		ps_varchar CHARACTER VARYING(50),

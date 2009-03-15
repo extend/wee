@@ -5,7 +5,7 @@ $this->isTrue(isset($oDb), sprintf(_WT('The file %s requires a database object $
 // Create the test table
 
 $oDb->query('
-	CREATE TEMPORARY TABLE numaffectedrows (
+	CREATE TABLE numaffectedrows (
 		nar_value INTEGER
 	)
 ');
@@ -28,8 +28,8 @@ try {
 	$oDb->query('DELETE FROM numaffectedrows WHERE nar_value != ?', -1);
 	$this->isEqual(80, $oDb->numAffectedRows(),
 		_WT('The number of rows affected by our DELETE of the rows with nar_value!=-1 is wrong.'));
-} catch (Exception $oException) {}
+} catch (Exception $eException) {}
 
 $oDb->query('DROP TABLE numaffectedrows');
-if (isset($oException))
-	throw $oException;
+if (isset($eException))
+	throw $eException;
