@@ -223,27 +223,38 @@ class weeTaconite implements Printable
 
 		// DOMDocument triggers a warning when its argument is empty but it is not triggered by libxml itself
 		// so we cannot use libxml_get_last_error in this case.
+
 		$sXMLDocument != '' or burn('InvalidArgumentException',
 			_WT('The given string must not be empty.'));
 
 		// Calls to DOMDocument::loadXML must be silenced because it triggers a warning when
 		// its argument is not a well-formed XML document.
 
+		// We ignore libxml warnings about undeclared entities as we cannot afford to load the
+		// entire XHTML entity sets. See http://www.xmlsoft.org/html/libxml-xmlerror.html
+		// for the complete list of error codes.
+
 		$oDocument = new DOMDocument;
-		if (!@$oDocument->loadXML($sXMLDocument))
-			throw new BadXMLException(
-				_WT('The given string is not a well-formed XML document.'),
-				libxml_get_last_error()
-			);
+		if (!@$oDocument->loadXML($sXMLDocument, LIBXML_NONET)) {
+			$o = libxml_get_last_error();
+			if ($o->code == 26 /* XML_ERR_UNDECLARED_ENTITY */)
+				throw new BadXMLException(
+					_WT('The given string failed to be parsed because of an undeclared entity. '
+						. 'To resolve this problem, please include a document type declaration at the top of your document.'), $o);
+			elseif ($o->code != 27 /* XML_WAR_UNDECLARED_ENTITY */)
+				throw new BadXMLException(_WT('The given string is not a well-formed XML document.'), $o);
+		}
 
 		$oXPath = new DOMXPath($oDocument);
 
 		$oXML = new DOMDocument;
-		if (!@$oXML->loadXML($this->toString()))
-			throw new BadXMLException(
-				_WT('The string returned by weeTaconite::toString is not a well-formed XML document.'),
-				libxml_get_last_error()
-			);
+		if (!@$oXML->loadXML('<!DOCTYPE dummy SYSTEM "">' . $this->toString(), LIBXML_NONET)) {
+			$o = libxml_get_last_error();
+			// No need to check for XML_ERR_UNDECLARED_ENTITY here as we include a dummy
+			// document type declaration ourselves.
+			if ($o->code != 27 /* XML_WAR_UNDECLARED_ENTITY */)
+				throw new BadXMLException(_WT('The string returned by weeTaconite::toString is not a well-formed XML document.'), $o);
+		}
 
 		foreach ($oXML->documentElement->childNodes as $oAction)
 		{
