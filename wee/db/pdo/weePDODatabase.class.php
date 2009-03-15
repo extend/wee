@@ -227,6 +227,16 @@ class weePDODatabase extends weeDatabase
 			return $s;
 		}
 
+		if ($this->sDBMS == 'oracle') {
+			$o = $this->oDb->query('SELECT ' . $this->escapeIdent($sName) . '.CURRVAL FROM DUAL');
+			$a = $this->oDb->errorInfo();
+			if ($a[0] == '55000')
+				burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
+			elseif ($a[0] != '00000')
+				burn('DatabaseException', _WT('Failed to return the value of the given sequence with the following message:') . "\n" . $a[2]);
+			return $o->fetchColumn(0);
+		}
+
 		if ($this->sDBMS == 'pgsql' && $sName === null) {
 			$o = $this->oDb->query('SELECT pg_catalog.lastval()');
 			$a = $this->oDb->errorInfo();
@@ -237,12 +247,15 @@ class weePDODatabase extends weeDatabase
 			return $o->fetchColumn(0);
 		}
 
-		$s = $this->oDb->lastInsertId($sName);
+		// PDO::lastInsertId must be silenced because it triggers a warning when the PDO driver is not supported
+		// by this method.
+
+		$s = @$this->oDb->lastInsertId($sName);
 		$a = $this->oDb->errorInfo();
 		if ($a[0] == '55000')
 			burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
 		elseif ($a[0] == 'IM001')
-			burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDriverName));
+			burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME)));
 		elseif ($a[0] != '00000')
 			burn('DatabaseException', _WT('Failed to return the value of the given sequence with the following message:') . "\n" . $a[2]);
 		return $s;
