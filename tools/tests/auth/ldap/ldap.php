@@ -129,7 +129,7 @@ try {
 		'host'		=> '127.0.0.1',
 		'port'		=> 389,
 		'rdn'		=> 'cn=Luke Skywalker,ou=customers,dc=example,dc=com',
-		'password'	=> sha1('Luke Skywalker'),
+		'password'	=> 'Luke Skywalker',
 	));
 
 	$oAuth = new weeAuthLDAP(array(

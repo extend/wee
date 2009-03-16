@@ -87,7 +87,7 @@ class weeAuthLDAP extends weeAuth
 			sprintf(_WT('No password found for the identifier %s.'), $aCredentials['identifier']));
 
 		$oLDAP = clone $this->aParams['ldap'];
-		$oLDAP->rebind($oEntry->getDN(), $sFunc($aCredentials['password']));
+		$oLDAP->rebind($oEntry->getDN(), $aCredentials['password']);
 
 		unset($oEntry['userPassword']);
 		return $oEntry;
@@ -123,7 +123,7 @@ class weeAuthLDAP extends weeAuth
 		empty($oEntry['userPassword']) and burn('UnexpectedValueException',
 			sprintf(_WT('No password found for the identifier %s.'), $aCredentials['identifier']));
 
-		$aCredentials['password'] === $sFunc($oEntry['userPassword'][0] . MAGIC_STRING)
+		$aCredentials['password'] === $this->hash($oEntry['userPassword'][0])
 			or burn('AuthenticationException', _WT('The credentials provided were incorrect.'));
 
 		unset($oEntry['userPassword']);

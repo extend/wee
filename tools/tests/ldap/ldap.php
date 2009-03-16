@@ -135,7 +135,7 @@ try {
 		'telephoneNumber'	=> array('5555-1234'),
 		'description'		=> array('Master of the New Jedi Order.'),
 		'cn'				=> array('Anakin Skywalker'),
-		'userPassword'		=> array(sha1('Anakin Skywalker')),
+		'userPassword'		=> array('Anakin Skywalker'),
 	);
 
 	$this->isEqual($aEntry, $o->fetch('cn=Anakin Skywalker, ou=customers, dc=example, dc=com', 'cn=*')->toArray(),
