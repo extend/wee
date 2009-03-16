@@ -33,17 +33,6 @@ try {
 
 try {
 	$oAuth = new weeAuthLDAP(array(
-		'ldap'					=> $o,
-		'base_dn'				=> 'dc=example, dc=com',
-		'host'					=> '127.0.0.1',
-		'password_treatment'	=> 'blah',
-	));
-	$this->fail('Should throw an InvalidArgumentException, the password_treatment parameter is not callable.');
-} catch (InvalidArgumentException $e) {}
-
-
-try {
-	$oAuth = new weeAuthLDAP(array(
 		'ldap'		=> $o,
 		'base_dn'	=> 'dc=example, dc=com',
 	));
