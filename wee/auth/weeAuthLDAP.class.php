@@ -34,8 +34,6 @@ class weeAuthLDAP extends weeAuth
 			ldap: The weeLDAP object getted after authentication to the LDAP server.
 			base_dn: The base DN for making search.
 			hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
-			host: The LDAP server.
-			port: The port to connect. Defaults to 389.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -46,8 +44,6 @@ class weeAuthLDAP extends weeAuth
 			_WT('You must provide a parameter "ldap" containing the instance of weeLDAP.'));
 		empty($aParams['base_dn']) and burn('InvalidArgumentException',
 			_WT('You must provide a parameter "base_dn" containing the base DN.'));
-		empty($aParams['host']) and burn('InvalidArgumentException',
-			_WT('You must provide a parameter "host" containing the hostname.'));
 
 		parent::__construct($aParams);
 	}
@@ -74,7 +70,6 @@ class weeAuthLDAP extends weeAuth
 			_WT('The authentication query returned more than 1 result.'));
 
 		$oEntry	= $oResults->fetch();
-
 		empty($oEntry['userPassword']) and burn('UnexpectedValueException',
 			sprintf(_WT('No password found for the identifier %s.'), $aCredentials['identifier']));
 
@@ -110,8 +105,6 @@ class weeAuthLDAP extends weeAuth
 			_WT('The authentication query returned more than 1 result.'));
 
 		$oEntry = $oResults->fetch();
-		$sFunc = $this->aParams['hash_treatment'];
-
 		empty($oEntry['userPassword']) and burn('UnexpectedValueException',
 			sprintf(_WT('No password found for the identifier %s.'), $aCredentials['identifier']));
 

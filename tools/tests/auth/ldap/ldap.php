@@ -18,7 +18,6 @@ try {
 try {
 	$oAuth = new weeAuthLDAP(array(
 		'base_dn'	=> 'dc=example, dc=com',
-		'host'		=> '127.0.0.1',
 	));
 	$this->fail('Should throw an InvalidArgumentException, the ldap object is missing.');
 } catch (InvalidArgumentException $e) {}
@@ -26,7 +25,6 @@ try {
 try {
 	$oAuth = new weeAuthLDAP(array(
 		'ldap' => $o,
-		'host' => '127.0.0.1',
 	));
 	$this->fail('Should throw an InvalidArgumentException, the parameter base_dn is missing.');
 } catch (InvalidArgumentException $e) {}
@@ -35,15 +33,6 @@ try {
 	$oAuth = new weeAuthLDAP(array(
 		'ldap'		=> $o,
 		'base_dn'	=> 'dc=example, dc=com',
-	));
-	$this->fail('Should throw an InvalidArgumentException, the host parameter is missing.');
-} catch (InvalidArgumentException $e) {}
-
-try {
-	$oAuth = new weeAuthLDAP(array(
-		'ldap'		=> $o,
-		'base_dn'	=> 'dc=example, dc=com',
-		'host'		=> '127.0.0.1',
 	));
 } catch (InvalidArgumentException $e) {
 	$this->fail('Should not throw an InvalidArgumentException.');
