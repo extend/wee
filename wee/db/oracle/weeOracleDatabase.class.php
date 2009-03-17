@@ -47,10 +47,15 @@ class weeOracleDatabase extends weeDatabase
 	protected $iNumAffectedRows;
 
 	/**
-		Initialize the driver and connects to the database.
-		The arguments available may change between drivers.
+		Initialise an oracle database.
 
-		@param $aParams Arguments for database connection, identification, and class initialization
+		This database driver accepts the following parameters:
+		 - user:		The user used to connect to the database.
+		 - password:	The password of the user.
+		 - dbname:		The name of the database.
+		 - encoding:	The encoding used for the connection (defaults to UTF8).
+
+		@param	$aParams	The arguments of the connection.
 	*/
 
 	public function __construct($aParams = array())
@@ -58,11 +63,14 @@ class weeOracleDatabase extends weeDatabase
 		function_exists('oci_new_connect') or burn('ConfigurationException',
 			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'OCI8'));
 
-		if (!empty($aParams['encoding']))
-			putenv('NLS_LANG=' . $aParams['encoding']);
-
 		// oci_new_connect triggers a warning when the connection failed.
-		$this->rLink = @oci_new_connect(array_value($aParams, 'user'), array_value($aParams, 'password'), array_value($aParams, 'dbname'), 'UTF8');
+		$this->rLink = @oci_new_connect(
+			array_value($aParams, 'user'),
+			array_value($aParams, 'password'),
+			array_value($aParams, 'dbname'),
+			array_value($aParams, 'encoding', 'UTF8')
+		);
+
 		$this->rLink !== false or burn('DatabaseException',
 			_WT('Failed to connect to database with the following message:') . "\n" . array_value(oci_error(), 'message'));
 	}
