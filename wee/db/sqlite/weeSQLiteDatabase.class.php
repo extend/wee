@@ -119,18 +119,22 @@ class weeSQLiteDatabase extends weeDatabase
 	}
 
 	/**
-		Escapes a given identifier for safe concatenation in an SQL query.
+		Escape a given identifier for safe concatenation in an SQL query.
 
-		@param	$sValue						The identifier to escape.
-		@return	string						The escaped identifier, wrapped around adequate quotes.
+		Be careful when using escaped identifiers in the field list of a SELECT query as
+		they will be used as the keys of the result set.
+
+		@param	$sValue	The identifier to escape.
+		@return	string	The escaped identifier, wrapped around adequate quotes.
 		@throw	InvalidArgumentException	The given identifier is empty.
-		@todo								More tests, may have to read the source of SQLite 2 to know all the identifier constraints.
+		@todo	More tests, may have to read the source of SQLite 2 to know all the identifier constraints.
 	*/
 
 	public function escapeIdent($sValue)
 	{
-		strlen($sValue) > 0 or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
-		return '"' . str_replace('"', '""', $sValue) . '"';
+		strlen($sValue) > 0 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
+			_WT('The given string is not a valid identifier.'));
+		return '[' . $sValue . ']';
 	}
 
 	/**

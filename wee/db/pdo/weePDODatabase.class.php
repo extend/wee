@@ -150,10 +150,13 @@ class weePDODatabase extends weeDatabase
 	}
 
 	/**
-		Escapes a given identifier for safe concatenation in an SQL query.
+		Escape a given identifier for safe concatenation in an SQL query.
 
-		@param	$sValue						The identifier to escape.
-		@return	string						The escaped identifier, wrapped around adequate quotes.
+		In SQLite 2, be careful when using escaped identifiers in the field list of a SELECT query as
+		they will be used as the keys of the result set.
+
+		@param	$sValue	The identifier to escape.
+		@return	string	The escaped identifier, wrapped around adequate quotes.
 		@throw	InvalidArgumentException	The given value is not a valid identifier for the current PDO driver.
 		@throw	ConfigurationException		The current PDO driver is not supported by this method.
 	*/
@@ -167,7 +170,6 @@ class weePDODatabase extends weeDatabase
 				$i = strlen($sValue);
 				$i != 0 && $i < 129 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
 					_WT('The given value is not a valid identifier.'));
-
 				return '[' . $sValue . ']';
 
 			case 'mysql':
@@ -175,7 +177,6 @@ class weePDODatabase extends weeDatabase
 				$iLength = strlen($sValue);
 				$iLength > 0 && $iLength < 65 && strpos($sValue, "\0") === false && strpos($sValue, chr(255)) === false && substr_compare($sValue, ' ', -1)
 					or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
-
 				return '`' . str_replace('`', '``', $sValue) . '`';
 
 			case 'oracle':
@@ -183,7 +184,6 @@ class weePDODatabase extends weeDatabase
 				$iLength = strlen($sValue);
 				strpos($sValue, '"') === false && $iLength > 0 && $iLength <= 30 or burn('InvalidArgumentException',
 					_WT('The given string is not a valid identifier.'));
-
 				return '"' . $sValue . '"';
 
 			case 'pgsql':
@@ -191,15 +191,14 @@ class weePDODatabase extends weeDatabase
 				$iLength = strlen($sValue);
 				$iLength > 0 && $iLength <= 63 && strpos($sValue, "\0") === false or burn('InvalidArgumentException',
 					_WT('The given string is not a valid identifier.'));
-
 				return '"' . str_replace('"', '""', $sValue) . '"';
 
 			case 'sqlite':
 			case 'sqlite2':
 				// see weeSQLiteDatabase::escapeIdent
-				strlen($sValue) > 0 or burn('InvalidArgumentException', _WT('The given string is not a valid identifier.'));
-
-				return '"' . str_replace('"', '""', $sValue) . '"';
+				strlen($sValue) > 0 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
+					_WT('The given string is not a valid identifier.'));
+				return '[' . $sValue . ']';
 
 			default:
 				burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDBMS));
