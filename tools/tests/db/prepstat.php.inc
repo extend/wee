@@ -36,8 +36,8 @@ $oDb->query('
 		ps_id INTEGER PRIMARY KEY,
 		ps_integer INTEGER,
 		ps_varchar CHARACTER VARYING(50),
-		ps_timestamp TIMESTAMP(0),
-		ps_boolean ' . ($oDb->is('oracle') ? 'INTEGER' : 'BOOLEAN') . '
+		ps_timestamp ' . ($oDb->is('mssql') ? 'datetime2' : 'TIMESTAMP') . '(0),
+		ps_boolean ' . ($oDb->is('oracle') || $oDb->is('mssql') ? 'INTEGER' : 'BOOLEAN') . '
 	)
 ');
 

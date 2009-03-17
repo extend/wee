@@ -14,7 +14,7 @@ try {
 	);
 } catch (IllegalStateException $e) {}
 
-$oDb->query('INSERT INTO getpkid (pk_value) VALUES (?)', -1);
+$oDb->query('INSERT INTO ' . (isset($sTable) ? $oDb->escapeIdent($sTable) : 'getpkid') . ' (pk_value) VALUES (?)', -1);
 $iPrevious = $oDb->getPKId($mPK);
 
 $sMsg = $mPK === null
@@ -22,7 +22,7 @@ $sMsg = $mPK === null
 	: sprintf(_WT('weeDatabase::getPKId did not return the expected previous value + 1 for the sequence "%s".'), $mPK);
 
 for ($i = 0; $i < 100; $i++) {
-	$oDb->query('INSERT INTO getpkid (pk_value) VALUES (?)', $i);
+	$oDb->query('INSERT INTO ' . (isset($sTable) ? $oDb->escapeIdent($sTable) : 'getpkid') . ' (pk_value) VALUES (?)', $i);
 	$iCurrent = $oDb->getPKId($mPK);
 	$this->isEqual($iPrevious + 1, $iCurrent, $sMsg);
 	$iPrevious = $iCurrent;
