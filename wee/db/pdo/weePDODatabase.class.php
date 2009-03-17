@@ -71,7 +71,12 @@ class weePDODatabase extends weeDatabase
 		}
 
 		$sDriver = $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$this->sDBMS = $sDriver == 'oci' ? 'oracle' : $sDriver;
+		if ($sDriver == 'oci')
+			$this->sDBMS = 'oracle';
+		elseif ($sDriver == 'dblib')
+			$this->sDBMS = 'mssql';
+		else
+			$this->sDBMS = $sDriver;
 	}
 
 	/**
@@ -104,7 +109,9 @@ class weePDODatabase extends weeDatabase
 			. "\n" . array_value($this->oDb->errorInfo(), 2));
 
 		$this->iNumAffectedRows = $this->doRowCount($m);
-		if ($m->columnCount())
+		// PDO_DBLIB always return 0 for the column count of an empty result set,
+		// even with SELECT queries.
+		if ($m->columnCount() || $this->sDBMS == 'mssql' && substr(ltrim($sQuery), 0, 6) == 'SELECT')
 			return new weeDatabaseDummyResult($m->fetchAll(PDO::FETCH_ASSOC));
 	}
 
@@ -155,6 +162,14 @@ class weePDODatabase extends weeDatabase
 	{
 		switch ($this->sDBMS)
 		{
+			case 'mssql':
+				// see weeMSSQLDatabase::escapeIdent
+				$i = strlen($sValue);
+				$i != 0 && $i < 129 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
+					_WT('The given value is not a valid identifier.'));
+
+				return '[' . $sValue . ']';
+
 			case 'mysql':
 				// see weeMySQLDatabase::escapeIdent
 				$iLength = strlen($sValue);
@@ -200,10 +215,11 @@ class weePDODatabase extends weeDatabase
 	public function getMetaClass()
 	{
 		static $aDbMetaMap = array(
+			'mssql'		=> 'weeMSSQLDbMeta',
 			'mysql'		=> 'weeMySQLDbMeta',
 			'pgsql'		=> 'weePgSQLDbMeta',
 			'sqlite'	=> 'weeSQLiteDbMeta',
-			'sqlite2'	=> 'weeSQLiteDbMeta'
+			'sqlite2'	=> 'weeSQLiteDbMeta',
 		);
 
 		return array_value($aDbMetaMap, $this->sDBMS);
