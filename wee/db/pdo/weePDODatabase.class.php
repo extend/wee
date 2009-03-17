@@ -104,7 +104,9 @@ class weePDODatabase extends weeDatabase
 
 	protected function doQuery($sQuery)
 	{
-		$m = $this->oDb->query($sQuery);
+		// PDO::query triggers a warning when calling an undefined stored procedure when
+		// used with PDO_DBLIB driver.
+		$m = @$this->oDb->query($sQuery);
 		$m !== false or burn('DatabaseException', _WT('Failed to execute the query with the following error:')
 			. "\n" . array_value($this->oDb->errorInfo(), 2));
 

@@ -1,4 +1,4 @@
 <?php
 
 require('connect.php.inc');
-require(dirname(__FILE__) . '/../../oracle/query.php');
+require(dirname(__FILE__) . '/../../query.php.inc');
