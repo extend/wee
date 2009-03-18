@@ -1,6 +1,7 @@
 <?php
 
-require('connect.php.inc');
+if (!isset($oDb))
+	require('connect.php.inc');
 
 // Test the method weeOracleDatabase::escape
 
