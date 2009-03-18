@@ -247,7 +247,7 @@ class weePDODatabase extends weeDatabase
 		if ($this->sDBMS == 'oracle') {
 			$o = $this->oDb->query('SELECT ' . $this->escapeIdent($sName) . '.CURRVAL FROM DUAL');
 			$a = $this->oDb->errorInfo();
-			if ($a[0] == '55000')
+			if (isset($a[1]) && $a[1] == 8002)
 				burn('IllegalStateException', _WT('No sequence value has been generated yet by the database in this session.'));
 			elseif ($a[0] != '00000')
 				burn('DatabaseException', _WT('Failed to return the value of the given sequence with the following message:') . "\n" . $a[2]);
