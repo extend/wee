@@ -1,5 +1,4 @@
 <?php
 
 require('connect.php.inc');
-$sDBMS = 'oracle';
-require(dirname(__FILE__) . '/../../is.php.inc');
+require(dirname(__FILE__) . '/../../oracle/is.php');

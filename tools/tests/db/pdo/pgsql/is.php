@@ -1,5 +1,4 @@
 <?php
 
 require('connect.php.inc');
-$sDBMS = 'pgsql';
-require(dirname(__FILE__) . '/../../is.php.inc');
+require(dirname(__FILE__) . '/../../pgsql/is.php');
