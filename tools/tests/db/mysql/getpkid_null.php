@@ -1,6 +1,7 @@
 <?php
 
-require('connect.php.inc');
+if (!isset($oDb))
+	require('connect.php.inc');
 
 $oDb->query('
 	CREATE TEMPORARY TABLE getpkid (
@@ -9,13 +10,11 @@ $oDb->query('
 	);
 ');
 
-$mPK = null;
-
 try {
+	$mPK = null;
 	require(dirname(__FILE__) . '/../getpkid.php.inc');
 } catch (Exception $oException) {}
 
 $oDb->query('DROP TABLE getpkid');
-
 if (isset($oException))
 	throw $oException;

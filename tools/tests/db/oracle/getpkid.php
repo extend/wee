@@ -1,10 +1,11 @@
 <?php
 
-require('connect.php.inc');
+if (!isset($oDb))
+	require('connect.php.inc');
 
 try {
 	$oDb->query('
-		CREATE GLOBAL TEMPORARY TABLE GETPKID (
+		CREATE TABLE GETPKID (
 			PK_ID INTEGER PRIMARY KEY,
 			PK_VALUE INTEGER
 		)

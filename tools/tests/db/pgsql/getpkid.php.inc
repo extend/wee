@@ -5,17 +5,16 @@ if (!isset($oDb))
 
 $oDb->query('
 	CREATE TEMPORARY TABLE getpkid (
-		pk_id INTEGER PRIMARY KEY,
+		pk_id SERIAL NOT NULL,
 		pk_value INTEGER
 	);
 ');
 
 try {
-	$mPK = null;
 	require(dirname(__FILE__) . '/../getpkid.php.inc');
-} catch (Exception $oException) {}
+} catch (Exception $eException) {}
 
 $oDb->query('DROP TABLE getpkid');
 
-if (isset($oException))
-	throw $oException;
+if (isset($eException))
+	throw $eException;
