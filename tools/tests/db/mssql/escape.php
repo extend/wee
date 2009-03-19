@@ -25,15 +25,8 @@ $this->isEqual('null', $oDb->escape(null),
 $this->isEqual('[egg]', $oDb->escapeIdent('egg'),
 	_WT('escapeIdent does not properly escape the identifier "egg".'));
 
-try {
-	$oDb->escapeIdent('[');
-	$this->fail(sprintf(_WT('weeMSSQLDatabase::escapeIdent does not throw an InvalidArgumentException when the identifier contains "%s".'), '['));
-} catch (InvalidArgumentException $e) {}
-
-try {
-	$oDb->escapeIdent(']');
-	$this->fail(sprintf(_WT('weeMSSQLDatabase::escapeIdent does not throw an InvalidArgumentException when the identifier contains "%s".'), ']'));
-} catch (InvalidArgumentException $e) {}
+$this->isEqual('[abc[]]def]', $oDb->escapeIdent('abc[]def'),
+	_WT('escapeIdent does not properly escape the identifier "abc[]def".'));
 
 try {
 	$oDb->escapeIdent('');

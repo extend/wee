@@ -168,11 +168,13 @@ class weePDODatabase extends weeDatabase
 		switch ($this->sDBMS)
 		{
 			case 'mssql':
-				// see weeMSSQLDatabase::escapeIdent
+			case 'sqlite':
+			case 'sqlite2':
+				// see weeMSSQLDatabase::escapeIdent and weeSQLiteDatabase
 				$i = strlen($sValue);
-				$i != 0 && $i < 129 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
+				$i != 0 && $i < 129 or burn('InvalidArgumentException',
 					_WT('The given value is not a valid identifier.'));
-				return '[' . $sValue . ']';
+				return '[' . str_replace(']', ']]', $sValue) . ']';
 
 			case 'mysql':
 				// see weeMySQLDatabase::escapeIdent
@@ -194,13 +196,6 @@ class weePDODatabase extends weeDatabase
 				$iLength > 0 && $iLength <= 63 && strpos($sValue, "\0") === false or burn('InvalidArgumentException',
 					_WT('The given string is not a valid identifier.'));
 				return '"' . str_replace('"', '""', $sValue) . '"';
-
-			case 'sqlite':
-			case 'sqlite2':
-				// see weeSQLiteDatabase::escapeIdent
-				strlen($sValue) > 0 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
-					_WT('The given string is not a valid identifier.'));
-				return '[' . $sValue . ']';
 
 			default:
 				burn('ConfigurationException', sprintf(_WT('Driver "%s" does not support this capability.'), $this->sDBMS));

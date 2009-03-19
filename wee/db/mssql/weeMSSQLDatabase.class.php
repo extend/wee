@@ -126,10 +126,10 @@ class weeMSSQLDatabase extends weeDatabase
 			$sValue = $sValue->toString();
 
 		$i = strlen($sValue);
-		$i != 0 && $i < 129 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
+		$i != 0 && $i < 129 or burn('InvalidArgumentException',
 			_WT('The given value is not a valid identifier.'));
 
-		return '[' . $sValue . ']';
+		return '[' . str_replace(']', ']]', $sValue) . ']';
 	}
 
 	/**

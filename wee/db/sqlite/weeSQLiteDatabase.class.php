@@ -132,9 +132,9 @@ class weeSQLiteDatabase extends weeDatabase
 
 	public function escapeIdent($sValue)
 	{
-		strlen($sValue) > 0 && strpos($sValue, '[') === false && strpos($sValue, ']') === false or burn('InvalidArgumentException',
+		strlen($sValue) > 0 or burn('InvalidArgumentException',
 			_WT('The given string is not a valid identifier.'));
-		return '[' . $sValue . ']';
+		return '[' . str_replace(']', ']]', $sValue) . ']';
 	}
 
 	/**
