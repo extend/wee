@@ -168,12 +168,12 @@ class weePDODatabase extends weeDatabase
 		switch ($this->sDBMS)
 		{
 			case 'mssql':
-			case 'sqlite':
-			case 'sqlite2':
 				// see weeMSSQLDatabase::escapeIdent and weeSQLiteDatabase
 				$i = strlen($sValue);
 				$i != 0 && $i < 129 or burn('InvalidArgumentException',
 					_WT('The given value is not a valid identifier.'));
+			case 'sqlite':
+			case 'sqlite2':
 				return '[' . str_replace(']', ']]', $sValue) . ']';
 
 			case 'mysql':

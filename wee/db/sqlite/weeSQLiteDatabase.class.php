@@ -126,14 +126,10 @@ class weeSQLiteDatabase extends weeDatabase
 
 		@param	$sValue	The identifier to escape.
 		@return	string	The escaped identifier, wrapped around adequate quotes.
-		@throw	InvalidArgumentException	The given identifier is empty.
-		@todo	More tests, may have to read the source of SQLite 2 to know all the identifier constraints.
 	*/
 
 	public function escapeIdent($sValue)
 	{
-		strlen($sValue) > 0 or burn('InvalidArgumentException',
-			_WT('The given string is not a valid identifier.'));
 		return '[' . str_replace(']', ']]', $sValue) . ']';
 	}
 

@@ -41,8 +41,3 @@ $this->isEqual('[egg]', $oDb->escapeIdent('egg'),
 
 $this->isEqual('[abc[]]def]', $oDb->escapeIdent('abc[]def'),
 	_WT('escapeIdent does not properly escape the identifier "abc[]def".'));
-
-try {
-	$oDb->escapeIdent('');
-	$this->fail(_WT('weeDatabase::escapeIdent does not throw an InvalidArgumentException when the identifier is empty.'));
-} catch(InvalidArgumentException $e) {}
