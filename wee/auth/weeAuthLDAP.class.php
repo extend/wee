@@ -61,6 +61,9 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticate($aCredentials)
 	{
+		isset($aCredentials['identifier'], $aCredentials['password']) 
+			or burn('AuthenticationException', _WT('The values for credentials are missing.'));
+
 		$oResults = $this->aParams['ldap']->search($this->aParams['base_dn'], 'cn=' . $this->aParams['ldap']->escapeFilter($aCredentials['identifier']));
 
 		count($oResults) === 0 and burn('AuthenticationException',
@@ -96,6 +99,9 @@ class weeAuthLDAP extends weeAuth
 
 	public function authenticateHash($aCredentials)
 	{
+		isset($aCredentials['identifier'], $aCredentials['password']) 
+			or burn('AuthenticationException', _WT('The values for credentials are missing.'));
+
 		defined('MAGIC_STRING') or burn('IllegalStateException',
 			_WT('You cannot hash a passphrase without defining the MAGIC_STRING constant first.'));
 

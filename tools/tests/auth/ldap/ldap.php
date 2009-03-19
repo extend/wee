@@ -40,8 +40,25 @@ try {
 
 try {
 	$oEntry = $oAuth->authenticateHash(array());
-	$this->fail('Should throw an IllegalStateException, there MAGIC_STRING is not defined.');
-} catch (IllegalStateException $e) {}
+
+	$this->fail('Should throw an AuthenticationException, the credentials are missing.');
+} catch (AuthenticationException $e) {}
+
+try {
+	$oEntry = $oAuth->authenticateHash(array());
+
+	$this->fail('Should throw an AuthenticationException, the credentials are missing.');
+} catch (AuthenticationException $e) {}
+
+if (!defined('MAGIC_STRING')) {
+	try {
+		$oEntry = $oAuth->authenticateHash(array(
+			'identifier'	=> 'Luke Skywalker',
+			'password'		=> 'Luke Skywalker',
+		));
+		$this->fail('Should throw an IllegalStateException, the MAGIC_STRING is not defined.');
+	} catch (IllegalStateException $e) {}
+}
 
 if (!defined('MAGIC_STRING'))
 	define('MAGIC_STRING', 'This is a magic string used to salt hash.');
