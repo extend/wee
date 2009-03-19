@@ -117,8 +117,8 @@ try {
 	));
 
 	$oEntry = $oAuth->authenticateHash(array(
-		'identifier'	=> 'admin',
-		'password'		=> $oAuth->hash('wee'),
+		'identifier'	=> 'Anakin Skywalker',
+		'password'		=> $oAuth->hash('Anakin Skywalker'),
 	));
 
 	$this->fail('Should throw an UnexpectedValueException, because user Luke Skywalker is not allowed to get admin password.');
