@@ -7,6 +7,5 @@ try {
 		'password'	=> 'wee',
 	));
 } catch (Exception $e) {
-    echo $e, "\n";
 	$this->skip();
 }

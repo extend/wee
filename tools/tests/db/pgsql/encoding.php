@@ -28,7 +28,6 @@ try {
 		$this->fail(_WT('weePgSQLDatabase should not throw an InvalidArgumentException when the given encoding is valid.'));
 	}
 } catch (Exception $e) {
-	echo $e, "\n";
 	if ($e instanceof ConfigurationException || $e instanceof DatabaseException)
 		$this->skip();
 	throw $e;
