@@ -41,13 +41,26 @@ class weeEmailValidator extends weeValidator
 	/**
 		Returns whether the given input is a valid email.
 
+		Email addresses using simple hostnames as domain names are
+		reported as invalid.
+
 		@param	$sInput			The input.
 		@return	bool			Whether the given input is a valid email.
 	*/
 
 	protected function isValidInput($sInput)
 	{
-		return filter_var($sInput, FILTER_VALIDATE_EMAIL) !== false;
+		if (filter_var($sInput, FILTER_VALIDATE_EMAIL) === false)
+			return false;
+
+		// The filter extension accepts hostnames as valid domain names since 5.2.9.
+		// See http://bugs.php.net/bug.php?id=47282.
+		if (version_compare(PHP_VERSION, '5.2.9', '>=')) {
+			$m = strpos($sInput, '.');
+			return $m !== false && $m != strlen($sInput);
+		}
+
+		return true;
 	}
 
 	/**
