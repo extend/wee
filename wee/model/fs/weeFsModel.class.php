@@ -26,25 +26,25 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 	If the file exists the constructor will also make available
 	the following keys (use $this[$sKey] to access them):
-	+ filename		path + filename
-	- name			file name (everything after / in filename)
-	- extension		file extension (if any)
-	- dev			device number
-	- ino			inode number
-	- mode			inode protection mode
-	- nlink			number of links
-	- uid			userid of owner
-	- gid			groupid of owner
-	- rdev			device type, if inode device *
-	- size			size in bytes
-	+ atime			time of last access (Unix timestamp)
-	+ mtime			time of last modification (Unix timestamp)
-	- ctime			time of last inode change (Unix timestamp)
-	- blksize		blocksize of filesystem IO *
-	- blocks		number of blocks allocated *
+	* filename:		path + filename [2]
+	* name:			file name (everything after / in filename)
+	* extension:	file extension (if any)
+	* dev:			device number
+	* ino:			inode number
+	* mode:			inode protection mode
+	* nlink:		number of links
+	* uid:			userid of owner
+	* gid:			groupid of owner
+	* rdev:			device type, if inode device [1]
+	* size:			size in bytes
+	* atime:		time of last access (Unix timestamp) [2]
+	* mtime:		time of last modification (Unix timestamp) [2]
+	* ctime:		time of last inode change (Unix timestamp)
+	* blksize:		blocksize of filesystem IO [1]
+	* blocks:		number of blocks allocated [1]
 
-		* not available on Windows (returns -1)
-		+ can be modified and applied using save()
+		* [1] not available on Windows (returns -1)
+		* [2] can be modified and applied using save()
 
 	You can rewrite everything, however your changes may be overwritten
 	by using some of the methods.

@@ -82,8 +82,8 @@ class weeLocale
 		Initialize the locale.
 
 		The parameters array can contain:
-		- auto:		Whether to automatically try to select the best locale based on the HTTP_ACCEPT_LANGUAGE header.
-		- default:	The default locale to use when others aren't available.
+		* auto:		Whether to automatically try to select the best locale based on the HTTP_ACCEPT_LANGUAGE header.
+		* default:	The default locale to use when others aren't available.
 
 		@param $aParams The parameters listed above.
 	*/

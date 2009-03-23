@@ -31,9 +31,9 @@ class weeAuthLDAP extends weeAuth
 		Create a new weeAuthLDAP object and store the paramters.
 
 		Parameters:
-			ldap: The weeLDAP object getted after authentication to the LDAP server.
-			base_dn: The base DN for making search.
-			hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
+			* ldap: The weeLDAP object getted after authentication to the LDAP server.
+			* base_dn: The base DN for making search.
+			* hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -52,8 +52,8 @@ class weeAuthLDAP extends weeAuth
 		Authenticate using the provided credentials.
 
 		Parameters:
-			identifier:	The credentials identifier (cn).
-			password:	The credentials password.
+			* identifier:	The credentials identifier (cn).
+			* password:		The credentials password.
 
 		@param $aCredentials Credentials used for authentication.
 		@return weeLDAPEntry Data retrieved while authenticating. Contains the attributes and values of the specified cn.
@@ -90,8 +90,8 @@ class weeAuthLDAP extends weeAuth
 		Use this function along with weeAuth::hash when you need to store credentials client-side.
 
 		Parameters:
-			identifier: The credentials identifier (cn).
-			password: The credentials password.
+			* identifier: The credentials identifier (cn).
+			* password: The credentials password.
 
 		@param $aCredentials Credentials used for authentication.
 		@return weeLDAPEntry Data retrieved while authenticating. Contains the attributes and values of the specified cn.

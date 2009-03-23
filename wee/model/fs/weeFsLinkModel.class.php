@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Model for filesystem links.
 
 	This class adds the following key:
-	- linkto	The filename of the linked file.
+	* linkto	The filename of the linked file.
 */
 
 class weeFsLinkModel extends weeFsModel

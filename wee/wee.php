@@ -277,13 +277,13 @@ function weeLog($sMessage, $sType = 'notice')
 // Other useful functions
 
 /**
-	Returns the array value if it exists, else a default value.
+	Return the array value if it exists, else a default value.
 	Simpler form than using the conditional operators, and returns null by default, which we usually want.
 
 	@param	$aArray		The array.
 	@param	$sKey		The key to look for in the array.
 	@param	$mIfNotSet	The default value.
-	@return	mixed
+	@return	mixed		Array value if it exists, else $mIfNotSet.
 */
 
 function array_value($aArray, $sKey, $mIfNotSet = null)

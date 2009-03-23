@@ -179,9 +179,9 @@ class weeCRUDUI extends weeContainerUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- columns:		Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
-			- countperpage:	Number of items per page in the list for the default event. Defaults to 25.
-			- set:			The set where all the CRUD operations will be performed.
+			* columns:		Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
+			* countperpage:	Number of items per page in the list for the default event. Defaults to 25.
+			* set:			The set where all the CRUD operations will be performed.
 
 		@param $aParams Frame's parameters.
 	*/

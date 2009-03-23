@@ -89,13 +89,13 @@ abstract class weeFeed implements Printable
 		Adds an entry.
 
 		Each entry can have one of the following keys:
-			- author
-			- category
-			- link
-			- summary
-			- title
-			- updated
-			TODO:id
+			* author
+			* category
+			* link
+			* summary
+			* title
+			* updated
+			* TODO:id
 
 		//TODO:validates each entry elements
 

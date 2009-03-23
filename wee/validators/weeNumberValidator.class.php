@@ -25,13 +25,13 @@ if (!defined('ALLOW_INCLUSION')) die;
 	A number validator.
 
 	This validator accepts the following arguments:
-	 - format:			The format of the number to validate, can be either 'int' or 'float', defaults to 'int'.
-	 - int_error:		The error message used if not a valid integer representation and the requested `format` is 'int'.
-	 - max:				The upper bound of the range of the valid numbers.
-	 - max_error:		The error message used if the number is greater than the `max` argument.
-	 - min:				The lower bound of the range of the valid numbers.
-	 - min_error:		The error message used if the number is smaller than the `min` argument.
-	 - invalid_error:	The error message used if the input is not numeric.
+	 * format:			The format of the number to validate, can be either 'int' or 'float', defaults to 'int'.
+	 * int_error:		The error message used if not a valid integer representation and the requested `format` is 'int'.
+	 * max:				The upper bound of the range of the valid numbers.
+	 * max_error:		The error message used if the number is greater than the `max` argument.
+	 * min:				The lower bound of the range of the valid numbers.
+	 * min_error:		The error message used if the number is smaller than the `min` argument.
+	 * invalid_error:	The error message used if the input is not numeric.
 */
 
 class weeNumberValidator extends weeValidator

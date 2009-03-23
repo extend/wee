@@ -371,22 +371,27 @@ abstract class weeDocumentor implements Mappable, Printable
 
 		@param $sDocComment The docComment.
 		@param $aParsedData Array where the parsed data is saved.
-		@lol ahahahah
 	*/
 
 	protected function parseDocComment($sDocComment, &$aParsedData)
 	{
 		$aParsedData = array();
 
+		// Whether there is stars on each line
+		// This docComment format is only scarcely supported for now
+		$bHasStars = preg_match('/^[[:space:]]*\*/', $sDocComment) != 0;
+
 		$a = explode("\n", $sDocComment);
 		$sDocComment = null;
 
 		foreach ($a as $sLine)
 		{
-			if (empty($sLine) || $sLine[0] != '@' || ($sLine[1] == ' ' || $sLine[1] == "\t"))
+			if (empty($sLine) || $sLine[0] != '@' || ($sLine[1] == ' ' || $sLine[1] == "\t")) {
+				if ($bHasStars && strpos($sLine, '@') === false) // Leave stars if it's a @modifier to have a bullet list
+					$sLine = substr($sLine, strpos($sLine, '*') + 1);
+
 				$sDocComment .= $sLine . "\n";
-			else
-			{
+			} else {
 				$sLine	= substr($sLine, 1);
 				$a		= preg_split('/\s+/', $sLine, 2);
 				$sFunc	= 'parseDocComment' . ucwords($a[0]);
@@ -514,10 +519,10 @@ abstract class weeDocumentor implements Mappable, Printable
 
 	protected function parseDocCommentThrow($sLine, &$aParsedData)
 	{
-		if (empty($aParsedData['throw']))
-			$aParsedData['throw'] = array();
+		if (empty($aParsedData['throws']))
+			$aParsedData['throws'] = array();
 
-		$aParsedData['throw'][] = $sLine;
+		$aParsedData['throws'][] = $sLine;
 	}
 
 	/**

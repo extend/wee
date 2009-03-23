@@ -33,9 +33,9 @@ abstract class weeDbModelScaffold extends weeDbModel
 		The metadata for the table associated with this model.
 
 		The metadata contains information about:
-		- table:	The full table name, properly quoted.
-		- columns:	An array of all the columns names.
-		- primary:	An array of all the primary key columns names.
+		* table:	The full table name, properly quoted.
+		* columns:	An array of all the columns names.
+		* primary:	An array of all the primary key columns names.
 	*/
 
 	protected $aMeta;

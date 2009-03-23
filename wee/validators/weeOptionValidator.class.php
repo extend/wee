@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	This validator checks if the given input is specified in the widget options.
 
 	This validator accepts the following arguments:
-	 - invalid_error: The error message used if the input is not available in the options.
+	 * invalid_error: The error message used if the input is not available in the options.
 */
 
 class weeOptionValidator extends weeFormValidator

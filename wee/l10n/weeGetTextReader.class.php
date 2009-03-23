@@ -157,8 +157,8 @@ class weeGetTextReader
 		Reads a table entry from the file stream.
 
 		The returned table entry is an associative array with 2 keys:
-		- length: The length of the string.
-		- offset: The offset where the string begins in the file.
+		* length: The length of the string.
+		* offset: The offset where the string begins in the file.
 
 		@return	array		The read table entry.
 	*/

@@ -37,12 +37,12 @@ class weeSession implements ArrayAccess
 		Sanitize the session id and start the session if it wasn't already.
 
 		If anything looks wrong the session is reinitialized. This can happen because:
-			- the session's name sent by the cookie is invalid
-			- the session is deemed invalid by the isSessionInvalid method
+			* the session's name sent by the cookie is invalid
+			* the session is deemed invalid by the isSessionInvalid method
 
 		Two parameters change the behavior of this class:
-			- 'check.ip': whether to check for the client's IP on each request
-			- 'check.token': whether to check for the session token on each request
+			* 'check.ip': whether to check for the client's IP on each request
+			* 'check.token': whether to check for the session token on each request
 
 		@param $aParams A list of parameters to configure the session class.
 		@see weeSession::isSessionInvalid
@@ -116,12 +116,12 @@ class weeSession implements ArrayAccess
 		Checks if the session is invalid.
 
 		The session is invalid if:
-		 * the parameter 'check.ip' evaluates to true and either of
-			 * the session's IP is empty
-			 * the session's IP is different from the current user IP
-		 * the parameter 'check.token' evaluates to true and either of
-			 * the session token is empty
-			 * the session token is different from the cookie's session token
+		* the parameter 'check.ip' evaluates to true and either of
+			** the session's IP is empty
+			** the session's IP is different from the current user IP
+		* the parameter 'check.token' evaluates to true and either of
+			** the session token is empty
+			** the session token is different from the cookie's session token
 
 		@return bool True if the session is invalid, false otherwise.
 	*/

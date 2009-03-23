@@ -42,9 +42,9 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		The metadata for the table associated with this set.
 
 		The metadata contains information about:
-		- table:	The full table name, properly quoted.
-		- columns:	An array of all the columns names.
-		- primary:	An array of all the primary key columns names.
+		* table:	The full table name, properly quoted.
+		* columns:	An array of all the columns names.
+		* primary:	An array of all the primary key columns names.
 	*/
 
 	protected $aMeta;
@@ -267,9 +267,9 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		Get the metadata for the table associated with the set.
 
 		The metadata returned contains information about:
-		- table:	The full table name, properly quoted.
-		- columns:	An array of all the columns names.
-		- primary:	An array of all the primary key columns names.
+		* table:	The full table name, properly quoted.
+		* columns:	An array of all the columns names.
+		* primary:	An array of all the primary key columns names.
 
 		@return array The metadata for the table associated with this set.
 	*/
@@ -382,12 +382,14 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		along with one or more values. Here is the representation of all the possible
 		forms of a single criteria:
 
-			$aCriteria = array(
-				'field_1' => 'operation',
-				'field_2' => array('operation'),
-				'field_3' => array('operation', 'value'),
-				'field_4' => array('operation', 'value', 'more values', ...),
-			);
+		{{{
+		$aCriteria = array(
+			'field_1' => 'operation',
+			'field_2' => array('operation'),
+			'field_3' => array('operation', 'value'),
+			'field_4' => array('operation', 'value', 'more values', ...),
+		);
+		}}}
 
 		@param $aCriteria The criteria to search for.
 		@param $iOffset Start fetching from this offset.
@@ -424,12 +426,14 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		along with one or more values. Here is the representation of all the possible
 		forms of a single criteria:
 
-			$aCriteria = array(
-				'field_1' => 'operation',
-				'field_2' => array('operation'),
-				'field_3' => array('operation', 'value'),
-				'field_4' => array('operation', 'value', 'more values', ...),
-			);
+		{{{
+		$aCriteria = array(
+			'field_1' => 'operation',
+			'field_2' => array('operation'),
+			'field_3' => array('operation', 'value'),
+			'field_4' => array('operation', 'value', 'more values', ...),
+		);
+		}}}
 
 		@param $aCriteria The criteria to search for.
 		@return string The body of the WHERE clause built according to the criteria.
@@ -479,12 +483,14 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		along with one or more values. Here is the representation of all the possible
 		forms of a single criteria:
 
-			$aCriteria = array(
-				'field_1' => 'operation',
-				'field_2' => array('operation'),
-				'field_3' => array('operation', 'value'),
-				'field_4' => array('operation', 'value', 'more values', ...),
-			);
+		{{{
+		$aCriteria = array(
+			'field_1' => 'operation',
+			'field_2' => array('operation'),
+			'field_3' => array('operation', 'value'),
+			'field_4' => array('operation', 'value', 'more values', ...),
+		);
+		}}}
 
 		@param $aCriteria The criteria to search for.
 		@return integer The number of rows returned by a search using this criteria.

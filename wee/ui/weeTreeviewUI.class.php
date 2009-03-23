@@ -61,8 +61,8 @@ class weeTreeviewUI extends weeUI
 		Add a new global action.
 
 		A global action is identified by the following parameters:
-			- link: URL to the action's event
-			- label: Label describing the action
+			* link: URL to the action's event
+			* label: Label describing the action
 
 		@param $aAction The global action parameters.
 	*/
@@ -76,8 +76,8 @@ class weeTreeviewUI extends weeUI
 		Add a new item action.
 
 		An item action is identified by the following parameters:
-			- link: URL to the action's event
-			- label: Label describing the action
+			* link: URL to the action's event
+			* label: Label describing the action
 
 		@param $aAction The item action parameters.
 	*/
@@ -134,10 +134,10 @@ class weeTreeviewUI extends weeUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- columns:			Columns to use for the tree. Must have three keys: label, leftid and rightid.
-			- countperpage:		Number of items per page.
-			- primary:			The key identifying each item uniquely. A key can be either one or more columns stored in an array.
-			- total:			Total number of items.
+			* columns:			Columns to use for the tree. Must have three keys: label, leftid and rightid.
+			* countperpage:		Number of items per page.
+			* primary:			The key identifying each item uniquely. A key can be either one or more columns stored in an array.
+			* total:			Total number of items.
 
 		@param $aParams Frame's parameters.
 	*/

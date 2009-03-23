@@ -43,9 +43,9 @@ class weePDODatabase extends weeDatabase
 		Initialises a new pdo database.
 
 		This driver accepts the following parameters:
-		 - dsn: 		The DSN of the database.
-		 - user:		The user for the database.
-		 - password:	The password of the user.
+		 * dsn: 		The DSN of the database.
+		 * user:		The user for the database.
+		 * password:	The password of the user.
 
 		@param	$aParams					The parameters of the driver.
 		@throw	ConfigurationException		The PDO PHP extension is missing.

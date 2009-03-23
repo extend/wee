@@ -31,12 +31,12 @@ class weeAuthDbTable extends weeAuth
 		Create a new weeAuthDbTable object and stores the paramters.
 
 		Parameters:
-			db:					The weeDatabase object to authenticate against.
-			table:				The table containing the credentials to authenticate against.
-			identifier_field:	The field containing the identifiers.
-			password_field:		The field containing the passwords hashed with 'password_treatment'.
-			password_treatment:	The callback applied to each passwords stored in the 'password_field' field. Defaults to 'sha1'.
-			hash_treatment:		The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
+			* db:					The weeDatabase object to authenticate against.
+			* table:				The table containing the credentials to authenticate against.
+			* identifier_field:		The field containing the identifiers.
+			* password_field:		The field containing the passwords hashed with 'password_treatment'.
+			* password_treatment:	The callback applied to each passwords stored in the 'password_field' field. Defaults to 'sha1'.
+			* hash_treatment:		The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
 
 		@param $aParams List of parameters to authenticate against.
 	*/
@@ -65,8 +65,8 @@ class weeAuthDbTable extends weeAuth
 		Authenticate using the provided credentials.
 
 		Parameters:
-			identifier:	The credentials identifier (like an username or an email).
-			password:	The credentials password.
+			* identifier:	The credentials identifier (like an username or an email).
+			* password:		The credentials password.
 
 		@param $aCredentials Credentials used for authentication.
 		@return array Data retrieved while authenticating. Contains the whole row retrieved from the database.
@@ -103,8 +103,8 @@ class weeAuthDbTable extends weeAuth
 		Use this function along with weeAuth::hash when you need to store credentials client-side.
 
 		Parameters:
-			identifier:	The credentials identifier (like an username or an email).
-			password:	The credentials password.
+			* identifier:	The credentials identifier (like an username or an email).
+			* password:		The credentials password.
 
 		@param $aCredentials Credentials used for authentication.
 		@return array Data retrieved while authenticating. Contains the whole row retrieved from the database.

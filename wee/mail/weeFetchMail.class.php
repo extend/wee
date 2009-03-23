@@ -37,12 +37,12 @@ class weeFetchMail
 		Initialize the mailbox connection.
 
 		The mailbox connection parameters are as follow:
-		- host:		Host name of the server hosting the mailbox. Default: localhost.
-		- port:		Port of the imap service. Default: 143.
-		- mailbox:	Mailbox name. Default: INBOX.
-		- flags:	Connection flags. Optionnal.
-		- user:		User name.
-		- password:	User password.
+		* host:		Host name of the server hosting the mailbox. Default: localhost.
+		* port:		Port of the imap service. Default: 143.
+		* mailbox:	Mailbox name. Default: INBOX.
+		* flags:	Connection flags. Optionnal.
+		* user:		User name.
+		* password:	User password.
 
 		For a detailed list of available flags, please see the PHP documentation
 		for imap_open.

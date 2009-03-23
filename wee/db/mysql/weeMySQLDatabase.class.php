@@ -49,11 +49,11 @@ class weeMySQLDatabase extends weeDatabase
 		Initialises a new mysql database.
 
 		This database driver accepts the following parameters:
-		 - host:		The host of the database server.
-		 - user:		The user of the connection to the database.
-		 - password:	The password used by the user.
-		 - dbname:		The name of the database to select.
-		 - encoding:	The encoding to use for the database connection. Defaults to 'utf8'.
+		 * host:		The host of the database server.
+		 * user:		The user of the connection to the database.
+		 * password:	The password used by the user.
+		 * dbname:		The name of the database to select.
+		 * encoding:	The encoding to use for the database connection. Defaults to 'utf8'.
 
 		Refer to the documentation of mysql_connect to know the default values
 		of the `host`, `user` and `password` parameters.

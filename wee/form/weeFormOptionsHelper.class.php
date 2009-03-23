@@ -53,11 +53,11 @@ class weeFormOptionsHelper
 		The $mOption can be a string, a printable object or a an array.
 
 		The valid offsets of the array are:
-			label		string	The label to display
-			value		mixed	The value, if any (no value usually means it is a group node which can contain other items)
-			help		string	The help message
-			disabled	string	Whether this option is disabled (any non-empty value means disabled)
-			selected	string	Whether this option is selected (any non-empty value means selected)
+			* label		(string):	The label to display
+			* value		(mixed):	The value, if any (no value usually means it is a group node which can contain other items)
+			* help		(string):	The help message
+			* disabled	(string):	Whether this option is disabled (any non-empty value means disabled)
+			* selected	(string):	Whether this option is selected (any non-empty value means selected)
 
 		If the option is a string or a printable object, it will be used as the label of the option.
 

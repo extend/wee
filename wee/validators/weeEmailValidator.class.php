@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	A email validator.
 
 	This validator accepts the following parameters:
-	 - invalid_error: The error message if the email is not valid.
+	 * invalid_error: The error message if the email is not valid.
 */
 
 class weeEmailValidator extends weeValidator

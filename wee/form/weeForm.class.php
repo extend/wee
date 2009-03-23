@@ -105,7 +105,7 @@ class weeForm implements Printable
 
 		The form key is given to the stylesheet if any.
 
-		@return The built XSL stylesheet.
+		@return string The built XSL stylesheet.
 	*/
 
 	protected function buildXSLStylesheet()

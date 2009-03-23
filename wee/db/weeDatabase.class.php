@@ -204,8 +204,8 @@ abstract class weeDatabase
 		Determine the name of the underlying DBMS.
 
 		This method can be used in two different ways:
-		- If no argument is given then the underlying DBMS' name is returned.
-		- Otherwise a boolean is returned indicating whether the argument is equal to the underlying DBMS' name.
+		* If no argument is given then the underlying DBMS' name is returned.
+		* Otherwise a boolean is returned indicating whether the argument is equal to the underlying DBMS' name.
 
 		@param  $sDBMS  The DBMS' name to compare to.
 		@return mixed   Whether the database is from the given DBMS or the name of the DBMS.
@@ -263,7 +263,9 @@ abstract class weeDatabase
 		If you pass other arguments to it, the arguments will be escaped and inserted into the query.
 
 		For example if you have:
-			weeApp()->db->query('SELECT * FROM example_table WHERE example_name=? AND example_id=? LIMIT 1', $sField, $iId);
+		{{{
+		weeApp()->db->query('SELECT * FROM example_table WHERE example_name=? AND example_id=? LIMIT 1', $sField, $iId);
+		}}}
 		It will select the row with the $sField example_name and $iId example_id.
 
 		You can also use named parameters. This can make for more readable queries,
@@ -272,17 +274,21 @@ abstract class weeDatabase
 
 		There's two ways to use named parameters. You can assign explicit names, or use the implicit ones.
 		If you specify names the above query will become like this:
-			weeApp()->db->query('SELECT * FROM example_table WHERE example_name=:name AND example_id=:id LIMIT 1', array(
-				'name'	=> $sField,
-				'id'	=> $iId,
-			));
+		{{{
+		weeApp()->db->query('SELECT * FROM example_table WHERE example_name=:name AND example_id=:id LIMIT 1', array(
+			'name'	=> $sField,
+			'id'	=> $iId,
+		));
+		}}}
 
 		If you don't specify names, the array indexes will be used by default. Array indexes starts at 0.
 		The example then becomes this:
-			weeApp()->db->query(
-				'SELECT * FROM example_table WHERE example_name=:0 AND example_id=:1 LIMIT 1',
-				array($sField, $iId)
-			);
+		{{{
+		weeApp()->db->query(
+			'SELECT * FROM example_table WHERE example_name=:0 AND example_id=:1 LIMIT 1',
+			array($sField, $iId)
+		);
+		}}}
 
 		All data passed to it not required by the query will be ignored. You can thus pass a bigger array
 		that contains what you need (like a POST array) and everything will be binded automatically and
@@ -313,8 +319,10 @@ abstract class weeDatabase
 		Build and execute an SQL value query.
 
 		This method is a shortcut to the following idiom:
-			$a = $this->query('SELECT count(*) FROM example_table')->fetch();
-			return array_shift($a);
+		{{{
+		$a = $this->query('SELECT count(*) FROM example_table')->fetch();
+		return array_shift($a);
+		}}}
 
 		An UnexpectedValueException will be thrown if the query did not return exactly one row or if the row does
 		not contain exactly one column.

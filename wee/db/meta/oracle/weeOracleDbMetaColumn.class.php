@@ -75,14 +75,14 @@ class weeOracleDbMetaColumn extends weeDbMetaColumn
 		Does the oracle-dependent logic of getValidator.
 
 		Handled types:
-		 - CHAR
-		 - VARCHAR2
-		 - NCHAR
-		 - NVARCHAR2
-		 - LONG
-		 - NUMBER
-		 - BINARY_FLOAT
-		 - BINARY_DOUBLE
+		 * CHAR
+		 * VARCHAR2
+		 * NCHAR
+		 * NVARCHAR2
+		 * LONG
+		 * NUMBER
+		 * BINARY_FLOAT
+		 * BINARY_DOUBLE
 
 		@return	weeValidator	A validator appropriate for the column or null.
 		@todo	Handle NUMBER precision and scale properly.

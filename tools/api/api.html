@@ -4,36 +4,51 @@
 	<title>Web:Extend API</title>
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
 
+	<link rel="stylesheet" href="pub/finder/default.css" type="text/css" media="screen" charset="utf-8">
+	<link rel="stylesheet" href="pub/finder/ui.finder.css" type="text/css" media="screen,print" charset="utf-8">
+	<link rel="stylesheet" href="pub/finder/ui.theme.css" type="text/css" media="screen" charset="utf-8">
+
 	<style type="text/css">
 body {background:#fff url(res/wee/bg.png) repeat-x;font-family:Times New Roman,Verdana,serif}
-#header {border-bottom:1px dotted #000}
-h1 {cursor:pointer;float:left;margin:0}
+#footer {font-size:.8em;margin:1em;text-align:center}
+#header h1 {float:left;margin:0}
 #navigation {font-size:1.2em;margin:0;padding:.5em;text-align:right}
 #navigation li {display:inline;list-style:none;margin-left:.5em}
 #navigation a, #navigation a:visited {color:blue;text-decoration:none}
 #navigation a:hover, #navigation a:visited:hover {color:black}
-#list {border-right:1px dotted #000;float:left;width:17em}
-#list ul {padding:0 1em}
-#contents {margin-left:18em}
-#methodslist, h3 {margin-left:1em}
-ul.methods li{margin-bottom:2em}
 
-:link, :visited {border-bottom:1px dotted #bbb;color:#b00;text-decoration:none}
-h1:hover, :link:hover, :visited:hover {background-color:#eee;color:#555}
+.ui-finder .api-contents {font-weight:normal !important;padding:0 .5em 1em .5em}
+.ui-finder h1, .ui-finder h2, .ui-finder h3, .ui-finder ul.methods {margin:1em}
+.ui-finder h1 {line-height:1em;margin-top:.5em}
+.ui-finder h2 {margin-top:2em}
 
-dl {margin-left:1em}
-dt {float:left;font-weight:bold;width:5em}
-dt:after {content:":"}
-dd {margin-left:6em}
+.ui-finder div.comment {background:#f7f7f7;border:1px solid #d7d7d7;margin:1em 1em 1em 2em;overflow:auto;padding:.25em}
 
-table {border:2px solid #ccc;border-collapse:collapse;border-spacing:0;margin:1em}
-th, td {border:1px solid #ccc;padding:.2em .4em}
-caption {font-weight:bold;text-align:left}
-caption:after {content:":"}
-pre {background:#f7f7f7;border:1px solid #d7d7d7;margin:1em;overflow:auto;padding:.25em}
+.ui-finder .methods li>div, .ui-finder .properties li>div {display:none}
+.ui-finder .methods li>div:last-child, .ui-finder .properties li>div:last-child {margin-bottom:1em}
+.ui-finder p {margin-left:2em}
+.ui-finder div.comment p {margin:0}
+.ui-finder div.comment p+*, .ui-finder div.comment ul+* {margin-top:1em}
+.ui-finder div.comment pre {margin:1em}
+
+.ui-finder .api-contents ol {line-height:2em;list-style:disc;margin-left:3em}
+.ui-finder .api-contents ul {list-style:disc;margin-left:3em}
+.ui-finder .api-contents ul h4 {line-height:2em}
+
+.ui-finder h4, .ui-finder .api-contents :link, .ui-finder .api-contents :visited {border-bottom:1px dotted #bbb;color:#b00;cursor:pointer;text-decoration:none}
+.ui-finder h4:hover, .ui-finder .api-contents :link:hover, .ui-finder .api-contents :visited:hover {background-color:#eee;color:#555;cursor:pointer}
+.ui-finder h4 {height:2em;overflow:hidden}
+.ui-finder .preview {color:#888;font-size:1em;font-weight:normal;padding-left:1em}
+.ui-finder .type {font-weight:normal}
+
+.ui-finder {width:98%}
+.ui-finder-container {height:700px}
 	</style>
+
 	<script type="text/javascript" src="res/jquery/jquery.js"></script>
-	<script type="text/javascript" src="res/jquery/jquery.history.js"></script>
+	<script type="text/javascript" src="pub/finder/jquery.scrollTo-1.4.0-min.js"></script>
+	<script type="text/javascript" src="pub/finder/ui.finder-min.js"></script>
+	<script type="text/javascript" src="pub/creole.js"></script>
 	<script type="text/javascript">
 // Options for the API application
 var options = {
@@ -43,16 +58,59 @@ var options = {
 	srcBaseURL: 'http://wee.extend.ws/browser/trunk/'
 };
 
-var api; // Store the API xml file
+// Store the API xml file
+var api;
 
-// Start page
-apiHome = function() {
-	$('#contents').empty().append('<p>Welcome to <a href="http://wee.extend.ws">Web:Extend</a>\'s API. Please click on the link corresponding to the class or function you want to get details about.</p>');
-}
+// Creole parser
+var creole;
+
+// Method to open when coming from an external link
+var openMethod;
+
+// Modules mapping
+var modules = {
+	'wee': 'wee-core',
+	'wee/exceptions': 'wee-core-exceptions',
+	'wee/exceptions/logic': 'wee-core-exceptions',
+	'wee/exceptions/runtime': 'wee-core-exceptions',
+	'wee/app': 'wee-app',
+	'wee/auth': 'wee-auth',
+	'wee/cache': 'wee-cache',
+	'wee/db': 'wee-db',
+	'wee/db/mssql': 'wee-db-mssql',
+	'wee/db/mysql': 'wee-db-mysql',
+	'wee/db/mysqli': 'wee-db-mysqli',
+	'wee/db/oracle': 'wee-db-oracle',
+	'wee/db/pdo': 'wee-db-pdo',
+	'wee/db/pgsql': 'wee-db-pgsql',
+	'wee/db/sqlite': 'wee-db-sqlite',
+	'wee/db/meta': 'wee-dbmeta',
+	'wee/db/meta/interfaces': 'wee-dbmeta',
+	'wee/db/meta/mssql': 'wee-dbmeta-mssql',
+	'wee/db/meta/mysql': 'wee-dbmeta-mysql',
+	'wee/db/meta/oracle': 'wee-dbmeta-oracle',
+	'wee/db/meta/pgsql': 'wee-dbmeta-pgsql',
+	'wee/db/meta/sqlite': 'wee-dbmeta-sqlite',
+	'wee/documentor': 'wee-documentor',
+	'wee/feed': 'wee-feeds',
+	'wee/form': 'wee-forms',
+	'wee/http': 'wee-http',
+	'wee/l10n': 'wee-l10n',
+	'wee/ldap': 'wee-ldap',
+	'wee/mail': 'wee-mail',
+	'wee/model': 'wee-model',
+	'wee/model/db': 'wee-model-db',
+	'wee/model/fs': 'wee-model-fs',
+	'wee/output': 'wee-output',
+	'wee/tests': 'wee-tests',
+	'wee/ui': 'wee-ui',
+	'wee/validators': 'wee-validators',
+	'wee/vendor/FirePHPCore': 'wee-core-exceptions'
+};
 
 // Format the XML func node given into a PHP function declaration
 formatFuncName = function(func) {
-	s = '';
+	s = '<span class="type">';
 
 	if ($(func).attr('type'))
 		s += $(func).attr('type') + ' ';
@@ -60,182 +118,288 @@ formatFuncName = function(func) {
 	if ($(func).attr('visibility'))
 		s += $(func).attr('visibility') + ' ';
 
-	s += 'function ' + $(func).attr('name') + '(';
+	s += 'function</span> ' + $(func).attr('name') + '(';
 
 	if ($('>params>param', func).length == 0)
 		return s + ')';
 
 	$('>params>param', func).each(function() {
 		s += '<span class="param">';
-		if ($(this).attr('type')) s += $(this).attr('type') + ' ';
-		if ($(this).attr('ref')) s += '&';
 		s += '$' + $(this).attr('name');
-		if ($(this).attr('default')) s += ' = ' + $(this).attr('default');
 		s += '</span>, ';
 	});
 	return s.substring(0, s.length - 2) + ')';
 }
 
-// Write func details to the page at the given destination
-writeFuncDetails = function(func, dest, filename) {
-	if ($('>comment', func).text())
-		$(dest).append('<pre class="comment">' + $('>comment', func).text() + '</pre><dl/>');
-
-	if ($(func).attr('type'))
-		$(dest + '>dl').append('<dt>Type</dt><dd>' + $(func).attr('type') + '</dd>');
-
-	if ($(func).attr('filename')) {
-		filename = $(func).attr('filename');
-		$(dest + '>dl').append('<dt>Filename</dt><dd><a href="' + options.srcBaseURL + filename + '">' + filename + '</a></dd>');
+// Write the docComment description
+writeComment = function(el, dest) {
+	if ($('>comment', el).text()) {
+		$(dest).append('<div class="comment"/>');
+		creole.parse($('div.comment', dest).get(0), $('>comment', el).text());
 	}
+}
 
-	if ($(func).attr('internal') == undefined)
-		$(dest + '>dl').append('<dt>Lines</dt><dd><a href="' + options.srcBaseURL + filename + '#L' + $(func).attr('startline') + '">'
-			+ $(func).attr('startline') + ':' + $(func).attr('endline') + '</dd>');
-	else
-		$(dest + '>dl').append('<dt>Lines</dt><dd>Internal</dd>');
+// Write the code location
+writeLocation = function(el, dest, filename) {
+	$(dest).append('<h3>Location</h3><p>Defined in the file <a href="' + options.srcBaseURL + filename + '">' + filename
+		+ '</a>, lines <a href="' + options.srcBaseURL + filename + '#L' + $(el).attr('startline') + '">'
+		+ $(el).attr('startline') + ' to ' + $(el).attr('endline') + '</a>.</p>');
+}
 
-	if ($(func).attr('visibility'))
-		$(dest + '>dl').append('<dt>Visibility</dt><dd>' + $(func).attr('visibility') + '</dd>');
+// Write the see also section
+writeSeeAlso = function(el, dest) {
+	$(dest).append('<h3>See Also</h3><ul class="seealso"/>');
+	$('>sees>see', el).each(function() {
+		see = $(this).text();
 
-	if ($('>params', func).length > 0) {
-		$(dest).append('<table class="params"><caption>Parameters</caption><tr><th>Ref?</th><th>Type</th><th>Name</th><th>Default</th><th>Comment</th></tr></table>');
-		$('>params>param', func).each(function() {
-			s = '<tr><td>';
-			if ($(this).attr('ref') == undefined) s += ''; else s += '&';
-			s += '</td><td>';
+		if (see.substr(0, 7) == 'http://')
+			see = '<a href="' + see + '">' + see + '</a>';
+
+		$('>ul.seealso', dest).append('<li>' + see + '</li>');
+	});
+}
+
+// Write func details
+writeFuncDetails = function(el, dest, filename) {
+	writeComment(el, dest);
+
+	if ($('>params', el).length > 0) {
+		$(dest).append('<h3>Parameters</h3><ol class="params"/>');
+		$('>params>param', el).each(function() {
+			s = '<li>';
+			if ($(this).attr('ref') != undefined)
+				s += '<acronym title="Passed by reference">&</acronym>';
+			s += '<strong>$' + $(this).attr('name') + '</strong> (<em>';
+
 			if ($(this).attr('hint') != undefined)
 				s += $(this).attr('hint');
 			else if ($(this).attr('type') != undefined)
 				s += $(this).attr('type');
-			s += '</td><td>$' + $(this).attr('name') + '</td><td>';
-			if ($(this).attr('default') == undefined) s += ''; else s += $(this).attr('default');
-			s += '</td><td>' + $(this).text() + '</td></tr>'
-			$(dest + '>table.params').append(s);
+
+			s += '</em>';
+
+			if ($(this).attr('default') != undefined)
+				s += ', defaults to <strong>' + $(this).attr('default') + '</strong>';
+
+			s += '): ' + $(this).text() + '</li>';
+
+			$('>ol.params', dest).append(s);
 		});
 	}
 
-	if ($('>return', func).length > 0) {
-		$(dest).append('<table class="return"><caption>Returns</caption><tr><th>Ref?</th><th>Type</th><th>Comment</th></tr></table>');
+	if ($('>return', el).length > 0) {
+		$(dest).append('<h3>Return Value</h3>');
 
-		s = '<tr><td>';
-		if ($('>return', func).attr('ref')) s += '&'; else s += '';
-		s += '</td><td>' + $('>return', func).attr('type') + '</td><td>' + $('>return', func).text() + '</td></tr>';
+		s = '<ol class="return"><li>';
+		if ($('>return', el).attr('ref'))
+			s += '& ';
+		s += ' <em>' + $('>return', el).attr('type') + '</em>';
+		if ($('>return', el).text())
+			s+= ': ' + $('>return', el).text();
+		s += '</li></ol>';
 
-		$(dest + '>table.return').append(s);
+		$(dest).append(s);
 	}
 
-	// TODO: bugs, overloads, sees, throws, todos, warnings
+	if ($(el).attr('deprecated'))
+		$(dest).append('<h3>Deprecated</h3><p>This function has been deprecated and will be removed in a future release.</p>');
+
+	if ($(el).attr('filename'))
+		writeLocation(el, dest, $(el).attr('filename'));
+	else if ($(el).attr('internal'))
+		$(dest).append('<h3>Location</h3><p>Defined by PHP.</p>');
+
+	if ($('>sees', el).length > 0)
+		writeSeeAlso(el, dest);
 };
 
-// Event called when a class link is clicked
-clickClassLink = function(e) {
-	$('#contents').empty();
-
-	el = $('classes>class[name="' + e.target.textContent + '"]', api);
+// Write class panel
+writeClass = function(el, dest) {
 	filename = $(el).attr('filename');
 
-	$('#contents').append('<h2 id="' + $(el).attr('name') + '">' + $(el).attr('name') + '</h2>'
-		+ '<pre class="comment">' + $('>comment', el).text() + '</pre><dl/>');
-
-	if ($(el).attr('parent')) {
-		if ($('a.classLink[href="#' + $(el).attr('parent') + '"]').length > 0) {
-			$('#contents>dl').append('<dt>Parent</dt><dd><a href="#' + $(el).attr('parent') + '" class="classLink">' + $(el).attr('parent') + '</a></dd>');
-			$('#contents>dl>dd>a.classLink').bind('click', clickClassLink);
-		} else
-			$('#contents>dl').append('<dt>Parent</dt><dd>' + $(el).attr('parent') + '</dd>');
+	if ($(el).attr('type') == undefined)
+		type = 'class';
+	else {
+		type = $(el).attr('type');
+		if (type != 'interface')
+			type += ' class';
 	}
 
-	if ($(el).attr('type') == undefined)
-		$('#contents>dl').append('<dt>Type</dt><dd>class</dd>');
-	else
-		$('#contents>dl').append('<dt>Type</dt><dd>' + $(el).attr('type') + ' class</dd>');
+	$(dest).append('<h1 id="' + $(el).attr('name') + '"><span class="type">' + type + '</span> ' + $(el).attr('name') + '</h1>');
+	writeComment(el, dest);
 
-	$('#contents>dl').append('<dt>Filename</dt><dd><a href="' + options.srcBaseURL + filename + '">' + filename + '</a></dd>'
-		+ '<dt>Lines</dt><dd><a href="' + options.srcBaseURL + filename + '#L' + $(el).attr('startline') + '">'
-		+ $(el).attr('startline') + ':' + $(el).attr('endline') + '</a></dd>');
+	if ($(el).attr('parent') || $('>implements>implement', el).length > 0)
+		$(dest).append('<h3>Parents</h3><ol class="parent"/>');
+
+	if ($(el).attr('parent')) {
+		if ($('a.classLink[href="#' + $(el).attr('parent') + '"]').length > 0)
+			$('>ol.parent', dest).append('<li>Extend <a href="#' + $(el).attr('parent') + '" class="classLink">' + $(el).attr('parent') + '</a></li>');
+		else
+			$('>ol.parent', dest).append('<li>Extend ' + $(el).attr('parent') + '</li>');
+	}
 
 	if ($('>implements>implement', el).length > 0) {
-		$('#contents').append('<h3>Implements:</h3><ul class="implements"/>');
 		$('>implements>implement', el).each(function() {
+			if ($('a.classLink[href="#' + $(this).text() + '"]').length > 0)
+				$('>ol.parent', dest).append('<li>Implement <a href="#' + $(this).text() + '" class="classLink">' + $(this).text() + '</a></li>');
+			else
+				$('>ol.parent', dest).append('<li>Implement ' + $(this).text() + '</li>');
+		});
+	}
 
-			if ($('a.classLink[href="#' + $(this).text() + '"]').length > 0) {
-				$('#contents>ul.implements').append('<li><a href="#' + $(this).text() + '" class="classLink">' + $(this).text() + '</a></li>');
-				$('#contents>ul.implements>li>a.classLink').bind('click', clickClassLink);
-			} else
-				$('#contents>ul.implements').append('<li>' + $(this).text() + '</li>');
+	if ($(el).attr('deprecated'))
+		$(dest).append('<h3>Deprecated</h3><p>This class has been deprecated and will be removed in a future release.</p>');
+
+	writeLocation(el, dest, filename);
+
+	if ($('>consts>const', el).length > 0) {
+		$(dest).append('<h3>Constants</h3><ul class="constants"/>');
+		$('>consts>const', el).each(function() {
+			$('>ul.constants', dest).append('<li>' + $(this).attr('name') + ' = ' + $(this).attr('value') + '</li>');
 		});
 	}
 
 	if ($('>methods>method', el).length > 0) {
-		$('#contents').append('<h3>Methods:</h3><div id="methodslist">Go to method: <select class="methods"/></div>');
+		$(dest).append('<h3>Methods</h3><ul class="methods"/>');
 		$('>methods>method', el).each(function() {
-			$('#methodslist>select.methods').append('<option value="' + $(el).attr('name') + '/' + $(this).attr('name') + '">' + $(this).attr('name') + '</option>');
-		});
-		$('#methodslist>select.methods').bind('change', function(e){
-			document.location = '#' + e.target.value;
-		});
+			comment = $('>comment', this).text(); // fx returns empty to this? >_>
+			if (comment.indexOf("\n") != -1)
+				comment = comment.substr(0, comment.indexOf("\n"));
 
-		$('#contents').append('<ul class="methods"/>');
-		$('>methods>method', el).each(function(){
-			$('#contents>ul.methods').append('<li><h4 id="' + $(el).attr('name') + '/' + $(this).attr('name') + '">' + formatFuncName(this) + '</h4></li>');
-			writeFuncDetails(this, '#contents>ul.methods>li:last-child', filename);
+			$('>ul.methods', dest).append('<li><h4 id="' + $(el).attr('name') + '/' + $(this).attr('name') + '">' + formatFuncName(this)
+				+ ' <span class="preview">' + comment + '</span></h4><div/></li>');
+			writeFuncDetails(this, $('>ul.methods>li:last-child>div', dest), filename);
 		});
 	}
-}
 
-// Event called when a function link is clicked
-clickFuncLink = function(e) {
-	$('#contents').empty();
+	if ($('>properties>property', el).length > 0) {
+		$(dest).append('<h3>Properties</h3><ul class="properties"/>');
+		$('>properties>property', el).each(function() {
+			comment = $('>comment', this).text();
+			if (comment.indexOf("\n") != -1)
+				comment = comment.substr(0, comment.indexOf("\n"));
 
-	el = $('funcs>func[name="' + e.target.textContent + '"]', api);
+			type = '';
+			if ($(this).attr('static'))
+				type += $(this).attr('static') + ' ';
+			type += $(this).attr('visibility');
 
-	$('#contents').append('<h2 id="func/' + $(el).attr('name') + '">' + formatFuncName(el) + '</h2>');
-	writeFuncDetails(el, '#contents', $(el).attr('filename'));
-}
+			$('>ul.properties', dest).append('<li><h4><span class="type">' + type + '</span> $' + $(this).attr('name')
+				+ ' <span class="preview">' + comment + '</span></h4><div/></li>');
 
-// Function called when the hash part of the URL changes
-hashChange = function(loc) {
-	if (loc != '') {
-		spl = loc.split('/');
+			writeComment(this, $('>ul.properties>li:last-child>div', dest));
 
-		if (spl[0] == 'func')
-			$('li>a[href="#' + loc + '"]').click();
-		else {
-			$('li>a[href="#' + spl[0] + '"]').click();
-			if (spl[1] != undefined)
-				ti = window.setTimeout("$('select.methods').val(loc).change();", 100);
-		}
+			if ($(this).attr('deprecated'))
+				$('>ul.properties>li:last-child>div', dest).append('<h3>Deprecated</h3><p>This property has been deprecated and will be removed in a future release.</p>');
+
+			if ($('>sees', this).length > 0)
+				writeSeeAlso(this, $('>ul.properties>li:last-child>div', dest));
+		});
 	}
+
+	if ($('>sees', el).length > 0)
+		writeSeeAlso(el, dest);
+}
+
+// Change panel
+moveTo = function(dest) {
+	if (dest == '')
+		return;
+
+	spl = dest.split('/');
+	if (spl[0] != '#func') {
+		if (spl[1] != undefined)
+			openMethod = dest;
+
+		dest = spl[0];
+	}
+
+	a = [dest];
+	node = $('#finder [href="' + dest + '"]').get(0).parentNode.parentNode;
+
+	while (node.nodeName == 'UL') {
+		a.push($(node).prev().attr('href'));
+		node = node.parentNode.parentNode;
+	}
+
+	$('#finder').finder('select', a.reverse());
 }
 
 // Called when document is ready
 $(function() {
+	$('#finder').hide();
+
 	$.ajax({
 		url: options.apiFile,
 		dataType: "xml",
 		error: function(){$('#contents').empty().append('<p>An error occurred while trying to load the API file. Does the file exist?</p>');},
-		success: function(xml){
+		success: function(xml) {
 			api = xml;
 
-			$('funcs>func', xml).each(function(){
-				$('#funcs').append('<li><a class="funcLink" href="#func/' + $(this).attr('name') + '">' + $(this).attr('name') + '</a></li>');
+			$('#finder li>a').each(function() {
+				$(this).attr('href', '#' + $($(this).get(0).parentNode).attr('id') + '-link');
 			});
 
-			$('classes>class', xml).each(function(){
-				$('#classes').append('<li><a class="classLink" href="#' + $(this).attr('name') + '">' + $(this).attr('name') + '</a></li>');
+			for (var name in modules){
+				if ($('#' + modules[name] + ' > ul').length == 0)
+					$('#' + modules[name]).append('<ul></ul>');
+
+				$('[module="' + name + '"]', api).each(function(){
+					if (this.nodeName == 'func')
+						$('#' + modules[name] + ' > ul').append('<li><a class="funcLink" href="#func/' + $(this).attr('name') + '">' + $(this).attr('name') + '</a></li>');
+					else
+						$('#' + modules[name] + ' > ul').append('<li><a class="classLink" href="#' + $(this).attr('name') + '">' + $(this).attr('name') + '</a></li>');
+				});
+			}
+
+			$('#finder').finder({
+				animate: false,
+				title: 'Web:Extend API Browser',
+				onInit: function(finderObj) {
+					setTimeout(function(){moveTo(document.location.hash);}, 0);
+				},
+
+				onItemSelect: function(listItem,eventTarget,finderObject){
+					if ($('div.api-contents', listItem).length == 0) {
+						$(listItem).append('<div class="api-contents"></div>');
+						var contents = $('div.api-contents', listItem);
+
+						if ($('>a', listItem).attr('class') == 'funcLink') {
+							el = $('funcs>func[name="' + $('>a', listItem).text() + '"]', api);
+							$(contents).append('<h1 id="func/' + $(el).attr('name') + '">' + formatFuncName(el) + '</h1>');
+							writeFuncDetails(el, contents, $(el).attr('filename'));
+						} else {
+							el = $('classes>class[name="' + $('>a', listItem).text() + '"]', api);
+							writeClass(el, contents);
+							if (openMethod) {
+								$('[id="' + openMethod.substr(1) + '"] span.preview').css('display', 'none'); // toggle didn't want to work...
+								$('[id="' + openMethod.substr(1) + '"]').next().toggle();
+								openMethod = false;
+							}
+						}
+					}
+
+					return 42; // Workaround to allow item selection when no href attribute exists
+				}
 			});
-
-			$('h1').bind('click', apiHome);
-			$('a.classLink').bind('click', clickClassLink);
-			$('a.funcLink').bind('click', clickFuncLink);
-
-			apiHome();
-
-			// Handling of the next/back buttons
-			$.historyInit(hashChange);
-			hashChange(document.location.hash.substring(1));
+			$('#finder').show();
+			$('#wait').hide();
 		}
+	});
+
+	$('.methods h4, .properties h4').live('click', function() {
+		$('span.preview', this).toggle();
+		$(this).next().slideToggle();
+	});
+
+	$('ol.parent a.classLink').live('click', function(e) {
+		moveTo($(e.target).attr('href'));
+	});
+
+	creole = new Parse.Simple.Creole({
+		forIE: document.all,
+		interwiki: {},
+		linkFormat: ''
 	});
 });
 	</script>
@@ -253,12 +417,50 @@ $(function() {
 			<li><a href="http://blog.extend.ws">Blog</a></li>
 		</ul>
 	</div>
-	<div id="list">
-		<ul id="funcs"></ul>
-		<ul id="classes"></ul>
-	</div>
 	<div id="contents">
-		<p>Please wait while the API file is loading.</p>
+		<p id="wait"><img src="pub/finder/loading.gif" alt="Loading..."/> Please wait while the API file is loading.</p>
+		<ol id="finder">
+			<li id="wee-core"><a>Core</a><ul>
+				<li id="wee-core-exceptions"><a>Exceptions</a></li>
+			</ul></li>
+			<li id="wee-app"><a>Application</a></li>
+			<li id="wee-auth"><a>Authentication</a></li>
+			<li id="wee-cache"><a>Caching</a></li>
+			<li id="wee-db"><a>Database</a><ul>
+				<li id="wee-db-mysql"><a>MySQL</a></li>
+				<li id="wee-db-mysqli"><a>MySQLi</a></li>
+				<li id="wee-db-oracle"><a>Oracle</a></li>
+				<li id="wee-db-pdo"><a>PDO</a></li>
+				<li id="wee-db-pgsql"><a>PostgreSQL</a></li>
+				<li id="wee-db-sqlite"><a>SQLite</a></li>
+				<li id="wee-db-mssql"><a>SQL Server</a></li>
+			</ul></li>
+			<li id="wee-dbmeta"><a>DBMeta</a><ul>
+				<li id="wee-dbmeta-mysql"><a>MySQL</a></li>
+				<li id="wee-dbmeta-oracle"><a>Oracle</a></li>
+				<li id="wee-dbmeta-pgsql"><a>PostgreSQL</a></li>
+				<li id="wee-dbmeta-sqlite"><a>SQLite</a></li>
+				<li id="wee-dbmeta-mssql"><a>SQL Server</a></li>
+			</ul></li>
+			<li id="wee-documentor"><a>Documentor</a></li>
+			<li id="wee-feeds"><a>Feeds</a></li>
+			<li id="wee-forms"><a>Forms</a></li>
+			<li id="wee-http"><a>HTTP</a></li>
+			<li id="wee-l10n"><a>Localization</a></li>
+			<li id="wee-ldap"><a>LDAP</a></li>
+			<li id="wee-mail"><a>Mail</a></li>
+			<li id="wee-model"><a>Model</a><ul>
+				<li id="wee-model-db"><a>Database</a></li>
+				<li id="wee-model-fs"><a>Filesystem</a></li>
+			</ul></li>
+			<li id="wee-output"><a>Output</a></li>
+			<li id="wee-tests"><a>Tests</a></li>
+			<li id="wee-ui"><a>UI</a></li>
+			<li id="wee-validators"><a>Validators</a></li>
+		</ol>
+	</div>
+	<div id="footer">
+		API Browser based on the <a href="http://www.nicolas.rudas.info/jquery/finder/">jQuery Finder</a>
 	</div>
 </div>
 </body>

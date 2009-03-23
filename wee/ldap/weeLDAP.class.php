@@ -63,10 +63,10 @@ class weeLDAP
 		For binding anonymously, you don't need to specify RDN and password.
 
 		Parameters:
-			host: The LDAP server.
-			port: The port to connect.
-			rdn: The Relative Distinguished Name.
-			password: The password to use.
+			* host: The LDAP server.
+			* port: The port to connect.
+			* rdn: The Relative Distinguished Name.
+			* password: The password to use.
 
 		@param $aPrams List of parameters used to initalize the connection and authentication.
 		@throw ConfigurationException LDAP support must be enabled.

@@ -76,9 +76,9 @@ class weePaginationUI extends weeUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- countperpage:	Number of items per page. Defaults to 25.
-			- total:		Total number of items.
-			- url:			The base URL for the navigation links.
+			* countperpage:	Number of items per page. Defaults to 25.
+			* total:		Total number of items.
+			* url:			The base URL for the navigation links.
 
 		@param $aParams Frame's parameters.
 	*/

@@ -73,6 +73,7 @@ abstract class weeDatabaseRow extends weeDataSource implements ArrayAccess, Iter
 	{
 		return $this->aCurrentElement['key'];
 	}
+
 	/**
 		Move forward to next element.
 

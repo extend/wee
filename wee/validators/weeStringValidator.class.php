@@ -25,14 +25,14 @@ if (!defined('ALLOW_INCLUSION')) die;
 	A string validator.
 
 	This validator accepts the following arguments:
-	 - invalid_error:	The error message used if the input is not of a string compatible type.
-	 - len:				The length that the string must have.
-	 - len_error:		The error message used if the string has a length not equal to the `len` argument.
-	 - max:				The maximal length that the string must have.
-	 - max_error:		The error message used if the string has a length greater than the `max` argument.
-	 - min:				The minimal length that the string must have.
-	 - min_error:		The error message used if the string has a length smaller than the `min` argument.
-	 - nul_error:		The error message used if the string contains null characters.
+	 * invalid_error:	The error message used if the input is not of a string compatible type.
+	 * len:				The length that the string must have.
+	 * len_error:		The error message used if the string has a length not equal to the `len` argument.
+	 * max:				The maximal length that the string must have.
+	 * max_error:		The error message used if the string has a length greater than the `max` argument.
+	 * min:				The minimal length that the string must have.
+	 * min_error:		The error message used if the string has a length smaller than the `min` argument.
+	 * nul_error:		The error message used if the string contains null characters.
 */
 
 class weeStringValidator extends weeValidator

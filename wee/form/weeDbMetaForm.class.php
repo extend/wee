@@ -41,12 +41,12 @@ class weeDbMetaForm extends weeForm
 		Initializes the form.
 
 		Options include:
-		- action:				The action to be performed by the form. Either 'add' or 'update'. Defaults to 'add'.
-		- formkey:				Whether the form key mechanism should be used for added security. Defaults to true.
-		- label-from-comment:	Use the columns comment as the field's label. Defaults to true.
-		- method:				Method of submission of the form. Usually 'get' or 'post'. Defaults to 'post'.
-		- show-pkey:			Whether to show primary key fields. By default, only a hidden field is output for the 'update' action.
-		- uri:					The form URI. Defaults to $_SERVER['REQUEST_URI'].
+		* action:				The action to be performed by the form. Either 'add' or 'update'. Defaults to 'add'.
+		* formkey:				Whether the form key mechanism should be used for added security. Defaults to true.
+		* label-from-comment:	Use the columns comment as the field's label. Defaults to true.
+		* method:				Method of submission of the form. Usually 'get' or 'post'. Defaults to 'post'.
+		* show-pkey:			Whether to show primary key fields. By default, only a hidden field is output for the 'update' action.
+		* uri:					The form URI. Defaults to $_SERVER['REQUEST_URI'].
 
 		@param $oSet The set to build the form for.
 		@param $aOptions Options to control the building of the form.

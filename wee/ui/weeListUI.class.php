@@ -61,8 +61,8 @@ class weeListUI extends weeContainerUI
 		Add a new global action.
 
 		A global action is identified by the following parameters:
-			- link: URL to the action's event
-			- label: Label describing the action
+			* link: URL to the action's event
+			* label: Label describing the action
 
 		@param $aAction The global action parameters.
 	*/
@@ -76,8 +76,8 @@ class weeListUI extends weeContainerUI
 		Add a new item action.
 
 		An item action is identified by the following parameters:
-			- link: URL to the action's event
-			- label: Label describing the action
+			* link: URL to the action's event
+			* label: Label describing the action
 
 		@param $aAction The item action parameters.
 	*/
@@ -144,12 +144,12 @@ class weeListUI extends weeContainerUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- columns:			Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
-			- countperpage:		Number of items per page.
-			- orderby:			The column to use to sort the rows.
-			- orderdirection:	The direction of the column sort. Defaults to 'asc'.
-			- primary:			The key identifying each item uniquely. A key can be either one or more columns stored in an array.
-			- total:			Total number of items.
+			* columns:			Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
+			* countperpage:		Number of items per page.
+			* orderby:			The column to use to sort the rows.
+			* orderdirection:	The direction of the column sort. Defaults to 'asc'.
+			* primary:			The key identifying each item uniquely. A key can be either one or more columns stored in an array.
+			* total:			Total number of items.
 
 		@param $aParams Frame's parameters.
 	*/

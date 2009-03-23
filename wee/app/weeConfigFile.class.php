@@ -57,7 +57,7 @@ class weeConfigFile implements Mappable
 	/**
 		Return the filename of the configuration file which is to be included.
 
-		If the path of the configuration file begins with "//" the path is relative to ROOT_PATH,
+		If the path of the configuration file begins with {{{ "//" }}} the path is relative to ROOT_PATH,
 		if it begins with "./", then it is relative to the current file being parsed,
 		otherwise the standard behaviour is adopted, working directory being the one of the process.
 
@@ -103,14 +103,14 @@ class weeConfigFile implements Mappable
 
 		Configuration lines can begin with a $(instruction). command.
 		The 'instruction' is a list of words, following this schema:
-			function [param1] [param2] [...] target
+			* function [param1] [param2] [...] target
 
 		With function one of these:
-			os:		Operating System name, e.g. NetBSD.
-			host:	Hostname, like localhost.example.com.
-			phpver:	PHP version.
-			extver:	PHP extension version. Needs one parameter: the extension's name.
-			sapi:	Type of interface between web server and PHP.
+			* os:		Operating System name, e.g. NetBSD.
+			* host:	Hostname, like localhost.example.com.
+			* phpver:	PHP version.
+			* extver:	PHP extension version. Needs one parameter: the extension's name.
+			* sapi:	Type of interface between web server and PHP.
 
 		And target is the value wanted.
 

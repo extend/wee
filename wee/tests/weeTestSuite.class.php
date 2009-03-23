@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	It is meant to be very light and embedded with the framework's distribution to
 	allow anyone to check if it will work correctly on their platform using a simple
 	"make test". It is not meant to be used to test applications. There are much
-	better tools for this purpose, like PHPUnit (http://phpunit.de).
+	better tools for this purpose, like PHPUnit, available at http://phpunit.de
 
 	Unit test cases that return false value will be ignored.
 	Return false if you need additional files that are not unit test cases.

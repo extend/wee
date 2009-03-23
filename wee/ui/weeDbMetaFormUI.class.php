@@ -31,7 +31,7 @@ class weeDbMetaFormUI extends weeFormUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- set: Set used for the form.
+			* set: Set used for the form.
 
 		@param $aParams Frame's parameters.
 	*/

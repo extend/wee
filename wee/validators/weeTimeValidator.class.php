@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	The input must be a time in format HH:mm, as in 00:00 for midnight.
 
 	This validator accepts the following parameters:
-	 - invalid_error: The error message used if the input is not a valid time.
+	 * invalid_error: The error message used if the input is not a valid time.
 */
 
 class weeTimeValidator extends weeValidator

@@ -84,6 +84,7 @@ class weeDocumentorXML extends weeDocumentor
 	{
 		$this->oXMLWriter->startElement('class');
 		$this->oXMLWriter->writeAttribute('name', $aClass['name']);
+		$this->oXMLWriter->writeAttribute('module', substr($aClass['filename'], 0, strrpos($aClass['filename'], '/')));
 		$this->oXMLWriter->writeAttribute('filename', $aClass['filename']);
 		$this->oXMLWriter->writeAttribute('startline', $aClass['startline']);
 		$this->oXMLWriter->writeAttribute('endline', $aClass['endline']);
@@ -157,8 +158,11 @@ class weeDocumentorXML extends weeDocumentor
 		$this->oXMLWriter->startElement($bIsMethod ? 'method' : 'func');
 		$this->oXMLWriter->writeAttribute('name', $aFunc['name']);
 
-		if (!empty($aFunc['filename']))
+		if (!empty($aFunc['filename'])) {
+			if (!$bIsMethod)
+				$this->oXMLWriter->writeAttribute('module', substr($aFunc['filename'], 0, strrpos($aFunc['filename'], '/')));
 			$this->oXMLWriter->writeAttribute('filename', $aFunc['filename']);
+		}
 
 		if (!$bIsMethod || empty($aFunc['internal']))
 		{

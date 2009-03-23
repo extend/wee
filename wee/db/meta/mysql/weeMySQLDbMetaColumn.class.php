@@ -74,14 +74,14 @@ class weeMySQLDbMetaColumn extends weeDbMetaColumn implements weeDbMetaCommentab
 		Does the mysql-dependent logic of getValidator.
 
 		Handled types:
-		 - tinyint
-		 - smallint
-		 - int
-		 - bigint
-		 - char
-		 - varchar
-		 - date
-		 - time (range restricted from 00:00:00 to 23:59:59)
+		 * tinyint
+		 * smallint
+		 * int
+		 * bigint
+		 * char
+		 * varchar
+		 * date
+		 * time (range restricted from 00:00:00 to 23:59:59)
 
 		The UNSIGNED modifier of the integer types is also properly handled.
 

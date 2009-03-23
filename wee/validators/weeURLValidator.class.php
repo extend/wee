@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	An URL validator.
 
 	This validator accepts the following arguments:
-	 - invalid_error: The error message used if the input is not a valid URL.
+	 * invalid_error: The error message used if the input is not a valid URL.
 */
 
 class weeURLValidator extends weeValidator

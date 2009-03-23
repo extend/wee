@@ -166,9 +166,9 @@ final class weeException
 		It does not stop the script execution, since PHP does it itself after calling this function.
 
 		If the request is an HTTP request, and:
-			- If the exception is an instance of RouteNotFoundException, send a 404 Not Found error
-			- If the exception is an instance of NotPermittedException, send a 403 Forbidden error
-			- Otherwise, send a 500 Internal Server Error
+			* If the exception is an instance of RouteNotFoundException, send a 404 Not Found error
+			* If the exception is an instance of NotPermittedException, send a 403 Forbidden error
+			* Otherwise, send a 500 Internal Server Error
 
 		When DEBUG is enabled and the request is an HTTP request, send the exception to FirePHP
 		to ease debug through Firebug.

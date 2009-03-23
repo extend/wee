@@ -51,7 +51,7 @@ abstract class weeFrame
 	/**
 		Prefix to the template for the frame.
 		Define the template file path prefix, as in:
-			$sTemplate = $sBaseTemplatePrefix . $sBaseTemplate;
+			* $sTemplate = $sBaseTemplatePrefix . $sBaseTemplate;
 	*/
 
 	protected $sBaseTemplatePrefix;

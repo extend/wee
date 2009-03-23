@@ -80,13 +80,13 @@ class weePgSQLDbMetaColumn extends weeDbMetaColumn
 		Does the pgsql-dependent logic of getValidator.
 
 		Handled types:
-		 - smallint
-		 - int
-		 - bigint
-		 - real
-		 - character
-		 - character varying
-		 - time (in 24-hours format, without time zone)
+		 * smallint
+		 * int
+		 * bigint
+		 * real
+		 * character
+		 * character varying
+		 * time (in 24-hours format, without time zone)
 
 		@return	weeValidator	A validator appropriate for the column or null.
 		@see					http://www.postgresql.org/docs/8.3/static/datatype.html

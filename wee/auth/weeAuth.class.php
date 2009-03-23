@@ -37,7 +37,7 @@ abstract class weeAuth
 		Create a new weeAuth object and stores the paramters.
 
 		Parameters:
-			hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
+			* hash_treatment: The callback to use to hash passwords stored client-side. Defaults to 'sha1'.
 
 		@param $aParams List of parameters to authenticate against.
 	*/

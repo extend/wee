@@ -29,9 +29,13 @@ if (!defined('ALLOW_INCLUSION')) die;
 	under certain servers (e.g. Apache), the working directory can change at that point.
 
 	For example, instead of using:
-		define('WEE_AUTOLOAD_CACHE', 'app/tmp/autoload.php');
+	{{{
+	define('WEE_AUTOLOAD_CACHE', 'app/tmp/autoload.php');
+	}}}
 	Use:
-		define('WEE_AUTOLOAD_CACHE', getcwd() . '/app/tmp/autoload.php');
+	{{{
+	define('WEE_AUTOLOAD_CACHE', getcwd() . '/app/tmp/autoload.php');
+	}}}
 
 	The cache file is disabled in DEBUG mode.
 */

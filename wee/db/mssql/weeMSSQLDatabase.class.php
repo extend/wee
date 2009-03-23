@@ -50,10 +50,10 @@ class weeMSSQLDatabase extends weeDatabase
 		Initialises a new mssql database.
 
 		This database driver accepts the following parameters:
-		 - host:		The server of the database as specified by mssql_connect.
-		 - user:		The username.
-		 - password:	The password.
-		 - dbname:		The name of the database.
+		 * host:		The server of the database as specified by mssql_connect.
+		 * user:		The username.
+		 * password:	The password.
+		 * dbname:		The name of the database.
 
 		@param	$aParams	The parameters of the database.
 		@throw	ConfigurationException	The MSSQL PHP extension is missing.

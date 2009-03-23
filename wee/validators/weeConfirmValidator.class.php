@@ -30,8 +30,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 	The user types it two times, and this validator checks if it's correctly entered.
 
 	This validator accepts the following arguments:
-	 - invalid_error:	The error message used if the input is not confirmed in the form data.
-	 - with:			The name of the widget which value must be confirmed by the validator (mandatory).
+	 * invalid_error:	The error message used if the input is not confirmed in the form data.
+	 * with:			The name of the widget which value must be confirmed by the validator (mandatory).
 */
 
 class weeConfirmValidator extends weeFormValidator

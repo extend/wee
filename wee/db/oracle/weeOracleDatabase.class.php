@@ -50,10 +50,10 @@ class weeOracleDatabase extends weeDatabase
 		Initialise an oracle database.
 
 		This database driver accepts the following parameters:
-		 - user:		The user used to connect to the database.
-		 - password:	The password of the user.
-		 - dbname:		The name of the database.
-		 - encoding:	The encoding used for the connection (defaults to UTF8).
+		 * user:		The user used to connect to the database.
+		 * password:	The password of the user.
+		 * dbname:		The name of the database.
+		 * encoding:	The encoding used for the connection (defaults to UTF8).
 
 		@param	$aParams	The arguments of the connection.
 	*/

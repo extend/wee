@@ -94,8 +94,8 @@ class weeFormUI extends weeUI
 		Set callback methods.
 
 		Possible callbacks are:
-			- setup:	Called at the end of the method `setup`.
-			- submit:	Called when valid data has been submitted.
+			* setup:	Called at the end of the method `setup`.
+			* submit:	Called when valid data has been submitted.
 
 		@param $aCallbacks Array containing (name => callback) associations.
 	*/
@@ -109,7 +109,7 @@ class weeFormUI extends weeUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			- filename: Form's filename.
+			* filename: Form's filename.
 
 		@param $aParams Frame's parameters.
 	*/

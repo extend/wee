@@ -49,11 +49,11 @@ class weeMySQLiDatabase extends weeDatabase
 		Initialises a new mysqli database.
 
 		This database driver accepts the following parameters:
-		 - host:		The host of the database server.
-		 - user:		The user of the connection to the database.
-		 - password:	The password used by the user.
-		 - dbname:		The name of the database to select.
-		 - encoding:	The encoding to use for the database connection.
+		 * host:		The host of the database server.
+		 * user:		The user of the connection to the database.
+		 * password:	The password used by the user.
+		 * dbname:		The name of the database to select.
+		 * encoding:	The encoding to use for the database connection.
 
 		Refer to the documentation of mysqli::real_connect() to know the default values
 		of the `host`, `user` and `password` parameters.

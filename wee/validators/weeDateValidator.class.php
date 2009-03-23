@@ -27,11 +27,11 @@ if (!defined('ALLOW_INCLUSION')) die;
 	The input to validate must be a date as specified in the SQL standard, e.g. 1987-29-10 for october 29th, 1987.
 
 	This validator accepts the following arguments:
-	 - max:				The upper bound of the range of the valid dates.
-	 - max_error:		The error message used if the date is after the date specified in the `max` argument.
-	 - min:				The lower bound of the range of the valid dates.
-	 - min_error:		The error message used if the date is before the date specified in the `min` argument.
-	 - invalid_error:	The error message used if the input is not a date.
+	 * max:				The upper bound of the range of the valid dates.
+	 * max_error:		The error message used if the date is after the date specified in the `max` argument.
+	 * min:				The lower bound of the range of the valid dates.
+	 * min_error:		The error message used if the date is before the date specified in the `min` argument.
+	 * invalid_error:	The error message used if the input is not a date.
 
 	 `max` and `min` arguments both accept 'current' as a special value, this special value represents
 	 the current date at the time of the validation.

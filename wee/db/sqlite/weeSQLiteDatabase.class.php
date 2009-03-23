@@ -49,8 +49,8 @@ class weeSQLiteDatabase extends weeDatabase
 		Initialises a new sqlite database.
 
 		This driver accepts the following parameters:
-		 - create:	Whether to create the database file if it does not exist (defaults to false).
-		 - file:	The filename of the SQLite database (mandatory).
+		 * create:	Whether to create the database file if it does not exist (defaults to false).
+		 * file:	The filename of the SQLite database (mandatory).
 
 		@param	$aParams					The parameters of the driver.
 		@throw	ConfigurationException		The SQLite PHP extension is missing.

@@ -192,14 +192,14 @@ class weeApplication
 		Dispatch an event to its respective frame.
 
 		Event information can contain the following parameters:
-			- context: either cli, http or xmlhttprequest
-			- frame: name of the destination frame
-			- method: request method used to access the event (e.g. get, post)
-			- name: name of the event
-			- get: $_GET array for this event
-			- post: $_POST array for this event
-			- pathinfo: the PATH_INFO if any
-			- noframechange: if defined and true, the frame of this event won't be displayed
+			* context: either cli, http or xmlhttprequest
+			* frame: name of the destination frame
+			* method: request method used to access the event (e.g. get, post)
+			* name: name of the event
+			* get: $_GET array for this event
+			* post: $_POST array for this event
+			* pathinfo: the PATH_INFO if any
+			* noframechange: if defined and true, the frame of this event won't be displayed
 
 		@param $aEvent Event information
 	*/
