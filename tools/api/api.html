@@ -129,7 +129,7 @@ formatFuncName = function(func) {
 		s += '</span>, ';
 	});
 	return s.substring(0, s.length - 2) + ')';
-}
+};
 
 // Write the docComment description
 writeComment = function(el, dest) {
@@ -137,14 +137,14 @@ writeComment = function(el, dest) {
 		$(dest).append('<div class="comment"/>');
 		creole.parse($('div.comment', dest).get(0), $('>comment', el).text());
 	}
-}
+};
 
 // Write the code location
 writeLocation = function(el, dest, filename) {
 	$(dest).append('<h3>Location</h3><p>Defined in the file <a href="' + options.srcBaseURL + filename + '">' + filename
 		+ '</a>, lines <a href="' + options.srcBaseURL + filename + '#L' + $(el).attr('startline') + '">'
 		+ $(el).attr('startline') + ' to ' + $(el).attr('endline') + '</a>.</p>');
-}
+};
 
 // Write the see also section
 writeSeeAlso = function(el, dest) {
@@ -157,7 +157,7 @@ writeSeeAlso = function(el, dest) {
 
 		$('>ul.seealso', dest).append('<li>' + see + '</li>');
 	});
-}
+};
 
 // Write func details
 writeFuncDetails = function(el, dest, filename) {
@@ -299,10 +299,10 @@ writeClass = function(el, dest) {
 
 	if ($('>sees', el).length > 0)
 		writeSeeAlso(el, dest);
-}
+};
 
 // Change panel
-moveTo = function(dest) {
+changePanel = function(dest) {
 	if (dest == '')
 		return;
 
@@ -315,6 +315,11 @@ moveTo = function(dest) {
 	}
 
 	a = [dest];
+
+	// IE doesn't find anything for this, debug later
+	if ($('#finder [href="' + dest + '"]').get(0) == undefined)
+		return;
+
 	node = $('#finder [href="' + dest + '"]').get(0).parentNode.parentNode;
 
 	while (node.nodeName == 'UL') {
@@ -323,7 +328,7 @@ moveTo = function(dest) {
 	}
 
 	$('#finder').finder('select', a.reverse());
-}
+};
 
 // Called when document is ready
 $(function() {
@@ -356,7 +361,7 @@ $(function() {
 				animate: false,
 				title: 'Web:Extend API Browser',
 				onInit: function(finderObj) {
-					setTimeout(function(){moveTo(document.location.hash);}, 0);
+					setTimeout(function(){changePanel(document.location.hash);}, 0);
 				},
 
 				onItemSelect: function(listItem,eventTarget,finderObject){
@@ -393,7 +398,7 @@ $(function() {
 	});
 
 	$('ol.parent a.classLink').live('click', function(e) {
-		moveTo($(e.target).attr('href'));
+		changePanel($(e.target).attr('href'));
 	});
 
 	creole = new Parse.Simple.Creole({
