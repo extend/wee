@@ -13,6 +13,7 @@ $oDb->query('BEGIN TRANSACTION');
 try
 {
 	$oDb->query('CREATE SCHEMA pikachu CREATE TABLE test1 (a int) CREATE TABLE test2 (a int)');
+	$oDb->query("EXEC sp_addextendedproperty MS_Description, 'pika pika', 'SCHEMA', pikachu");
 
 	// weeMSSQLDbMeta::schemas
 
@@ -53,6 +54,11 @@ try
 
 	$this->isEqual('pikachu', $oSchema->name(),
 		_WT('weeMSSQLDbMetaSchema does not return a correct name.'));
+
+	// weeMSSQLDbMetaSchema::comment
+
+	$this->isEqual('pika pika', $oSchema->comment(),
+		_WT('weeMSSQLDbMetaSchema::comment does not return the expected comment.'));
 
 	// weeMSSQLDbMetaSchema::tableExists
 

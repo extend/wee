@@ -43,14 +43,20 @@ class weeMSSQLDbMeta extends weeDbMeta implements weeDbMetaSchemaProvider
 	{
 		$sClass = $this->getSchemaClass();
 		return new $sClass($this, $this->db()->query("
-			SELECT TOP 1 SCHEMA_NAME AS name
-			FROM INFORMATION_SCHEMA.SCHEMATA
-			WHERE SCHEMA_NAME = COALESCE(SCHEMA_NAME(), 'dbo')
+			SELECT	s.SCHEMA_NAME AS name, c.value AS comment
+			FROM	INFORMATION_SCHEMA.SCHEMATA s LEFT JOIN sys.extended_properties c
+						ON	c.major_id	= COALESCE(SCHEMA_ID(), SCHEMA_ID('dbo'))
+						AND	c.minor_id	= 0
+						AND c.class		= 3 -- c.class_desc = N'SCHEMA'
+						AND	c.name		= N'MS_Description'
+			WHERE	s.SCHEMA_NAME = COALESCE(SCHEMA_NAME(), 'dbo')
 		")->fetch());
 	}
 
 	/**
 		Fetch the names of the columns taking part in a given constraint.
+
+		Please note this method does not check whether the given constraint really exists.
 
 		@param	$sSchema	The name of the schema containing the constraint.
 		@param	$sName		The name of the constraint.
@@ -96,47 +102,6 @@ class weeMSSQLDbMeta extends weeDbMeta implements weeDbMetaSchemaProvider
 	}
 
 	/**
-		Return a table of a given name in the database.
-
-		@param	$sName						The name of the table.
-		@return	weeMSSQLDbMetaTable			The table.
-		@throw	UnexpectedValueException	The table does not exist.
-	*/
-
-	public function table($sName)
-	{
-		$oQuery = $this->db()->query("
-			SELECT		TOP 1 TABLE_SCHEMA AS [schema], TABLE_NAME AS name
-				FROM	INFORMATION_SCHEMA.TABLES
-				WHERE	TABLE_NAME		= ?
-					AND	TABLE_SCHEMA	= COALESCE(SCHEMA_NAME(), 'dbo')
-					AND	TABLE_TYPE		= 'BASE TABLE'
-		", $sName);
-
-		count($oQuery) == 1 or burn('UnexpectedValueException',
-			sprintf(_WT('Table "%s" does not exist.'), $sName));
-
-		$sClass = $this->getTableClass();
-		return new $sClass($this, $oQuery->fetch());
-	}
-
-	/**
-		Return whether a table of a given name exists in the database.
-
-		@param	$sName	The name of the table.
-		@return	bool	true if the table exists in the database, false otherwise.
-	*/
-
-	public function tableExists($sName)
-	{
-		return $this->db()->queryValue("
-			SELECT	TOP 1 COUNT(*)
-			FROM	INFORMATION_SCHEMA.TABLES
-			WHERE	TABLE_NAME = ? AND TABLE_SCHEMA = COALESCE(SCHEMA_NAME(), 'dbo') AND TABLE_TYPE = 'BASE TABLE'
-		", $sName);
-	}
-
-	/**
 		Query all the schemas of the database.
 
 		@return	weeMSSQLResult	The data of all the schemas of the database.
@@ -145,27 +110,50 @@ class weeMSSQLDbMeta extends weeDbMeta implements weeDbMetaSchemaProvider
 	protected function querySchemas()
 	{
 		return $this->db()->query("
-			SELECT		SCHEMA_NAME AS name
-			FROM		INFORMATION_SCHEMA.SCHEMATA
-			ORDER BY	SCHEMA_NAME
+			SELECT		s.SCHEMA_NAME AS name, c.value AS comment
+			FROM		INFORMATION_SCHEMA.SCHEMATA s LEFT JOIN sys.extended_properties c
+							ON	c.major_id	= SCHEMA_ID(s.SCHEMA_NAME)
+							AND	c.minor_id	= 0
+							AND c.class		= 3 -- c.class_desc = N'SCHEMA'
+							AND	c.name		= N'MS_Description'
+			ORDER BY	s.SCHEMA_NAME
 		");
 	}
 
 	/**
-		Query all the tables of the database.
+		Query all the tables of the database in the default schema.
 
 		@return	weeMSSQLResult	The data of all the tables of the database.
 	*/
 
 	protected function queryTables()
 	{
+		return $this->queryTablesInSchema();
+	}
+
+	/**
+		Query the rows describing the tables of a given schema.
+		If no schema is given, this method queries the tables in the default schema.
+
+		Please note this method does not check whether the given schema really exists.
+
+		@param	$sSchema		The name of the schema.
+		@return	weeMSSQLResult	The tables in the given schema.
+	*/
+
+	public function queryTablesInSchema($sSchema = null)
+	{
 		return $this->db()->query("
-			SELECT			TABLE_SCHEMA AS [schema], TABLE_NAME AS name
-				FROM		INFORMATION_SCHEMA.TABLES
-				WHERE		TABLE_SCHEMA	= COALESCE(SCHEMA_NAME(), 'dbo')
-					AND		TABLE_TYPE		= 'BASE TABLE'
-				ORDER BY	name
-		");
+			SELECT			t.TABLE_SCHEMA AS [schema], t.TABLE_NAME AS name, c.value AS comment
+				FROM		INFORMATION_SCHEMA.TABLES t LEFT JOIN sys.extended_properties c
+								ON	c.major_id	= OBJECT_ID(t.TABLE_SCHEMA)
+								AND	c.minor_id	= 0
+								AND	c.class		= 1 -- c.class_desc = 'OBJECT_OR_COLUMN'
+								AND	c.name		= 'MS_Description'
+				WHERE		t.TABLE_SCHEMA	= " . ($sSchema === null ? "COALESCE(SCHEMA_NAME(), 'dbo')" : ':schema') . "
+					AND		t.TABLE_TYPE	= 'BASE TABLE'
+				ORDER BY	t.TABLE_NAME
+		", array('schema' => $sSchema));
 	}
 
 	/**
@@ -177,11 +165,15 @@ class weeMSSQLDbMeta extends weeDbMeta implements weeDbMetaSchemaProvider
 
 	public function schema($sName)
 	{
-		$oQuery = $this->db()->query('
-			SELECT	TOP 1 SCHEMA_NAME AS name
-			FROM	INFORMATION_SCHEMA.SCHEMATA
-			WHERE	SCHEMA_NAME = ?
-		', $sName);
+		$oQuery = $this->db()->query("
+			SELECT	TOP 1 s.SCHEMA_NAME AS name, CAST(c.value AS varchar) AS comment
+			FROM	INFORMATION_SCHEMA.SCHEMATA s LEFT JOIN sys.extended_properties c
+						ON	c.major_id	= SCHEMA_ID(s.SCHEMA_NAME)
+						AND	c.minor_id	= 0
+						AND c.class		= 3 -- c.class_desc = N'SCHEMA'
+						AND	c.name		= N'MS_Description'
+			WHERE	s.SCHEMA_NAME = ?
+		", $sName);
 
 		count($oQuery) == 1 or burn('UnexpectedValueException',
 			sprintf(_WT('Schema "%s" does not exist.'), $sName));
@@ -231,5 +223,84 @@ class weeMSSQLDbMeta extends weeDbMeta implements weeDbMetaSchemaProvider
 		foreach ($this->querySchemas() as $aSchema)
 			$aNames[] = $aSchema['name'];
 		return $aNames;
+	}
+
+	/**
+		Return a table of a given name in the current schema.
+
+		@param	$sName	The name of the table.
+		@return	weeMSSQLDbMetaTable	The table.
+	*/
+
+	public function table($sName)
+	{
+		return $this->tableInSchema($sName);
+	}
+
+	/**
+		Return whether a table of a given name exists in the default schema.
+
+		@param	$sName	The name of the table.
+		@return	bool	Whether the table exists.
+	*/
+
+	public function tableExists($sName)
+	{
+		return $this->tableExistsInSchema($sName);
+	}
+
+	/**
+		Return whether a table of a given name exists in a given schema.
+		If no schema is given, this method returns whether the table exists
+		in the default schema.
+
+		Please note this method will not fail if the schema itself does
+		not exists.
+
+		@param	$sName		The name of the table.
+		@param	$sSchema	The name of the schema.
+		@return	bool		Whether the table exists.
+	*/
+
+	public function tableExistsInSchema($sName, $sSchema = null)
+	{
+		return (bool)$this->db()->queryValue("
+			SELECT	TOP 1 COUNT(*)
+			FROM	INFORMATION_SCHEMA.TABLES
+			WHERE	TABLE_NAME		= :name
+				AND	TABLE_SCHEMA	= " . ($sSchema === null ? "COALESCE(SCHEMA_NAME(), 'dbo')" : ':schema') . "
+				AND	TABLE_TYPE		= 'BASE TABLE'
+		", array('name' => $sName, 'schema' => $sSchema));
+	}
+
+	/**
+		Return a table of a given name in the current schema.
+		If no schema is given, this method return the table in the default schema.
+
+		@param	$sName		The name of the table.
+		@param	$sSchema	The name of the schema.
+		@return	weeMSSQLDbMetaTable			The table.
+		@throw	UnexpectedValueException	The table does not exist.
+	*/
+
+	public function tableInSchema($sName, $sSchema = null)
+	{
+		$oQuery = $this->db()->query("
+			SELECT	TOP 1 t.TABLE_SCHEMA AS [schema], t.TABLE_NAME AS name, CAST(c.value AS varchar) AS comment
+			FROM	INFORMATION_SCHEMA.TABLES t LEFT JOIN sys.extended_properties c
+						ON	c.major_id	= OBJECT_ID(QUOTENAME(t.TABLE_SCHEMA) + N'.' + QUOTENAME(t.TABLE_NAME))
+						AND	c.minor_id	= 0
+						AND c.class		= 1 -- c.class_desc = N'COLUMN_OR_OBJECT'
+						AND	c.name		= N'MS_Description'
+			WHERE	t.TABLE_SCHEMA	= " . ($sSchema === null ? "COALESCE(SCHEMA_NAME(), 'dbo')" : ':schema') . "
+				AND	t.TABLE_NAME	= :name
+				AND	t.TABLE_TYPE	= 'BASE TABLE'
+		", array('name' => $sName, 'schema' => $sSchema));
+
+		count($oQuery) == 1 or burn('UnexpectedValueException',
+			_WT('The requested table does not exist.'));
+
+		$sClass = $this->getTableClass();
+		return new $sClass($this, $oQuery->fetch());
 	}
 }

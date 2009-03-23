@@ -10,6 +10,7 @@ try
 {
 	$oDb->query('CREATE TABLE test1 (a int)');
 	$oDb->query('CREATE SCHEMA pikachu CREATE TABLE test1 (b int) CREATE TABLE test2 (a int)');
+	$oDb->query("EXEC sp_addextendedproperty MS_Description, 'down the road', 'SCHEMA', pikachu, 'TABLE', test1");
 
 	// weeMSSQLDbMeta::tables
 
@@ -76,6 +77,14 @@ try
 
 	$this->isEqual('test1', $oTable->name(),
 		_WT('weeMSSQLDbMeta::table does not return the requested table.'));
+
+	// weeMSSQLDbMetaTable::comment
+
+	$this->isNull($oTable->comment(),
+		_WT('weeMSSQLDbMeta::comment should return null when the table does not have a comment.'));
+
+	$this->isEqual('down the road', $oMeta->schema('pikachu')->table('test1')->comment(),
+		_WT('weeMSSQLDbMeta::comment does not return the comment of the table.'));
 }
 catch (Exception $eException) {}
 

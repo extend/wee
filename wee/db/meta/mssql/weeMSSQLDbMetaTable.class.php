@@ -52,19 +52,22 @@ class weeMSSQLDbMetaTable extends weeDbMetaTable
 
 	public function column($sName)
 	{
-		$oQuery = $this->meta()->db()->query('
-			SELECT		TOP 1 TABLE_SCHEMA AS [schema], TABLE_NAME AS [table], COLUMN_NAME AS name, ORDINAL_POSITION AS num,
-						COLUMN_DEFAULT AS [default], IS_NULLABLE AS nullable,
-						DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS max_length
-				FROM	INFORMATION_SCHEMA.COLUMNS
-				WHERE	COLUMN_NAME		= :column
-					AND	TABLE_NAME		= :name
-					AND	TABLE_SCHEMA	= :schema
-		', array('column' => $sName) + $this->aData);
+		$oQuery = $this->meta()->db()->query("
+			SELECT	TOP 1 c.TABLE_SCHEMA AS [schema], c.TABLE_NAME AS [table], COLUMN_NAME AS name,
+					c.ORDINAL_POSITION AS num, c.COLUMN_DEFAULT AS [default], c.IS_NULLABLE AS nullable,
+					c.DATA_TYPE AS type, c.CHARACTER_MAXIMUM_LENGTH AS max_length, CAST(p.value AS varchar) AS comment
+			FROM	INFORMATION_SCHEMA.COLUMNS c LEFT JOIN sys.extended_properties p
+						ON	p.major_id	= OBJECT_ID(QUOTENAME(c.TABLE_SCHEMA) + N'.' + QUOTENAME(c.TABLE_NAME))
+						AND	p.minor_id	= c.ORDINAL_POSITION
+						AND	p.class		= 1 -- c.class_desc = N'COLUMN_OR_OBJECT'
+						AND	p.name		= N'MS_Description'
+			WHERE	c.COLUMN_NAME	= :column
+				AND	c.TABLE_NAME	= :name
+				AND	c.TABLE_SCHEMA	= :schema
+		", array('column' => $sName) + $this->aData);
 
-		count($oQuery) == 1
-			or burn('UnexpectedValueException',
-				sprintf(_WT('Column "%s" does not exist.'), $sName));
+		count($oQuery) == 1 or burn('UnexpectedValueException',
+			sprintf(_WT('Column "%s" does not exist.'), $sName));
 
 		return $this->instantiateObject($this->getColumnClass(), $oQuery->fetch());
 	}
@@ -85,6 +88,17 @@ class weeMSSQLDbMetaTable extends weeDbMetaTable
 					AND	TABLE_NAME		= :name
 					AND	TABLE_SCHEMA	= :schema
 		', array('column' => $sName) + $this->aData);
+	}
+
+	/**
+		Returns the comment of the table.
+
+		@return string The comment.
+	*/
+
+	public function comment()
+	{
+		return $this->aData['comment'];
 	}
 
 	/**
@@ -244,15 +258,19 @@ class weeMSSQLDbMetaTable extends weeDbMetaTable
 
 	protected function queryColumns()
 	{
-		return $this->meta()->db()->query('
-			SELECT			TABLE_SCHEMA AS [schema], TABLE_NAME AS [table], COLUMN_NAME AS name, ORDINAL_POSITION AS num,
-							COLUMN_DEFAULT AS [default], IS_NULLABLE AS nullable,
-							DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS max_length
-				FROM		INFORMATION_SCHEMA.COLUMNS
-				WHERE		TABLE_NAME		= :name
-						AND	TABLE_SCHEMA	= :schema
-				ORDER BY	ORDINAL_POSITION
-		', $this->aData);
+		return $this->meta()->db()->query("
+			SELECT		c.TABLE_SCHEMA AS [schema], c.TABLE_NAME AS [table], COLUMN_NAME AS name,
+						c.ORDINAL_POSITION AS num, c.COLUMN_DEFAULT AS [default], c.IS_NULLABLE AS nullable,
+						c.DATA_TYPE AS type, c.CHARACTER_MAXIMUM_LENGTH AS max_length, CAST(p.value AS varchar) AS comment
+			FROM		INFORMATION_SCHEMA.COLUMNS c LEFT JOIN sys.extended_properties p
+							ON	p.major_id	= OBJECT_ID(QUOTENAME(c.TABLE_SCHEMA) + N'.' + QUOTENAME(c.TABLE_NAME))
+							AND	p.minor_id	= c.ORDINAL_POSITION
+							AND	p.class		= 1 -- c.class_desc = N'COLUMN_OR_OBJECT'
+							AND	p.name		= N'MS_Description'
+			WHERE		c.TABLE_NAME	= :name
+					AND	c.TABLE_SCHEMA	= :schema
+			ORDER BY	c.ORDINAL_POSITION
+		", $this->aData);
 	}
 
 	/**

@@ -44,6 +44,17 @@ class weeMSSQLDbMetaSchema extends weeDbMetaSchema
 	}
 
 	/**
+		Returns the comment of the schema.
+
+		@return string The comment.
+	*/
+
+	public function comment()
+	{
+		return $this->aData['comment'];
+	}
+
+	/**
 		Return a table of a given name in the schema.
 
 		@param	$sName	The name of the table.
@@ -53,18 +64,7 @@ class weeMSSQLDbMetaSchema extends weeDbMetaSchema
 
 	public function table($sName)
 	{
-		$oQuery = $this->db()->query("
-			SELECT		TOP 1 TABLE_SCHEMA AS [schema], TABLE_NAME AS name
-				FROM	INFORMATION_SCHEMA.TABLES
-				WHERE	TABLE_SCHEMA = :name AND TABLE_NAME = :table AND TABLE_TYPE = 'BASE TABLE'
-		", array('table' => $sName) + $this->aData);
-
-		count($oQuery) == 1
-			or burn('UnexpectedValueException',
-				sprintf(_WT('Table "%s" does not exist in the schema.'), $sName));
-
-		$sClass = $this->meta()->getTableClass();
-		return new $sClass($this->meta(), $oQuery->fetch());
+		return $this->meta()->tableInSchema($sName, $this->name());
 	}
 
 	/**
@@ -76,11 +76,7 @@ class weeMSSQLDbMetaSchema extends weeDbMetaSchema
 
 	public function tableExists($sName)
 	{
-		return (bool)$this->db()->queryValue("
-			SELECT	TOP 1 COUNT(*)
-			FROM	INFORMATION_SCHEMA.TABLES
-			WHERE	TABLE_SCHEMA = :name AND TABLE_NAME = :table AND TABLE_TYPE = 'BASE TABLE'
-		", array('table' => $sName) + $this->aData);
+		return $this->meta()->tableExistsInSchema($sName, $this->name());
 	}
 
 	/**
@@ -91,11 +87,6 @@ class weeMSSQLDbMetaSchema extends weeDbMetaSchema
 
 	protected function queryTables()
 	{
-		return $this->db()->query("
-			SELECT			TABLE_SCHEMA AS [schema], TABLE_NAME AS name
-				FROM		INFORMATION_SCHEMA.TABLES
-				WHERE		TABLE_SCHEMA = ? AND TABLE_TYPE = 'BASE TABLE'
-				ORDER BY	TABLE_NAME
-		", $this->name());
+		return $this->meta()->queryTablesInSchema($this->name());
 	}
 }

@@ -8,6 +8,14 @@ $oDb->query('BEGIN TRANSACTION');
 try
 {
 	$oDb->query('CREATE TABLE test (a integer, b integer NULL DEFAULT 42)');
+	$oDb->query("
+		EXEC sp_addextendedproperty
+			MS_Description,	'across the river',
+			'SCHEMA',		?,
+			'TABLE',		test,
+			'COLUMN',		a
+	", $oMeta->currentSchema()->name());
+
 	$oTable = $oMeta->table('test');
 
 	// weeMSSQLDbMetaTable::columnExists
@@ -77,10 +85,15 @@ try
 	// weeMSSQLDbMetaTable::columns
 
 	$aNames = array();
-	foreach ($oTable->columns() as $oColumnA)
-		$aNames[] = $oColumnA->name();
+	foreach ($oTable->columns() as $oColumn)
+		$aNames[] = $oColumn->name();
 	$this->isEqual(array('a', 'b'), $aNames,
 		_WT('weeMSSQLDbMetaTable::columns does not correctly return all the columns of the table.'));
+
+	// weeMSSQLDbMetaComment::comment
+
+	$this->isEqual('across the river', $oColumnA->comment(),
+		_WT('weeMSSQLDbMeta::comment does not return the comment of the table.'));
 }
 catch (Exception $eException) {}
 

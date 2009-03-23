@@ -26,7 +26,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 */
 
 class weeMSSQLDbMetaColumn extends weeDbMetaColumn 
-	implements weeDbMetaSchemaObject
+	implements weeDbMetaCommentable, weeDbMetaSchemaObject
 {
 	/**
 		Initialise a new mssql column object.
@@ -42,6 +42,17 @@ class weeMSSQLDbMetaColumn extends weeDbMetaColumn
 	public function __construct(weeMSSQLDbMeta $oMeta, array $aData, weeMSSQLDbMetaTable $oTable)
 	{
 		parent::__construct($oMeta, $aData, $oTable);
+	}
+
+	/**
+		Returns the comment of the column.
+
+		@return string The comment.
+	*/
+
+	public function comment()
+	{
+		return $this->aData['comment'];
 	}
 
 	/**
