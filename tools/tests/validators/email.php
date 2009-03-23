@@ -84,6 +84,8 @@ $this->isFalse(weeEmailValidator::test('@example.com'),
 	_WT('weeEmailValidator returns true for "@example.com".'));
 $this->isFalse(weeEmailValidator::test('test@example'),
 	_WT('weeEmailValidator returns true for "test@example".'));
+$this->isFalse(weeEmailValidator::test('test.test@example'),
+	_WT('weeEmailValidator returns true for "test.test@example".'));
 $this->isFalse(weeEmailValidator::test('test@@example.com'),
 	_WT('weeEmailValidator returns true for "test@@example.com".'));
 $this->isFalse(weeEmailValidator::test('test@test@example.com'),

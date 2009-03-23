@@ -56,7 +56,7 @@ class weeEmailValidator extends weeValidator
 		// The filter extension accepts hostnames as valid domain names since 5.2.9.
 		// See http://bugs.php.net/bug.php?id=47282.
 		if (version_compare(PHP_VERSION, '5.2.9', '>=')) {
-			$m = strpos($sInput, '.');
+			$m = strpos($sInput, '.', strpos($sInput, '@') + 1);
 			return $m !== false && $m != strlen($sInput);
 		}
 
