@@ -1,12 +1,11 @@
 <div class="treeview-container">
 	<ul class="treeview">
-		<?php $prev_rgt = 0; $level = 0; foreach ($tree as $item):?> 
-				<?php if ($item[$columns['leftid']] == $prev_rgt + 2): $level--;?> 
-					</ul></li><li><?php echo $item[$columns['label']]?> 
-				<?php else:?> 
-					<li><?php echo $item[$columns['label']]?> 
-				<?endif?> 
+		<?php $parent_rgts = array(); foreach ($tree as $item):?> 
+				<?php while(!empty($parent_rgts) && end($parent_rgts) < $item[$columns['leftid']]): array_pop($parent_rgts)?>
+					</ul></li>
+				<?php endwhile?> 
 
+				<li><?php echo $item[$columns['label']]?> 
 				<div class="items-actions"><?php foreach ($items_actions as $action): if (is_object($item)) $item = $item->toArray()?> 
 						<?php if ($action['method'] == 'post'):?> 
 							<form action="<?php echo $this->mkLink($action['link'])?>" method="post">
@@ -22,14 +21,14 @@
 
 				<?php if ($item[$columns['leftid']] + 1 == $item[$columns['rightid']]):?> 
 					</li>
-				<?php else: $level++;?> 
+				<?php else: $parent_rgts[] = $item[$columns['rightid']]?> 
 					<ul>
 				<?php endif?> 
-		<?php $prev_rgt = $item[$columns['rightid']]; endforeach?> 
+		<?php endforeach?> 
 
-		<?php for ($i = 0; $i < $level; $i++):?> 
+		<?php while (array_pop($parent_rgts) !== null):?> 
 			</ul></li>
-		<?endfor?> 
+		<?endwhile?> 
 	</ul>
 
 	<?php if (!empty($global_actions)):?> 
