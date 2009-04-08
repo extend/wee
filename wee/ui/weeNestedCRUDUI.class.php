@@ -70,6 +70,18 @@ class weeNestedCRUDUI extends weeCRUDUI
 		));
 
 		$oList->addItemAction(array(
+			'label'		=> _WT('Up'),
+			'link'		=> APP_PATH . $aEvent['frame'] . '/up',
+			'method'	=> 'post',
+		));
+
+		$oList->addItemAction(array(
+			'label'		=> _WT('Down'),
+			'link'		=> APP_PATH . $aEvent['frame'] . '/down',
+			'method'	=> 'post',
+		));
+
+		$oList->addItemAction(array(
 			'label'		=> _WT('Delete'),
 			'link'		=> APP_PATH . $aEvent['frame'] . '/delete',
 			'method'	=> 'post',
@@ -102,6 +114,40 @@ class weeNestedCRUDUI extends weeCRUDUI
 		));
 
 		weeContainerUI::defaultEvent($aEvent);
+	}
+
+	/**
+		Put an item in the set after its next sibling.
+
+		@param $aEvent Event information.
+	*/
+
+	protected function eventDown($aEvent)
+	{
+		$aEvent['method'] == 'post' or burn('InvalidArgumentException',
+			sprintf(_WT('Event "%s" must be called using a POST request.'), 'down'));
+
+		$this->aParams['set']->down($aEvent['post']);
+		safe_header('HTTP/1.0 303 See Other');
+		safe_header('Location: ' . APP_PATH . $aEvent['frame']);
+		exit;
+	}
+
+	/**
+		Put an item in the set before its previous sibling.
+
+		@param $aEvent Event information.
+	*/
+
+	protected function eventUp($aEvent)
+	{
+		$aEvent['method'] == 'post' or burn('InvalidArgumentException',
+			sprintf(_WT('Event "%s" must be called using a POST request.'), 'up'));
+
+		$this->aParams['set']->up($aEvent['post']);
+		safe_header('HTTP/1.0 303 See Other');
+		safe_header('Location: ' . APP_PATH . $aEvent['frame']);
+		exit;
 	}
 
 	/**
