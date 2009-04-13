@@ -52,6 +52,11 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
 if (PHP_SAPI == 'cli')
 	define('WEE_CLI', 1);
 
+// Whether the current request is done through the HTTPS protocol.
+
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+	define('WEE_HTTPS', 1);
+
 // Paths
 
 if (!defined('BASE_PATH')) // Base path of boostrap file
@@ -61,8 +66,28 @@ if (!defined('BASE_PATH')) // Base path of boostrap file
 if (!defined('ROOT_PATH')) // Path to application's root directory
 	define('ROOT_PATH', './');
 
-if (!defined('APP_PATH')) // Path to application's web directory
-	define('APP_PATH', BASE_PATH . (ROOT_PATH == './' ? '' : ROOT_PATH));
+// Path to application's web directory
+if (!defined('APP_PATH')) {
+	if (defined('WEE_CLI'))
+		define('APP_PATH', BASE_PATH . (ROOT_PATH == './' ? '' : ROOT_PATH));
+	else {
+		if (isset($_SERVER['HTTP_ORIGIN']))
+			$sOrigin = $_SERVER['HTTP_ORIGIN'];
+		else {
+			$sScheme		= 'http';
+			$iDefaultPort	= 80;
+			if (defined('WEE_HTTPS')) {
+				$sScheme		.= 's';
+				$iDefaultPort	= 443;
+			}
+
+			$sOrigin = $sScheme . '://' . $_SERVER['HTTP_HOST']
+				. ($_SERVER['SERVER_PORT'] != $iDefaultPort ? ':' . $_SERVER['SERVER_PORT'] : '');
+		}
+
+		define('APP_PATH', $sOrigin . dirname($_SERVER['SCRIPT_NAME']) . '/');
+	}
+}
 
 if (!defined('WEE_PATH')) // Path to the framework's directory
 	define('WEE_PATH', ROOT_PATH . 'wee/');
