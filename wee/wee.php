@@ -85,7 +85,10 @@ if (!defined('APP_PATH')) {
 				. ($_SERVER['SERVER_PORT'] != $iDefaultPort ? ':' . $_SERVER['SERVER_PORT'] : '');
 		}
 
-		define('APP_PATH', $sOrigin . dirname($_SERVER['SCRIPT_NAME']) . '/');
+		$sPath = dirname($_SERVER['SCRIPT_NAME']);
+		if ($sPath != '/')
+			$sPath .= '/';
+		define('APP_PATH', $sOrigin . $sPath);
 	}
 }
 
