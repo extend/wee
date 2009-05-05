@@ -91,6 +91,16 @@ class weeFormUI extends weeUI
 	}
 
 	/**
+		Return the form associated with the frame.
+
+		@return weeForm The form associated with the frame.
+	*/
+
+	public function getForm() {
+		return $this->oForm;
+	}
+
+	/**
 		Set callback methods.
 
 		Possible callbacks are:
