@@ -43,8 +43,15 @@ class weeAuthDbTable extends weeAuth
 
 	public function __construct($aParams = array())
 	{
-		empty($aParams['db']) || !($aParams['db'] instanceof weeDatabase) and burn('InvalidArgumentException',
-			_WT('You must provide a parameter "db" containing an instance of weeDatabase.'));
+		if (!isset($aParams['db'])) {
+			function_exists('weeApp') or burn('IllegalStateException',
+				_WT('Parameter "db" is missing and weeApp() does not exist.'));
+			$aParams['db'] = weeApp()->db;
+		}
+		
+		is_object($aParams['db']) && $aParams['db'] instanceof weeDatabase or burn('InvalidArgumentException',
+			sprintf(_WT('Parameter "%s" must be an instance of %s.'), 'db', 'weeDatabase'));
+
 		empty($aParams['table']) and burn('InvalidArgumentException',
 			_WT('You must provide a parameter "table" containing the name of the credentials table in your database.'));
 		empty($aParams['identifier_field']) and burn('InvalidArgumentException',
