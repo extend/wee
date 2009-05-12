@@ -67,6 +67,9 @@ class weeFormOptionsHelper
 
 	public function addOption($mOption, $sDestXPath = null)
 	{
+		if (empty($this->oXML->options))
+			$this->oXML->addChild('options');
+
 		$this->createOption($mOption, $this->translateDestXPath($sDestXPath));
 	}
 
@@ -80,6 +83,9 @@ class weeFormOptionsHelper
 
 	public function addOptions($aOptions, $sDestXPath = null)
 	{
+		if (empty($this->oXML->options))
+			$this->oXML->addChild('options');
+
 		$oDest = $this->translateDestXPath($sDestXPath);
 
 		foreach ($aOptions as $mOption)
@@ -96,24 +102,37 @@ class weeFormOptionsHelper
 
 	protected function createOption($mOption, $oDest)
 	{
-		if (empty($this->oXML->options))
-			$this->oXML->addChild('options');
-
+		// Convert the option from object/strings to array
 		if ($mOption instanceof Printable)
 			$mOption = $mOption->toString();
 
 		if (!is_array($mOption))
 			$mOption = array('label' => $mOption);
 
-		$oItem = $oDest->addChild(array_value($mOption, 'name', 'item'));
+		// We'll use DOM to create our nodes
+		if (!($oDest instanceof DOMNode))
+			$oDest = dom_import_simplexml($oDest);
+
+		// Retrieve the node type
+		$sName = array_value($mOption, 'name', 'item');
 		unset($mOption['name']);
 
-		if (!empty($mOption['selected']))
-			$oItem->addAttribute('selected', 'selected');
-		unset($mOption['selected']);
+		// Create the new node
+		$oNewNode = $oDest->ownerDocument->createElement($sName);
 
+		// First load the children nodes
+		if ($sName == 'group') {
+			foreach ($mOption['children'] as $mChild)
+				$this->createOption($mChild, $oNewNode);
+			unset($mOption['children']);
+		}
+
+		// Then the attributes
 		foreach ($mOption as $sName => $sValue)
-			$oItem->addAttribute($sName, $sValue);
+			$oNewNode->setAttribute($sName, $sValue);
+
+		// And finally append it
+		$oDest->appendChild($oNewNode);
 	}
 
 	/**
@@ -127,7 +146,7 @@ class weeFormOptionsHelper
 	{
 		$sEscapedValue	= xmlspecialchars($sValue);
 		$aOptions		= $this->oXML->options->xpath(
-			'item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]');
+			'.//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]');
 
 		if ($aOptions === false)
 			return false;
@@ -145,7 +164,7 @@ class weeFormOptionsHelper
 	{
 		$sEscapedValue	= xmlspecialchars($sValue);
 		$aOptions		= $this->oXML->options->xpath(
-			'item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and @selected]
+			'.//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and @selected]
 		');
 
 		if ($aOptions === false)
@@ -174,7 +193,7 @@ class weeFormOptionsHelper
 
 	public function selectNone()
 	{
-		$aOptions = $this->oXML->options->xpath('item[@selected]');
+		$aOptions = $this->oXML->options->xpath('.//item[@selected]');
 
 		if ($aOptions !== false)
 			foreach ($aOptions as $oItem)
@@ -194,7 +213,7 @@ class weeFormOptionsHelper
 	{
 		$sEscapedValue	= xmlspecialchars($sValue);
 		$aOption		= $this->oXML->options->xpath(
-			'item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
+			'.//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
 		);
 
 		($aOption === false || sizeof($aOption) != 1) and burn('BadXMLException',

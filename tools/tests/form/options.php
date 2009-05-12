@@ -15,7 +15,7 @@ $aOptions = array(
 	array('label' => 'test 2', 'value' => '40'),
 	array('label' => 'test 3', 'value' => '41'),
 	array('label' => 'test 4', 'value' => '43'),
-	array('label' => 'test 5', 'value' => '44'),
+	array('name' => 'group', 'children' => array(array('label' => 'test 5', 'value' => '44'))),
 );
 
 $oHelper->addOptions($aOptions);
