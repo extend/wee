@@ -403,8 +403,13 @@ class weeForm implements Printable
 					else
 					{
 						$oOptionHelper = $this->helper('weeFormOptionsHelper', $sName);
-						if ($oOptionHelper->isInOptions($this->aData[$sName]))
-							$oOptionHelper->select($this->aData[$sName]);
+						if (empty($oWidget->options['multiple'])) {
+							if ($oOptionHelper->isInOptions($this->aData[$sName]))
+								$oOptionHelper->select($this->aData[$sName]);
+						} else
+							foreach ($this->aData[$sName] as $mValue)
+								if ($oOptionHelper->isInOptions($mValue))
+									$oOptionHelper->select($mValue);
 					}
 				}
 
