@@ -216,10 +216,12 @@ class weeFormOptionsHelper
 			'.//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
 		);
 
-		($aOption === false || sizeof($aOption) != 1) and burn('BadXMLException',
-			_WT('The value was not found in the options or was found more than once.'));
+		$iSize = sizeof($aOption);
+		$iSize > 1 and burn('BadXMLException',
+			_WT('The value was found more than once in the options.'));
 
-		$aOption[0]['selected'] = 'selected';
+		if ($iSize == 1)
+			$aOption[0]['selected'] = 'selected';
 	}
 
 	/**
