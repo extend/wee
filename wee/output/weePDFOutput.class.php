@@ -60,34 +60,39 @@ class weePDFOutput extends weeLaTeXOutput
 
 	public function __destruct()
 	{
-		// Store LaTeX output in a temporary file
+		// No stack frame here, so we must catch any exception
 
-		$sTmpFilename = tempnam(null, null);
-		file_put_contents($sTmpFilename, ob_get_contents());
-		ob_end_clean();
+		try {
+			// Store LaTeX output in a temporary file
 
-		// Convert it to PDF
+			$sTmpFilename = tempnam(null, null);
+			file_put_contents($sTmpFilename, ob_get_contents());
+			ob_end_clean();
 
-		$sTmpDir = sys_get_temp_dir();
-		chdir($sTmpDir);
+			// Convert it to PDF
 
-		$sPdfLatex = 'pdflatex ' . $this->sOptions . ' ' . $sTmpFilename;
-		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex1.log');
-		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex2.log');
+			$sTmpDir = sys_get_temp_dir();
+			chdir($sTmpDir);
 
-		// TODO: Throw an exception or something if the PDF generation isnt completed
+			$sPdfLatex = 'pdflatex ' . $this->sOptions . ' ' . $sTmpFilename;
+			exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex1.log');
+			exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex2.log');
 
-		// Send the PDF to the browser
+			// TODO: Throw an exception or something if the PDF generation isnt completed
 
-		safe_header('Content-Type: application/pdf');
-		safe_header('Content-Length: ' . filesize($sTmpFilename . '.pdf'));
-		safe_header('Content-Disposition: attachment; filename="' . $this->sFilename . '"');
+			// Send the PDF to the browser
 
-		readfile($sTmpFilename . '.pdf');
+			safe_header('Content-Type: application/pdf');
+			safe_header('Content-Length: ' . filesize($sTmpFilename . '.pdf'));
+			safe_header('Content-Disposition: attachment; filename="' . $this->sFilename . '"');
 
-		// Cleanup the temporary directory
+			readfile($sTmpFilename . '.pdf');
 
-		exec('rm ' . $sTmpFilename . '*');
+			// Cleanup the temporary directory
+
+			exec('rm ' . $sTmpFilename . '*');
+		} catch (Exception $e) {
+		}
 	}
 
 	/**
