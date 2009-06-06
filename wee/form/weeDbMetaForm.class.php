@@ -43,6 +43,7 @@ class weeDbMetaForm extends weeForm
 		Options include:
 		* action:				The action to be performed by the form. Either 'add' or 'update'. Defaults to 'add'.
 		* formkey:				Whether the form key mechanism should be used for added security. Defaults to true.
+		* ignorecolumns:		List of columns to ignore when building the form.
 		* label-from-comment:	Use the columns comment as the field's label. Defaults to true.
 		* method:				Method of submission of the form. Usually 'get' or 'post'. Defaults to 'post'.
 		* show-pkey:			Whether to show primary key fields. By default, only a hidden field is output for the 'update' action.
@@ -65,6 +66,8 @@ class weeDbMetaForm extends weeForm
 			$this->aOptions['formkey'] = true;
 		if (!isset($this->aOptions['label-from-comment']))
 			$this->aOptions['label-from-comment'] = true;
+		if (!isset($this->aOptions['ignorecolumns']))
+			$this->aOptions['ignorecolumns'] = array();
 
 		in_array($this->aOptions['action'], array('add', 'update'))  or burn('InvalidArgumentException',
 			_WT('Invalid action name. Valid action names are "add" or "update".'));
@@ -148,6 +151,10 @@ class weeDbMetaForm extends weeForm
 		foreach ($aMeta['colsobj'] as $oCol) {
 			$sColumn = $oCol->name();
 
+			// Ignore given columns
+			if (in_array($sColumn, $this->aOptions['ignorecolumns']))
+				continue;
+
 			if (!empty($aRefSets[$sColumn])) {
 				$this->addWidget('choice', $oCol);
 
@@ -220,9 +227,10 @@ class weeDbMetaForm extends weeForm
 			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
 				sprintf(_WT('The reference table %s do not have a primary key.'), $aRefMeta['table']));
 
-			if (empty($aRef['key']) && count($aRefMeta['primary']) == 1)
+			if (empty($aRef['key'])) {
+				count($aRefMeta['primary']) == 1 or burn('UnexpectedValueException', 'Multiple columns for a primary key are not suppored yet.'); //TODO
 				$aMap[$aRefMeta['primary'][0]] = array('set' => $oRefSet, 'meta' => $aRefMeta, 'key' => $aRefMeta['primary'][0]);
-			elseif (count($aRef['key']) == 1) {
+			} elseif (count($aRef['key']) == 1) {
 				$aKeys = array_keys($aRef['key']);
 				$aValues = array_values($aRef['key']);
 

@@ -31,6 +31,7 @@ class weeDbMetaFormUI extends weeFormUI
 		Define the frame's parameters.
 
 		Parameters can include:
+			* ignorecolumns: Columns to ignore when building the form.
 			* set: Set used for the form.
 
 		@param $aParams Frame's parameters.
@@ -60,6 +61,7 @@ class weeDbMetaFormUI extends weeFormUI
 			'action' => $aEvent['name'],
 			'formkey' => true,
 			'method' => 'post',
+			'ignorecolumns' => array_value($this->aParams, 'ignorecolumns'),
 		));
 
 		$this->set('debug', defined('DEBUG'));
