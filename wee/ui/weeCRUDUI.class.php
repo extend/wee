@@ -44,30 +44,31 @@ class weeCRUDUI extends weeContainerUI
 
 	protected function defaultEvent($aEvent)
 	{
-		$iCount = $this->aParams['set']->count();
-
 		// Initialize the list frame
 
 		$oList = new weeListUI($this->oController);
 		$this->addFrame('index', $oList);
 
-		$oList->setParams($this->aParams
-			+ $this->aParams['set']->getMeta()
-			+ array('total' => $iCount)
-		);
+		// Set the custom action links
+
+		if (!empty($this->aParams['indexglobalactions']))
+			foreach ($this->aParams['indexglobalactions'] as $aAction)
+				$oList->addGlobalAction($aAction);
+
+		if (!empty($this->aParams['indexitemactions']))
+			foreach ($this->aParams['indexitemactions'] as $aAction)
+				$oList->addItemAction($aAction);
 
 		// Set the standard action links
 
 		$oList->addGlobalAction(array(
 			'label'		=> _WT('Create'),
 			'link'		=> APP_PATH . $aEvent['frame'] . '/add',
-			'method'	=> 'get',
 		));
 
 		$oList->addItemAction(array(
 			'label'		=> _WT('Update'),
 			'link'		=> APP_PATH . $aEvent['frame'] . '/update',
-			'method'	=> 'get',
 		));
 
 		$oList->addItemAction(array(
@@ -89,10 +90,24 @@ class weeCRUDUI extends weeContainerUI
 		// Set the list data
 
 		$iFrom = (int)array_value($aEvent['get'], 'from', 0);
+
+		if (empty($aEvent['get']['q']) || empty($aEvent['get']['in'])) {
+			$oItems = $this->aParams['set']->fetchSubset($iFrom, $this->aParams['countperpage']);
+			$iCount = $this->aParams['set']->count();
+		} else {
+			$aCriteria = array($aEvent['get']['in'] => array('LIKE', '%' . $aEvent['get']['q'] . '%'));
+			$oItems = $this->aParams['set']->search($aCriteria, $iFrom, $this->aParams['countperpage']);
+			$iCount = $this->aParams['set']->searchCount($aCriteria, $iFrom, $this->aParams['countperpage']);
+		}
+
 		($iFrom < 0 || ($iCount > 0 && $iFrom >= $iCount)) and burn('OutOfRangeException',
 			_WT('The parameter "from" is out of range.'));
 
-		$oList->setList($this->aParams['set']->fetchSubset($iFrom, $this->aParams['countperpage']));
+		$oList->setList($oItems);
+		$oList->setParams($this->aParams
+			+ $this->aParams['set']->getMeta()
+			+ array('total' => $iCount)
+		);
 
 		// Call containers default event
 
@@ -179,9 +194,12 @@ class weeCRUDUI extends weeContainerUI
 		Define the frame's parameters.
 
 		Parameters can include:
-			* columns:		Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
-			* countperpage:	Number of items per page in the list for the default event. Defaults to 25.
-			* set:			The set where all the CRUD operations will be performed.
+			* columns:				Columns to display in the list. Columns use the format 'label' => 'name', with 'label' optional.
+			* countperpage:			Number of items per page in the list for the default event. Defaults to 25.
+			* indexglobalactions:	Additional global actions for the items listing.
+			* indexitemactions:		Additional item-specific actions for the items listing.
+			* searchcolumn:			Column to use for the search function. No search by default.
+			* set:					The set where all the CRUD operations will be performed.
 
 		@param $aParams Frame's parameters.
 	*/

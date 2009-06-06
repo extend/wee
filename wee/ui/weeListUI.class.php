@@ -61,14 +61,18 @@ class weeListUI extends weeContainerUI
 		Add a new global action.
 
 		A global action is identified by the following parameters:
-			* link: URL to the action's event
-			* label: Label describing the action
+			* link: URL to the action's event.
+			* label: Label describing the action.
+			* method: Either 'post' or 'get'. Defaults to 'get'.
 
 		@param $aAction The global action parameters.
 	*/
 
 	public function addGlobalAction(array $aAction)
 	{
+		if (!isset($aAction['method']))
+			$aAction['method'] = 'get';
+
 		$this->aGlobalActions[] = $aAction;
 	}
 
@@ -76,14 +80,18 @@ class weeListUI extends weeContainerUI
 		Add a new item action.
 
 		An item action is identified by the following parameters:
-			* link: URL to the action's event
-			* label: Label describing the action
+			* link: URL to the action's event.
+			* label: Label describing the action.
+			* method: Either 'post' or 'get'. Defaults to 'get'.
 
 		@param $aAction The item action parameters.
 	*/
 
 	public function addItemAction(array $aAction)
 	{
+		if (!isset($aAction['method']))
+			$aAction['method'] = 'get';
+
 		$this->aItemsActions[] = $aAction;
 	}
 
@@ -128,6 +136,7 @@ class weeListUI extends weeContainerUI
 			'items_actions'		=> $this->aItemsActions,
 			'orderby'			=> array_value($this->aParams, 'orderby'),
 			'orderdirection'	=> $this->aParams['orderdirection'],
+			'search'			=> array_intersect_key($aEvent['get'], array('q' => true, 'in' => true)),
 		));
 
 		parent::defaultEvent($aEvent);

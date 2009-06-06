@@ -1,4 +1,14 @@
 <div class="list-container">
+	<form method="get">
+		<input type="text" name="q" value="<?php echo array_value($search, 'q')?>"/>
+		<select name="in">
+			<?php foreach ($columns as $label => $name): if (is_int($label)) $label = $name;?> 
+				<option label="<?php echo $label?>" value="<?php echo $name?>"<?php if ($name == array_value($search, 'in')) echo ' selected="selected"'?>/>
+			<?php endforeach?> 
+		</select>
+		<input type="submit" value="<?php echo _WT('Search')?>"/>
+	</form>
+
 	<?php reset($frames)->render()?> 
 
 	<table class="list">
