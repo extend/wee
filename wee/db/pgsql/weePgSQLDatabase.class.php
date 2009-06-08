@@ -76,7 +76,8 @@ class weePgSQLDatabase extends weeDatabase
 		// pg_connect triggers a warning if the connection failed.
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
 		$this->rLink === false and burn('DatabaseException',
-			_WT('Failed to connect to database with the following message:') . "\n" . pg_last_error());
+			_WT('Failed to connect to database with the following message:')
+				. "\n" . array_value(error_get_last(), 'message'));
 
 		pg_set_client_encoding($this->rLink, $sEncoding) != -1 or burn('InvalidArgumentException',
 			sprintf(_WT('Encoding "%s" is invalid.'), $sEncoding));
