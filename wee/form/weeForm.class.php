@@ -67,6 +67,9 @@ class weeForm implements Printable
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
 			_WT('The XSL PHP extension is required by weeForm.'));
 
+		is_callable('simplexml_load_file') or burn('ConfigurationException',
+			_WT('The SimpleXML extension is required by weeForm.'));
+
 		ctype_print($sAction) or burn('InvalidArgumentException', _WT('The action name must be printable.'));
 
 		$sFilename = FORM_PATH . $sFilename . FORM_EXT;

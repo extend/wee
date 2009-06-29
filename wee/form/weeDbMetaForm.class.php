@@ -58,6 +58,9 @@ class weeDbMetaForm extends weeForm
 		class_exists('XSLTProcessor') or burn('ConfigurationException',
 			_WT('The XSL PHP extension is required by weeForm.'));
 
+		is_callable('simplexml_load_string') or burn('ConfigurationException',
+			_WT('The SimpleXML extension is required by weeForm.'));
+
 		$this->aOptions = $aOptions;
 
 		if (!isset($this->aOptions['action']))
