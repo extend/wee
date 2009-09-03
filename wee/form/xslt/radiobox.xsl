@@ -7,7 +7,7 @@
 
 	<li><label>
 		<xsl:attribute name="for">
-			<xsl:value-of select="concat($radioboxid, '_', position())"/>
+			<xsl:value-of select="$radioboxid"/>
 		</xsl:attribute>
 
 		<xsl:if test="@help">
@@ -30,7 +30,7 @@
 			</xsl:if>
 
 			<xsl:attribute name="id">
-				<xsl:value-of select="concat($radioboxid, '_', position())"/>
+				<xsl:value-of select="$radioboxid"/>
 			</xsl:attribute>
 
 			<xsl:attribute name="name">
@@ -113,7 +113,7 @@
 		<ol>
 			<xsl:for-each select="options/*">
 				<xsl:call-template name="radioboxoptions">
-					<xsl:with-param name="radioboxid" select="$radioboxid"/>
+					<xsl:with-param name="radioboxid" select="concat($radioboxid, '_', position())"/>
 					<xsl:with-param name="radioboxname" select="../../name"/>
 				</xsl:call-template>
 			</xsl:for-each>
