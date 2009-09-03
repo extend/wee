@@ -266,6 +266,7 @@ class weeForm implements Printable
 		$oExternal = $oNode->ownerDocument->createElement('root');
 
 		$oSet = new $sClass;
+		// TODO: use helpers here instead of having a similar method to load items
 		$this->loadSetExternalsFromArray($oExternal, $oSet->$sMethod());
 
 		// Only insert the contents of the convenience node
@@ -399,7 +400,7 @@ class weeForm implements Printable
 			{
 				$oWidget = $a[0];
 
-				if (!empty($this->aData[$sName]))
+				if (isset($this->aData[$sName]))
 				{
 					if (empty($oWidget->options))
 						$oWidget->value = $this->aData[$sName];
