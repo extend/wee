@@ -175,11 +175,10 @@ class weeDbMetaForm extends weeForm
 			} else {
 				$sWidget = 'textbox';
 
-				if (in_array($sColumn, $aMeta['primary'])) {
+				if (in_array($sColumn, $aMeta['primary']) && empty($this->aOptions['show-pkey'])) {
 					if ($this->aOptions['action'] != 'update')
 						continue;
-					if (empty($this->aOptions['show-pkey']))
-						$sWidget = 'hidden';
+					$sWidget = 'hidden';
 				}
 				elseif (strpos($sColumn, '_is_'))
 					$sWidget = 'checkbox';
