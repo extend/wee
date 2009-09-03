@@ -110,7 +110,8 @@ if (!defined('LC_MESSAGES'))
 
 // Atomize magic quotes
 
-set_magic_quotes_runtime(0);
+if (get_magic_quotes_runtime())
+	@set_magic_quotes_runtime(0);
 if (get_magic_quotes_gpc())
 {
 	// Can't use array_walk_recursive: see http://fr2.php.net/manual/en/function.array-walk-recursive.php#81835
