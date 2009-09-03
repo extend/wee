@@ -33,6 +33,7 @@ class weeDbMetaFormUI extends weeFormUI
 		Parameters can include:
 			* ignorecolumns: Columns to ignore when building the form.
 			* set: Set used for the form.
+			* show-pkey: Whether to display the primary key.
 
 		@param $aParams Frame's parameters.
 	*/
@@ -62,6 +63,7 @@ class weeDbMetaFormUI extends weeFormUI
 			'formkey' => true,
 			'method' => 'post',
 			'ignorecolumns' => array_value($this->aParams, 'ignorecolumns'),
+			'show-pkey' => array_value($this->aParams, 'show-pkey'),
 		));
 
 		$this->set('debug', defined('DEBUG'));

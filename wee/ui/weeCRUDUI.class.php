@@ -200,6 +200,7 @@ class weeCRUDUI extends weeContainerUI
 			* indexitemactions:		Additional item-specific actions for the items listing.
 			* searchcolumn:			Column to use for the search function. No search by default.
 			* set:					The set where all the CRUD operations will be performed.
+			* show-pkey: 			Whether to display the primary key.
 
 		@param $aParams Frame's parameters.
 	*/
