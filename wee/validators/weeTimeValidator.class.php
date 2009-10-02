@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	The input must be a time in format HH:mm, as in 00:00 for midnight.
 
 	This validator accepts the following parameters:
-	 * invalid_error: The error message used if the input is not a valid time.
+	 - invalid_error: The error message used if the input is not a valid time.
 */
 
 class weeTimeValidator extends weeValidator
@@ -37,19 +37,28 @@ class weeTimeValidator extends weeValidator
 	*/
 
 	protected $aErrors = array(
-		'invalid' => 'Input must be a time.'
+		'invalid' => 'Input must be a time.',
 	);
 
 	/**
 		Returns whether a given input is a valid time.
 
-		@param	$sInput			The input.
-		@return	bool			Whether the given input is a valid time.
+		@param	$sInput	The input.
+		@return	bool	Whether the given input is a valid time.
 	*/
 
 	protected function isValidInput($sInput)
 	{
-		return strlen($sInput) != 5 || $sInput[2] != ':' || mktime(substr($sInput, 0, 2), substr($sInput, 3, 2)) !== false;
+		if (strlen($sInput) != 5 || $sInput[2] != ':')
+			return false;
+
+		$sHour		= substr($sInput, 0, 2);
+		$sMinute	= substr($sInput, 3, 2);
+
+		if (!ctype_digit($sHour) || !ctype_digit($sMinute))
+			return false;
+
+		return $sHour >= 0 && $sHour < 24 && $sMinute >= 0 && $sMinute < 60;
 	}
 
 	/**
@@ -57,9 +66,9 @@ class weeTimeValidator extends weeValidator
 
 		$mValue must be either a string, an instance of Printable or an object castable to string.
 
-		@param	$mValue						The value to attach.
-		@return	$this						Used to chain methods.
-		@throw	DomainException				$mValue is not of a correct type.
+		@param	$mValue	The value to attach.
+		@return	$this	Used to chain methods.
+		@throw	DomainException $mValue is not of a correct type.
 	*/
 
 	public function setValue($mValue)
@@ -82,9 +91,9 @@ class weeTimeValidator extends weeValidator
 	/**
 		Convenience function for inline validating of variables.
 
-		@param	$mValue			The value to validate.
-		@param	$aArgs			The configuration arguments of the validator.
-		@return	bool			Whether the variable is valid.
+		@param	$mValue	The value to validate.
+		@param	$aArgs	The configuration arguments of the validator.
+		@return	bool	Whether the variable is valid.
 	*/
 
 	public static function test($mValue, array $aArgs = array())

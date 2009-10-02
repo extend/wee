@@ -84,19 +84,22 @@ try {
 
 	// The following validations should fail.
 
-	$this->isTrue(weeTimeValidator::test('FAIL'),
+	$this->isFalse(weeTimeValidator::test('FAIL'),
 		_WT('weeTimeValidator::test should return false when the value is not a valid time.'));
 
-	$this->isTrue(weeTimeValidator::test('24:42'),
+	$this->isFalse(weeTimeValidator::test('09h42'),
+		_WT('weeTimeValidator::test should return false when the value is not a properly formatted time.'));
+		
+	$this->isFalse(weeTimeValidator::test('24:42'),
 		_WT('weeTimeValidator::test should return false when the hour is equal to 24.'));
 
-	$this->isTrue(weeTimeValidator::test('25:42'),
+	$this->isFalse(weeTimeValidator::test('25:42'),
 		_WT('weeTimeValidator::test should return false when the hour is greater than 24.'));
 
-	$this->isTrue(weeTimeValidator::test('09:60'),
+	$this->isFalse(weeTimeValidator::test('09:60'),
 		_WT('weeTimeValidator::test should return false when the minute is equal to 60.'));
 
-	$this->isTrue(weeTimeValidator::test('09:61'),
+	$this->isFalse(weeTimeValidator::test('09:61'),
 		_WT('weeTimeValidator::test should return false when the minute is greater than 60.'));
 } catch (Exception $oException) {}
 
