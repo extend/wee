@@ -30,6 +30,17 @@ require(WEE_PATH . 'vendor/phpmailer/class.phpmailer.php');
 class weeSendMail extends PHPMailer
 {
 	/**
+		Provides the ability to change the line ending.
+
+		Note: It was originally \n in an older version of PHPMailer.
+		The new \r\n seems to cause problems and make some email
+		software append linebreaks. By setting it back to \n we fix
+		this issue.
+	*/
+
+	public $LE = "\n";
+
+	/**
 		Initialize PHPMailer.
 	*/
 
