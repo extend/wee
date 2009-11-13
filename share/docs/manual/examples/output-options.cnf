@@ -1,0 +1,2 @@
+output.buffer		= 1
+output.buffer.gzip	= 0

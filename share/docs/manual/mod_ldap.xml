@@ -1,0 +1,689 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_ldap">
+	<title>LDAP module</title>
+	<para>
+		The LDAP module provides a simplified interface to perform common LDAP operations.
+		The <ulink url="http://en.wikipedia.org/wiki/LDAP">Lightweight Directory Access Protocol</ulink> is used
+		to access <ulink url="http://en.wikipedia.org/wiki/Directory_server">directory servers</ulink>.
+		LDAP support must be <ulink url="http://php.net/manual/ldap.setup.php">enabled in PHP</ulink> in order to use the LDAP module.
+	</para>
+
+	<sect1 id="mod_ldap_directories">
+		<title>LDAP directories</title>
+		<para>
+			A directory is used to store data, organized according to classes and presented
+			in a <ulink url="http://en.wikipedia.org/wiki/Directory_Information_Tree">hierarchical tree-like structure</ulink>.
+			The most common example is a directory containing a list of people.
+			You can however store many other things like UNIX accounts, personal data (like an address book), pictures of people,
+			identification data and more generally anything that can be named and to whom we can attach information.
+		</para>
+		<para>
+			A directory's structure can be compared to a file system.
+			A directory contains entries like a folder would contain files.
+			Each entries contain attributes inside it, with each attribute containing one or more values.
+			Entries at the same level of a directory generally contain similar information.
+		</para>
+		<para>
+			A directory could contain information about people, with one entry per person.
+			Then for each person you would have various information, also called attributes.
+			For example a common name, surname, phone number, email address, etc.
+			The attributes may contain one or more values.
+			For example each person only have one common name but may have more than one phone number.
+		</para>
+		<para>
+			Each entry contain an attribute named <literal>objectClass</literal> that defines what kind of object it is.
+			The class determine the attributes available for the object.
+			For example when <literal>objectClass = person</literal> the entry contains the required attributes <literal>objectClass</literal>,
+			<literal>cn</literal> (common name) and <literal>sn</literal> (surname) and the optional attributes
+			<literal>description</literal>, <literal>seeAlso</literal>, <literal>telephoneNumber</literal> and <literal>userPassword</literal>.
+		</para>
+		<para>
+			There is three different kinds of object classes:
+			<itemizedlist>
+				<listitem><para>
+					<emphasis>Structural class</emphasis>: basic description of objects in the directory.
+					One entry is always an instance of one structural class.
+					For example <literal>people</literal>, <literal>group</literal>, <literal>organizational unit</literal>.
+				</para></listitem>
+				<listitem><para>
+					<emphasis>Auxiliary class</emphasis>: adds complementary information to entries.
+					For example <literal>mailRecipient</literal> adds various attributes related to the mailbox of a person.
+				</para></listitem>
+				<listitem><para><emphasis>Abstract class</emphasis>: represents system LDAP objects like <literal>top</literal> or <literal>alias</literal>.</para></listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			You can refer to the documents <ulink url="http://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol#Schema">Schema</ulink>
+			and <ulink url="http://www.rfc-editor.org/rfc/rfc4519.txt">Schema for User Applications</ulink> for more information.
+		</para>
+
+		<sect2>
+			<title>Distinguished name</title>
+			<para>
+				Each entry has an attribute that is unique among all siblings of a single parent.
+				This unique attribute is called the <emphasis>Relative Distinguished Name</emphasis> (RDN).
+				It means that we can uniquely identify any entry within a directory by combining the RDNs
+				of all the entries in the path from the desired node to the root of the tree.
+				This string created by combining RDNs to form a unique name is called the node's <emphasis>Distinguished Name</emphasis> (DN).
+			</para>
+			<para>
+				The DN is like the absolute path between the root of a filesystem and a file, a RDN is like a filename.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Base DN</title>
+			<para>
+				The top level of the LDAP directory tree is the base, referred to as the <emphasis>base DN</emphasis>.
+				A <emphasis>base DN</emphasis> usually takes this form: <literal>dc=example, dc=com</literal>.
+				The URL is split into domain components: <literal>example.com</literal> becomes <literal>dc=example, dc=com</literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Example entry</title>
+			<para>
+				This is an example of an entry for an UNIX user.
+				<programlisting>
+dn: uid=lskywalker, ou=people, dc=example, dc=com
+objectclass: person
+objectclass: posixAccount
+givenname: Luke
+sn: Skywalker
+cn: Luke Skywalker
+uid: lskywalker
+userpassword: {crypt}b4Rda3JgvHs
+uidnumber: 1234
+gidnumber: 1200
+telephonenumber: 5555-1234
+homedirectory: /home/lskywalker
+loginshell: /bin/sh
+				</programlisting>
+			</para>
+			<para>
+				The first line is the DN, also repeated here:
+				<programlisting>
+dn: uid=lskywalker, ou=people, dc=example, dc=com
+				</programlisting>
+			</para>
+			<para>
+				The RDN for this entry is <literal>uid=lskywalker</literal>.
+				The full DN can be translated as the user whose <emphasis>User IDentifiant</emphasis> (uid) is <literal>lskywalker</literal>
+				and belongs to the <emphasis>Organizational Unit</emphasis> (ou) <literal>people</literal>,
+				in the <emphasis>Domain Component</emphasis> (dc) <literal>example.com</literal>.
+			</para>
+			<para>
+				The <literal>objectclass</literal> attribute determines the required and optional attributes.
+				<programlisting>
+objectclass: person
+objectclass: posixAccount
+				</programlisting>
+			</para>
+			<para>
+				The object class <literal>person</literal> requires the <literal>cn</literal> (common name) and <literal>sn</literal> (surname) fields values
+				and allows optional fields like <literal>givenname</literal> or <literal>telephonenumber</literal>.
+				The object class <literal>posixAccount</literal> requires information relative to an account,
+				like <literal>uidnumber</literal>, <literal>guidnumber</literal>, <literal>homedirectory</literal> and more.
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ldap_directories_example">
+			<title>Example of a directory information tree</title>
+			<para>
+				This schema represents a <ulink url="http://en.wikipedia.org/wiki/Directory_Information_Tree">DIT</ulink> from which we based our example entry.
+				<programlisting>
+                         dc=com
+                           |
+                      dc=example
+                      /    |    \
+                     /     |     \
+                    /      |      \
+          ou=People  ou=Group  ou=Computers
+              /      |
+             /       |
+            /        |
+           /         |
+          /          |
+         /           |
+        /            |
+ cn=Luke Skywalker  cn=Chewbacca
+				</programlisting>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_ldap_connection">
+		<title>Connection without the application module</title>
+		<para>
+			There are 4 parameters that are used to connect to directory servers:
+			<itemizedlist>
+				<listitem><para><literal>host</literal>The LDAP server hostname.</para></listitem>
+				<listitem><para><literal>port</literal>The port to connect to. Defaults to 389.</para></listitem>
+				<listitem><para><literal>rdn</literal>The RDN used to login to the directory server.</para></listitem>
+				<listitem><para><literal>password</literal>The password associated with that RDN.</para></listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			You can establish a simple connection to an LDAP server on a specified hostname and port and bind to the LDAP directory with the specified RDN and password.
+			You may also bind anonymously; in such case you don't need to specify the RDN and password.
+		</para>
+		<para>
+			The following settings can be used to connect using an RDN:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-settings.php.xml"/>
+		</para>
+		<para>
+			The following settings can be used to connect anonymously to the <literal>ldap.example.com</literal> server:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-settings-anon.php.xml"/>
+		</para>
+		<para>
+			Note that if you use an anonymous connection, your permissions will be restricted
+			and you won't be able to perform many operations (anonymous settings depends on the server configuration).
+		</para>
+		<para>
+			You can then create the <literal>weeLDAP</literal> object by giving the settings' array to its constructor:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-create.php.xml"/>
+		</para>
+		<para>
+			You can then use the <literal>$oLDAP</literal> object to <link linkend="mod_ldap_manipulation">manipulate entries</link>
+			and to <link linkend="mod_ldap_query">perform queries</link> on your directory server.
+		</para>
+
+		<sect2>
+			<title>Rebinding</title>
+			<para>
+				You can establish a new bind to the server simply by calling <literal>weeLDAP::rebind</literal> with new RDN and password.
+			</para>
+			<para>
+				This example shows how to rebind to the server with a new RDN and password.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-rebind.php.xml"/>
+			</para>
+			<para>
+				You can also bind anonymously to the server as follow.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-rebind-anon.php.xml"/>
+			</para>
+			<para>
+				Note that if you bind anonymously, your permissions will be restricted.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Cloning</title>
+			<para>
+				You can get a copy of a <literal>weeLDAP</literal> object created before by using the keyword <literal>clone</literal>.
+			</para>
+			<para>
+				Here is an example of how to clone the <literal>$oLDAP</literal> object created earlier.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-clone.php.xml"/>
+			</para>
+			<para>
+				You can then use the <literal>$oLDAPCopy</literal> object like the original <literal>$oLDAP</literal> object.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Closing the connection</title>
+			<para>
+				You usually shouldn't need to close the connection, since PHP will close it at the end of the script's execution.
+				But you might consider closing it yourself, if you are running a time-intensive or memory-intensive script
+				and you do not need to have a connection open the whole time, to free up resources.
+				You can do it by simply using <ulink url="http://php.net/unset">unset</ulink> on the LDAP object, as in:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-close.php.xml"/>
+			</para>
+			<para>
+				This will effectively destroy the LDAP object and close the connection.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_ldap_manipulation">
+		<title>Manipulation</title>
+		<para>
+			After having established a connection to your server, you can perform various manipulations.
+		</para>
+
+		<sect2>
+			<title>Escaping a DN</title>
+			<para>
+				You must escape certain characters when they appear within a component of a DN.
+			</para>
+			<para>
+				For example if you have the entry <literal>o=Company, Ltd.</literal> in the directory,
+				the comma is part of the organization's name not a separator between DN components.
+				You can also have multivalued RDNs like <literal>cn=Luke Skywalker+mail=lskywalker@example.com</literal>.
+			</para>
+			<para>
+				This example shows how to escape the value of a component of a DN.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-escape.php.xml"/>
+			</para>
+			<para>
+				You should always escape the value of a component of a DN if the data comes from outside your application
+				(like from an user, from a database, or from the directory itself).
+				Doing so will help avoid security vulnerabilities.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Comparing attribute values</title>
+			<para>
+				You can check the value of an attribute directly using the method <literal>isEqual</literal>.
+				This method requires the DN of the entry, the name of the attribute to compare and the value you compare the attribute against.
+			</para>
+			<para>
+				This example show you how to compare the value of a password with the value of <literal>$sCryptedPass</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-isequal.php.xml"/>
+			</para>
+			<para>
+				Note that the attributes available for each entry depend on the <literal>objectClass</literal> attribute.
+				Make sure you know whether the entry contains the attribute you compare against.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Inserting</title>
+			<para>
+				Before inserting an entry to the directory server, you must know what kind of information are associated with the entry.
+				As described in the previous section, the <literal>objectClass</literal> attribute defines what attributes are required or optional for your new entry.
+			</para>
+			<para>
+				You can proceed with the insertion when you know the structure of the new entry.
+				To insert an entry, use the method <literal>insert</literal>.
+				This method takes two parameters: the DN of the new entry and an associative array containing the attributes.
+			</para>
+			<para>
+				The following snippet create an <emphasis>Organizational Unit</emphasis> named <literal>people</literal> at the base of your directory.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-insert.php.xml"/>
+			</para>
+			<para>
+				Then the following snippet inserts an entry in the <literal>ou</literal> we just created.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-insert-person.php.xml"/>
+			</para>
+			<para>
+				We could also have specified the <literal>seeAlso</literal> or <literal>telephoneNumber</literal>
+				attributes for this entry, but since they're optional we could ignore them.
+			</para>
+			<para>
+				Note that you can not add a child to an entry if the entry does not exists.
+				The user <literal>cn=Luke Skywalker, ou=people, dc=example, dc=com</literal> can not be created
+				if the parent entry <literal>ou=people, dc=example, dc=com</literal> does not exists.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Modifying</title>
+			<para>
+				Modifying an entry is a similar operation to inserting a new entry.
+				The difference is that the entry must already exists.
+				To modify an entry, use the method <literal>modify</literal>.
+				This method allows you to modify an entry without first retrieving it.
+			</para>
+			<para>
+				In this example we modify the entry inserted above.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-modify.php.xml"/>
+			</para>
+			<para>
+				Note that you can encounter errors when trying to modify certain attributes, like <literal>objectClass</literal> for example.
+				You can find more information about the allowed changes in your directory server's documentation.
+				Of note is that you <ulink url="http://php.net/manual/en/function.ldap-modify.php#74581">cannot add a new structural objectClass</ulink>
+				to your existing entry under OpenLDAP. Doing so will trigger an exception.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Deleting</title>
+			<para>
+				To delete an entry you only have to specify its DN to the method <literal>delete</literal>.
+			</para>
+			<para>
+				This example will delete the user <literal>Luke Skywalker</literal> created earlier.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-delete.php.xml"/>
+			</para>
+			<para>
+				Not that you can not perform a recursive delete yet.
+				If you want to remove an entry that contains sub-entries, you have to remove the children entries before:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-delete-recursive.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Copying</title>
+			<para>
+				The method <literal>copy</literal> allows you to make a copy of an entry.
+				This method requires two parameters: the DN of the source entry and the DN of the destination entry.
+				The destination entry will be created with the attributes and values of the source entry.
+			</para>
+			<para>
+				This example shows how to copy the user <literal>Luke Skywalker</literal>
+				from the <literal>people</literal> organization to the <literal>jedi</literal> organization.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-copy.php.xml"/>
+			</para>
+			<para>
+				Now we have two entries: a <literal>Luke Skywalker</literal> in <literal>people</literal>
+				and a <literal>Luke Skywalker</literal> in <literal>jedi</literal>.
+				All of their attributes are identical but they have a different DN,
+				because they are not located in the same <emphasis>Organizational Unit</emphasis>.
+			</para>
+			<para>
+				Note that the source and destination DN must be different.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Moving</title>
+			<para>
+				The method <literal>move</literal> allows you to move an entry.
+				This operation is similar to <literal>copy</literal>, except that the source entry is removed.
+				This method requires two parameters: the DN of the source entry and the DN of the destination entry.
+				The destination entry will be created with the attributes and values of the source entry.
+			</para>
+			<para>
+				The following example shows how to move an entry.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-move.php.xml"/>
+			</para>
+			<para>
+				Now we have only one entry: <literal>Luke Skywalker</literal> was moved
+				from the <literal>people</literal> organization to the <literal>jedi</literal> organization.
+				The attributes of the entry do not change but the entry is now identified by a new DN.
+			</para>
+			<para>
+				Note that the source and destination must be different.
+				Read on to learn how to rename an entry without moving it.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Renaming</title>
+			<para>
+				The method <literal>rename</literal> allows you to rename an entry.
+				The entry is not moved nor copied, only renamed.
+			</para>
+			<para>
+				Remember, an entry is identified by its <emphasis>Distinguished Name</emphasis>
+				(e.g. <literal>cn=Luke Skywalker, ou=people, dc=example, dc=com</literal>),
+				with the first part being its <emphasis>Relative Distinguished Name</emphasis> (e.g. <literal>cn=Luke Skywalker</literal>).
+				This method only renames the <literal>RDN</literal> of the entry.
+			</para>
+			<para>
+				This method requires two parameters: the DN of the entry and its new RDN.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-rename.php.xml"/>
+			</para>
+			<para>
+				The user <literal>Anakin Skywalker</literal> becomes <literal>Darth Vader</literal>.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_ldap_query">
+		<title>Query</title>
+		<para>
+			You can query a directory to retrieve entries in three different ways.
+			You can retrieve one specific entry;
+			you can list all the immediate entries in a specific part of the directory (this is not recursive and is most similar with listing the files in a folder);
+			and you can search for entries located in a specific part of the directory recursively.
+		</para>
+
+		<sect2>
+			<title>Escaping a filter</title>
+			<para>
+				You must escape the filter correctly when searching or listing a directory.
+			</para>
+			<para>
+				The following example shows you how to escape the search query entered by an user.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-escapefilter.php.xml"/>
+			</para>
+			<para>
+				You can then list or search entries in the directory.
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ldap_query_fetch">
+			<title>Fetching</title>
+			<para>
+				You can retrieve a specific entry by giving its DN to the method <literal>fetch</literal>.
+				This method requires the DN of the entry you wish to fetch.
+				You can also pass a filter to be used when retrieving the entry; by default there is no filtering happening.
+			</para>
+			<para>
+				The following example fetch the entry whose common name is <emphasis>Anakin Skywalker</emphasis> in the organizational unit <literal>customers</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-fetch.php.xml"/>
+			</para>
+			<para>
+				You can then <link linkend="mod_ldap_entries">proceed using the entry</link>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Listing</title>
+			<para>
+				You can list all the child entries matching a filter in a specific DN by using
+				the method <literal>search</literal> with the recursive parameter set to false.
+				This method requires the DN of the parent entry and the filter to use.
+			</para>
+			<para>
+				The following example list all the <literal>organizationalUnits</literal> entries
+				directly at the top of the domain <literal>example.com</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-search-non-recursive.php.xml"/>
+			</para>
+			<para>
+				You can then <link linkend="mod_ldap_results">proceed using the results</link>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Searching</title>
+			<para>
+				You can also search for entries recursively using the same method, <literal>search</literal>,
+				but this time with the recursive parameter set to true (it is by default).
+				This method requires the DN of the parent entry and the filter to use.
+			</para>
+			<para>
+				This example demonstrate how to search users which their common name set to <literal>Luke Skywalker</literal> in the whole domain <literal>example.com</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-search.php.xml"/>
+			</para>
+			<para>
+				No need to specify the third parameter since it's the default.
+			</para>
+			<para>
+				We may receive more than one entry in our results because we gave a RDN,
+				and there might be more than one <literal>Luke Skywalker</literal> in the directory,
+				although they will all be located in different places of your directory.
+			</para>
+			<para>
+				You can then <link linkend="mod_ldap_results">proceed using the results</link>.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_ldap_results">
+		<title>Results</title>
+		<para>
+			After you performed a query on a directory you can process the results.
+			The results object allows you to process the entries from your query.
+			You can count the number of results, sort them and retrieve the entries.
+		</para>
+
+		<sect2>
+			<title>Counting</title>
+			<para>
+				The <literal>weeLDAPResult</literal> class implements the <ulink url="http://php.net/manual/class.countable.php">Countable interface</ulink>.
+				It allows you to retrieve the number of entries in the result object using the function <literal>count</literal> directly on your object.
+			</para>
+			<para>
+				The following example demonstrate how to count the number of
+				<literal>organizationalUnits</literal> objects contained at the top of the domain <literal>example.com</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-count.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Sorting</title>
+			<para>
+				It is possible to sort the results of a query.
+				The method <literal>sort</literal> will sort the results according to the specified filter.
+				This function takes only the <ulink url="http://www.mozilla.org/directory/csdk-docs/filter.htm">filter</ulink> to apply to sort the entries as parameter.
+			</para>
+			<para>
+				The following example shows how to sort the <literal>organizationalUnits</literal> objects found in the domain <literal>example.com</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-sort.php.xml"/>
+			</para>
+			<para>
+				If applied on a directory tree like the one <link linkend="mod_ldap_directories_example">from our introductory chapter</link>, the output would be:
+				<programlisting>
+1: ou=computers, dc=example, dc=com
+2: ou=group, dc=example, dc=com
+3: ou=people, dc=example, dc=com
+				</programlisting>
+			</para>
+			<para>
+				Calling <literal>sort</literal> more than one time will override the sorting filter, keeping only the last one.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching</title>
+			<para>
+				Web:Extend provides three ways to retrieve rows from a result object.
+			</para>
+
+			<sect3>
+				<title>The <literal>fetch</literal> method</title>
+				<para>
+					The <literal>fetch</literal> method is mainly used when you are expecting to get only one entry back from your query.
+					The <literal>fetch</literal> method will throw an exception if there is no row to fetch,
+					making it not appropriate for use for iterating through rows.
+				</para>
+				<para>
+					This exemple fetch an entry from the results.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-results-fetch.php.xml"/>
+				</para>
+				<para>
+					Note that you can also fetch directly a single entry by using
+					<link linkend="mod_ldap_query_fetch">the method <literal>weeLDAP::fetch</literal></link>
+					without having to retrieve results first.
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>The <literal>fetchAll</literal> method</title>
+				<para>
+					You can fetch all entries using the method <literal>fetchAll</literal>.
+					This will return an array containing all the entries returned by your query.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-results-fetchall.php.xml"/>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Using <literal>foreach</literal></title>
+				<para>
+					The <literal>weeLDAPResult</literal> class also implements the <ulink url="http://php.net/manual/class.iterator.php">Iterator interface</ulink>.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-results-foreach.php.xml"/>
+				</para>
+			</sect3>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_ldap_entries">
+		<title>Entries</title>
+		<para>
+			The entry object contains all the information about your entry.
+		</para>
+
+		<sect2>
+			<title>Retrieving the entry's DN</title>
+			<para>
+				You can retrieve the DN of an entry by using the method <literal>getDN</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-entry-getdn.php.xml"/>
+			</para>
+			<para>
+				The output for this example could be:
+				<programlisting>
+cn=Luke Skywalker, ou=people, dc=example, dc=com
+				</programlisting>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Reading and writing attributes</title>
+			<para>
+				The class <literal>weeLDAPEntry</literal> implements the <ulink url="http://php.net/manual/class.arrayaccess.php">ArrayAccess interface</ulink>.
+			</para>
+			<para>
+				You can perform operations on attributes like you usually do with an array.
+				An attribute is identified by its name and its values.
+				When accessing an attribute you will always receive an array even if there is only one value for the specified attribute.
+				The array is a numbered list, with 0 being the first element.
+			</para>
+			<para>
+				This example shows how to access the attributes of the entry <literal>cn=Luke Skywalker, ou=people, dc=example, cd=com</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-entry-read.php.xml"/>
+			</para>
+			<para>
+				The output for this example could be:
+				<programlisting>
+surname: Skywalker
+tel: 5555-1234
+mob: 5555-5678
+				</programlisting>
+			</para>
+			<para>
+				You can also use <literal>foreach</literal> to list all the values for an attribute.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-entry-attr-foreach.php.xml"/>
+			</para>
+			<para>
+				To change the value of an entry, you must set an array.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-entry-write.php.xml"/>
+			</para>
+			<para>
+				This means that if you only wish to do a minor modification you have to
+				first retrieve the attribute, then change the array and then set it back into the entry.
+			</para>
+			<para>
+				Note that <literal>$oEntry['attributeName']</literal> array must be an array
+				containing consecutive integers as indexes, starting with 0,
+				if you want to be able to apply modifications on the server.
+			</para>
+			<para>
+				To apply the modifications in the directory, you must then call the method <literal>update</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-entry-update.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Iterating over the entry's attributes</title>
+			<para>
+				The class <literal>weeLDAPEntry</literal> implements the <ulink url="http://php.net/manual/class.iterator.php">Iterator interface</ulink>.
+				You can iterate over the attributes entries, like you would do with an array.
+				The key is the attribute's name and the value is represented as an array of values.
+			</para>
+			<para>
+				This example demonstrate how to iterate over the attributes of an entry:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ldap-entry-foreach.php.xml"/>
+			</para>
+			<para>
+				A part of the output for this example could be:
+				<programlisting>
+Current attribute: objectClass
+Values:
+Array
+(
+	[0] => person
+	[1] => organizationalPerson 
+	[2] => inetOrgPerson 
+)
+				</programlisting>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Converting to an array</title>
+			<para>
+				The class <literal>weeLDAPEntry</literal> implements the <literal>Mappable</literal> interface.
+				It allows you to retrieve all the attributes of the entry as an array by calling the method <literal>toArray</literal>.
+				The array has the same structure as the entry when you access it like an array.
+				It's mostly useful when you need to do array operations on your attributes (since you can't on <literal>ArrayAccess</literal> objects).
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

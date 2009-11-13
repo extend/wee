@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<formkey>0</formkey>
+	<method>post</method>
+
+	<widgets>
+		<widget type="fieldset">
+			<widget type="hidden" action="update">
+				<name>user_id</name>
+				<label>User ID</label>
+			</widget>
+
+			<widget type="textbox">
+				<name>user_name</name>
+				<label>Username</label>
+			</widget>
+
+			<widget type="textbox">
+				<name>user_email</name>
+				<label>Email</label>
+			</widget>
+
+			<widget type="checkbox">
+				<name>user_email_private</name>
+				<label>Keep email private</label>
+			</widget>
+
+			<widget type="choice">
+				<name>profile_id</name>
+				<label>Profile</label>
+				<options>
+					<item label="Administrator" value="ADM"/>
+					<item label="Moderator" value="MOD"/>
+					<item label="User" value="USR"/>
+				</options>
+			</widget>
+
+			<widget type="fieldset">
+				<class>buttonsfieldset</class>
+				<widget type="submitbutton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>

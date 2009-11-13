@@ -1,0 +1,3 @@
+<?php
+
+$oOutput = new weeXHTMLOutput;

@@ -1,0 +1,8 @@
+db.host		= localhost
+db.user		= wee
+db.password	= wee
+db.dbname	= wee_tests
+
+$(os Darwin).on_darwin = 1
+
+include ./another_config_file.cnf

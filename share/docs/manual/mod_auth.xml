@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_auth">
+	<title>Authentication module</title>
+
+	<para>
+		<ulink url="http://en.wikipedia.org/wiki/Authentication">Authentication</ulink> is the act of confirming the identity of an individual.
+		Although it can have many uses, you will mainly need to use it to identify the users of your application when they log in
+		or perform an action requiring the confirmation of their identity (like accessing the administration panel of your application).
+	</para>
+	<para>
+		Authentication usually requires the individual to communicate its identifier and an associated password.
+		The identifier can be anything, ranging from a pseudonym, an email address, or an ID number.
+		An authentication request is only valid if the identifier and the password matches the ones stored in the authentication server.
+	</para>
+	<para>
+		Note that the authentication mechanisms expects identifiers to be unique in the authentication server.
+	</para>
+
+	<sect1 id="mod_auth_dbtable">
+		<title>Database table driver</title>
+		<para>
+			The database table authentication driver allows you to authenticate users against fields in a table from a database.
+			This is especially useful if you have a table containing information, including credentials, for all users of your application.
+		</para>
+		<para>
+			Assuming you want to authenticate against a table named <literal>users</literal> containing the identifier field
+			<literal>user_email</literal> and the password field <literal>user_password</literal>, you can use the following code:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/auth-dbtable.php.xml"/>
+		</para>
+		<para>
+			As you can see, an <literal>AuthenticationException</literal> is thrown when authentication fails.
+			This allows you to easily detect it and act upon it if you need it.
+			And if you don't need to, you don't even have to catch it.
+		</para>
+		<para>
+			When the authentication succeeds, an array is returned that contains
+			all the information returned by the authentication server about the user.
+			This effectively equals a row of the <literal>users</literal> table, in our example.
+		</para>
+		<para>
+			The default treatment applied to the password is <literal>sha1</literal>.
+			This can be changed by specifying the <literal>password_treatment</literal> parameter to the constructor.
+			This allows you to store the password in other forms as needed.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_auth_ldap">
+		<title>LDAP driver</title>
+		<para>
+			The LDAP authentication driver allows you to authenticate users against
+			entries in an <ulink url="http://wee.extend.ws/wiki/Documentation/Modules/LDAP">LDAP directory</ulink>.
+			The attribute used as the identifier is the <literal>common name (cn)</literal>.
+		</para>
+		<para>
+			This driver works similarly to the database table driver.
+			The only difference is that you only have to pass the <literal>weeLDAP</literal> object and the <literal>base dn</literal> where the users are stored.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/auth-ldap.php.xml"/>
+		</para>
+		<para>
+			<literal>weeAuthLDAP::authenticate</literal> checks if the common name <emphasis>Luke Skywalker</emphasis>
+			exists in the DN <literal>ou=people, dc=example, dc=com</literal> and that the password specified match
+			the password of the entry <literal>cn=Luke Skywalker, ou=people, dc=example, dc=com</literal>.
+			If authentication fails, an <literal>AuthenticationException</literal> is thrown.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_auth_hash">
+		<title>Hash-based authentication</title>
+		<para>
+			Sometimes you might need to authenticate against hash representations of the individual's credentials.
+			For example, you might want to store the credentials in the cookies of the browser
+			so that authentication can be performed automatically without requiring the individual's input.
+		</para>
+		<para>
+			Sending the identifier in clear is not a concern.
+			However, sending the password as it is stored directly in the database is more dangerous.
+			An attacker could retrieve it and eventually guess the password
+			(the easiness of this operation depends both on the password and on the hash algorithm).
+			To prevent this, we first concatenate the <literal>MAGIC_STRING</literal> constant to the password and then we hash it.
+			This effectively helps preventing an attacker from retrieving the password by breaking the encryption. This process is known as salting.
+		</para>
+		<para>
+			The hash method can be the same or a different method than the one used to store the password in the database.
+		</para>
+		<para>
+			All authentication drivers provides two methods for this purpose: <literal>hash</literal> and <literal>authenticateHash</literal>.
+			The following code demonstrate the hashing of the password and the authentication using this hashed password.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/auth-hash.php.xml"/>
+		</para>
+		<para>
+			Note that we generate a hash based on the password as stored inside the authentication server.
+			This means that a treatment may have already been applied to it.
+			By hashing it again with a salt, we ensure that the original hash and the original password cannot be guessed.
+		</para>
+		<para>
+			You cannot generate a hash based on the clear-text password, unless you store it in clear-text in the authentication server, which is strongly discouraged.
+		</para>
+		<para>
+			The default treatment applied when hashing is <literal>sha1</literal>.
+			This, too, can be changed by specifying the <literal>hash_treatment</literal> parameter to the constructor.
+		</para>
+	</sect1>
+</chapter>

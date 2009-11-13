@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="introduction">
+	<title>Introduction</title>
+	<para>
+		Web:Extend is an open source PHP5 framework focused on ease of use and efficiency. It is licensed under the LGPL.
+		The main contributor of the project is the company <ulink url="http://dev-extend.eu">Dev:Extend</ulink>.
+	</para>
+
+	<sect1 id="introduction_philosophy">
+		<title>Philosophy</title>
+		<para>
+			The development team tries to apply the following philosophy whenever possible.
+		</para>
+
+		<sect2>
+			<title>Simplicity</title>
+			<para>
+				<ulink url="http://en.wikipedia.org/wiki/Simplicity">Simplicity</ulink> is the property,
+				condition, or quality of being simple or un-combined. It often denotes beauty, purity or clarity.
+				Simple things are usually easier to explain and understand than complicated ones.
+				Simplicity can mean freedom from hardship, effort or confusion.
+			</para>
+			<para>
+				In other words, a developer who uses Web:Extend should be able to translate her project's
+				requirements into a finished application with the least thinking and writing needed.
+				Ideally, the developer should not have to worry about anything other than the project's requirements.
+				The tools she use should be easy to use and understand.
+				They also should get out of the way to let her get the work done.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Small and efficient framework</title>
+			<sect3>
+				<title>Passive view MVC</title>
+				<para>
+					The framework gives you the possibility to use a variant of the MVC pattern.
+					This variant is explained in details by <ulink url="http://martinfowler.com">Martin Fowler</ulink>
+					in his <ulink url="http://martinfowler.com/eaaDev/PassiveScreen.html">passive view article</ulink>.
+					It is designed to enhance testability, but it also gives a much simpler approach to MVC.
+					The passive view receives data from the controller and renders the page. That's it.
+					The passive view do not need to access the model or the controller. <link linkend="mod_app_mvc">Read more about the MVC architecture...</link>
+				</para>
+			</sect3>
+			<sect3>
+				<title>Minimal interface</title>
+				<para>
+					The framework is designed as a <ulink url="http://martinfowler.com/bliki/MinimalInterface.html">Minimal Interface</ulink>.
+					This means classes will only have methods that are strictly needed for its purpose.
+					This allows you to learn it much more easily because classes are small and go to the point.
+					We sometimes also add convenience methods when there's a noticeable pattern in the class use.
+				</para>
+			</sect3>
+			<sect3>
+				<title>Write less but better code</title>
+				<para>
+					By keeping things simple, the framework helps you write better code.
+					We think the developer should be able to create an application with very few lines of code.
+					You should not have to handle technicalities, the framework can do it for you.
+				</para>
+			</sect3>
+			<sect3>
+				<title>Automating security where possible</title>
+				<para>
+					We think the developer shouldn't have to worry about security.
+					It's the job of the framework to make sure the application is secure.
+					This can be enforced by adding various checks and security measures
+					inside the framework, along with a set of recommendations.
+					We also provide information about the various security issues that can arise directly in the documentation.
+				</para>
+			</sect3>
+			<sect3>
+				<title>Loose coupling</title>
+				<para>
+					Each module of the framework is loosely coupled.
+					This means you can choose to use any module you want.
+					If you don't want to use the MVC architecture, you don't have to.
+					You can directly access the database instead of using models,
+					or you can write a script using only the database and mail modules to send emails to all your users.
+					You are free to use the code the way you want to, without any restriction.
+					And if you find out you can't do that for some reason, you should consider reporting it as a bug.
+				</para>
+			</sect3>
+			<sect3>
+				<title>No bloat</title>
+				<para>
+					Bloat is not exactly the opposite of simplicity, but it's certainly
+					one of the causes leading to complexity in a lot of softwares.
+					We think bloat is bad. Bloat can happen for various reasons:
+						following trends to look cool,
+						focusing on adding features for only a small subset of users,
+						generating code automatically,
+						adding features already available by other means,
+						etc.
+					That's something we can promise to never do.
+					You might think generating code is a good thing,
+					well maybe it is, but we think we have a better solution.
+					And for everything else, there will be plugins.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Developers, developers, developers</title>
+			<para>
+				We think the developers (the users of our product) are the most important people in the world.
+				Therefore we always listen carefully to their inputs and provide help whenever possible.
+				You can find help by contacting us directly, through a mailing list, IRC,
+				but also by opening tickets asking for more documentation or tutorials.
+			</para>
+			<para>
+				We also need your help.
+				Please forward us comments or suggestions so we can improve the product.
+				We are listening.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="introduction_goals">
+		<title>Goals</title>
+		<para>
+			Web:Extend was officially created in 2006.
+			Work began in 2005 on various modules that would lead to the creation of the framework.
+			The goal at the time was to make a form generator to simplify form handling and validation.
+			This form generator was rewritten 3 times up to this day,
+			leading to the current implementation that uses XSL stylesheets to transform an XML into HTML,
+			along with <ulink url="http://php.net/simplexml">SimpleXML</ulink> for manipulation and validation.
+		</para>
+		<para>
+			Web:Extend was created because no framework used all the power of PHP5 at the time.
+			We believe it's still true today. Most of the power of PHP5 comes from the
+			<ulink url="http://php.net/spl">SPL</ulink> and from the SimpleXML extensions.
+			Interfaces like <ulink url="http://php.net/iterator">Iterator</ulink> or
+			<ulink url="http://php.net/arrayaccess">ArrayAccess</ulink> simplify everything.
+			That's why we use them everywhere it makes sense to.
+		</para>
+		<para>
+			The current goals are:
+			<itemizedlist>
+				<listitem><para>To provide a simple, consistent but also powerful API for common operations</para></listitem>
+				<listitem><para>To reduce the development times using the framework</para></listitem>
+				<listitem><para>To build a high-performance application framework</para></listitem>
+				<listitem><para>To allow extensibility through a simple-to-use plugin system</para></listitem>
+				<listitem><para>To enhance security through the inclusion of automated prevention mechanisms</para></listitem>
+				<listitem><para>To write great resources around it including documentation and tutorials</para></listitem>
+			</itemizedlist>
+		</para>
+	</sect1>
+</chapter>

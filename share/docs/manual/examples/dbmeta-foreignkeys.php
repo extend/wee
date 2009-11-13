@@ -1,0 +1,3 @@
+<?php
+
+$aForeignKeys = $oTable->foreignKeys();

@@ -1,0 +1,3 @@
+<?php
+
+weeApp()->mydriver->myMethod();

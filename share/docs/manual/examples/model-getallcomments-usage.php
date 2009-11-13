@@ -1,0 +1,3 @@
+<?php
+
+$aComments = $oModel->getAllComments();

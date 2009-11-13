@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_validators">
+	<title>Validators module</title>
+	<para>
+		In Web:Extend, there is <emphasis>Web</emphasis>.
+		The Web is a marvelous world, but every single bit of user-supplied data should be treated as a possible threat for humans,
+		capable of triggering a black hole in the heart of the <ulink url="http://www.hasthelhcdestroyedtheearth.com">LHC</ulink>.
+		We can't trust the user, so we have to validate data.
+		An user could enter bad information by mistake that would trigger errors everywhere in your application.
+		Or a malicious attacker could send specifically crafted data in an attempt to take the control of your system.
+		To protect yourself and your applications, Web:Extend provides a number of validators that should cover all of your common needs.
+	</para>
+	<para>
+		Every validator inherits from <literal>weeValidator</literal>.
+		To use a validator, you first need to construct it with some arguments (they can vary depending on the validator)
+		and attach a value to it through the <literal>setValue</literal> method.
+		Then, calling the <literal>hasError</literal> method will return whether the data is <emphasis>invalid</emphasis>.
+		If the data is invalid, you can call <literal>getError</literal> to retrieve a description of the error.
+	</para>
+	<para>
+		For convenience, a static method <literal>test</literal> is also available.
+		This method takes the value to be validated and the validator arguments and returns whether the value is <emphasis>valid</emphasis>.
+		Note the difference between the <literal>test</literal> method and the <literal>hasError</literal> method.
+	</para>
+	<para>
+		There exists two types of validators: standard validators, allowing you to test variables directly;
+		and form validators, allowing you to test data associated with a <link linkend="mod_form">form</link>.
+	</para>
+	<para>
+		The following table lists the standard validators available in the framework:
+		<table>
+			<title>Standard validators</title>
+			<tgroup cols="2">
+				<thead>
+					<row>
+						<entry>Name</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry><literal>weeBigNumberValidator</literal></entry>
+						<entry>
+							A number validator like <literal>weeNumberValidator</literal>, but not affected by PHP's limitations on number size.
+							Use this validator when you expect some values to be bigger than PHP's variable limit (e.g. <literal>MAX_INT</literal> for integers).
+						</entry>
+					</row>
+					<row>
+						<entry><literal>weeDateValidator</literal></entry>
+						<entry>Checks if a date is valid. The date format must be <literal>YYYY-MM-DD</literal>, e.g. <literal>1987-10-29</literal> for October 29th, 1987.</entry>
+					</row>
+					<row>
+						<entry><literal>weeEmailValidator</literal></entry>
+						<entry>Checks if an email address is well-formed.</entry>
+					</row>
+					<row>
+						<entry><literal>weeNumberValidator</literal></entry>
+						<entry>Checks if the given value is a correct number. It can check for integers and floats and restrict them to a specific range.</entry>
+					</row>
+					<row>
+						<entry><literal>weeStringValidator</literal></entry>
+						<entry>
+							Checks if the given input is a correct string according to the arguments.
+							The input must be a string, or an instance of <literal>Printable</literal>, or an object with a callable <literal>__toString()</literal> method.
+						</entry>
+					</row>
+					<row>
+						<entry><literal>weeTimeValidator</literal></entry>
+						<entry>Checks if the given input is a correct time. The time format must be <literal>HH:mm</literal>, e.g. <literal>00:00</literal> for midnight.</entry>
+					</row>
+					<row>
+						<entry><literal>weeURLValidator</literal></entry>
+						<entry>Checks if the given input is a correct URL.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+	</para>
+
+	<sect1 id="mod_validators_usage">
+		<title>Usage</title>
+		<para>
+			As shown before, you need to use <literal>weeStringValidator</literal> to validate a string.
+			You need to give him a few arguments, because this validator is almost as useful without arguments as a stagecoach without horses.
+			You can use this validator when you need to verify some constraints about the input length.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-string.php.xml"/>
+		</para>
+		<para>
+			On the other hand, some validators do not require any argument, like the email validator <literal>weeEmailValidator</literal>.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-email.php.xml"/>
+		</para>
+		<para>
+			All validators have default error messages.
+			These messages can be modified by passing adequate arguments to the validators.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-error.php.xml"/>
+		</para>
+		<para>
+			Furthermore, the error messages related to a specific argument can refer to its value.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-error-value.php.xml"/>
+		</para>
+		<para>
+			If you don't care about the error message because you only want to know whether your input is valid,
+			you can use the static <literal>test</literal> shortcut method of your validator.
+			Every standard validator implements this method.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-test.php.xml"/>
+		</para>
+		<para>
+			As in practice nearly all failed validations lead to a failure somewhere,
+			it is good practice to use the <literal>test</literal> method in conjunction with the <emphasis>test or burn</emphasis> idiom.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-test-or-burn.php.xml"/>
+		</para>
+		<para>
+			This will throw an <literal>UnexpectedValueException</literal> if the validation fails.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_validators_form">
+		<title>Form validators</title>
+		<para>
+			There exists a special type of validators that are meant to be used alongside with the <link linkend="mod_form">forms module</link>.
+			These validators inherit from <literal>weeFormValidator</literal> and implement a special function
+			that is used by the form to communicate additional information that will be used to validate the value.
+		</para>
+		<para>
+			The form module will call the <literal>setFormData</literal> method before trying to validate the value.
+			This method takes two arguments:
+			<itemizedlist>
+				<listitem><para>the SimpleXMLElement object representating the form</para></listitem>
+				<listitem><para>the full data array that has been sent using the form</para></listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			The validator can use these information to validate the value against other values or against the form itself.
+			For example, <literal>weeOptionValidator</literal> will use this information to ensure that the value sent
+			is present in the options of its associated <literal>select</literal> widget.
+			<literal>weeConfirmValidator</literal> will ensure that the value sent is identical to another of the values sent by the form,
+			allowing you to easily check that a value has been entered correctly by asking the user to type it twice.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_validators_custom">
+		<title>Custom validators</title>
+		<para>
+			To write a custom validator, you need to extend <literal>weeValidator</literal>.
+			This class contains an abstract method <literal>isValidInput</literal> which should return a boolean
+			telling whether its argument is a valid input for the validator.
+			This method is called by the default implementation of <literal>validate</literal>
+			that reports an <emphasis>invalid</emphasis> error if the returned value is <literal>false</literal>.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-uuid.php.xml"/>
+		</para>
+		<para>
+			Validation logic involving arguments should go in the <literal>validate</literal> method.
+			The <literal>aArgs</literal> property can be used to set default values for the various arguments;
+			the <literal>aErrors</literal> one serves the same purpose for the default error messages.
+			Arguments values should be checked at the beginning of the constructor.
+		</para>
+		<para>
+			Here is a simple validator which checks whether a given input is an integer
+			and whether it is a prime number if the <literal>prime</literal> argument is true.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/validators-integer.php.xml"/>
+		</para>
+	</sect1>
+</chapter>

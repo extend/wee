@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_l10n">
+	<title>Localization module</title>
+	<para>
+		As you already know, Web:Extend provides you with <link linkend="core_nls">translation functions</link> directly in the core of the framework.
+		You also know that we recommend using the <ulink url="http://php.net/intl">intl PHP extension</ulink> to internationalize your application.
+		This set of tools is pretty much all you need to make your application available to any culture.
+	</para>
+	<para>
+		However, we felt the need to provide you with another class.
+		A task someone must do often when writing an international application is select the locale to use.
+		This can be based off the browser's HTTP headers or on the URL that was entered.
+		This class helps you by automatically detecting both and choosing the correct language.
+		The class can be used as an application driver, which means it can be auto started with each request and will do its job without you having to worry about it.
+	</para>
+	<para>
+		To enable the use of this class as an application driver, and start it automatically, simply put the following in your configuration file:
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/l10n-autostart.cnf.xml"/>
+	</para>
+	<para>
+		This will also select the locale according to the HTTP headers, if possible.
+		Otherwise the default locale will be set using <ulink url="http://php.net/manual/en/locale.setdefault.php">locale_set_default</ulink>.
+	</para>
+
+	<sect1 id="mod_l10n_map">
+		<title>Locale map</title>
+		<para>
+			This class will try to determine the locale by itself when you give a two letter language code.
+			For example, if you give <literal>fr</literal> to any of the following method,
+			it will use the locale <literal>fr_FR</literal>. If you give <literal>en</literal> it will use <literal>en_US</literal>.
+		</para>
+		<para>
+			You can extend the number of accepted languages simply by extending <literal>weeLocale</literal>
+			and adding values to the <literal>$aLocaleMap</literal> property.
+			About 30 different languages are defined currently.
+			If an important language is missing, please report it.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_l10n_http_headers">
+		<title>Locale selection based on the HTTP headers</title>
+		<para>
+			This method is automatically played in the constructor if you give the <literal>auto</literal> parameter.
+			When using the class as an application driver, simply put <literal>locale.auto = 1</literal> in the configuration file.
+		</para>
+		<para>
+			It will use the <ulink url="http://php.net/manual/en/locale.acceptfromhttp.php">locale_accept_from_http function</ulink> to try to determine the locale.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_l10n_url">
+		<title>Locale selection based on the URL</title>
+		<para>
+			When you start automatically the class as an application driver,
+			the application will use it when it translate the request into an event
+			to determine if a language has been defined in the URL.
+			<literal>weeLocale</literal> will check the beginning of the URL for a language identifier,
+			and if it finds one, select the associated locale and strip the language code from the URL.
+		</para>
+		<para>
+			For example if you have the URL <literal>http://example.org/fr/articles</literal>,
+			the application will set the locale to <literal>fr_FR</literal>
+			and change the working URL to <literal>http://example.org/articles</literal> for further operations.
+		</para>
+		<para>
+			If you have the URL <literal>http://example.org/en/</literal>,
+			the application will set the locale to <literal>en_US</literal>
+			and change the working URL to <literal>http://example.org/</literal>
+			and thus will send the event to the default frame.
+		</para>
+		<para>
+			If no language code is found, the URL is left unmodified.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_l10n_manual">
+		<title>Manual locale selection</title>
+		<para>
+			You can also set the locale manually.
+			To this end, you can use the method <literal>set</literal>.
+			For example, to set the locale to french, use:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/l10n-set-fr-full.php.xml"/>
+		</para>
+		<para>
+			Or better yet, use the language code:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/l10n-set-fr-abbr.php.xml"/>
+		</para>
+		<para>
+			The default codeset is UTF-8. If you need another codeset (for chinese, for example), you can give a second parameter to the method:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/l10n-set-zh-utf16.php.xml"/>
+		</para>
+		<para>
+			Some locales accept a modifier.
+			For example there is a modifier to add the euro symbol EUR to some locales.
+			You can give a third parameter to specify a modifier:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/l10n-set-it-88591-euro.php.xml"/>
+		</para>
+		<para>
+			You may want to read the <ulink url="http://php.net/setlocale">setlocale documentation</ulink> for more information about locales in PHP.
+		</para>
+	</sect1>
+</chapter>

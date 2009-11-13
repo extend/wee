@@ -1,0 +1,3 @@
+<?php
+
+$bHasDefault = $oColumn->hasDefault();

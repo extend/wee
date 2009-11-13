@@ -1,0 +1,431 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_db">
+	<title>Database access layer module</title>
+	<para>
+		Web:Extend provides an unified interface to various databases, including MySQL, PostgreSQL, SQLite and Oracle.
+		The unified interface allows you to access any of these database using the same PHP code,
+		meaning you only have to learn it once in order to use it everywhere.
+	</para>
+	<para>
+		Note however that the database access layer is <emphasis>not</emphasis> an ORM.
+		Web:Extend lets you access the database directly and does not prevent you to use functionality that only exists in one of the DBMS.
+		You are entirely free to use <ulink url="http://www.postgresql.org/docs/8.3/static/arrays.html">PostgreSQL's arrays</ulink>
+		or <ulink url="http://dev.mysql.com/doc/refman/5.1/en/set.html">MySQL's sets</ulink>.
+		This means you can freely use the full power of your DBMS.
+	</para>
+	<para>
+		The database access layer provides an easy-to-use interface to your database.
+		There is only four types of objects: the database object, the result set object, the row object and the prepared statement object.
+		Both the database and the prepared statement objects are used to query the database,
+		while the result set and the row objects are used to handle the results of <literal>SELECT</literal> queries.
+	</para>
+	<para>
+		Handling results is really easy: the result set is an iterator, meaning you can use <literal>foreach</literal> directly on the object, like if it was an array of rows.
+		Similarly, the row object acts like an array by implementing <literal>ArrayAccess</literal>.
+		Note however that by default the rows are returned as arrays.
+	</para>
+
+	<sect1 id="mod_db_connection">
+		<title>Connection</title>
+		<para>
+			You can connect to a database either manually or using the application module.
+			This chapter will explain both ways.
+		</para>
+
+		<sect2>
+			<title>With the application module</title>
+			<para>
+				You only need to modify the configuration file in order to connect to a database.
+				You only need to fill the connection settings that will be used to connect to the database when you first try to access it.
+				Note that the framework will never connect to the database until you need it.
+				If your script use the application module but do not access the database, it will not try to connect.
+			</para>
+			<para>
+				The parameters can vary depending on the database driver.
+				This chapter will explain how to connect to a PostgreSQL database.
+				Examples may vary depending on the DBMS used.
+			</para>
+			<para>
+				There is 5 parameters: the database driver used, the hostname, login name, password, and database name.
+				The last 4 are common when connecting to a database.
+				The first parameter is the name of the class used to access the database,
+				and can be either of <literal>weePgSQLDatabase</literal> for <ulink url="http://www.postgresql.org">PostgreSQL</ulink>,
+				<literal>weeMySQLDatabase</literal> or <literal>weeMySQLiDatabase</literal> for <ulink url="http://www.mysql.com">MySQL</ulink>,
+				or any other driver available.
+			</para>
+			<para>
+				You need to modify the following parameters in the configuration file:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-app-configuration.cnf.xml"/>
+			</para>
+			<para>
+				Once the application is started you can access your database using <literal>weeApp()->db</literal>
+				and start writing <link linkend="mod_db_query">queries</link>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Without the application module</title>
+			<para>
+				To connect without the application module you need to create the database driver yourself.
+				It takes an <ulink url="http://php.net/manual/en/language.types.array.php">associative array</ulink> containing the settings as a parameter.
+				The parameters are the same 4 we already discussed, except their name do not include the <literal>db.</literal> part.
+				This is demonstrated by the following example, where we connect to a PostgreSQL database:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-connection-no-app.php.xml"/>
+			</para>
+			<para>
+				You can then use the <literal>$oDb</literal> object to perform <link linkend="mod_db_query">queries</link> on your database.
+			</para>
+			<para>
+				Please note that some drivers may not require all these settings defined, or require totally different settings.
+				Please refer to the documentation for your database driver before trying to connect.
+				There might also be optional, driver-specific settings that are documented in the drivers documentation.
+			</para>
+
+			<sect3>
+				<title>Closing the connection</title>
+				<para>
+					You usually shouldn't need to close the connection, since PHP will close it at the end of the script's execution.
+					But you might consider closing it yourself, if you are running a time-intensive or memory-intensive script
+					and you do not need to have a connection open the whole time, to free up resources.
+					You can do it by simply using <ulink url="http://php.net/unset">unset</ulink> on the database object, as in:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-closing-connection.php.xml"/>
+				</para>
+				<para>
+					This will effectively destroy the database object and close the connection.
+				</para>
+				<para>
+					Note however that it is not possible to close the connection manually at this time using the application module.
+				</para>
+			</sect3>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_db_query">
+		<title>Query</title>
+		<para>
+			Once you are connected to the database you can start executing SQL queries.
+			This section explains how to directly query the database.
+			For <link linkend="mod_db_statements">prepared statements</link>, please see the corresponding section.
+		</para>
+		<para>
+			If you are not using the application framework, you can replace <literal>weeApp()->db</literal> by your database object for the examples in this chapter.
+		</para>
+		<para>
+			You can query a database in various ways using Web:Extend.
+			The following diagram summarizes the various methods discussed in this section:
+			<screenshot>
+				<screeninfo>Database query methods</screeninfo>
+				<mediaobject>
+					<imageobject><imagedata fileref="dia/db-query.png" format="PNG"/></imageobject>
+					<textobject><phrase>Database query methods</phrase></textobject>
+					<caption><para>Database query methods</para></caption>
+				</mediaobject>
+			</screenshot>
+		</para>
+
+		<sect2>
+			<title>The <literal>query</literal> method</title>
+			<para>
+				You can write queries by using the <literal>query</literal> method of the <literal>weeDatabase</literal> object.
+				If we wanted to fetch the last 5 articles from the table <literal>articles</literal>, that is how we would do it:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-query-simple.php.xml"/>
+			</para>
+			<para>
+				It's pretty straightforward. <literal>query</literal> lets you write any SQL queries without restriction.
+				You could write standard SQL or write database-dependent SQL without having the framework complain.
+				But let's face it, most queries need parameters.
+			</para>
+			<para>
+				There are two methods to bind parameters to query automatically.
+				You can use either question marks (<literal>?</literal>) or named parameters placeholders in your query,
+				and give the parameters directly to the <literal>query</literal> method.
+				Using each of these two methods your parameters are escaped automatically without you
+				having to worry about <ulink url="http://en.wikipedia.org/wiki/SQL_injection">SQL Injections</ulink>.
+			</para>
+			<para>
+				You can of course build a query with parameters manually.
+				However it is not recommended, and there's a few things to know when doing this that we will describe.
+				The preferred solution is using named parameters.
+			</para>
+
+			<sect3>
+				<title>Named parameters</title>
+				<para>
+					Using named parameters is easy.
+					You just have to use names preceded by a colon, like <literal>:id</literal>, <literal>:parameter</literal>,
+					<literal>:art_date</literal>, or even numbers like <literal>:3</literal> in the query,
+					and then pass an associative array as the second argument to the <literal>query</literal> method.
+					The array will contain the names without the colon as keys, like <literal>id</literal>,
+					<literal>parameter</literal>, <literal>art_date</literal>, <literal>3</literal>, and their respective associated values.
+				</para>
+				<para>
+					For example let's fetch the article number 3 from our articles table:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-query-np1.php.xml"/>
+				</para>
+				<para>
+					Or if we assume that your frame is waiting for an <literal>id</literal> parameter using <literal>GET</literal>,
+					you can simply type the following line without bothering whether the <literal>id</literal> parameter exists
+					or whether there's other values in the <literal>$_GET</literal> array.
+					The `query` method will just look for the <literal>id</literal> value, and if absent trigger an exception.
+					But even if doing this is possible, it is recommended to filter the input
+					before passing the <literal>$_GET</literal> array to the <literal>query</literal> method.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-query-np2.php.xml"/>
+				</para>
+			</sect3>
+			<sect3>
+
+				<title>Question mark placeholders</title>
+				<para>
+					Another method is to use question marks instead of named parameters.
+					This might come in handy when you do simple queries with one or two parameters only.
+					Instead of passing an associative array to the <literal>query</literal> method,
+					you will give values directly after the query. Let's see with an example:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-query-qm.php.xml"/>
+				</para>
+				<para>
+					The first parameter will replace the first placeholder, the second parameter will replace the second placeholder, and so on.
+				</para>
+				<para>
+					Beware of using this method: you must give a parameter two times if it appears in two places in the query.
+					If that happens or if the query uses a lot of parameters, please use the named parameters method.
+				</para>
+			</sect3>
+			<sect3>
+				<title>Manual query build</title>
+				<para>
+					You can also use the old way of building queries: by concatening yourself strings and values.
+					This method is dangerous because the framework can't protect your queries from SQL injections.
+					You should be very careful while doing this, and ensure that you always call the <literal>escape</literal> method for each parameter.
+					Here's an example:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-query-manual.php.xml"/>
+				</para>
+				<para>
+					One more time, you shouldn't do this unless you have no other choices.
+					If you stumble upon a case where you must do this, please submit a ticket
+					and we'll try to enhance the framework so you won't have to do it next time.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>The <literal>queryValue</literal> method</title>
+			<para>
+				Sometimes you run a query only to retrieve a unique row which has only one column, for example to retrieve the count of a table.
+				<literal>queryValue</literal> is a convenience method to facilitate using these values.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-queryvalue.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the last primary key ID created</title>
+			<para>
+				After executing an <literal>INSERT</literal> query, you might need to retrieve an identifier for the row you just inserted.
+				You can do so by calling the <literal>getPKId</literal> method.
+				Depending on the driver this method will require a parameter: the name of the sequence for this primary key.
+			</para>
+			<para>
+				This is an example for MySQL:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-getpkid-mysql.php.xml"/>
+			</para>
+			<para>
+				And the same example for PostgreSQL:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-getpkid-pgsql.php.xml"/>
+			</para>
+			<para>
+				With <literal>art_id_seq</literal> the name of the sequence associated with this column.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the number of affected rows</title>
+			<para>
+				You might also want to check the number of affected rows after executing
+				an <literal>INSERT</literal>, <literal>UPDATE</literal> or <literal>DELETE</literal> statement.
+				Reasons might be because you want to check your query was executed successfully.
+				You can call the <literal>numAffectedRows</literal> method to retrieve this number.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-numaffectedrows.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_db_results">
+		<title>SQL results</title>
+		<para>
+			When you execute a <literal>SELECT</literal> statement with the <literal>query</literal> method,
+			a <literal>weeDatabaseResult</literal> will be returned. It allows you to retrieve the results of the query.
+		</para>
+		<para>
+			We can obtain a <literal>weeDatabaseResult</literal> object by running the following code:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-query-simple.php.xml"/>
+		</para>
+		<para>
+			If you are not using the application framework, you can replace <literal>weeApp()->db</literal> by your database object.
+		</para>
+		<para>
+			Let's now see what we can do with those results.
+		</para>
+
+		<sect2>
+			<title>Counting rows</title>
+			<para>
+				<literal>weeDatabaseResults</literal> implements the <literal>Countable</literal> interface.
+				This interface makes us define a method, <literal>count</literal>, that returns an integer.
+				In the case of a database query results, it will be the number of rows returned.
+				The <literal>Countable</literal> interface allows us to give objects to the <literal>count($var)</literal> PHP function.
+				The function will then call the method <literal>count</literal> and return the resulting value.
+				See the <ulink url="http://php.net/count">count documentation</ulink> for more details.
+			</para>
+			<para>
+				This allows us to get the number of rows returned by the query by writing the following code:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-count-rows.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching rows</title>
+			<para>
+				Web:Extend provides 3 ways of fetching rows from a <literal>weeDatabaseResults</literal> object.
+			</para>
+
+			<sect3>
+				<title>The <literal>fetch</literal> method</title>
+				<para>
+					The method <literal>fetch</literal> method is mainly used when you are getting only 1 row back from your query,
+					which usually apply to all queries that includes an equivalent of the <literal>LIMIT 1</literal> statement.
+					<literal>fetch</literal> will throw an exception if there is no row to fetch, making it not appropriate for use for iterating through rows.
+				</para>
+				<para>
+					You can fetch a row using the following code:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-fetch.php.xml"/>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>The <literal>fetchAll</literal> method</title>
+				<para>
+					The method <literal>fetchAll</literal> method returns all the results as an array of associative arrays.
+					It can be useful if you want to process some data from the results before passing it to another function, like a template for display.
+				</para>
+				<para>
+					You can fetch all rows using the following code:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-fetchall.php.xml"/>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Using <literal>foreach</literal></title>
+				<para>
+					The last possibility to retrieve rows is to use the <literal>Iterator</literal> capabilities of the <literal>weeDatabaseResult</literal> object.
+					<literal>Iterator</literal> allows you to use <literal>foreach</literal> directly on the <literal>weeDatabaseResult</literal> object, like this:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-foreach.php.xml"/>
+				</para>
+				<para>
+					You might consider reading the <ulink url="http://php.net/manual/en/language.oop5.iterations.php">PHP5 foreach documentation</ulink>
+					to learn how it works and be more comfortable before you start using it.
+				</para>
+				<para>
+					Most of the times you will pass directly the <literal>$oResults</literal> object to your template for display.
+					Please read the <link linkend="mod_output_tpl">templates chapter</link> for more details
+					about the interaction between <literal>weeDatabaseResult</literal> and the template,
+					like the automated encoding of rows data, automagically preventing cross-scripting vulnerabilities.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2 id="mod_db_results_rowclass">
+			<title>Custom row class</title>
+			<para>
+				By default <literal>weeDatabaseResults</literal> returns an <ulink url="http://php.net/manual/en/language.types.array.php">associative array</ulink>
+				containing the names/values of the fetched row. It is possible to define a class that will store the row and provide additional functionality not available in a PHP array.
+			</para>
+			<para>
+				You can use the <literal>rowClass</literal> method to define the class that will store the rows data.
+				You can use any class, as long as the constructor takes one array parameter.
+				But Web:Extend also defines a base class for rows, <literal>weeDatabaseRow</literal>.
+				This class implements <literal>ArrayAccess</literal> and <literal>Iterator</literal> to make it act like an array when needed.
+				You can extend this class to add any method needed.
+				You could for example add a method that will format the row data to your liking.
+			</para>
+			<para>
+				When using <link linkend="mod_model">domain models</link>, you can use this method to automatically create instances of your model.
+			</para>
+			<para>
+				You only need to do this to change the row class used by the subsequent retrieval operations:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-rowclass.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_db_statements">
+		<title>Prepared statements</title>
+		<para>
+			Prepared statements are SQL statements that are only prepared once and then executed as many times as needed with different parameters.
+			The statement and the data are sent separately, helping prevent <ulink url="http://en.wikipedia.org/wiki/SQL_injection">SQL injection</ulink> vulnerabilities.
+			Their advantages and their possible uses may vary depending on the database driver you use.
+		</para>
+		<para>
+			Prepared statements increase performance by checking that the query is valid only the first time it is received.
+			If valid, the query will then be prepared so that it can be executed as fast as possible the subsequent times it is called.
+			However, since the statement and the data are sent separately (which is a good and safe practice),
+			this may create an overhead that will result in worse performance than sending queries directly.
+			You can only be sure a prepared statement will increase performance by benchmarking it in the context of your application.
+			However, you can be pretty sure a prepared statement will perform better if you have a thousand of the same <literal>INSERT</literal> query to execute in your script, for example.
+		</para>
+
+		<sect2>
+			<title>Initialization</title>
+			<para>
+				The database class of your driver allows you to create a prepared statement.
+				It will return an instance of <literal>weeDatabaseStatement</literal>
+				that you can use to execute the statement as many times as you need.
+				To obtain a prepared statement object and execute it, use the following:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-prepare.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Execution</title>
+			<para>
+				The statement object works pretty much like the database object itself.
+				It contains all the methods you need to interact with the prepared statement.
+			</para>
+			<para>
+				To execute a prepared statement, you need to call the <literal>execute</literal> method.
+				The return value obey the same rules as the <literal>weeDatabase::query</literal> method:
+				a <literal>weeDatabaseResult</literal> result object will be returned if the prepared statement is a <literal>SELECT</literal> query.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-prepare-return.php.xml"/>
+			</para>
+			<para>
+				As usual, you can chain the <literal>prepare</literal> and <literal>execute</literal> methods if needed.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-prepare-chain.php.xml"/>
+			</para>
+			<para>
+				If the query contains parameters, their values must be bound to the prepared statement through its <literal>bind</literal> method.
+				You should note that prepared statements only work with named parameters, as opposed with standard queries.
+				All database drivers use named parameters.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-prepare-parameters.php.xml"/>
+			</para>
+			<para>
+				Of course the execution of these two snippets is different, even if the result is the same, as was explained earlier.
+			</para>
+			<para>
+				The most common use of prepared statement is to create a query and then reuse it multiple times throughout your script.
+				This is most useful in the case of <literal>INSERT</literal> or <literal>UPDATE</literal> queries.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-prepare-common-use.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the number of affected rows</title>
+			<para>
+				When the prepared statement is an <literal>UPDATE</literal> or a <literal>DELETE</literal> query,
+				you can use the method <literal>numAffectedRows</literal> of the statement object
+				to retrieve the number of rows affected by the query like you would do with the database object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-prepare-numaffectedrows.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

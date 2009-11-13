@@ -1,0 +1,325 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_ui">
+	<title>UI module</title>
+	<para>
+		The goal of the <emphasis>user interface module</emphasis> is to create a set of reusable UI components.
+		The module itself defines two base classes and a few fully functional components,
+		with other components that will be made available as plug-ins.
+	</para>
+	<para>
+		The base class for UI components is <literal>weeUI</literal>.
+		It defines all the methods needed to write an UI component.
+		The other base class, <literal>weeContainerUI</literal>, inherits from <literal>weeUI</literal>
+		and define methods to act as a container of other UI components.
+		It is to be used whenever an UI component includes others inside itself.
+	</para>
+	<para>
+		All UI components share a similar design, made possible through the use of conventions.
+	</para>
+
+	<sect1 id="mod_ui_frames">
+		<title>UI frames</title>
+		<para>
+			You can change the template used by any UI frame by calling <literal>setTemplate</literal>.
+			This will replace both the base template and the prefix.
+			For example you could change the template of a <literal>weeFormUI</literal>
+			from <filename>app/tpl/ui/form</filename> to <filename>app/tpl/myform</filename> like this:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-settemplate.php.xml"/>
+		</para>
+		<para>
+			You can disable the taconite output of an UI frame during an AJAX call by using the method <literal>noTaconite</literal>.
+			It will output nothing automatically, even if the frame normally would output Taconite.
+		</para>
+		<para>
+			All UI frames also implement <link linkend="mod_app_routing_failsafe">fail-safe routing</link>.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_ui_containers">
+		<title>UI containers</title>
+		<para>
+			UI containers are frames that contain other UI frames.
+			They define methods to add new frames to the container and to access them.
+			They also define a default event that will simply give all the frames to the template.
+		</para>
+		<para>
+			All UI frames are identified uniquely using an identifier.
+			The identifier of a child frame is always the identifier of the parent frame plus a name appended.
+			For example the UI frame <literal>crud</literal> can have childs named
+			<literal>crud-index</literal>, <literal>crud-add</literal> or <literal>crud-anything</literal>.
+			The base of the identifier is obtained by calling <literal>getChildIdPrefix</literal>.
+		</para>
+		<para>
+			To add a new frame to a container, you can use the method <literal>addFrame</literal>.
+			This method expects the name of the child frame (without the prefix) along with the UI object.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-addframe.php.xml"/>
+		</para>
+		<para>
+			You can then use the method <literal>child</literal> to access the child frame.
+			Assuming we have an <literal>$oUI</literal> object for the frame implementing the above <literal>defaultEvent</literal>, we can do this:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-child.php.xml"/>
+		</para>
+		<para>
+			You can also chain the <literal>child</literal> calls,
+			in case the frame you need to use isn't a direct child of the object you already have access to.
+			For example:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-child-chain.php.xml"/>
+		</para>
+		<para>
+			You can disable the taconite output of all the child UI frames during an AJAX call by using the method <literal>noChildTaconite</literal>.
+			It is most useful if you plan to render the template for this container (and all child containers) and send the output of the template as a taconite instruction.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-nochildtaconite.php.xml"/>
+		</para>
+		<para>
+			This is a very basic example, of course other transformation commands are supported.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_ui_conventions">
+		<title>Conventions</title>
+		<para>
+			Conventions are necessary to provide a consistent interface to all UI components.
+			They also make using a foreign UI class much easier because most of the method names and goals are already known.
+		</para>
+
+		<sect2>
+			<title>Callbacks</title>
+			<para>
+				All callbacks must be defined using a method named <literal>setCallbacks</literal>.
+				This method should accept an associative array as its only parameter,
+				of the form <literal>$sCallbackName</literal> => <literal>$mCallbackFunction</literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Data</title>
+			<para>
+				You can use custom method names for data handling.
+				Make sure the name is explicit, for example <literal>setPath</literal> or <literal>setList</literal>.
+				Do not write <emphasis>getters</emphasis> unless it is required for proper use of the class.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Parameters</title>
+			<para>
+				All parameters must be defined using a method named <literal>setParams</literal>.
+				This method should accept an associative array as its only parameter,
+				of the form <literal>$sParamName</literal> => <literal>$mParamValue</literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Sets</title>
+			<para>
+				The UI module assumes that you are using sets compatible with the <link linkend="mod_model_scaffold">database scaffolding classes</link>.
+				You can use any set, but you must make sure that they behave accordingly.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_ui_usage">
+		<title>Usage</title>
+		<para>
+			First you should make sure that your application uses the correct UI templates.
+			To do this, simply create a symbolic link <filename>app/tpl/ui</filename>
+			to <filename>share/ui/tpl</filename> in your <filename>app/tpl</filename> folder.
+			Under Windows you'll probably have to copy them manually in the correct location.
+		</para>
+		<para>
+			You can optionally use the UI CSS and Javascript files in your pages.
+			These files are located at <filename>res/wee/ui.css</filename> and <filename>res/wee/ui.js</filename>.
+		</para>
+		<para>
+			Usually when using UI you only need to setup a container by creating and configuring its children, and then let the magic do its work.
+		</para>
+		<para>
+			The following example creates a <literal>weeBreadcrumbsUI</literal> for navigation
+			and a <literal>weeCRUDUI</literal> for `CRUD` handling of the specified set.
+			We also define a custom template.
+			Everything else is done by the UI library.
+			This includes retrieving and saving data to the database, validating data, handling AJAX, and more.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-example.php.xml"/>
+		</para>
+		<para>
+			The template can look like the following.
+			It can actually be reused throughout all similar frames without any problem.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-example.html.xml"/>
+		</para>
+	</sect1>
+
+	<sect1 id="mod_ui_components">
+		<title>Components reference</title>
+		<para>
+			This chapter intends to document the standard UI components available with a standard Web:Extend installation.
+			For each components will be attached a short description along with a list of possible parameters, callbacks and eventually the data it requires.
+		</para>
+
+		<sect2 id="mod_ui_components_breadcrumbs">
+			<title>Breadcrumbs</title>
+			<para>
+				The breadcrumbs component is an implementation of the <ulink url="http://developer.yahoo.com/ypatterns/pattern.php?pattern=breadcrumbs">breadcrumbs design pattern</ulink>.
+				Breadcrumbs allow the user to see the path to its current position on the site and to come back to any of the parent sections.
+			</para>
+			<para>
+				Breadcrumbs UI components only require a path to be rendered.
+				If not provided, they will automatically guess the path by using the <literal>pathinfo</literal> part of the current URL.
+				To define a different path, you can use the method <literal>setPath</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-breadcrumbs.php.xml"/>
+			</para>
+			<para>
+				This will make 3 links: a <emphasis>home</emphasis> link leading to <literal>home</literal>;
+				a <emphasis>news</emphasis> link leading to <literal>home/news</literal>;
+				a <emphasis>today</emphasis> link leading to <literal>home/news/today</literal>.
+			</para>
+			<para>
+				You can define prettier labels by passing an array instead of a string.
+				The associative array contains <literal>URI</literal> => <literal>label</literal> associations.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-breadcrumbs-labels.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ui_components_crud">
+			<title>CRUD</title>
+			<para>
+				The CRUD component is a container encapsulating the list and meta form components through 4 different events:
+				the <literal>defaultEvent</literal>, <literal>add</literal>, <literal>update</literal> and <literal>delete</literal>.
+				It implements <ulink url="http://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD functionality</ulink>.
+			</para>
+			<para>
+				This component accepts 3 parameters: the columns to display in the list and the number of items per page for the default event,
+				and the set to use to retrieve data and save modifications.
+				These parameters are documented in the <link linkend="mod_ui_components_list">list component</link>
+				and <link linkend="mod_ui_components_metaform">meta form component</link> documentation.
+			</para>
+			<para>
+				A typical use of this component is the following:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-crud.php.xml"/>
+			</para>
+			<para>
+				Depending on the event, this component may have children.
+				For the default event it has an <literal>index</literal> component as a child.
+				For <literal>add</literal> and <literal>update</literal> events it has a <literal>form</literal> component.
+				The following snippet demonstrates how to retrieve the latter.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-crud-child.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ui_components_form">
+			<title>Form</title>
+			<para>
+				The form component handles <link linkend="mod_form">forms</link>, including their creation, output and validation.
+			</para>
+			<para>
+				Its only parameter is the form file to load.
+				It also has two callbacks: one that is triggered when the form is created (<literal>setup</literal>)
+				and another when the form has been submitted successfully (<literal>submit</literal>).
+				You can use the former to add options or modify the form and the latter to send data to your model.
+			</para>
+			<para>
+				The following example shows a typical usage in a container UI frame.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-form.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ui_components_metaform">
+			<title>Meta form</title>
+			<para>
+				In addition to normal forms there is an UI component to handle <!-- todo: link to meta forms documentation -->meta forms.
+			</para>
+			<para>
+				This component only has two additional parameters: the set object (or the name of the object)
+				to use to create the form and the columns to ignore when building the form.
+				Ignoring columns is useful if you have fields in your table that shouldn't be edited, like index values.
+				It also has the same two <literal>setup</literal> and ''submit'' callbacks,
+				with a slight nuance being that if no submit callback was provided
+				the component will use the set to properly <literal>insert</literal> or <literal>update</literal> the data.
+			</para>
+			<para>
+				When <literal>DEBUG</literal> is enabled, the component will by default
+				add a link on the page that, if clicked, will display the meta form as XML.
+				This is most useful when designing an application, as you can first create a form
+				based on a set and then copy paste it in a file and tweak it to suit your specific needs.
+			</para>
+			<para>
+				Overall this component is used like the normal form component, so please refer above for an example.
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ui_components_list">
+			<title>List</title>
+			<para>
+				The list component's role is to display a list of rows of data (for example: database table rows).
+				It handles pagination automatically and allows you to define actions for the whole list and for each individual rows.
+				It also handles row sorting.
+				Note that the list component do not handle retrieving the data, it is only meant to be used to <emphasis>display</emphasis> it.
+				You have to limit the number of items or sort the data yourself before sending it to the list.
+			</para>
+			<para>
+				You can configure this component in various different ways.
+				First you probably want to define the number of items total and per page that will be used to create the pagination.
+				Then you can define the order in which the items are sorted.
+				The sort order is defined by the column used to sort the list and the order (<literal>asc</literal> or <literal>desc</literal>).
+				You can also define which columns you want to display using the columns parameter.
+				This parameter is an associative array of <literal>labels</literal> => <literal>names</literal>.
+			</para>
+			<para>
+				You can give its data to a list using the method <literal>setList</literal>.
+				This method accepts either an associative array or a <literal>Traversable</literal> object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-list.php.xml"/>
+			</para>
+			<para>
+				To add a global action to the list, you can use the method <literal>addGlobalAction</literal>.
+				This method accepts an array containing the <literal>link</literal> and the <literal>label</literal> for the action.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-list-globalaction.php.xml"/>
+			</para>
+			<para>
+				To add an action for each item you must first define the primary key for the rows.
+				For our <literal>users</literal> example that would be <literal>user_id</literal>.
+				If your primary key is comprised of several columns, pass an array containing all the columns.
+				Then you can add item actions using <literal>addItemAction</literal>.
+				This method works exactly like <literal>addGlobalAction</literal> with one nuance.
+				You can specify the <literal>method</literal> that will be used for the subsequent request.
+				By default it creates a link that uses the GET method but if you set <literal>method</literal> to <literal>post</literal>
+				it will instead create a form that uses the POST method when submitted.
+				It is recommended to use POST when the action is going to modify
+				(directly, this do not apply if you only send a form to modify the item) or delete the item.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-list-itemaction.php.xml"/>
+			</para>
+			<para>
+				This component is a container that only have a <literal>pagination</literal> child.
+				You can retrieve this object by calling the method <literal>child</literal>.
+				You do not need to configure it yourself.
+				The list component will send the parameter you gave it to the pagination component automatically.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-list-child.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2 id="mod_ui_components_pagination">
+			<title>Pagination</title>
+			<para>
+				The pagination component is an implementation of the <ulink url="http://developer.yahoo.com/ypatterns/pattern.php?pattern=itempagination">item pagination design pattern</ulink>.
+				It can also be used as a <ulink url="http://developer.yahoo.com/ypatterns/pattern.php?pattern=searchpagination">search pagination</ulink>
+				simply by changing the template to the search pagination template (planned for a later release).
+				The pagination component allows you to automatically generate pagination based on a total number of items and the number of items displayed per page.
+			</para>
+			<para>
+				Pagination components accepts three optional parameters: the total number of items to paginate,
+				the number of items displayed per page and the base URL for all pagination links.
+				The default base link used if none was provided is the <literal>REQUEST_URI</literal> and the default number of items displayed per page is 25.
+			</para>
+			<para>
+				The pagination component uses the value of <literal>$aEvent['get']['from']</literal> to identify the position within the items it paginates.
+				It will automatically fill the <literal>form</literal> value in the links, you don't have to do it yourself.
+				You might need to retrieve the value for your own use, however.
+			</para>
+			<para>
+				A typical use of this component is demonstrated as follow.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/ui-pagination.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

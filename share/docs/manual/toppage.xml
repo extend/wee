@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<book>
+	<bookinfo>
+		<title>Web:Extend documentation</title>
+		<date>2009</date>
+		<releaseinfo>HEAD</releaseinfo>
+
+		<authorgroup>
+			<author>
+				<firstname>Lo&iuml;c</firstname>
+				<surname>Hoguin</surname>
+			</author>
+			<author>
+				<firstname>Anthony</firstname>
+				<surname>Ramine</surname>
+			</author>
+			<author>
+				<firstname>Youssef</firstname>
+				<surname>Leulmi</surname>
+			</author>
+		</authorgroup>
+
+		<abstract><para>
+			<application>Web:Extend</application> is a simple yet
+			powerful PHP5 API that makes web development easy.
+		</para></abstract>
+
+		<keywordset>
+			<keyword>Web:Extend</keyword>
+			<keyword>php</keyword>
+			<keyword>web</keyword>
+			<keyword>framework</keyword>
+		</keywordset>
+	</bookinfo>
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="introduction.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="gettingstarted.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="core.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_acl.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_app.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_auth.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_cache.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_db.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_dbmeta.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_form.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_http.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_ldap.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_l10n.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_mail.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_model.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_output.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_tests.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_ui.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_validators.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools.xml"/>
+</book>

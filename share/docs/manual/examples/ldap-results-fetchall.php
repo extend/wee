@@ -1,0 +1,3 @@
+<?php
+
+$aEntries = $oResults->fetchAll();

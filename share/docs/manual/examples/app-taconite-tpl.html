@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title>Example</title>
+	<script type="text/javascript" src="<?php echo APP_PATH?>res/jquery/jquery.js"></script>
+	<script type="text/javascript" src="<?php echo APP_PATH?>res/jquery/jquery.taconite.js"></script>
+	<script type="text/javascript">
+// The following function will be called when the document is loaded
+$(function(){
+	$('#update').click(function(){
+		$.get($(this).attr('href'));
+		return false;
+	});
+});
+	</script>
+</head>
+
+<body>
+	<div id="#date"><?php echo $date?></div>
+	<a href="example" id="#update">Update</a>
+</body>
+</html>

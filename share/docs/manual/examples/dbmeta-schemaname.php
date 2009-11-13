@@ -1,0 +1,3 @@
+<?php
+
+$sSchemaName = $oDbObjectInSchema->schemaName();

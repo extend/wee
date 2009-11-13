@@ -1,0 +1,489 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="core">
+	<title>Core component</title>
+	<para>
+		The core component of the Web:Extend framework represents a set of classes,
+		constants and functions defined upon inclusion of the core file, <filename>wee/wee.php</filename>.
+		The core of the framework is very minimalist, initializing only what is required by other modules to work correctly.
+	</para>
+	<para>
+		You can load Web:Extend using the following code:
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-load.php.xml"/>
+	</para>
+	<para>
+		The framework version can be obtained through the <literal>WEE_VERSION</literal> constant.
+	</para>
+	<para>
+		The format of the version is compatible with PHP's <ulink url="http://php.net/version_compare">version_compare function</ulink>.
+		You can determine if the current version of the framework is the one you need by using the following snippet:
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-version.php.xml"/>
+	</para>
+	<para>
+		If <ulink url="http://php.net/security.magicquotes">magic quotes</ulink> are enabled,
+		the framework will automatically disable them and remove all the magic quotes from the input data.
+		We recommend however that you disable it directly in the PHP configuration file if possible.
+	</para>
+
+	<sect1 id="core_predefined">
+		<title>Predefined classes, constants and functions</title>
+
+		<sect2>
+			<title>Classes</title>
+			<itemizedlist>
+				<listitem><para><literal>weeAutoload</literal>: <link linkend="core_autoload">see the autoload documentation</link></para></listitem>
+				<listitem><para><literal>weeException</literal>: <link linkend="core_exceptions">see the exceptions documentation</link></para></listitem>
+			</itemizedlist>
+		</sect2>
+
+		<sect2>
+			<title>Constants</title>
+			<para>
+				Apart from the framework's version, a few other constants are defined.
+				Some can be overridden while others are defined depending on the context.
+			</para>
+			<para>
+				These constants are defined only if they are not yet defined.
+				This means you can override their default value if you define them before loading the framework.
+				<itemizedlist>
+					<listitem><para><literal>APP_PATH</literal>: path to the application's root based on the requested URI</para></listitem>
+					<listitem><para><literal>ROOT_PATH</literal>: path to the application's root in the filesystem (the folder containing the bootstrap file <filename>index.php</filename>)</para></listitem>
+					<listitem><para><literal>PHP_EXT</literal>: extension for PHP files; defaults to <literal>'.php'</literal></para></listitem>
+					<listitem><para><literal>CLASS_EXT</literal>: extension for PHP class files; defaults to <literal>'.class' . PHP_EXT</literal></para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				These constants are defined depending on the environment.
+				You cannot override them.
+				<itemizedlist>
+					<listitem><para><literal>WEE_CLI</literal>: defined if the script was called from the command line</para></listitem>
+					<listitem><para><literal>WEE_ON_WINDOWS</literal>: defined if the script is running on Windows</para></listitem>
+				</itemizedlist>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Functions</title>
+			<itemizedlist>
+				<listitem><para><literal>_T</literal> and <literal>_WT</literal>: <link linkend="core_nls">see the native language support documentation</link></para></listitem>
+				<listitem><para><literal>array_value</literal>: shortcut for <literal>if (isset($a['key'])) return $a['key']; else return 'default';</literal></para></listitem>
+				<listitem><para><literal>burn</literal>: safely throw an exception (<link linkend="core_exceptions">see the exceptions documentation</link>)</para></listitem>
+				<listitem><para><literal>rmdir_recursive</literal>: recursively remove a directory</para></listitem>
+				<listitem><para><literal>xmlspecialchars</literal>: convert special characters to XML entities</para></listitem>
+				<listitem><para><literal>weeLog</literal>: <link linkend="core_log">see the log function documentation</link></para></listitem>
+			</itemizedlist>
+		</sect2>
+
+		<sect2>
+			<title>Interfaces</title>
+			<itemizedlist>
+				<listitem><para><literal>Mappable</literal>: defines the method <literal>toArray</literal> returning the array representation of the object</para></listitem>
+				<listitem><para><literal>Printable</literal>: defines the method <literal>toString</literal> returning the string representation of the object</para></listitem>
+			</itemizedlist>
+		</sect2>
+	</sect1>
+
+	<sect1 id="core_autoload">
+		<title>Autoload</title>
+		<para>
+			Autoload allows you to use files without including them; in fact they are automatically included on the fly.
+			It is a PHP feature that will run callback functions everytime an unknown class is encountered.
+			These function then try to locate and load the required file on the fly, without the developer having to include it herself.
+			For more informations about this feature, see the <ulink url="http://php.net/autoload">PHP documentation</ulink>.
+		</para>
+		<para>
+			Web:Extend provides its own autoload handler in the weeAutoload class.
+			<literal>weeAutoload::loadClass()</literal> is called every time a class needs to be loaded.
+			For example, <literal>weeAutoload::loadClass('weeForm')</literal> will include the file <filename>wee/form/weeForm.class.php</filename>.
+		</para>
+		<para>
+			To add a path to autoload, you can use <literal>weeAutoload::addPath('/path/to/autoload')</literal>.
+			You can add this call in your bootstrap script (e.g <filename>index.php</filename>), just after <literal>require('wee/wee.php');</literal>.
+			All the files named <literal>CLASSNAME.class.php</literal> with <literal>CLASSNAME</literal> the name of the class defined in the file will be loaded automatically.
+		</para>
+		<para>
+			weeAutoload will scan every directory which has been passed to its <literal>addPath()</literal> method and build a map from classnames to filenames.
+			Since scanning all these directories is a very intensive operation, Web:Extend will cache the listing of the files found during the first scan.
+			On all subsequent requests, the cache file will be loaded directly.
+		</para>
+		<para>
+			The cache file is located by default at <filename>app/tmp/autoload.php</filename>.
+			If you wish to change this path, you can define the constant <literal>WEE_AUTOLOAD_CACHE</literal>
+			in your bootstrap script (e.g <filename>index.php</filename>) and set it to the path you need.
+		</para>
+		<para>
+			The cache is enabled by default, unless <literal>DEBUG</literal> is defined.
+			This allows you to not have to worry about enabling the cache on production servers or disabling it while developing.
+		</para>
+		<para>
+			If you need to disable the cache without enabling <literal>DEBUG</literal>,
+			you can either comment <literal>WEE_AUTOLOAD_CACHE</literal> or define the constant <literal>NO_CACHE</literal>.
+			Keep in mind that disabling caching will greatly reduce the performances of your application.
+		</para>
+	</sect1>
+
+	<sect1 id="core_exceptions">
+		<title>Exceptions</title>
+		<para>
+			Web:Extend uses various exceptions for error handling, including SPL exceptions and a few others.
+			The exceptions thrown by a function are listed in its docComment and can be found in the API.
+			It is good practice to catch these exceptions and display a meaningful message to the user.
+			If you don't, however, Web:Extend will handle it, as described in this article.
+		</para>
+		<para>
+			There's 2 kinds of exceptions: logical and runtime.
+			The logical exceptions are thrown when something is wrong with the application itself. For example: a parameter has a wrong type.
+			The runtime exceptions can only be detected at runtime: for example the user sent an unexpected value.
+		</para>
+		<para>
+			The following two tables contain all the exceptions used by the framework (but not necessarily defined by default).
+
+			<table>
+				<title>Logical exceptions</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>Name</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><literal>BadFunctionCallException</literal></entry>
+							<entry>Exception thrown when a function call was illegal.</entry>
+						</row>
+						<row>
+							<entry><literal>BadMethodCallException</literal></entry>
+							<entry>Exception thrown when a method call was illegal.</entry>
+						</row>
+						<row>
+							<entry><literal>BadXMLException</literal></entry>
+							<entry>Exception thrown when an XML doesn't follow strictly its DTD schema.</entry>
+						</row>
+						<row>
+							<entry><literal>DomainException</literal></entry>
+							<entry>Exception that denotes a value not in the valid domain was used.</entry>
+						</row>
+						<row>
+							<entry><literal>DoubleFaultException</literal></entry>
+							<entry>Exception thrown in the exception handling code.</entry>
+						</row>
+						<row>
+							<entry><literal>FileNotFoundException</literal></entry>
+							<entry>Exception thrown when a required file is missing.</entry>
+						</row>
+						<row>
+							<entry><literal>IllegalStateException</literal></entry>
+							<entry>Exception thrown when a method is called and the object isn't in the right state (example: not initialized).</entry>
+						</row>
+						<row>
+							<entry><literal>InvalidArgumentException</literal></entry>
+							<entry>Exception that denotes invalid arguments were passed.</entry>
+						</row>
+						<row>
+							<entry><literal>LengthException</literal></entry>
+							<entry>Exception thrown when a parameter exceeds the allowed length.</entry>
+						</row>
+						<row>
+							<entry><literal>OutOfRangeException</literal></entry>
+							<entry>Exception thrown when an illegal index was requested.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+
+			<table>
+				<title>Runtime exceptions</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>Name</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><literal>ConfigurationException</literal></entry>
+							<entry>Exception thrown when a configuration requirement is not met.</entry>
+						</row>
+						<row>
+							<entry><literal>DatabaseException</literal></entry>
+							<entry>Exception thrown when there is a database error.</entry>
+						</row>
+						<row>
+							<entry><literal>EndOfFileException</literal></entry>
+							<entry>Exception thrown when an end of file is reached.</entry>
+						</row>
+						<row>
+							<entry><literal>NotPermittedException</literal></entry>
+							<entry>Exception thrown when permission requirements are not met.</entry>
+						</row>
+						<row>
+							<entry><literal>OutOfBoundsException</literal></entry>
+							<entry>Exception thrown when an illegal index was requested.</entry>
+						</row>
+						<row>
+							<entry><literal>OverflowException</literal></entry>
+							<entry>Exception thrown to indicate arithmetic/buffer overflow.</entry>
+						</row>
+						<row>
+							<entry><literal>RangeException</literal></entry>
+							<entry>Exception thrown to indicate range errors during program execution.</entry>
+						</row>
+						<row>
+							<entry><literal>UnderflowException</literal></entry>
+							<entry>Exception thrown to indicate arithmetic/buffer underflow.</entry>
+						</row>
+						<row>
+							<entry><literal>UnexpectedValueException</literal></entry>
+							<entry>Exception thrown to indicate an unexpected value.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</para>
+
+		<sect2 id="core_exceptions_default">
+			<title>Default exception handling</title>
+			<para>
+				By default, Web:Extend will catch all exceptions and print an error page.
+				The framework also transforms any triggered error in an <ulink url="http://php.net/errorexception">ErrorException</ulink> which are then catchable like any other exception.
+				The error page contains generic information about the error and a few instructions to help the user of the application.
+				In <literal>DEBUG</literal> mode, the page will also contains a detailed report on the error, including a trace, if available.
+			</para>
+			<para>
+				You can customize the error page and set up your own instead of the generic one.
+				To do this, simply call <literal>weeException::setErrorPage</literal> with the path to the error page file.
+				This file will then get included, which means it can be a PHP script or just a simple HTML file.
+				It will also be provided with <literal>$aDebug</literal>, an array containing debugging informations.
+				You are free to use it or to ignore it.
+			</para>
+			<para>
+				Here is an example calling this method:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-seterrorpage.php.xml"/>
+			</para>
+			<para>
+				The <literal>$aDebug</literal> array contains the following values:
+				<itemizedlist>
+					<listitem><para><literal>type</literal>: either <literal>'error'</literal> or <literal>'exception'</literal></para></listitem>
+					<listitem><para><literal>name</literal>: name of the error/exception</para></listitem>
+					<listitem><para><literal>message</literal>: description of the problem</para></listitem>
+					<listitem><para><literal>trace</literal>: complete trace leading to the uncatched exception</para></listitem>
+					<listitem><para><literal>file</literal>: the file where the error occurred</para></listitem>
+					<listitem><para><literal>line</literal>: the line where the error occurred</para></listitem>
+					<listitem><para><literal>number</literal>: only for errors; the error's number</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				You can take a look at the default error page located at <filename>trunk/res/wee/error.htm</filename> for a detailed example using this array.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Safely throwing exceptions</title>
+			<para>
+				Avoid throwing exceptions directly using the <literal>throw</literal> keyword.
+				If you make a typo in the exception's name, it will result in a fatal error.
+			</para>
+			<para>
+				The framework defines the <literal>burn</literal> function for throwing exceptions.
+				It takes two parameters: the exception name and the error message. If the exception doesn't exist, a <literal>DoubleFaultException</literal> is thrown instead.
+				If you really need a script to finish properly, catching <literal>Exception</literal> directly will ensure there is no problem, even if you made a typo.
+			</para>
+			<para>
+				A few examples:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-burn.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Catching PHP errors</title>
+			<para>
+				As explained before, when an error is triggered, the default error handler throws an <ulink url="http://php.net/errorexception">ErrorException</ulink>
+				with the same informations as the triggered error. The default error handler totally ignores the error level set through
+				<ulink url="http://php.net/error_reporting">error_reporting</ulink> so every catchable error is caught by it.
+			</para>
+			<para>
+				The following snippet demonstrates how to catch PHP errors.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-errorexception.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Recommended practices</title>
+			<para>
+				The shut-up operator <literal>@</literal> should be used only in the following two conditions:
+				<itemizedlist>
+					<listitem><para>If it makes more sense to throw a specific exception instead of <literal>ErrorException</literal>.</para></listitem>
+					<listitem><para>If the target code must never fail. This condition should be very rare.</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				It is a really bad practice to use it when combined with an instruction
+				that might include or parse a PHP file, as it would mask the error and display a blank page.
+			</para>
+			<para>
+				The following rules define how the developer can choose between the various exceptions:
+				<itemizedlist>
+					<listitem><para>If under normal use of the class the script should be terminated upon encountering a PHP error then use <literal>ErrorException</literal>.</para></listitem>
+					<listitem><para>If the normal use of the class may require the developer to catch an exception upon an error in a method and continue normally
+					then use a normal exception instead of <literal>ErrorException</literal>. Example: <literal>FileNotFoundException</literal>, <literal>BadXMLException</literal>.</para></listitem>
+					<listitem><para>If the normal use of the class require the developer to catch exceptions to determine if an action was successful, then use a custom exception
+					for the class/module. Example: <literal>FormValidationException</literal>, <literal>AuthenticationException</literal>, <literal>RouteNotFoundException</literal>.</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				Only for the last 2 cases the docComment should inform the developer of the exceptions that can be thrown by the function or method.
+			</para>
+			<para>
+				There is no need to check for invalid arguments unless not doing so could result in an illegal state.
+				For example, the checks done in <literal>weeAuthDbTable::__construct</literal> are important
+				because without them invalid arguments would not prevent the construction of the object
+				and yet the <literal>authenticate</literal> and <literal>authenticateHash</literal> methods would always fail,
+				thus rendering the object useless.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="core_log">
+		<title>Server log</title>
+		<para>
+			Web:Extend provides a simple function for logging: <literal>weeLog</literal>.
+			<literal>weeLog</literal> will simply format the message according to <literal>WEE_LOG_FORMAT</literal> and send it to <literal>STDERR</literal>.
+			Most web servers (including Apache or lighttpd) will automatically log everything that is sent to <literal>STDERR</literal>.
+		</para>
+		<para>
+			Sending to <literal>STDERR</literal> ensures that your application will be as performant whether you log or not.
+			There is no significant performance loss for logging messages using <literal>weeLog</literal>. You can use it safely in any application.
+		</para>
+		<para>
+			When using the command line, you can easily manipulate <literal>STDERR</literal> and redirect it to a file, process it or simply ignore it.
+		</para>
+		<para>
+			To log a message, simply use:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-log.php.xml"/>
+		</para>
+		<para>
+			By default, the log level will be <literal>'notice'</literal>.
+			The message from our above example will look like this:
+			<programlisting>
+[Sun Nov 09 18:27:05 2008] [notice] [wee] Sending a message to the log file!
+			</programlisting>
+		</para>
+		<para>
+			To change the level of the log message, simply add a second parameter. For example you could use the following to log an error:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-log-error.php.xml"/>
+		</para>
+		<para>
+			It will results in:
+			<programlisting>
+[Sun Nov 09 18:27:05 2008] [error] [wee] An error happened!
+			</programlisting>
+		</para>
+
+		<sect2>
+			<title>Log format</title>
+			<para>
+				By default the error message is formatted using Apache's default log format.
+				You can of course define your own format.
+				To do so, simply define <literal>WEE_LOG_FORMAT</literal> in your boostrap file.
+				For example you could use:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-log-format.php.xml"/>
+			</para>
+			<para>
+				Where <literal>%c</literal> is the current time and date,
+				<literal>%1$s</literal> is the message and <literal>%2$s</literal> the message level.
+				The format string is passed through <ulink url="http://php.net/strftime">strftime</ulink> first so you can define the date format to your liking.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="core_nls">
+		<title>Native language support</title>
+		<para>
+			Web:Extend provides two functions that can be used to translate an application.
+			These functions are wrapped around the <ulink url="http://php.net/gettext">gettext extension</ulink>
+			and provide a similar functionality. The framework also includes an alternative implementation
+			of <literal>gettext</literal> written in PHP, in case the extension is not available.
+		</para>
+		<para>
+			The translations functions of the framework handle both singular and plural form with the same function, as opposed to <literal>gettext</literal>.
+		</para>
+		<para>
+			The functions are <literal>_T</literal> and <literal>_WT</literal>.
+			The first function, <literal>_T</literal>, is used to translate the application's messages.
+			This is the only function you should need when writing an application using the Web:Extend framework.
+			The other function is used internally by the framework.
+			It uses a different domain (and thus different localization files) than the application.
+		</para>
+		<para>
+			The translation functions accept either one or three parameters.
+			When passing only one parameter, the operation performed is equivalent to calling the <ulink url="http://php.net/function.gettext">gettext function</ulink>.
+			When 3 parameters are passed, the operation is equivalent to calling the <ulink url="http://php.net/ngettext">ngettext function</ulink>.
+		</para>
+		<para>
+			Assuming you have created a french locale file for your application, you can use the following code to switch to french and translate a few strings:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-locale-sing.php.xml"/>
+		</para>
+		<para>
+			Using the second form of the function requires a bit more work.
+			Let's assume we have a variable named <literal>$iNumberOfPonies</literal>.
+			We want to output <literal>pony</literal> if there's 0 or 1 pony, and <literal>ponies</literal> if there's 2 or more.
+			This is done like this:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/core-locale-plur.php.xml"/>
+		</para>
+		<para>
+			The <literal>gettext</literal> manual has more examples for handling plural forms and multiple parameters.
+		</para>
+		<para>
+			Web:Extend also provides a <link linkend="mod_l10n">complementary internationalization and localization solution</link>.
+			With it, you can correctly format numbers and dates for every cultures, among other things.
+		</para>
+		<sect2>
+			<title>Options</title>
+			<para>
+				There are 3 options applicable to the translation functions.
+				To change an option, simply define its constant.
+				You must define them before loading the framework if you wish to change the default values.
+			</para>
+			<para>
+				<itemizedlist>
+					<listitem><para><literal>APP_LOCALE_DOMAIN</literal>: Domain used by the application.
+					Defaults to <literal>app</literal>. The domain represents the name of the file used by the localization functions.
+					For example, if you change the domain to <literal>example</literal>, the translation file will be called <filename>example.mo</filename>.</para></listitem>
+					<listitem><para><literal>APP_LOCALE_PATH</literal>: Path to the locale folder. Defaults to <filename>app/locale</filename>.</para></listitem>
+					<listitem><para><literal>WEE_TRANSLATE</literal>: If defined, it forces the use of the alternative <literal>gettext</literal> implementation,
+					even if the PHP extension is available.</para></listitem>
+				</itemizedlist>
+			</para>
+		</sect2>
+		<sect2>
+			<title>Translation files</title>
+			<para>
+				Web:Extend uses <literal>gettext</literal> files to store the translation strings.
+				The file format and the associated utilities are described in the <ulink url="http://www.gnu.org/software/gettext/manual/gettext.html">gettext documentation</ulink>.
+			</para>
+			<para>
+				The locale files are stored in the <filename>app/locale</filename> folder by default.
+				The name of the language files is <filename>app.mo</filename> by default.
+			</para>
+			<para>
+				Using the default values, the locale files are stored as follow:
+				<programlisting>
+app/locale/en_GB/LC_MESSAGES/app.mo
+app/locale/en_US/LC_MESSAGES/app.mo
+app/locale/fr_FR/LC_MESSAGES/app.mo
+				</programlisting>
+			</para>
+			<para>
+				To generalize, locale files are stored in <filename>path_to_locale/lang/category/file.mo</filename>.
+			</para>
+			<para>
+				The language used by the application is defined using the <ulink url="http://php.net/setlocale">setlocale function</ulink>.
+				Details may vary depending on your operating system, refer to the PHP documentation for more information.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

@@ -1,0 +1,3 @@
+<?php
+
+$aSchemasNames = $oTable->schemasNames();

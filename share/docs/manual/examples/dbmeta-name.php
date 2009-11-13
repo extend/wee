@@ -1,0 +1,3 @@
+<?php
+
+$sName = $o->name();

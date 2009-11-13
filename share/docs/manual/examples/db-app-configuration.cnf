@@ -1,0 +1,7 @@
+# Database settings
+
+db.driver	= weePgSQLDatabase
+db.host		= localhost
+db.user		= username
+db.password	= password
+db.name		= dbname

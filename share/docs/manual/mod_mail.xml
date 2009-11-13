@@ -1,0 +1,305 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_mail">
+	<title>Mail module</title>
+	<para>
+		Sending emails is an essential part of many applications.
+		Some other applications require retrieving emails for processing (for example a mailing list manager).
+		Web:Extend provides both functionalities.
+	</para>
+	<para>
+		To send emails, Web:Extend uses <ulink url="http://phpmailer.codeworxtech.com">PHPMailer</ulink>.
+		If you are already familiar with it, then you'll be able to use it without trouble.
+		Note however that the mail module allows using email templates, complete with headers,
+		for better separation of code and presentation even while writing emails.
+	</para>
+	<para>
+		To retrieve emails, Web:Extend uses the <ulink url="http://php.net/imap">IMAP PHP extension</ulink>.
+		It encapsulates the extension and provides you with a simplified interface to various functions like searching emails or saving email attachments to a file.
+	</para>
+
+	<sect1 id="mod_mail_send">
+		<title>Sending emails</title>
+		<para>
+			The first thing you will probably want to do is extend the <literal>weeSendMail</literal> class
+			and set a few properties that will rarely change in your project, such as the sender information.
+			Here is an example defining the mailer type and the sender information:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-mysendmail.php.xml"/>
+		</para>
+		<para>
+			You can also use the configuration file of your application to store this information.
+			To retrieve the information from the configuration you will have to extend the constructor
+			and call the method <literal>weeApp()->cnf</literal> for each value needed.
+			Don't forget the call to the parent constructor in order to initialize PHPMailer correctly.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-mysendmail-conf.php.xml"/>
+		</para>
+		<para>
+			Most mail servers will consider a message to be spam if the <literal>Return-Path</literal> header is not set.
+			You can define this header by setting the value of the <literal>$Sender</literal> property to a valid email address.
+			Setting it to the same value as the <literal>$From</literal> property usually do the trick.
+		</para>
+		<para>
+			Sometimes mail servers will <ulink url="http://en.wikipedia.org/wiki/Greylisting">greylist</ulink> your emails before accepting them.
+			This method triggers a delay before the mail is delivered successfully.
+			Depending on the mail server or mail provider it is possible to authenticate your server so that no greylisting occurs. <!-- todo: explain how -->
+		</para>
+
+		<sect2>
+			<title>Usage</title>
+			<para>
+				When not using templates, the class works exactly like PHPMailer.
+				Here is a typical use of the class:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-no-tpl.php.xml"/>
+			</para>
+			<para>
+				If you chose to not extend the base class you will have a few more lines to set the options we defined earlier.
+			</para>
+		</sect2>
+
+		<sect2 id="mod_mail_send_tpl">
+			<title>Using templates</title>
+			<para>
+				If you choose to use <link linkend="mod_output_tpl">templates</link>, a few things will change.
+				The template can set the body, but also the subject or any other header.
+				Templates format are identical to the format used by the UNIX <literal>sendmail</literal> tool.
+				First you define the headers, then add an empty line, and everything following is the message body.
+			</para>
+			<para>
+				You can pass variables to the templates.
+				This works pretty much like normal templates, you simply pass them to the <literal>loadTemplate</literal> method in an array.
+			</para>
+			<para>
+				Let's take a look at an example of sending an email using templates.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-tpl.php.xml"/>
+			</para>
+			<para>
+				This code will load the template located at <filename>app/tpl/emails/mytemplate.tpl</filename>.
+				It will pass two variables, named <literal>myvar</literal> and <literal>another</literal>, and then send the email to <literal>someuser@example.org</literal>.
+				The template can look like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-tpl.html.xml"/>
+			</para>
+			<para>
+				You should know that as soon as you call <literal>loadTemplate</literal>, the template will be loaded and executed.
+				This means here that the <literal>Subject</literal> and <literal>Body</literal> properties are defined just after calling it,
+				and that you can access them like you normally would using PHPMailer.
+			</para>
+			<para>
+				Of course, since they're templates, you can include other templates inside them.
+				You could have a header and a footer that will be included in all emails,
+				and your actual template would only include the email-specific information.
+			</para>
+			<para>
+				Here is an example email template that includes another template:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-tpl-in-tpl.html.xml"/>
+			</para>
+			<para>
+				The generated code must be valid so be careful if you include another template in the email header part.
+				Beware especially of PHP's tendency to remove the line break immediately following <literal>?></literal>.
+				This problem can be resolved by appending a space after <literal>?></literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Debugging</title>
+			<para>
+				If you run an UNIX platform, such as Linux, BSD or Solaris, there is a simple way to debug emails.
+				First, make sure that the mailer used by PHPMailer is <literal>sendmail</literal>.
+				Then write your own custom sendmail script.
+			</para>
+			<para>
+				If you already have sendmail or one of its alternative installed,
+				you can either uninstall it before writing the script or you can define the <literal>$Sendmail</literal> property in your sendmail class.
+				This property contains the path to the sendmail script that will be used when sending the email.
+			</para>
+			<para>
+				The following script will append all sent emails to the file <literal>/tmp/mail.log</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-send-debug.sh.xml"/>
+			</para>
+			<para>
+				After saving this script to <filename>/usr/sbin/sendmail</filename> and making sure it has executable permissions
+				using the command <literal>chmod +x /usr/sbin/sendmail</literal>, all the emails sent by your application will be stored in <filename>/tmp/mail.log</filename>.
+				You can then use the command <literal>tail -f /tmp/mail.log</literal> to monitor the file and have all the email headers and contents displayed as soon as they get sent.
+			</para>
+			<para>
+				If you don't see new emails being appended to the file, it is probably because your web server process doesn't have the permission to write to the file.
+				The manipulation to enable these permissions vary depending on your OS. On Ubuntu you can use the following command:
+				<programlisting>
+sudo chown www-data:www-data /tmp/mail.log
+				</programlisting>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_mail_fetch">
+		<title>Fetching emails</title>
+		<para>
+			Sometimes you might need to retrieve emails from a mailbox instead of sending them.
+			It could happen because you are writing a mailing list manager.
+			Or because you need to check automatically if the mails you sent didn't return because the destination address doesn't exist.
+			Or because you write a script to save the content of your personal mailbox.
+		</para>
+		<para>
+			To retrieve emails, Web:Extend uses the <ulink url="http://php.net/imap">IMAP PHP extension</ulink>.
+			It encapsulates the extension and provides you with a simplified interface to various functions like searching emails or saving email attachments to a file.
+		</para>
+		<para>
+			If you are already familiar with this extension, you will probably learn very quickly how to use these classes.
+		</para>
+
+		<sect2>
+			<title>Connection</title>
+			<para>
+				Connecting to the mailbox is fairly easy.
+				Simply create the object and pass a few options to the constructor.
+				The following options are accepted:
+				<table>
+					<title>Options for <literal>weeFetchMail</literal></title>
+					<tgroup cols="2">
+						<thead>
+							<row>
+								<entry>Name</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>host</literal></entry>
+								<entry>The hostname of the POP3/IMAP server. Defaults to <literal>localhost</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>port</literal></entry>
+								<entry>The port of the POP3/IMAP server. Defaults to <literal>143</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>flags</literal></entry>
+								<entry>Flags to append to the connection string. See the <ulink url="http://php.net/imap_open">imap_open documentation</ulink> for a list of allowed flags.</entry>
+							</row>
+							<row>
+								<entry><literal>mailbox</literal></entry>
+								<entry>Name of the mailbox to open. Defaults to <literal>INBOX</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>user</literal></entry>
+								<entry>Name of the owner of the mailbox. Required.</entry>
+							</row>
+							<row>
+								<entry><literal>password</literal></entry>
+								<entry>Password for this user. Required.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				The flags <literal>/pop3</literal> and <literal>/imap</literal> let you specify what protocol is to be used.
+				<literal>/ssl</literal> activates SSL encryption and <literal>/tls</literal> forces TLS encryption.
+				When you can, prefer using <ulink url="http://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</ulink>, as it is an improved version of SSL.
+			</para>
+			<para>
+				Knowing this, you can use the following code to connect to an IMAP mailbox located at <literal>imap.example.org</literal> using TLS encryption.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-connection.php.xml"/>
+			</para>
+			<para>
+				That's it! You're connected.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching messages</title>
+			<para>
+				You can retrieve all messages simply by calling the method <literal>fetchAll</literal>.
+				This method returns an array containing all the messages in the mailbox.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-fetchall.php.xml"/>
+			</para>
+			<para>
+				Depending on the size of the mailbox, this can be very expensive.
+				There is another method for retrieving messages: <literal>search</literal>.
+				It allows you to retrieve only the messages you need by passing a criteria.
+				The criteria takes the form of a string containing keyword/value pairs delimited by spaces.
+				See the <ulink url="http://php.net/imap_search">imap_search documentation</ulink> for more details about the criteria.
+			</para>
+			<para>
+				To retrieve all emails originating from <literal>summer.glau@example.org</literal> sent
+				the past week to the mailbox you're connected to, you can use the following snippet:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-search.php.xml"/>
+			</para>
+			<para>
+				I doubt you receive emails from Summer (unlike us!), so feel free to change the email address when trying this code.
+			</para>
+			<para>
+				The two methods return an array of <literal>weeFetchMailMessage</literal> objects each containing a single message.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Reading messages</title>
+			<para>
+				You can read two things from the message: its header and its body.
+				Email headers include information such as the sender of the message, the date of delivery, or the subject of the message.
+				The body contains the message itself.
+			</para>
+			<para>
+				From now on we'll work only on a single message extracted from the previous methods.
+				The object for this message will be called <literal>$oMessage</literal>.
+			</para>
+			<para>
+				You can easily access the headers by accessing the object like an array.
+				Note that headers are not automatically retrieved from the server, they're only requested when ask for them.
+				The body is not downloaded when you request headers. This snippet echoes the subject and the sender of the message:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-headers.php.xml"/>
+			</para>
+			<para><emphasis>
+				Although we echo the information directly for the sake of the example,
+				you should filter the data before doing so, because emails are generally not trusted data.
+			</emphasis></para>
+			<para>
+				The body can't be accessed the same way.
+				You have to call a method named <literal>getBody</literal> to retrieve the body of the message.
+			</para>
+			<para>
+				To echo the body of the message:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-getbody.php.xml"/>
+			</para>
+			<para><emphasis>
+				Although we echo the information directly for the sake of the example,
+				you should filter the data before doing so, because emails are generally not trusted data.
+			</emphasis></para>
+			<para>
+				Note that similar to how headers work,
+				downloading the body will not necessarily download the headers at the same time,
+				the server only send what you require, saving you time and bandwidth.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Downloading attachments</title>
+			<para>
+				If an email has an attachment, you can download it.
+				A message can have zero, one, or more attachments.
+				You can count the number of attachments and retrieve them.
+				To count the number of attachments, use <literal>numAttachments</literal>.
+				To retrieve them, use <literal>getAttachments</literal>.
+				Once retrieved, you can use the method <literal>saveTo</literal> on the attachment object
+				(<literal>weeFetchMailAttachment</literal>) to save it to a specified location.
+			</para>
+			<para>
+				For example:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-attach-saveto.php.xml"/>
+			</para>
+			<para>
+				This snippet will save all attachments of the message to <filename>/tmp</filename>, if any attachment were found.
+			</para>
+			<para>
+				Instead of saving it, you can also retrieve its filename using <literal>getFilename</literal> or its contents using <literal>getData</literal>.
+				The following code will echo both the filename and the data, separated by a line break.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/mail-fetch-attach-echo.php.xml"/>
+			</para>
+			<para><emphasis>
+				Beware! Before using the attachment, you should filter it and
+				validate its filename and its contents, because emails are generally not trusted data.
+			</emphasis></para>
+		</sect2>
+	</sect1>
+</chapter>

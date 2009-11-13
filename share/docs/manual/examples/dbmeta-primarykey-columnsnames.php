@@ -1,0 +1,3 @@
+<?php
+
+$aColumnsNames = $oPrimaryKey->columnsNames();

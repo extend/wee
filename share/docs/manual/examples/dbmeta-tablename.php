@@ -1,0 +1,3 @@
+<?php
+
+$sTableName = $oDbObjectInTable->tableName();

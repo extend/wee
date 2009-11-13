@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_output">
+	<title>Output module</title>
+	<para>
+		The output module is a module that you will probably always require but that won't have much need to interact with.
+		It currently does two things worth noting: it <ulink url="http://php.net/outcontrol">controls the output buffering</ulink>
+		and can encode or decode variables according to the current output driver.
+	</para>
+	<para>
+		There is a few different output drivers available.
+		The default driver is <literal>weeXHTMLOutput</literal> and define encoding methods for XHTML content.
+		There is also a <literal>weeTextOutput</literal> driver that you can use for outputting plain text,
+		for example when writing emails or sending a text report.
+		Finally there is <literal>weeLaTeXOutput</literal> and <literal>weePDFOutput</literal>
+		that are used to output PDF files.
+	</para>
+	<para>
+		The application module uses the option <literal>output.driver</literal> to define the default driver used.
+	</para>
+	<para>
+		The main attraction of the output drivers is the automatic encoding of variables
+		when you send them to your <link linkend="mod_output_tpl">templates</link>.
+		Each output driver define its own encoding (and decoding) rules, so you only have to worry about using the correct output.
+	</para>
+
+	<sect1 id="mod_output_switch">
+		<title>Switching output</title>
+		<para>
+			Most of the time you will only use what you defined as the default output driver through the <literal>output.driver</literal> configuration option.
+			There are times however when you need to change the driver, either temporarily, or for the duration of the request.
+		</para>
+		<para>
+			You can change the output driver used simply by selecting it.
+			When no output driver has been created, you only need to instantiate one to use it.
+			In other cases, you must call the static method <literal>weeOutput::select</literal>.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-select.php.xml"/>
+		</para>
+		<para>
+			If you need to change the output only temporarily,
+			you can use the return value of the static method <literal>weeOutput::select</literal>.
+			It indeed returns the previous output object.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-select-tmp.php.xml"/>
+		</para>
+	</sect1>
+
+	<sect1 id="mod_output_control">
+		<title>Output control</title>
+		<para>
+			The output drivers provide a <literal>bufferize</literal> method that will
+			start the output buffering and try to enabled GZIP compression if it is available.
+			If you use the application module then output will be started automatically
+			according to the driver you setup in the configuration file.
+			Otherwise you can start output by simply creating the output driver you want.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-new.php.xml"/>
+		</para>
+		<para>
+			You can choose to buffer output by calling bufferize.
+			By default, it will compress the output to GZIP if possible.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-bufferize.php.xml"/>
+		</para>
+		<para>
+			You can also choose to not use GZIP compression by giving false as the first parameter.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-bufferize-no-gzip.php.xml"/>
+		</para>
+		<para>
+			Or you can control the bufferization and the compression directly when creating the object.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-options.php.xml"/>
+		</para>
+		<para>
+			When using the application module, you can control these two options directly from the configuration file.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-options.cnf.xml"/>
+		</para>
+	</sect1>
+
+	<sect1 id="mod_output_tpl">
+		<title>Templates</title>
+		<para>
+			A template is a master document used to <ulink url="http://en.wikipedia.org/wiki/Separation_of_concerns">separate content from presentation</ulink>.
+			It is often used for mass-production of documents.
+			There is different kinds of templates depending on the type of document it defines.
+			Type of templates include <ulink url="http://en.wikipedia.org/wiki/Web_template">web templates</ulink>,
+			<link linkend="mod_mail_send_tpl">email templates</link>
+			and <link linkend="mod_output_pdf">LaTeX templates</link> (used to generate PDF files, for example).
+		</para>
+		<para>
+			A template effectively represents the view in the <link linkend="mod_app_mvc">MVC Architecture</link>.
+			The frame, a component of the controller tier, is responsible for <link linkend="mod_app_events_tpl">defining the view</link>
+			used to build the reply to the request it received.
+			It is also responsible for sending data taken from the <link linkend="mod_model">model</link> to the view.
+		</para>
+		<para>
+			This means the view is only responsible for outputting everything.
+			As opposed to other implementations of the <literal>MVC</literal> design pattern,
+			the view do not have to retrieve data, the view actually expects that all data it requires has been provided to it.
+			Missing data will produce an <link linkend="core_exceptions_default">error page</link>.
+		</para>
+
+		<sect2>
+			<title>Usage</title>
+			<para>
+				If you are using the application module, <link linkend="mod_app_events_tpl">please refer to this chapter</link>.
+			</para>
+			<para>
+				If you are not using the application framework, you can create a template simply by creating an instance.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-new.php.xml"/>
+			</para>
+			<para>
+				This will load the file <filename>app/tpl/myexample.tpl</filename>.
+			</para>
+			<para>
+				You can change the default template path (<filename>app/tpl</filename>) by defining the <literal>TPL_PATH</literal> constant.
+				Similarly, you can change the template extension (<literal>.tpl</literal>) by defining the <literal>TPL_EXT</literal> constant in your bootstrap file.
+			</para>
+			<para>
+				Sending data to the template is really simple.
+				It works exactly the same whether you use the application module or not.
+				You just need to call the <literal>set</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-set.php.xml"/>
+			</para>
+			<para>
+				Same example with the application module.
+				The <literal>set</literal> method of <literal>weeFrame</literal> simply redirects the data to the template.
+				The frame will not create the template until required.
+				This means that the first call to <literal>set</literal> will effectively create the template object.
+				If you don't use <literal>set</literal> the template will be created before it must be rendered.
+				In some cases, for example when sending a <link linkend="mod_app_taconite">taconite reply</link> in an xmlhttprequest context,
+				the template might not be created at all, saving resources.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-set-app.php.xml"/>
+			</para>
+			<para>
+				You may prefer to use an alternative syntax for the <literal>set</literal> method,
+				allowing to pass more variables in the same call.
+				Simply give an array as a single parameter instead of two.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-set-app-array.php.xml"/>
+			</para>
+			<para>
+				There is no need to encode the data passed to the template using the <literal>set</literal> method.
+				All data is encoded automatically according to the output driver you selected.
+				You must however encode data if it is not processed by the <literal>set</literal> method.
+				You must also encode data passed using the <literal>set</literal> method as an object that doesn't extend the <ulink url="http://api.extend.ws/#weeDataSource">weeDataSource class</ulink>.
+				The best way to write secure template is to write them completely standalone, requiring only input from the <literal>set</literal> method.
+			</para>
+			<para>
+				These three examples result in exactly the same data passed to the template.
+				On the template's side, this effectively creates variables using the names and values your provided.
+				You can then output them as needed.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-example.html.xml"/>
+			</para>
+			<para>
+				You should use the <ulink url="http://php.net/manual/en/control-structures.alternative-syntax.php">alternative syntax for control structures</ulink> in your templates.
+				It is the easier syntax to read, as was demonstrated here.
+			</para>
+			<para>
+				Note that PHP has a tendency to remove the line break immediately following <literal>?&gt;</literal>, resulting in a badly formatted file.
+				Although white spaces do not really matter when dealing with XHTML, it becomes a problem if you're outputting other formats like plain text.
+				This problem can be resolved by appending a space after <literal>?&gt;</literal>.
+				It is good practice to always put a space after all the <literal>?&gt;</literal> that are followed by a line break.
+			</para>
+			<para>
+				A template can include another template.
+				A common use of this functionality is to separate
+				the header and the footer of the page into their own templates.
+				Here is an example such template file:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-nested.html.xml"/>
+			</para>
+			<para>
+				We can do this because we are actually executing code in the <literal>weeTemplate</literal> class.
+				You could call any of its methods if you wanted to.
+				Note however that it is neither safe nor a good practice to call a method
+				other than <literal>template</literal> and <literal>mkLink</literal> (detailed below).
+			</para>
+			<para>
+				The nested template will receive all the data that has been submitted to the main template.
+				You can also send additional data by specifying it in an array given as a second parameter to the <literal>template</literal> method.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Safe link generation</title>
+			<para>
+				<literal>weeTemplate</literal> contain methods that can be used to build links.
+				The links can be pre-parameterized, allowing you to specify in advance a number
+				of variables that will be appended to all the links built using the template's method.
+			</para>
+			<para>
+				To add parameters to the links, simply call <literal>addLinkArgs</literal>:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-addlinkargs.php.xml"/>
+			</para>
+			<para>
+				Then, if you call <literal>mkLink</literal> from within the template, a correct link containing these two parameters will be built.
+				Make sure the link you give is not HTML encoded; in other words you need to <literal>decode</literal> it if you passed it to the template from within the frame.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-addlinkargs.html.xml"/>
+			</para>
+			<para>
+				You can pass additional parameters to the method that will be appended only for this link.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-addlinkargs2.html.xml"/>
+			</para>
+			<para>
+				As you can see, this can save you a lot of typing if all your links must contain the same parameters.
+			</para>
+			<para>
+				Note that there is currently no proxy method in <literal>weeFrame</literal> to add parameters to links using <literal>addLinkArgs</literal>.
+				Unfortunately, this means you'll have to write a few more lines to ensure it works as intended. This will be fixed before going stable.
+			</para>
+			<para>
+				You have to ensure the template is created before calling the method.
+				This can be achieved by using the following code:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-addlinkargs-app.php.xml"/>
+			</para>
+			<para>
+				Using this event in a frame will send the correct link parameters to the template,
+				making all links created with <literal>mkLink</literal> contain a <emphasis>location</emphasis> and <emphasis>year</emphasis> parameter.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Rendering</title>
+			<para>
+				If you are using the application module you do not need to render templates yourself.
+				In other cases, a template can be easily rendered by using the method <literal>render</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-render.php.xml"/>
+			</para>
+			<para>
+				You can also retrieve the output of a template by calling the method <literal>toString</literal>.
+				You can then process it as you wish.
+				The following example will replace all <emphasis>example</emphasis>
+				by <emphasis>demo</emphasis> in the resulting string and then output it.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-tpl-tostring.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_output_pdf">
+		<title>PDF output</title>
+		<para>
+			This chapter will describe how you can use the output module to output PDF files built using <ulink url="http://www.latex-project.org">LaTeX</ulink>.
+			It will describe how to setup the framework for this type of output and attempt to provide a tutorial for the most common tasks along with various hints and advices.
+		</para>
+
+		<sect2>
+			<title>Why LaTeX?</title>
+			<para>
+				It makes a lot of sense to use LaTeX instead of some PHP library, if you can.
+				<itemizedlist>
+					<listitem><para>You can use templates.</para></listitem>
+					<listitem><para>You can separate your documents into different templates.</para></listitem>
+					<listitem><para>You can design your document using any editor you wish.</para></listitem>
+					<listitem><para>The technology is proven and is widely used.</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				However it might not be available on all hosts.
+				If you administer the server then there's no worry, you can always install it,
+				but on shared environments you might have to fall back to a PHP library.
+				Make sure you know the specifications of the destination host of your application before starting developments.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Usage</title>
+			<para>
+				First, make sure that you have LaTeX installed.
+				There is various LaTeX distributions that you can use,
+				we suggest you use the one recommended for your operating system.
+				Make sure you have an executable called <literal>pdflatex</literal> after installation.
+				You might also want to install all additional LaTeX packages
+				since they contain more environments that you might want to use in your project.
+			</para>
+			<para>
+				The first thing you need to make sure of is that the binary for <literal>pdflatex</literal> is available in your <literal>PATH</literal>.
+				If it isn't, you can add it by putting the following line of code in your bootstrap file:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-pdf-path.php.xml"/>
+			</para>
+			<para>
+				Then all you need to do is select the PDF Output whenever you need it.
+				The following code will select it and add a few options.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/output-pdf-usage.php.xml"/>
+			</para>
+			<para>
+				From this point onward, templates will automatically encode data to LaTeX as needed.
+				So you have no need to worry about special characters when you send data to the template.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>LaTeX resources</title>
+			<para>
+				There is <ulink url="http://www.latex-project.org/guides/">a lot of resources</ulink> available to learn LaTeX.
+				There exists also quite a few user-friendly editors that can help you design LaTeX document.
+				If you need one, we recommend <ulink url="http://kile.sourceforge.net">Kile</ulink>.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

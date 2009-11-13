@@ -1,0 +1,592 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_model">
+	<title>Model module</title>
+	<para>
+		Models are an essential part of an MVC application.
+		Models encapsulate the data access layer (such as a <link linkend="mod_db">database</link>)
+		and <ulink url="http://en.wikipedia.org/wiki/Model-view-controller#As_a_design_pattern provide">a domain-specific representation of the information</ulink> on which the application operates.
+		Domain logic adds meaning to raw data (e.g., calculating whether today is the user's birthday, or the totals, taxes, and shipping charges for shopping cart items).
+		The model also ensures that the data is consistent, by validating it and triggering an error when the application performs an illegal operation.
+	</para>
+	<para>
+		The model part of an application is sometimes called the <emphasis>domain model</emphasis>.
+		A <ulink url="http://en.wikipedia.org/wiki/Domain_model">domain model</ulink> is
+		a <ulink url="http://en.wikipedia.org/wiki/Conceptual_model_(computer_science)">conceptual model</ulink>
+		of a system which describes the various entities involved in that system and their relationships.
+	</para>
+
+	<sect1 id="mod_model_fat">
+		<title>Fat models are sexier</title>
+		<para>
+			There exists different types of implementation for the domain model.
+			We advocate fat models that encapsulate everything cited above.
+			Some developers might argue that it's OK to have skinny models that aren't much more than a data access layer.
+			They are wrong. Why? You can find some reasons
+			<ulink url="http://blog.astrumfutura.com/archives/373-The-M-in-MVC-Why-Models-are-Misunderstood-and-Unappreciated.html">over there</ulink>.
+			But we have more reasons than that.
+		</para>
+		<para>
+			Models should be reusable.
+			You should be able to take the domain model (and only the domain model) from an existing project, copy it into a new project, and start using it.
+			There should be no data corruption in case you make a programming error in your new project.
+			If your domain model is well designed, there won't be any.
+		</para>
+		<para>
+			The domain model contains the building blocks of your application.
+			When developing a web application, the first thing you should do when you start coding is create the domain model.
+			It doesn't make sense to create the view if there's no data to show (unless you're only working on the design).
+			It doesn't make sense to write controllers if they can't work on anything.
+			When your models are written, you've almost finished your application.
+			Everything else will be much easier.
+			Your main concerns after writing the model is to correctly implement your application's workflows and to ensure a great user experience.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_model_sets">
+		<title>Sets and models</title>
+		<para>
+			Web:Extend goes one bit farther with its model module.
+			When talking about data, we all know that there can be only two kind of representation:
+			<itemizedlist>
+				<listitem><para>the representation for n items</para></listitem>
+				<listitem><para>the representation for 1 item</para></listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			You can see an example of this when modeling a database.
+			Relationships between table can be between 1 or n elements.
+			When you have a 1,n relationship, the second table can have
+			between 0 and infinite rows associated to the row from the first table.
+		</para>
+		<para>
+			This concept is also found in the <ulink url="http://en.wikipedia.org/wiki/Set_(mathematics)">set mathematical concept</ulink>, although in much greater details.
+			This is where the idea for our implementation came from.
+		</para>
+
+		<sect2>
+			<title>Set</title>
+			<para>
+				We call the representation for n items a <emphasis>set</emphasis>.
+				A set object will generally contain methods to act on the set or on one of its subsets.
+				That means a set object will be able to do the following actions:
+				<itemizedlist>
+					<listitem><para>count the number of items in the set</para></listitem>
+					<listitem><para>count the number of items in a subset of the set</para></listitem>
+					<listitem><para>perform other calculations on a subset of items in the set</para></listitem>
+					<listitem><para>retrieve an item from the set</para></listitem>
+					<listitem><para>retrieve a subset of items from the set</para></listitem>
+					<listitem><para>add an item to the set</para></listitem>
+					<listitem><para>remove an item from the set</para></listitem>
+					<listitem><para>modify a subset of items in the set</para></listitem>
+					<listitem><para>remove a subset of items from the set</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				A subset here means <literal>n</literal>, or in other words it may act on all the items present in the set.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Model</title>
+			<para>
+				We call the representation for 1 item a <emphasis>model</emphasis>.
+				A model object will generally contain methods to act on the specific item it represents, and only that item.
+				That means a model object will be able to do the following actions:
+				<itemizedlist>
+					<listitem><para>perform calculations on the item itself</para></listitem>
+					<listitem><para>modify the item</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				In addition to this, the model object contains relationships to other sets.
+				If for example you have a table for the users and another for the users comments,
+				you should first create a set and a model class for both users and comments (resulting in 4 different classes).
+				Then you should create a kind of proxy function that would link the users model to the comments set and return the comments for this specific user.
+				Done correctly, you'd only have to write the following code to get them all:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-getallcomments-usage.php.xml"/>
+			</para>
+			<para>
+				The method could look like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-getallcomments-class.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_model_db">
+		<title>Database model</title>
+		<para>
+			The database model classes extend <literal>weeSet</literal> and <literal>weeModel</literal>
+			and provide you with a number of methods that will make writing queries much easier than it would be otherwise.
+			Each class implements their own methods that are directly related to our previous description of what a set and a model are.
+		</para>
+		<para>
+			This chapter describes the standard model classes.
+			There is <link linkend="mod_model_scaffold">two other classes</link> that extend these
+			and provide you with all the methods you need to perform all
+			<ulink url="http://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD operations</ulink>,
+			without you needing to write a single query.
+		</para>
+		<para>
+			The database model classes are not an <ulink url="http://en.wikipedia.org/wiki/Object-relational_mapping">ORM toolkit</ulink>.
+			We have not implemented an ORM for a good number of reasons, and we advise you do not use one.
+			You really should write your own SQL and/or use the <emphasis>scaffold</emphasis> classes,
+			as it will ease a lot maintenance and improve your productivity. Catch is, you must know SQL.
+		</para>
+
+		<sect2>
+			<title>Set</title>
+			<para>
+				As we saw earlier, set operations affect the set itself.
+				When used to retrieve items, a set returns a model object.
+				The set includes methods built with these two concept in mind.
+			</para>
+			<para>
+				You can choose to use the following method, or you can call the database directly.
+				If you choose the latter, then you must use the method <literal>getDb</literal> to retrieve the database associated with the set.
+				Here is an example set that doesn't use the shortcut methods:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-set-getdb.php.xml"/>
+			</para>
+			<para>
+				The method basically retrieve the set database, perform a query on it, defines the returned class to be <literal>myExampleModel</literal>
+				and then fetch the result (which will effectively return a <literal>myExampleModel</literal> object).
+				We'll define this class later in this chapter so don't worry too much about it right now.
+			</para>
+			<para>
+				As you can see, we didn't specify any database. So why is the code still working?
+				Because the default database for all sets and models is <literal>weeApp()->db</literal>.
+				As long as you use the application, you don't have to worry about the database.
+				We will see later how to change the database used in case you ever need it.
+			</para>
+			<para>
+				The example use could be written in a single line if the code used a convenience static method, like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-set-getdb-instance.php.xml"/>
+			</para>
+			<para>
+				If you choose to do so, please name the method <literal>instance</literal>, by convention.
+			</para>
+			<para>
+				Let's now take a look at the shortcut methods available in the database set class.
+			</para>
+
+			<sect3>
+				<title>The <literal>query</literal> method</title>
+				<para>
+					Shortcut for <literal>$this->getDb()->query()</literal>.
+				</para>
+				<para>
+					If the method results a <literal>weeDatabaseResult</literal> object,
+					the <literal>weeDatabaseResult::rowClass()</literal> method will be called with <literal>$this->sModel</literal> as parameter.
+					<literal>$this->sModel</literal> is the name of the class of the model corresponding to this set.
+					You can find more information about <literal>rowClass</literal> in the
+					<link linkend="mod_db_results_rowclass">database access layer's documentation</link>.
+				</para>
+				<para>
+					The following snippet adds a <literal>fetchAll</literal> method to our previous example, using the shortcut method this time.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-set-query.php.xml"/>
+				</para>
+				<para>
+					If you iterate through the results, you will fetch <literal>myExampleModel</literal> objects for each resulting row.
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>The <literal>queryRow</literal> method</title>
+				<para>
+					Shortcut for <literal>$this->getDb()->query()->rowClass($this->sModel)->fetch()</literal>.
+				</para>
+				<para>
+					See <literal>weeDbSet::query</literal> for an explanation about <literal>rowClass</literal>.
+					The method <literal>fetch</literal> expects <emphasis>exactly one result</emphasis>.
+					It will trigger an exception otherwise.
+				</para>
+				<para>
+					This method is best used for situations similar to our method <literal>myExampleSet::fetch</literal>.
+					Let's rewrite it using the shortcut method:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-set-queryrow.php.xml"/>
+				</para>
+				<para>
+					It's still working exactly the same as before, but we saved quite a few keystrokes,
+					and more importantly we won't have to repeat ourselves each time we want to repeat this common operation.
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>The <literal>queryValue</literal> method</title>
+				<para>
+					Shortcut for <literal>$this->getDb()->queryValue()</literal>.
+				</para>
+				<para>
+					This is best useful for queries returning exactly one value.
+					For example, when counting the number of rows in a table.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-set-queryvalue.php.xml"/>
+				</para>
+				<para>
+					If you implemented the interface <ulink url="http://php.net/Countable">Countable</ulink> in the set, you could also write:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-set-queryvalue-countable.php.xml"/>
+				</para>
+				<para>
+					But as you can see there isn't that much advantage doing so.
+					You might find a situation where this comes in handy though.
+				</para>
+				<para>
+					As you can see, the resulting set class is pretty easy to read and self-describing.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Model</title>
+			<para>
+				The model represents an item and will thus contain the item's information.
+				Typically, a database model will contain the data for the row associated with its table.
+				It will not perform many operations on the table itself, it should basically just save changes when it is requested.
+				It is the class that will add the most meaning to the data.
+				A model for an user could contain a method calculating if today is the user's birthday, for example.
+				It is also the one providing relationships to other sets.
+				A model for an user could contain a method that would retrieve the user's comments.
+			</para>
+			<para>
+				The model object implements <ulink url="http://php.net/ArrayAccess">ArrayAccess</ulink> so accessing its data is pretty straightforward:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-arrayaccess.php.xml"/>
+			</para>
+			<para>
+				When you need to write a relationship it's also pretty easy.
+				Simply call the right method in the right set and provide it with the parameters it requires.
+				Since it's a relationship, it'll usually require the primary key of the current model.
+				To continue our previous example, our <literal>myExampleModel</literal> class could look like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-class.php.xml"/>
+			</para>
+			<para>
+				The database model class define only two methods for working on the database.
+				Of course, like with the database set class, you can also access the database directly using the same <literal>getDb</literal> method.
+			</para>
+
+			<sect3>
+				<title>The <literal>query</literal> method</title>
+				<para>
+					Shortcut for <literal>$this->getDb()->query()</literal>.
+					As opposed to <literal>weeDbSet::query</literal>, no row class operation is performed
+					since this method should not be used to write a <literal>SELECT</literal> query.
+				</para>
+				<para>
+					You can use it to perform an `UPDATE` query, for example.
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-update.php.xml"/>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>The <literal>queryValue</literal> method</title>
+				<para>
+					Shortcut for <literal>$this->getDb()->queryValue()</literal>.
+					You should not need to use this method unless under very specific circumstances.
+					Do not use it to count the number of items in a related table, counting belongs to a set.
+				</para>
+				<para>
+					An example could be to ask the database what is the current date
+					(<literal>SELECT CURRENT_TIMESTAMP</literal> or similar), and then to use this current date for calculation.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Defining the database used</title>
+			<para>
+				Both set and model classes define 2 methods to get or set the database they will use to execute the queries.
+				The database defaults to the application's database, so you won't need to set it most of the time.
+				You might need it if you don't use the application module or if you use more than one database in your application.
+				When a set returns a model, the database is <emphasis>NOT</emphasis> passed automatically to the new object.
+				There is no guess-work involved, all the objects will assume that if you don't specify a different database yourself
+				it means you want to use the default database of the application.
+			</para>
+			<para>
+				Let's take a look at what this means in 2 similar examples.
+				In the first one we are going to copy users data from the main database to a second "backup" database:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-setdb-main-backup.php.xml"/>
+			</para>
+			<para>
+				In the second example we copy users data from the "backup" database to the main database:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-setdb-backup-main.php.xml"/>
+			</para>
+			<para>
+				In both cases it's very clear where we fetch or save data.
+				The rule is: <emphasis>if you don't specify a database explicitly, the default database will be used</emphasis>.
+				If you need to work with different databases often you can always change this behavior where you see fit in your own classes, but we don't recommend it.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_model_scaffold">
+		<title>Database scaffolding</title>
+		<para>
+			The model module also includes two classes designed for scaffolding a database model.
+			These two classes will provide the developer with a handset of methods for common operations without having to write or generate any code.
+		</para>
+		<para>
+			The scaffold classes use <link linkend="mod_dbmeta">DbMeta</link> to build queries.
+			This means that any change on the database structure will automatically be applied to the scaffold classes without you needing to do anything.
+			If you need to add a field in a table, simply add it, nothing else; the model doesn't have to be updated since it asks directly the database for the information it requires.
+		</para>
+		<para>
+			To be clear. The goal of the scaffolding classes is not to abstract all SQL queries or anything like
+			what an <ulink url="http://en.wikipedia.org/wiki/Object-relational_mapping">ORM</ulink> would do.
+			Its goal is to make all the common operations available to you with the least effort.
+			For more complicated operations you can use the full power of <ulink url="http://en.wikipedia.org/wiki/SQL">SQL</ulink> to <link linkend="mod_model_db">write queries</link>.
+		</para>
+		<para>
+			Even if you don't want to use them, you might consider reading this chapter, if you plan to use the UI module.
+			This module expects an interface compatible with the scaffold classes to interact with the domain model of your application.
+		</para>
+		<para>
+			In order to use scaffolding on a table, you must define both a set and a model.
+			These set and model will extend the base scaffold classes available in the framework and provide them with all they need to work properly.
+			By default they only require the name of the table they scaffold, along with the name of the associated model/set class.
+		</para>
+		<para>
+			Assuming we want to write a domain model for our users:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-classes.php.xml"/>
+		</para>
+		<para>
+			That's all we need to define to be able to count the number of rows in the table,
+			fetch one or more rows, search, insert, update or delete rows.
+			With only this code you are ready to access your table and already have 75% of the queries you need built for you.
+		</para>
+
+		<sect2>
+			<title>Counting</title>
+			<para>
+				To count the number of items in the table, use the method <literal>count</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-count.php.xml"/>
+			</para>
+			<para>
+				Additionally you can use the function <literal>count</literal> directly on the object,
+				because it implements the <ulink url="http://php.net/Countable">Countable interface</ulink>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching</title>
+			<para>
+				You can fetch one, multiple or all rows from the table.
+			</para>
+			<para>
+				To fetch one row you have to know its primary key.
+				The primary key can consists of one or more columns of the table.
+				If the primary key spans one column then simply pass its value,
+				otherwise pass an associative array containing all the values for all the columns of the primary key.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-fetch.php.xml"/>
+			</para>
+			<para>
+				To fetch more than one row, or in other words, to fetch a subset, you need to call <literal>fetchSubset</literal>.
+				This method expects two arguments: the offset from where to start retrieving rows and the number of rows to retrieve.
+				By default, it will start at row 0 and will retrieve all the rows it finds.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-fetchsubset.php.xml"/>
+			</para>
+			<para>
+				By default it will simply fetch all the rows in the table.
+				You can also use the alias <literal>fetchAll</literal> that will perform
+				a <literal>fetchSubset</literal> with default parameters and thus return all the rows in the table.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-fetchall.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Searching</title>
+			<para>
+				You can also search in the table according to various criteria.
+				The framework defines a few <emphasis>safe criteria</emphasis>
+				available in all RDBMS, but is flexible enough to allow you to define your own.
+			</para>
+			<para>
+				To search in the table, simply use the method <literal>search</literal>.
+				Depending on the criteria operator, you may need to create an array
+				to contain the operator and the values associated with a field.
+				See the <ulink url="http://api.extend.ws/#weeDbSetScaffold/search">search API</ulink> for more information.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search.php.xml"/>
+			</para>
+			<para>
+				You can count the number of rows you would have obtained if you were trying
+				to retrieve all the results by calling the <literal>searchCount</literal> method.
+				If the criteria you gave matches 77 rows but you retrieve only 10,
+				using <literal>searchCount</literal> will allow you to know that there's 67 more you can retrieve.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-searchcount.php.xml"/>
+			</para>
+			<para>
+				The following criteria operators are defined by default:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search-criteria.php.xml"/>
+			</para>
+			<para>
+				If a criteria operator you need is not available by default,
+				you can use it by adding it to the operators array when you extend the scaffolding set class.
+				For example you could add <ulink url="http://dev.mysql.com/doc/refman/5.1/en/regexp.html">MySQL's regular expression functions</ulink> to the list of criteria operators.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search-regexp.php.xml"/>
+			</para>
+			<para>
+				You can then use these criteria operators in your <literal>search</literal> calls.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search-use-regexp.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Custom results order</title>
+			<para>
+				The order in which all the results are returned when using <literal>fetchSubset</literal>,
+				<literal>fetchAll</literal> or <literal>search</literal> is undetermined by default.
+				If you wish to order the results you can use the <literal>orderBy</literal> method before trying to retrieve the rows.
+			</para>
+			<para>
+				This method expects only one argument.
+				You can specify either the column you wish to use to order the results,
+				or an associative array if you need more options.
+				Let's look at a few examples:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-orderby.php.xml"/>
+			</para>
+			<para>
+				I suppose you get it. For more information you can look at the <ulink url="http://api.extend.ws/#weeDbSetScaffold/orderBy">orderBy method in the API</ulink>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Joins</title>
+			<para>
+				You can also perform joins automatically to retrieve data from multiple tables if needed.
+				For example you might have a table <literal>users</literal> with each user attached to a profile described in a table named <literal>profiles</literal>.
+				When you retrieve the users you might also want to retrieve the profile information for this user.
+				You can do so automatically by defining the relations in the declaration of your <literal>users</literal> set.
+				To do this, however, all associated tables must have a primary key.
+			</para>
+			<para>
+				Let's first define our classes for the <literal>profiles</literal> table.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-profiles.php.xml"/>
+			</para>
+			<para>
+				Nothing new here.
+				Now we are going to modify the <literal>users</literal> set so that it knows about this relationship
+				and more importantly so that it knows you <emphasis>want</emphasis> to retrieve the data from this table.
+				Assuming you have a normalized database and you have the <literal>profiles</literal> table's primary key name
+				identical to the foreign key in your <literal>users</literal> table (for example, they're both called <literal>profile_id</literal>), you only have to do this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-refsets.php.xml"/>
+			</para>
+			<para>
+				That's all. Simply give it the name of the set you associate to
+				your <literal>users</literal> set and it will do all the work for you.
+				If you then fetch a row it will contain the profile information.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-usage.php.xml"/>
+			</para>
+			<para>
+				You can specify multiple reference tables in your set.
+				For example you could associate both <literal>profiles</literal>
+				and a different set for the <literal>projects</literal> table.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-multiple.php.xml"/>
+			</para>
+			<para>
+				Although it is much better to have <ulink url="http://en.wikipedia.org/wiki/Database_normalization">a normalized database</ulink>,
+				sometimes you must deal with a lesser quality code base.
+				If you have a relationship between <literal>users</literal> and <literal>profiles</literal>
+				but the column in <literal>users</literal> is called <literal>profile_id</literal>
+				while it is simply called <literal>id</literal> in <literal>profiles</literal>,
+				you can specify on which columns the join must be applied.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-keys.php.xml"/>
+			</para>
+			<para>
+				If your primary key contains more than one column, simply add them to the <literal>key</literal> array.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-multiple-keys.php.xml"/>
+			</para>
+			<para>
+				As you can see it becomes a little more complicated if your database is not normalized,
+				so be sure to design a good schema for easier development and maintenance later.
+			</para>
+			<para>
+				By default all joins are <literal>LEFT OUTER JOIN</literal>.
+				You can change the join type by modifying the <literal>$sJoinType</literal> property.
+				All methods will take notice of this and act accordingly, including the method <literal>count</literal>.
+			</para>
+			<para>
+				To use <literal>INNER JOIN</literal> instead of the default join type:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-type.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Deleting</title>
+			<para>
+				To delete an item from the set, call the <literal>delete</literal> method.
+				This method expects the primary key as its only parameter.
+				The primary key can be either a value or an array of values
+				for each columns of the primary key, just like with the method <literal>fetch</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-delete.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Inserting</title>
+			<para>
+				To insert an item in the set, call the <literal>insert</literal> method.
+				Simply give the values to be inserted in the table and it will be done.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-insert.php.xml"/>
+			</para>
+			<para>
+				As you can see, the query will be built automatically.
+				This allows you to give the columns you have without worrying about it.
+			</para>
+			<para>
+				The <literal>insert</literal> method returns a model object containing
+				the data you just gave to it, so that you can use it directly if needed.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-insert-return.php.xml"/>
+			</para>
+			<para>
+				The <literal>insert</literal> method unfortunately cannot retrieve
+				the value of the primary key if this one is generated by the database.
+				Not yet anyway.
+				But you can easily do it yourself by extending the <literal>insert</literal> method in your set.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-insert-getpkid.php.xml"/>
+			</para>
+			<para>
+				That's it. You can now use the <literal>user_id</literal> in your application by using <literal>$oUser['user_id']</literal>.
+			</para>
+			<para>
+				Note that since the primary key is required for <emphasis>updating</emphasis> to work,
+				you can directly use the object returned by your extended <literal>insert</literal> method,
+				add values and update the row in the database.
+				But this is not efficient.
+				If you can, put all your data when inserting instead of executing two queries.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Updating</title>
+			<para>
+				To update a row, you first need to assign the new values for your columns and then
+				commit the changes to the database by calling the method <literal>update</literal> of the model class.
+			</para>
+			<para>
+				The following snippet update the user's email.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-update.php.xml"/>
+			</para>
+			<para>
+				You do not have to worry about data not belonging to the database when updating.
+				If you retrieved data from both the <literal>users</literal> and <literal>profiles</literal> table using joins,
+				all data belonging to the <literal>profiles</literal> table will be ignored by the <literal>update</literal> method.
+				If you want to update the <literal>profiles</literal>, use the correct model for the job.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Performance</title>
+			<para>
+				Since they make use of <link linkend="mod_dbmeta">DbMeta</link> to build queries,
+				the scaffolding classes need to perform additional queries to retrieve the metadata information.
+				If you need performance you should avoid using these classes in their current form.
+				In the future, however, integrated caching mechanisms will be used to cache the metadata information
+				and allow you to use these classes even when you require performance.
+				After all, metadata isn't supposed to change unless you update the application, so it can be very easily cached.
+			</para>
+			<para>
+				Today however you might consider avoiding creating multiple instances of the same set,
+				as it will query the database for metadata information for each sets.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

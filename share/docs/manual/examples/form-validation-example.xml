@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<formkey>0</formkey>
+	<method>post</method>
+
+	<widgets>
+		<widget type="fieldset">
+			<widget type="hidden" action="update" required="required">
+				<name>user_id</name>
+				<label>User ID</label>
+				<validator type="weeNumberValidator" min="1"/>
+			</widget>
+
+			<widget type="textbox" required="required" required_error="You must enter an username.">
+				<name>user_name</name>
+				<label>Username</label>
+				<validator type="weeStringValidator"
+					min="3" min_error="The username must contain at least 3 characters."
+					max="16" max_error="The username must contain at most 16 characters."
+				/>
+			</widget>
+
+			<widget type="textbox" required="required" required_error="You must enter an email address.">
+				<name>user_email</name>
+				<label>Email</label>
+				<validator type="weeEmailValidator" invalid_error="The email address is invalid."/>
+			</widget>
+
+			<widget type="checkbox">
+				<name>user_email_private</name>
+				<label>Keep email private</label>
+			</widget>
+
+			<widget type="choice" required="required">
+				<name>profile_id</name>
+				<label>Profile</label>
+				<validator type="weeOptionValidator"/>
+				<options>
+					<item label="Administrator" value="ADM"/>
+					<item label="Moderator" value="MOD"/>
+					<item label="User" value="USR"/>
+				</options>
+			</widget>
+
+			<widget type="fieldset">
+				<class>buttonsfieldset</class>
+				<widget type="submitbutton"/>
+			</widget>
+		</widget>
+	</widgets>
+</form>

@@ -1,0 +1,3 @@
+<?php
+
+$aRows = $oResults->fetchAll();

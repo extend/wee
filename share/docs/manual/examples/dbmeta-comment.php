@@ -1,0 +1,3 @@
+<?php
+
+$mComment = $oCommentableObject->comment();

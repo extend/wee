@@ -1,0 +1,3 @@
+<?php
+
+$iNumRows = count($oResults);

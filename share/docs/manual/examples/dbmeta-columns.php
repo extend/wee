@@ -1,0 +1,3 @@
+<?php
+
+$aColumns = $oTable->columns();

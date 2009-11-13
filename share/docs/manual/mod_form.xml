@@ -1,0 +1,1333 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_form">
+	<title>Forms module</title>
+
+	<para>
+		When building a web application, a recurring task is to write an HTML form, to receive,
+		filter and validate its input and to then use the submitted data or store it into a database.
+		Writing all the code to handle one form can take some time.
+		Writing the code to handle all of your application's forms takes a lot more time.
+	</para>
+	<para>
+		Web:Extend was started because of the simple fact that using forms is too often a tedious task.
+		Throughout its history, the framework included some kind of form generator that handled filtering and validation on its own.
+		This form generator evolved through various stages to take its current form.
+		What was at first badly written PHP became with time a very efficient form generator,
+		allowing you to boost your productivity without sacrificing code quality, performance or security.
+	</para>
+	<para>
+		The form module uses <ulink url="http://en.wikipedia.org/wiki/XSLT">XSLT</ulink> to transform its form files into valid XHTML.
+		Do not worry however, there is a good probability that you won't have to write any XSL stylesheet.
+		In fact, unless you want to <link linkend="mod_form_customization">customize extensively the resulting form</link>
+		by altering its markup output, you probably won't need to, ever.
+	</para>
+
+	<sect1 id="mod_form_format">
+		<title>Form file format</title>
+
+		<para>
+			The form files are basically XHTML markup along with a few special nodes.
+			The special nodes cover the form configuration and the fields it contains.
+		</para>
+		<para>
+			A form file has the following structure:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-file-format.xml.xml"/>
+		</para>
+		<para>
+			The following nodes are defined in this example:
+			<table>
+				<title>Main nodes in a form file</title>
+				<tgroup cols="3">
+					<thead>
+						<row>
+							<entry>Node</entry>
+							<entry>Parent node</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><literal>form</literal></entry>
+							<entry>--</entry>
+							<entry>Root node, no attributes. Contains header nodes (none required) and a mandatory <literal>widgets</literal> node.</entry>
+						</row>
+						<row>
+							<entry><literal>widgets</literal></entry>
+							<entry><literal>form</literal></entry>
+							<entry>Root node for the form contents. Contains all widgets along with the embedded XHTML.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</para>
+		<para>
+			The first line is the XML header.
+			Although not necessarily required, it is recommended to always define it
+			as it allows the parser to detect the encoding of the file.
+		</para>
+
+		<sect2>
+			<title>Header</title>
+			<para>
+				There is currently four different nodes available.
+				<table>
+					<title>Header nodes in a form file</title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>Node</entry>
+								<entry>Parent node</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>class</literal></entry>
+								<entry><literal>form</literal></entry>
+								<entry>The form's CSS class. Defaults to <literal>block</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>enctype</literal></entry>
+								<entry><literal>form</literal></entry>
+								<entry>The form's <literal>enctype</literal> attribute. Do not forget to set it to <literal>multipart/form-data</literal> when the form permits file uploads.</entry>
+							</row>
+							<row>
+								<entry><literal>formkey</literal></entry>
+								<entry><literal>form</literal></entry>
+								<entry>Whether to enable the <emphasis>form key protection</emphasis>. Value can be either 0 or 1. Enabled by default.</entry>
+							</row>
+							<row>
+								<entry><literal>method</literal></entry>
+								<entry><literal>form</literal></entry>
+								<entry>Submit method. Either <literal>post</literal> or <literal>get</literal>. Defaults to <literal>post</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>uri</literal></entry>
+								<entry><literal>form</literal></entry>
+								<entry>Target URI of the form. Defaults to the current page, identified by <literal>$_SERVER['REQUEST_URI']</literal>.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				The following example demonstrates the setting of a few header options:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-file-format-header.xml.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Widgets</title>
+			<para>
+				A <literal>widget</literal> node, child of the <literal>widgets</literal> node, contains information about a field.
+				It defines the its type, name, label, value, validators and various other options.
+			</para>
+			<para>
+				The widget node can contain the following nodes:
+				<table>
+					<title>Widget nodes in a form file</title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>Node</entry>
+								<entry>Parent node</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>class</literal></entry>
+								<entry><literal>widget</literal></entry>
+								<entry>The widget's HTML class.</entry>
+							</row>
+							<row>
+								<entry><literal>label</literal></entry>
+								<entry><literal>widget</literal></entry>
+								<entry>Widget's label that will be displayed next to it. For example <literal>Username</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>name</literal></entry>
+								<entry><literal>widget</literal></entry>
+								<entry>Widget's name, also used as the name of the HTML element produced. For example <literal>user_name</literal>.</entry>
+							</row>
+							<row>
+								<entry><literal>validator</literal></entry>
+								<entry><literal>widget</literal></entry>
+								<entry>One or more validators associated with this widget. See <link linkend="mod_form_validation">forms validation</link>.</entry>
+							</row>
+							<row>
+								<entry><literal>value</literal></entry>
+								<entry><literal>widget</literal></entry>
+								<entry>The widget's default value.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				Selectable widgets can also define a set of options. A root node and two different child nodes exist.
+				<table>
+					<title>Selectable widget-specific nodes in a form file</title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>Node</entry>
+								<entry>Parent node</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>options</literal></entry>
+								<entry><literal>widget</literal></entry>
+								<entry>Root node for the list of options. Child of <literal>widget</literal></entry>
+							</row>
+							<row>
+								<entry><literal>item</literal></entry>
+								<entry><literal>options</literal> | <literal>group</literal></entry>
+								<entry>An item that can be choosed from the list of options.</entry>
+							</row>
+							<row>
+								<entry><literal>group</literal></entry>
+								<entry><literal>options</literal> | <literal>group</literal></entry>
+								<entry>A non-selectable item that defines a group of other items. Only available for <literal>choice</literal> and <literal>radiobox</literal> widgets.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				Here is an example of a form containing a few widgets:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-file-example.xml.xml"/>
+			</para>
+			<para>
+				This XML will result in the following form.
+				The appearance of the form is defined by the default CSS style available in <filename>res/wee/form.block.css</filename>.
+				Before applying the stylesheet, <filename>res/yui/reset-fonts.css</filename> was also applied in order to reset the default styles of the browser.
+				The form is styled because we used the default HTML class <literal>block</literal>.
+				<screenshot>
+					<screeninfo>Example form</screeninfo>
+					<mediaobject>
+						<imageobject><imagedata fileref="snap/basic-form.png" format="PNG"/></imageobject>
+						<textobject><phrase>Example form</phrase></textobject>
+						<caption><para>Example form</para></caption>
+					</mediaobject>
+				</screenshot>
+			</para>
+			<para>
+				Note that all widgets that are direct child nodes of <literal>widgets</literal> will be contained inside an <literal>ol</literal> structure.
+				So you will have the following structure for your generated form:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-output-structure.html.xml"/>
+			</para>
+			<para>
+				A <link linkend="mod_form_widgets">complete widget reference</link> is available separately.
+				It details all the widget types available in the framework.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Embedded XHTML</title>
+			<para>
+				You can also embed XHTML directly into the form, inside the <literal>widgets</literal> node.
+				The following tags are allowed by default:
+				<programlisting>
+a, abbr, acronym, address, area, b, bdo, big, blockquote,
+br, caption, cite, code, col, colgroup, dd, del,
+div, dfn, dl, dt, em, h1, h2, h3, h4, h5, h6, hr, i,
+img, ins, kbd, li, map, noscript, object, ol, p,
+param, pre, q, samp, small, span, strong, sub, sup,
+table, tbody, td, tfoot, th, thead, tr, tt, ul, var
+				</programlisting>
+			</para>
+			<para>
+				If you need another tag not present in this list, you can add it by <link linkend="mod_form_customization">customizing the form output</link>.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_form_usage">
+		<title>Usage</title>
+		<para>
+			Creating a form file is half the work.
+			The remaining work is to actually output it and to handle the response request after the user submits the form.
+			To output a form, just convert it to string:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-tostring.php.xml"/>
+		</para>
+		<para>
+			This snippet will create a form based on the <filename>app/form/myform.form</filename> file and output it.
+		</para>
+		<para>
+			Not all forms can be generated directly like this.
+			Additional steps might be required if you are using selectable widgets or the built-in <emphasis>form key protection</emphasis>.
+			In these cases, the form generation may fail when you try to output it, because it requires more information.
+		</para>
+
+		<sect2>
+			<title>Form helpers</title>
+			<para>
+				Since forms are XML it is not easy to modify the form dynamically.
+				You can use form helpers to assist you in these tasks.
+				To create a form helper associated with the widget named <literal>profile_id</literal>, use the following code:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-helper.php.xml"/>
+			</para>
+			<para>
+				It will create an helper object whose goal is to help you modify the selectable widgets' options.
+				It is currently the only helper available in the framework. You can easily build your own helper though.
+				The only thing required is for the constructor to accept one parameter: the widget's <ulink url="http://php.net/simplexml">SimpleXMLElement object</ulink>.
+				Because all PHP objects are references, all modifications on this object will also modify the form itself.
+			</para>
+			<para>
+				Using <literal>weeFormOptionsHelper</literal>, you can add option items,
+				check if a value is in the options, select one or more items and check if a value is selected.
+			</para>
+			<para>
+				<emphasis>To add items</emphasis>, you can use the <literal>addOption</literal> and the <literal>addOptions</literal> methods,
+				the former allowing you to add one item option, and the latter an array of options. Let's take a look at a few examples:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-helper-addoption.php.xml"/>
+			</para>
+			<para>
+				As you can see in the last example, we can specify an XPATH query as a second parameter.
+				When you do so, it will instruct the helper to add the option to the node identified by the XPATH query, instead of directly at the root of the options.
+			</para>
+			<para>
+				<emphasis>To check if a value exists</emphasis>, use the <literal>isInOptions</literal> method.
+				It will return a boolean indicating whether the value exists. The value can be anywhere in the options tree, even in a sub-group.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-helper-isinoptions.php.xml"/>
+			</para>
+			<para>
+				<emphasis>To select items</emphasis> you can either define the selected state
+				when creating the item or use one of the <literal>select</literal>,
+				<literal>selectOne</literal> and <literal>selectNone</literal> methods.
+			</para>
+			<para>
+				<literal>select</literal> allows you to select a new option.
+				<literal>selectOne</literal> allows you to select exactly one item in the options.
+				Items already selected will be deselected.
+				It is equivalent to calling <literal>selectNone</literal> followed by a single <literal>select</literal>.
+				As you probably guessed it, <literal>selectNone</literal> will unselect all items.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-helper-select.php.xml"/>
+			</para>
+			<para>
+				<emphasis>To find out if an item is selected</emphasis>, simply use the <literal>isSelected</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-helper-isselected.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Form key protection</title>
+			<para>
+				The form key protection mechanism helps secure your applications by preventing
+				<ulink url="http://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross-Site Request Forgery</ulink> (CSRF).
+				It is enabled by default.
+			</para>
+			<para>
+				This protection will add a hidden input field to all your form-key forms, containing this form key.
+				The form key has an expire time that makes the form validation fails if the form is not submitted before the expiration.
+				If the form key is not found the form validation will also fail.
+			</para>
+			<para>
+				The session must be started in order to have a working form key protection.
+				If the session isn't started an exception will be thrown.
+			</para>
+			<para>
+				This mechanism is entirely automated and require no further intervention other than enabling sessions.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Target action</title>
+			<para>
+				A target action identifies the action that will be performed after the form is submitted.
+				For example a form can be used to <literal>add</literal> or <literal>update</literal> a record in a database.
+				Some of your form's widgets can be removed automatically if their target action do not match,
+				allowing you to use the same form file for <literal>add</literal>, <literal>update</literal> and any other actions you may need.
+			</para>
+			<para>
+				Let's take a look at the following form for a concrete example:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-file-example.xml.xml"/>
+			</para>
+			<para>
+				The <literal>user_id</literal> widget of this form will only appear if the target action of the form is <literal>update</literal>.
+				All other widgets will appear with any target action.
+				You can specify the target action when creating the form, by giving its constructor a second parameter.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-action.php.xml"/>
+			</para>
+			<para>
+				You can use the same form file for different actions, allowing you to reuse forms instead of creating a lot of similar form files.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Filling values</title>
+			<para>
+				You can easily fill all values for a form using the method <literal>fill</literal>.
+				It accepts an associative array containing name/value pairs.
+			</para>
+			<para>
+				The following example demonstrates how the <literal>fill</literal> method can be used.
+				The form is first filled once with the data from the database.
+				Then, if the form has been submitted, the submitted data is filled into the form, overwriting the data coming from the database.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-fill.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>XPATH queries</title>
+			<para>
+				Last but not least, the form class allows you to access the form's <emphasis>SimpleXMLElement object</emphasis> directly using XPATH.
+				It provides two methods for this purpose, namely <literal>xpath</literal> and <literal>xpathOne</literal>.
+				The former allows you to retrieve an array of results and the latter exactly one result.
+				<literal>xpathOne</literal> will throw an exception if not exactly 1 result has been found.
+			</para>
+			<para>
+				<literal>xpath</literal> returns an array of SimpleXMLElement objects.
+				It is merely a proxy method that will call the <ulink url="http://php.net/manual/en/function.simplexml-element-xpath.php">SimpleXMLElement::xpath</ulink> method.
+				Let's take a look at a few examples:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-xpath.php.xml"/>
+			</para>
+			<para>
+				<literal>xpathOne</literal> can be used when you expect exactly one result.
+				If no result are found an exception will be thrown.
+				It will return a SimpleXMLElement object directly.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-xpathone.php.xml"/>
+			</para>
+			<para>
+				All the changes done on the objects returned by XPATH are applied automatically to the form without requiring your intervention.
+			</para>
+		</sect2>
+	</sect1>
+
+	<!-- TODO: forms externals -->
+
+	<sect1 id="mod_form_validation">
+		<title>Data validation</title>
+		<para>
+			The forms module also handles the validation of forms.
+			Data validation is an important part of processing forms.
+			It ensures that the data that was submitted through the form is the data you are expecting and is in the correct format.
+		</para>
+		<para>
+			Although validation can be done client-side, it's important that you always validate the data server-side.
+			Although it may be nice to be able to validate data without querying the server, client-side validation can be easily bypassed.
+			Remember to always validate your data server-side, even if you add client-side validation.
+		</para>
+		<para>
+			A typical form processing, including filtering, validation and error handling, looks like this:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-validation-typical.php.xml"/>
+		</para>
+
+		<sect2>
+			<title>Filtering data</title>
+			<para>
+				The first thing to do is to make sure that the data you just received
+				do not contain additional fields that were absent from the original form.
+				It's an important step, as it will protect your application from attackers
+				that might try to add fields in the hope that they will be saved into the database,
+				despite not being in the form originally.
+				If you had a field <literal>user_admin</literal> in your <literal>users</literal> table,
+				and you built to insert query dynamically,
+				a malicious user might be able to gain administrator rights by adding this field to its POST request.
+				With filtering, you are sure that the data do not contain unwanted fields.
+			</para>
+			<para>
+				The <literal>filter</literal> method will filter the array given and return an array
+				containing only the data for the fields that are present in the form.
+				All other fields are stripped off the array.
+				This is all done in the following line of the above snippet:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-filter.php.xml"/>
+			</para>
+			<para>
+				You can also choose to overwrite the original <literal>$aEvent['post']</literal> array instead of creating another variable.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Validating data</title>
+			<para>
+				Now that we made sure that there is no hidden data in what we received,
+				we need to make sure that the data is <ulink url="http://en.wikipedia.org/wiki/Data_validation">valid</ulink>.
+				The framework helps you validate data automatically by using <link linkend="mod_validators">validators</link>.
+			</para>
+			<para>
+				As we saw previously, validators are specified directly in the form file.
+				The <literal>validator</literal> node defines the type of validator associated to the widget, along with the validator's parameters.
+				A widget can use any number of validators. You can easily stack multiple validators to ensure that your data is correct.
+			</para>
+			<para>
+				Let's add validators to the form we created in the previous chapter.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-validation-example.xml.xml"/>
+			</para>
+			<para>
+				Four validators are used here.
+				<itemizedlist>
+					<listitem><para><literal>weeNumberValidator</literal> ensures that the <emphasis>User ID</emphasis> is a number >= 1.</para></listitem>
+					<listitem><para><literal>weeStringValidator</literal> ensures that the <emphasis>Username</emphasis>'s length is between 3 and 16 characters.</para></listitem>
+					<listitem><para><literal>weeEmailValidator</literal> ensures that the <emphasis>Email</emphasis> is a valid email address.</para></listitem>
+					<listitem><para>Finally, <literal>weeOptionValidator</literal> ensures that the selected option is present in the option list.</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				The form will create instances of the validators specified in the form file.
+				You can also use custom validators if you need to.
+			</para>
+			<para>
+				To validate the form according to these specifications, simply call the <literal>validate</literal> method.
+				If validation fails, a <literal>FormValidationException</literal> will be thrown.
+				Whether you catch it or not (and you <emphasis>should</emphasis>), it will ensure that all data is correct and safely usable.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-validation-example.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Error handling</title>
+			<para>
+				When validation fails, an exception is thrown.
+				This exception contains all the errors that were detected during validation.
+				That's right, the validation doesn't stop on the first error.
+				Instead it compiles a list of human-readable errors associated
+				with each widgets and put this list inside the exception it throws.
+				This list can then be converted to a string or retrieved as an array.
+			</para>
+			<para>
+				To print the errors you can use the <literal>toString</literal> method of the exception.
+				This will concatenate all errors, one line per error, and return the resulting string. Let's look at an example.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-validation-errors.php.xml"/>
+			</para>
+			<para>
+				This snippet will output the following:
+				<programlisting>
+Input must not be smaller than 1.
+The username must contain at least 3 characters.
+The email address is invalid.
+Input must be available in the options.
+				</programlisting>
+			</para>
+			<para>
+				As you can see, when there's no custom error string the validator uses its default message.
+				The default is unfortunately pretty vague so you should always use a custom message
+				for validation errors that can happen during normal use of the application.
+				Here, we didn't put a message for the <emphasis>User ID</emphasis> and the <emphasis>Profile</emphasis>
+				because they shouldn't be modifiable directly in the browser without using a third-party tool (like <ulink url="http://getfirebug.com/">Firebug</ulink>).
+			</para>
+			<para>
+				If you were to omit one or more parameters, you would get a different error message.
+				Let's see what happens if we try to validate an empty array.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-validation-empty-array.php.xml"/>
+			</para>
+			<para>
+				This will give us the following error message:
+				<programlisting>
+Input is required for User ID.
+You must enter an username.
+You must enter an email address.
+Input is required for Profile.
+				</programlisting>
+			</para>
+			<para>
+				This is because we used the <literal>required</literal> attribute on the widgets.
+				We basically told the form that the validation must fail if there is no data associated with the widget.
+				Same as with the validators, we can define a custom error string, and if none are found a default message will be used.
+			</para>
+			<para>
+				The form can use these error messages and build them into the form when generating it.
+				This is what happens when we use the <literal>fillErrors</literal> method.
+				We tell the form to append the error messages next to each widgets so that the user can fix the errors.
+				To facilitate the task, we also should fill the form values with what was submitted.
+				The following snippet do exactly this.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-fillerrors.php.xml"/>
+			</para>
+			<para>
+				The <literal>Mappable</literal> interface ensures that the correct method will be called to convert the exception into its errors' array.
+			</para>
+			<para>
+				When an error occurs, the form will look similar to this:
+				<screenshot>
+					<screeninfo>Validation errors on a form</screeninfo>
+					<mediaobject>
+						<imageobject><imagedata fileref="snap/invalid-form.png" format="PNG"/></imageobject>
+						<textobject><phrase>Validation errors on a form</phrase></textobject>
+						<caption><para>Validation errors on a form</para></caption>
+					</mediaobject>
+				</screenshot>
+			</para>
+			<para>
+				All the errors are appended just below the corresponding widget!
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_form_widgets">
+		<title>Widgets reference</title>
+		<para>
+			This chapter describe all the available widgets in Web:Extend.
+		</para>
+		<para>
+			The following nodes are found in the standard widgets.
+			The widget reference will only list the nodes available for each widgets (with a few exceptions).
+			Please refer to this table for detailed informations about each of them.
+			<table>
+				<title>Widget nodes reference</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>Node</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><literal>class</literal></entry>
+							<entry>The widget's HTML class. Defaults to <literal>block</literal>.</entry>
+						</row>
+						<row>
+							<entry><literal>disabled</literal></entry>
+							<entry>Whether the widget is disabled. This is actually not a child node, but an attribute of the widget (like <literal>required</literal>).</entry>
+						</row>
+						<row>
+							<entry><literal>help</literal></entry>
+							<entry>Help message, displayed using the <literal>title</literal> attribute by default.</entry>
+						</row>
+						<row>
+							<entry><literal>label</literal></entry>
+							<entry>The widget's label.</entry>
+						</row>
+						<row>
+							<entry><literal>name</literal></entry>
+							<entry>Name of the widget.</entry>
+						</row>
+						<row>
+							<entry><literal>options</literal></entry>
+							<entry>List of options for selectable widgets.</entry>
+						</row>
+						<row>
+							<entry><literal>validator</literal></entry>
+							<entry>Validator associated with this widget.</entry>
+						</row>
+						<row>
+							<entry><literal>value</literal></entry>
+							<entry>Default value of the widget.</entry>
+						</row>
+						<row>
+							<entry><literal>widget</literal></entry>
+							<entry>A child widget node.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</para>
+		<para>
+			The reference indicates if a node is required and if it must be unique.
+			Unique here means that there can be only one of these nodes, while <emphasis>not unique</emphasis> means that you can have more than one.
+		</para>
+		<para>
+			All widgets that have a required name will create an HTML tag containing both a name and an id,
+			with the id being equal to <literal>'form_' . $name</literal> by default.
+			Use this at your advantage when writing client-side javascript.
+			All widgets with a name can have one or more optional validators, so they are not listed.
+		</para>
+		<para>
+			The type of the widget to be used in the form file is written <emphasis>in italic</emphasis>.
+		</para>
+
+		<sect2>
+			<title>Fieldset container</title>
+			<para>
+				The <emphasis>fieldset</emphasis> widget can be used as a container for other widgets.
+				<table>
+					<title>Nodes for the <literal>fieldset</literal> widget</title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>Node</entry>
+								<entry>Required?</entry>
+								<entry>Unique?</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>class</literal></entry>
+								<entry>No</entry>
+								<entry>Yes</entry>
+							</row>
+							<row>
+								<entry><literal>label</literal></entry>
+								<entry>No</entry>
+								<entry>Yes</entry>
+							</row>
+							<row>
+								<entry><literal>widget</literal></entry>
+								<entry>Yes</entry>
+								<entry>No</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				This widget will use the same structure as the form for containing the widgets, by using an ordered list.
+				The result will look similar to the following structure:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-fieldset-output-structure.html.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Writable widgets</title>
+			<para>
+				Writable widgets are widgets that have a value, as opposed to selectable widgets whose value can be selected.
+			</para>
+
+			<sect3>
+				<title>Textarea</title>
+				<para>
+					The <literal>textarea</literal> widget will create an HTML textarea tag.
+					<table>
+						<title>Nodes for the <literal>textarea</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>cols</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>disabled</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>rows</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>value</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					This widget uses two widget-specific nodes:
+					<table>
+						<title><literal>textarea</literal> widget-specific nodes</title>
+						<tgroup cols="2">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>cols</literal></entry>
+									<entry>HTML cols attribute of the textarea.</entry>
+								</row>
+								<row>
+									<entry><literal>rows</literal></entry>
+									<entry>HTML rows attribute of the textarea.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Textbox</title>
+				<para>
+					The <literal>textbox</literal> widget will create an HTML input tag with the type attribute equal to text.
+					<table>
+						<title>Nodes for the <literal>textbox</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>disabled</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>value</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					This widget uses one widget-specific nodes:
+					<table>
+						<title><literal>textbox</literal> widget-specific nodes</title>
+						<tgroup cols="2">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>readonly</literal></entry>
+									<entry>Makes the widget read only. Its value cannot be modified.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Password</title>
+				<para>
+					The <literal>password</literal> widget will create an HTML input tag with the type attribute equal to password.
+					<table>
+						<title>Nodes for the <literal>password</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>disabled</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>value</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Hidden</title>
+				<para>
+					The <literal>hidden</literal> widget will create an HTML input tag with the type attribute equal to hidden.
+					<table>
+						<title>Nodes for the <literal>hidden</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>disabled</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>value</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>File input</title>
+				<para>
+					The <literal>fileinput</literal> widget will create an HTML input tag with the type attribute equal to file.
+					<table>
+						<title>Nodes for the <literal>fileinput</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>disabled</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					This widget uses one widget-specific nodes:
+					<table>
+						<title><literal>fileinput</literal> widget-specific nodes</title>
+						<tgroup cols="2">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>accept</literal></entry>
+									<entry>The attribute <literal>accept</literal> of a file input HTML tag. Allows you to filter client-side the type of file you are accepting.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					Note that like all client-side validation, this attribute is not enough to ensure that the data you receive is the one you want.
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Checkbox</title>
+				<para>
+					The <literal>checkbox</literal> widget will create an HTML input tag with the type attribute equal to checkbox.
+					<table>
+						<title>Nodes for the <literal>checkbox</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>value</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					The <literal>value</literal> argument indicates whether the widget is checked.
+					The value sent by the HTML form will always be <literal>1</literal> when checked.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Selectable</title>
+			<para>
+				Selectable widgets are the widgets that contain an <literal>options</literal> node, which contains all the possible values for this widget.
+				An <literal>options</literal> node can contain <literal>item</literal> or <literal>group</literal> child nodes, depending on the widget.
+				These nodes are defined by their attributes. The possible attributes vary depending on the widget.
+			</para>
+
+			<sect3>
+				<title>Checklist</title>
+				<para>
+					The <literal>checklist</literal> widget will create a set of check boxes.
+					<table>
+						<title>Nodes for the <literal>checklist</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>options</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					The <literal>options</literal> node can only contain <literal>item</literal> nodes.
+					<literal>item</literal> nodes can contain the following attributes: <literal>disabled</literal>,
+					<literal>help</literal>, <literal>label</literal>, <literal>selected</literal>,
+					<literal>value</literal>, with <literal>label</literal> and <literal>value</literal> mandatory.
+				</para>
+			</sect3>
+			<sect3>
+				<title>Choice</title>
+				<para>
+					The <literal>choice</literal> widget will create an HTML select tag.
+					<table>
+						<title>Nodes for the <literal>choice</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>help</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>name</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>options</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>size</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>value</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					This widget uses one widget-specific nodes:
+					<table>
+						<title><literal>choice</literal> widget-specific nodes</title>
+						<tgroup cols="2">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>size</literal></entry>
+									<entry>The <literal>size</literal> attribute of the HTML select tag. Number of items to display at a time in the list.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					The <literal>options</literal> node can contain both <literal>item</literal> and <literal>group</literal> nodes.
+					<literal>item</literal> nodes can contain the following attributes: <literal>disabled</literal>,
+					<literal>label</literal>, <literal>selected</literal>, <literal>value</literal>, with only the <literal>label</literal> being mandatory.
+					The <literal>group</literal> nodes can contain the optional attribute <literal>disabled</literal>, the mandatory attribute <literal>label</literal>
+					and optional <literal>item</literal> child nodes.
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Radiobox</title>
+				<para>
+					The <literal>radiobox</literal> widget will create a set of HTML input tag with the type attribute equal to radio.
+					<table>
+						<title>Nodes for the <literal>radiobox</literal> widget</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Node</entry>
+									<entry>Required?</entry>
+									<entry>Unique?</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>class</literal></entry>
+									<entry>No</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>label</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+								<row>
+									<entry><literal>options</literal></entry>
+									<entry>Yes</entry>
+									<entry>Yes</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>
+					The <literal>options</literal> node can contain both <literal>item</literal> and <literal>group</literal> nodes.
+					<literal>item</literal> nodes can contain the following attributes: <literal>disabled</literal>, <literal>help</literal>,
+					<literal>label</literal>, <literal>selected</literal>, <literal>value</literal>, with <literal>label</literal> and <literal>value</literal> mandatory.
+					<literal>group</literal> nodes contain a mandatory <literal>label</literal> attribute and <literal>item</literal> or <literal>group</literal> child nodes.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Buttons</title>
+			<para>
+				All three buttons have the exact same child nodes.
+				<itemizedlist>
+					<listitem><para>The <literal>button</literal> widget will create an HTML input tag with the type attribute equal to button.</para></listitem>
+					<listitem><para>The <literal>resetbutton</literal> widget will create an HTML input tag with the type attribute equal to reset.</para></listitem>
+					<listitem><para>The <literal>submitbutton</literal> widget will create an HTML input tag with the type attribute equal to submit.</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				The nodes of all the buttons follow the same rules:
+				<table>
+					<title>Nodes for the buttons</title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>Node</entry>
+								<entry>Required?</entry>
+								<entry>Unique?</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>class</literal></entry>
+								<entry>No</entry>
+								<entry>Yes</entry>
+							</row>
+							<row>
+								<entry><literal>label</literal></entry>
+								<entry>No</entry>
+								<entry>Yes</entry>
+							</row>
+							<row>
+								<entry><literal>name</literal></entry>
+								<entry>No</entry>
+								<entry>Yes</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_form_customization">
+		<title>Output customization</title>
+		<para>
+			The whole process of generating forms is customizable.
+			You can change all the rules used to generate HTML, or even define your own .form file format if you wanted to.
+			Customization is possible through the use of user <ulink url="http://en.wikipedia.org/wiki/XSLT">XSL stylesheets</ulink>.
+			Note that customizing forms requires a good understanding of how XSLT works.
+		</para>
+		<para>
+			The rules in the user stylesheets will override the default rules.
+			This is because the user stylesheets are <emphasis>included</emphasis>
+			after the standard stylesheets are <emphasis>imported</emphasis>.
+		</para>
+
+		<sect2>
+			<title>Loading user stylesheets</title>
+			<para>
+				You can specify a path for your user stylesheets using the method <literal>setUserStylesheetsPath</literal>.
+				All the files (except hidden files) in the specified path will be loaded as user stylesheets.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-setuserstylesheet.php.xml"/>
+			</para>
+			<para>
+				Alternatively, if you need to use user stylesheets often in your project,
+				you can inherint <literal>weeForm</literal> and define the path directly in the constructor.
+				This way you won't have to repeat yourself every time you need to render a form.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-setuserstylesheet-construct.php.xml"/>
+			</para>
+			<para>
+				Then all you need to do is create an instance of this class.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Overriding default rules</title>
+			<para>
+				To override an existing template, you just need to write a new one that will match the same nodes.
+			</para>
+			<para>
+				For example, if you wanted to override the submit button widget, you would just need to define a rule matching its node.
+				The following user stylesheet make all submit buttons share the same custom label (and value, since the label is the value for submit buttons).
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/form-userstylesheet-example.xml.xml"/>
+			</para>
+			<para>
+				As you can see, this user stylesheet looks a lot like the original located in <filename>trunk/wee/form/xslt/submitbutton.xsl</filename>.
+				As you can probably guess, the best method to create a user stylesheet is to copy and paste one already existing and similar to what you are trying to achieve.
+				This advice is valid both for overriding rules and for adding new widgets.
+			</para>
+			<para>
+				To add a new widget the method is exactly the same.
+				The only difference is that the widget type do not exist in the standard stylesheets.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

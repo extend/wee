@@ -1,0 +1,3 @@
+<?php
+
+$sReferencedSchemaName = $oForeignKey->referencedSchemaName();

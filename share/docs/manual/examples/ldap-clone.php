@@ -1,0 +1,3 @@
+<?php
+
+$oLDAPCopy = clone $oLDAP;

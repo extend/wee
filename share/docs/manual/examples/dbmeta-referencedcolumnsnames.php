@@ -1,0 +1,3 @@
+<?php
+
+$aReferencedColumnsNames = $oForeignKey->referencedColumnsNames();

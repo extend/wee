@@ -1,0 +1,5 @@
+start.locale = 1
+
+locale.driver = weeLocale
+locale.auto = 1
+locale.default = en_US

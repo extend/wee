@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_http">
+	<title>HTTP module</title>
+	<para>
+		The <emphasis>HTTP module</emphasis> contains all the classes directly related to HTTP.
+		This includes <link linkend="mod_http_cookies">cookies</link>,
+		<link linkend="mod_http_sessions">sessions</link> and <link linkend="mod_http_upload">file upload handling</link>.
+		These classes encapsulate the <literal>$COOKIE</literal>, <literal>$_SESSION</literal> and <literal>$_FILES</literal> superglobal arrays, respectively.
+	</para>
+
+	<sect1 id="mod_http_cookies">
+		<title>Cookies</title>
+		<para>
+			Web:Extend provides a class that encapsulates the <literal>$COOKIE</literal> array.
+		</para>
+		<para>
+			The cookie class can be used both as an application driver or standalone.
+			This chapter will explain both ways.
+		</para>
+
+		<sect2>
+			<title>With the application module</title>
+			<para>
+				You can create and access the cookies object using the application module.
+				To do so, simply call <literal>weeApp()->cookies</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-app-create.php.xml"/>
+			</para>
+			<para>
+				By default the cookies object is created only when it is accessed.
+				There is no overhead if you don't use it.
+			</para>
+			<para>
+				The cookies object acts much like the <literal>$COOKIE</literal> array.
+				You can access your variables like you would with an array:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-app-access.php.xml"/>
+			</para>
+			<para>
+				By setting the value of <literal>cookies.path</literal> in the configuration file,
+				you can change the path under which the cookies will be saved.
+				By default the path used is the path to your bootstrap file (<filename>index.php</filename>).
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Without the application module</title>
+			<para>
+				If you are not using the application module, you can also create a standalone <literal>weeCookies</literal> object.
+				Once created you can access your cookies exactly like you would with the <literal>$COOKIES</literal> array. For example:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-no-app-create.php.xml"/>
+			</para>
+			<para>
+				You can also define the path under which the cookies will be saved.
+				By default the path used is the path to your bootstrap file (<literal>index.php</literal>).
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-no-app-create-path.php.xml"/>
+			</para>
+			<para>
+				All cookies set by this object will be saved under <literal>/path/to/my/app/</literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Setting cookies</title>
+			<para>
+				You can set cookies in two different ways.
+				The simpler way is to use <literal>weeCookies</literal> like an array.
+				The following code will send the cookie <literal>my_str</literal> with a value of <literal>egg</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-offsetset.php.xml"/>
+			</para>
+			<para>
+				This way does not allow you to specify the expiration time however.
+				If you need to, you can use the method <literal>set</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-set.php.xml"/>
+			</para>
+			<para>
+				However these variables won't be available for this request.
+				The cookies object do not store the variables you set:
+				it sends them to the browser, which will send them back on the next request.
+				So <literal>my_str</literal> won't be available until the next request.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Deleting cookies</title>
+			<para>
+				To delete a cookie, simply unset it.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-offsetunset.php.xml"/>
+			</para>
+			<para>
+				The value will be available in the object for the duration of the request.
+				The cookie will be deleted by the browser upon reception of the response headers.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_http_upload">
+		<title>File upload</title>
+		<para>
+			Two classes are designed to help you handle file uploads.
+			These classes allow you to iterate through all the files,
+			look for errors and safely move the files to their destination.
+			The first class, <literal>weeUploads</literal>,
+			wraps around the <literal>$_FILES</literal> array and allows you to retrieve files.
+			The second class, <literal>weeUploadedFile</literal>,
+			gives you a set of methods to manipulate the uploaded files.
+		</para>
+
+		<sect2>
+			<title>Files and arrays of files</title>
+			<para>
+				When you create an HTML file input widget, you need to give it a name that will be used to identify the file after the form is submitted.
+				You can have either single or arrays of files. To receive only a single file, you do not need to do anything special.
+				However if you want to receive an array of files all sharing the same name, you need to append <literal>[]</literal>
+				to the name of all the HTML file input widgets that will upload files with a common name.
+			</para>
+			<para>
+				In this chapter, <emphasis>arrays of files</emphasis> refer to this specific use of HTML names.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Accessing a specific file</title>
+			<para>
+				The class <literal>weeUploads</literal> provides methods to determine if a file has been uploaded and to retrieve it for later use.
+				Note that even if a file has tentatively been uploaded, an error might have occurred and you still have to look for errors on the individual file.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-fetch.php.xml"/>
+			</para>
+			<para>
+				Note that you can't use the method <literal>fetch</literal> on an array of files.
+				However you can use the method <literal>exists</literal> on them.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Iterating through the uploaded files</title>
+			<para>
+				You can iterate through all uploaded files using <literal>foreach</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-foreach.php.xml"/>
+			</para>
+			<para>
+				You can also filter the files so that you would iterate only over a specific array of files using the method <literal>filter</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-foreach-filter.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Error handling</title>
+			<para>
+				Once you got your <literal>weeUploadedFile</literal> object, you need to check if the upload completed successfully.
+				You can do so by using the method <literal>isOK</literal>.
+				Then, if an error happened during the upload you can retrieve an error message using <literal>getError</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-geterror.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving file information</title>
+			<para>
+				Once you know that the file was uploaded successfully, you can retrieve information about it.
+				The <literal>weeUploadedFile</literal> object provides a few methods and properties that you can use.
+			</para>
+			<para>
+				Amongst them, of note are the <literal>getExt</literal> and <literal>getFilename</literal> methods.
+				They allow you to retrieve the file extension and name, respectively.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-info.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Moving the uploaded file</title>
+			<para>
+				You can use the method <literal>moveTo</literal> to move the uploaded file.
+				Additionally you can use the method <literal>fileExists</literal> to determine
+				whether a file already exists at the location where you want to move your uploaded file.
+				They both use the same arguments, allowing you to reuse directly the values you would use for <literal>moveTo</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-moveto.php.xml"/>
+			</para>
+			<para>
+				Note that if the second argument isn't provided the original filename will be used.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Full upload handling example</title>
+			<para>
+				Here is a full example of upload handling code.
+				This is a typical use of these classes so feel free
+				to copy paste it directly in your projects before tweaking it.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-example-1file.php.xml"/>
+			</para>
+			<para>
+				And then the same code but for all uploaded files.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-files-example-manyfiles.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_http_sessions">
+		<title>Sessions</title>
+		<para>
+			Web:Extend contains a class that wraps the <literal>$_SESSION</literal> array,
+			adding security checks to prevent attacks like <ulink url="http://en.wikipedia.org/wiki/Session_fixation">session fixation</ulink>.
+		</para>
+		<para>
+			The session classes can be used both as an application driver or standalone.
+			This chapter describes both use, starting with the application driver way.
+			Then you will learn how to store sessions in a table in your database.
+		</para>
+
+		<sect2>
+			<title>With the application module</title>
+			<para>
+				<literal>weeApplication</literal>, the application module, can create a session automatically.
+				You just have to change a line in the configuration file.
+				Edit the parameter <literal>start.session</literal> and set it to <literal>1</literal> like this:
+				<programlisting>
+start.session = 1
+				</programlisting>
+			</para>
+			<para>
+				The framework will then create a <literal>weeSession</literal> object,
+				initiating a session, each time a page is requested.
+				You can then access this object by typing <literal>weeApp()->session</literal>.
+			</para>
+			<para>
+				Autostarting the session isn't required though. You could very well leave <literal>start.session</literal> at 0
+				and access <literal>weeApp()->session</literal> only when needed. If you do need to autostart it you should
+				also enable the output buffering, because the session will create a cookie that needs to be sent before
+				any output happens.
+			</para>
+			<para>
+				The session object acts much like the <literal>$_SESSION</literal> array.
+				You can access your variables like you would with an array, like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-sessions-set.php.xml"/>
+			</para>
+			<para>
+				Of course if you have to put or retrieve a lot of session variables you can do the following instead, to diminish the size of your code:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-sessions-set2.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Without the application module</title>
+			<para>
+				If you are not using the application module, you can also create a standalone <literal>weeSession</literal> object.
+				Once created you can access your session variables exactly like you would with the <literal>$_SESSION</literal> array.
+				For example:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-sessions-no-app.php.xml"/>
+			</para>
+
+			<sect3>
+				<title>Closing the session</title>
+				<para>
+					The session will be closed and the data will be stored upon destruction of the session's object.
+					This is automatically done when the script ends, but you might want to close the session before that.
+					You can close it by simply <ulink url="http://php.net/unset">unsetting</ulink> the object:
+					<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-sessions-unset.php.xml"/>
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Obtaining the user's IP address</title>
+			<para>
+				Finally, <literal>weeSession</literal> also allows you to retrieve
+				easily the user's IP address using the <literal>getIP</literal> method.
+				Calling <literal>weeApp()->session->getIP()</literal> will return the IP address of the user.
+				If the user is behind a proxy, it will be the forwarded IP address that will be returned, and not the proxy IP address.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Storing the session data in a database</title>
+			<para>
+				By default the session data is stored on the filesystem, each session containing an individual file.
+				You might prefer storing sessions in a database for various reasons.
+				One reason could be to improve security by making sure nobody can access your application's session data.
+				Another could be because you need a cluster of web servers all sharing the same session data.
+			</para>
+			<para>
+				You can use the <literal>weeSessionDbTable</literal> class in lieu of
+				<literal>weeSession</literal> to store the session data in a database table.
+				Its usage is the same but its creation requires two other parameters.
+			</para>
+			<para>
+				The <literal>db</literal> parameter specify the <link linkend="mod_db">database driver object</link> that will be used to store the session.
+				If it is not given then the default database <literal>weeApp()->db</literal> will be used instead.
+			</para>
+			<para>
+				The <literal>table</literal> parameter defines the table in which the session data is stored.
+				The following table definition can be used.
+				You can customize the schema definition as you wish as long as you keep the column names unchanged.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-sessions-table.sql.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Compability with <literal>$_SESSION</literal></title>
+			<para>
+				While we do not recommend mixing the two, it is possible to use
+				both <literal>weeSession</literal> and <literal>$_SESSION</literal> at the same time.
+				For example, the following code will work:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-sessions-compat.php.xml"/>
+			</para>
+			<para>
+				The creation of the <literal>weeSession</literal> object starts the session and do the security checks;
+				then we use the <literal>$_SESSION</literal> array to set our session variables;
+				and finally we output one of the variables using the <literal>weeSession</literal> object.
+				It works because <literal>weeSession</literal> works directly on the <literal>$_SESSION</literal> array.
+			</para>
+			<para>
+				It can be useful when converting code to Web:Extend.
+				You can just replace the <literal>session_start</literal> code first,
+				test that everything is still working, and then replace all the code that uses <literal>$_SESSION</literal>.
+				Or include third party code that uses the <literal>$_SESSION</literal> array without having to modify anything.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

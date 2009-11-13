@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_tests">
+	<title>Unit testing module</title>
+	<para>
+		Web:Extend features a unit testing module.
+		Most of the code for unit testing exists in the framework,
+		meaning you can extend it if you find it is not enough for your needs.
+		You are welcome to submit your changes for inclusion in Web:Extend though.
+	</para>
+	<para>
+		This unit testing module is <emphasis>not meant to be used for application unit testing</emphasis>.
+		Prefer using a more advanced unit testing tool like <ulink url="http://www.phpunit.de">PHPUnit</ulink> for this purpose.
+		We made this module so we could ship the test suite along with the framework and allow anyone to know if the framework
+		will work on their particular configuration just by typing <literal>make test</literal>.
+		It is designed to be lightweight and to remove any hurdles when writing tests.
+		It is not designed to generate reports, do static analysis, run <ulink url="http://selenium.openqa.org">Selenium</ulink> tests, or anything else.
+	</para>
+	<para>
+		This article is about the module, not its associated tool.
+		<link linkend="tools_cli_tests">Read more about the unit testing tool...</link>
+	</para>
+
+	<sect1 id="mod_tests_usage">
+		<title>Writing test cases</title>
+		<para>
+			If you use the standard unit testing tool that comes with Web:Extend, you can create test cases very easily.
+			You only need to create a new file and write your test directly in it without adding anything else!
+		</para>
+		<para>
+			Tests are located by default in the <filename>tools/tests</filename> folder.
+			Create a PHP file in this folder; let's call it <filename>example.php</filename>.
+			In this file you'll write all the tests related to one unit.
+			Your tests are done using various functions.
+			The simplest ones are <literal>$this->isTrue</literal> and <literal>$this->isFalse</literal>.
+			<literal>$this->isTrue</literal> checks if its first parameter is true
+			and <literal>$this->isFalse</literal> checks if its first parameter is false.
+			When the test fails, they both return an error with the message passed as the second parameter.
+		</para>
+		<para>
+			For example:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tests-example.php.xml"/>
+		</para>
+		<para>
+			Now if you run the test suite (<literal>make test</literal> from the base folder,
+			the one with the <filename>Makefile</filename> and <filename>index.php</filename> files)
+			you will get an error for this specific unit test case.
+			The error will be <literal>Example error message.</literal>
+		</para>
+		<para>
+			Of course there is other tests you can perform.
+			In our example the third test is badly written, it should read:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tests-isequal.php.xml"/>
+		</para>
+		<para>
+			By using more advanced test functions, the test suite can provide you with more feedback about the test that failed.
+			In this example, the message would also include the expected and actual values tested.
+		</para>
+	</sect1>
+
+	<sect1 id="mod_tests_reference">
+		<title>Functions reference</title>
+		<para>
+			You can use the following tests in your unit test cases:
+			<table>
+				<title>Test functions reference</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>Function</entry>
+							<entry>Test done</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row><entry><literal>$this->isTrue($m)</literal></entry><entry><literal>$m == true</literal></entry></row>
+						<row><entry><literal>$this->isFalse($m)</literal></entry><entry><literal>$m == false</literal></entry></row>
+						<row><entry><literal>$this->isNull($m)</literal></entry><entry><literal>is_null($m)</literal></entry></row>
+						<row><entry><literal>$this->isNotNull($m)</literal></entry><entry><literal>!is_null($m)</literal></entry></row>
+						<row><entry><literal>$this->isInstanceOf($m, $sClass)</literal></entry><entry><literal>$m instanceof $sClass</literal></entry></row>
+						<row><entry><literal>$this->isNotInstanceOf($m, $sClass)</literal></entry><entry><literal>!($m instanceof $sClass)</literal></entry></row>
+						<row><entry><literal>$this->isEqual($mExpected, $mActual)</literal></entry><entry><literal>$mExpected == $mActual</literal></entry></row>
+						<row><entry><literal>$this->isNotEqual($m, $n)</literal></entry><entry><literal>$m != $n</literal></entry></row>
+						<row><entry><literal>$this->isIdentical($mExpected, $mActual)</literal></entry><entry><literal>$mExpected === $mActual</literal></entry></row>
+						<row><entry><literal>$this->isNotIdentical($m, $n)</literal></entry><entry><literal>$m !== $n</literal></entry></row>
+						<row><entry><literal>$this->isMatching($m, $sPattern)</literal></entry><entry><literal>1 == preg_match($sPattern, $m)</literal></entry></row>
+						<row><entry><literal>$this->isNotMatching($m, $sPattern)</literal></entry><entry><literal>0 == preg_match($sPattern, $m)</literal></entry></row>
+					</tbody>
+				</tgroup>
+			</table>
+		</para>
+		<para>
+			Each function has another parameter, <literal>$sMessage</literal>, required.
+			It is the error message used when the test fails.
+		</para>
+		<para>
+			The following other functions are useful to fail or skip tests:
+			<itemizedlist>
+				<listitem><para><literal>$this->fail($sMessage)</literal> will make the test fail with the given error message.</para></listitem>
+				<listitem><para><literal>$this->skip()</literal> will skip the test.</para></listitem>
+			</itemizedlist>
+		</para>
+
+		<sect2>
+			<title>Extended data functions</title>
+			<para>
+				The following methods can be used to store extended data about the tests.
+				This data is printed just at the end of the test suite.
+				<itemizedlist>
+					<listitem><para><literal>$this->addExtArray($sName, $aIteratedData)</literal> will iterate over the array and store the values under the given name</para></listitem>
+					<listitem><para><literal>$this->addExtValue($sName, $sValue)</literal> will store the value under the given name</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				These methods are mainly used internally by the framework, but you can use them as needed.
+				They can be quite useful for debugging complicated tests.
+				Just avoid prefixing the name with <literal>wee:</literal> to prevent conflicts with the framework values.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

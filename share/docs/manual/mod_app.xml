@@ -1,0 +1,706 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_app">
+	<title>Application controller module</title>
+
+	<sect1 id="mod_app_mvc">
+		<title>MVC architecture</title>
+		<para>
+			Web:Extend can be used as an MVC framework. We implemented a derivative of the original MVC design.
+			The biggest difference is the use of a <ulink url="http://www.martinfowler.com/eaaDev/PassiveScreen.html">passive view</ulink>.
+			As you will soon understand, the architecture is very simple, with the various components being loosely coupled and modifiable easily without any effect on other components.
+		</para>
+
+		<sect2>
+			<title>Separation of concerns</title>
+			<para>
+				The main advantage of this architecture is that it enforces the separation of the output, of the data access layer and of the application's processes.
+				You probably already heard that you shouldn't mix HTML and PHP code? Well it's the same kind of separation.
+			</para>
+			<para>
+				Under this architecture, the output is handled by the <emphasis>view</emphasis>, the data access layer is handled by the <emphasis>domain model</emphasis> and the application's processes are handled by the <emphasis>controller</emphasis>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Data flow</title>
+			<para>
+				With Web:Extend, when a page is accessed by a browser, the request is redirected to the bootstrap file.
+				This file is the entry point for all pages used by your application.
+				It loads the framework and sends the request directly to the <emphasis>controller</emphasis>.
+				The request is then translated and an event is generated from it.
+				The event is then sent to another part of the <emphasis>controller</emphasis>: the frame.
+				Frames are where you write the application's controller code and handle or respond to the events received.
+			</para>
+			<para>
+				Depending on the event, you might have to send data to the <emphasis>domain model</emphasis>,
+				retrieve data from it and send it to the <emphasis>view</emphasis>;
+				or you might simply have to perform some calculations and send them directly to the <emphasis>view</emphasis>.
+				There's no restriction. You don't have to use models if you don't need them, nor do you have to send output back if you don't need to.
+			</para>
+			<para>
+				Here's a simplified diagram of the data flows occurring in the framework:
+				<screenshot>
+					<screeninfo>MVC data flow</screeninfo>
+					<mediaobject>
+						<imageobject><imagedata fileref="dia/app-dataflow.png" format="PNG"/></imageobject>
+						<textobject><phrase>MVC data flow</phrase></textobject>
+						<caption><para>MVC data flow</para></caption>
+					</mediaobject>
+				</screenshot>
+			</para>
+			<para>
+				As you can see, the <emphasis>domain model</emphasis> stores or retrieves data;
+				the <emphasis>controller</emphasis> receives, queries or sends data;
+				and the <emphasis>view</emphasis> only receives data.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Dependencies</title>
+			<para>
+				By using this simple architecture there is very few dependencies between the different parts of your application.
+				There is at most 2 dependencies: the <emphasis>controller</emphasis> depends
+				on the <emphasis>domain model</emphasis> and on the <emphasis>view</emphasis>.
+				There is no dependency at all between the <emphasis>domain model</emphasis>
+				and the <emphasis>view</emphasis>, as evidenced by this diagram:
+				<screenshot>
+					<screeninfo>MVC dependencies</screeninfo>
+					<mediaobject>
+						<imageobject><imagedata fileref="dia/app-dependencies.png" format="PNG"/></imageobject>
+						<textobject><phrase>MVC dependencies</phrase></textobject>
+						<caption><para>MVC dependencies</para></caption>
+					</mediaobject>
+				</screenshot>
+			</para>
+			<para>
+				The main advantages to this (besides simplicity) are that the <emphasis>domain model</emphasis> and the <emphasis>view</emphasis> can be tested independently.
+				You need however to use <ulink url="http://en.wikipedia.org/wiki/Mock_Object">mock objects</ulink> to test the <emphasis>Controller</emphasis> itself.
+				But you'll find out that most of the time the operations performed by the controller are very, very simple.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_app_configuration">
+		<title>Configuration</title>
+		<para>
+			Configuration is a central part of any project.
+			It allows to externalize settings like database credentials or session settings or even how errors should be handled.
+			Without using a central point for configuration, you would have to hard-code the values directly in your application.
+			This is not a good thing, especially when the configuration settings need to vary from one host to another.
+		</para>
+		<para>
+			There is a lot of ways to store configuration settings, PHP code, database table, files with various formats.
+			In Web:Extend the configuration depends on a file.
+		</para>
+
+		<sect2>
+			<title>File format</title>
+			<para>
+				The format of the file is very simple.
+				The settings are organized into pair/value combinations.
+				Here is an example configuration file revealing the syntax and all the statements available.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-configuration.cnf.xml"/>
+			</para>
+			<para>
+				Those files use Perl-like comments. Any line beginning with <literal>#</literal> is a comment.
+				<programlisting>
+# this is a comment
+				</programlisting>
+			</para>
+
+			<sect3>
+				<title>Include statement</title>
+				<para>
+					The include statements' syntax is fairly straightforward.
+					To include a file, simply put its name next to the <literal>include</literal> statement, as parameter.
+					If the file path begins with <literal>//</literal>, the path will be relative to <literal>APP_PATH</literal>;
+					if it begins with <literal>./</literal>, the path will be relative to the current config file being parsed;
+					otherwise it will be relative to the current working directory.
+					In most cases, <literal>APP_PATH</literal> is the current working directory, but you shouldn't count on it.
+					<programlisting>
+include //relative_to_app_path
+include ./relative_to_current_file
+include relative_to_current_working_directory
+					</programlisting>
+				</para>
+			</sect3>
+
+			<sect3>
+				<title>Targets</title>
+				<para>
+					Target instructions permits the developer to configure the application conditionally,
+					allowing some configuration settings to vary from one host or operating system to another.
+					For example, you may have two environments, one for development and one for production.
+				</para>
+				<para>
+					Your configuration file could look like this:
+					<programlisting>
+db.password                          = default_password
+$(host dev.example.org).db.password  = a_pass_easy_to_remember_for_the_dev_environment
+$(host test.example.org).db.password = a_fairly_secure_password
+					</programlisting>
+				</para>
+				<para>
+					The second line will only be read by the application if the hostname matches <literal>dev.example.org</literal>.
+					Otherwise it will be ignored. Same for the third line, it will only be read if the hostname matches <literal>test.example.org</literal>.
+					It is good pratice to put the production value by default and to override the production settings by your specific environment's settings.
+					The production value will only be overrided if there is a matching target.
+				</para>
+				<para>
+					The general syntax for target instructions is as follow.
+					<programlisting>
+$(function [param1] [param2] [...] target).key = value
+					</programlisting>
+				</para>
+				<para>
+					Instead of a key-value setting, you can also write an include statement to conditionally include another configuration file.
+					<programlisting>
+$(function [param1] [param2] [...] target).include //path/to/file
+					</programlisting>
+				</para>
+				<para>
+					Here is a list of all supported targets:
+					<table>
+						<title>List of configuration targets</title>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry>Function</entry>
+									<entry>Parameters</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>os</literal></entry>
+									<entry>None.</entry>
+									<entry>Operating System name, e.g. <literal>NetBSD</literal>. The equivalent PHP call is <literal>php_uname('s')</literal>.</entry>
+								</row>
+								<row>
+									<entry><literal>host</literal></entry>
+									<entry>None.</entry>
+									<entry>Hostname, like <literal>localhost</literal> or <literal>example.com</literal>. The equivalent PHP call is <literal>php_uname('n')</literal>.</entry>
+								</row>
+								<row>
+									<entry><literal>phpver</literal></entry>
+									<entry>None.</entry>
+									<entry>The version of PHP which is executing the script. The function executed is <literal>php_version()</literal>.</entry>
+								</row>
+								<row>
+									<entry><literal>extver</literal></entry>
+									<entry>Name of the PHP extension.</entry>
+									<entry>The version of the given PHP extension. The equivalent PHP function is <literal>php_version()</literal> with the name of the PHP extension as its argument.</entry>
+								</row>
+								<row>
+									<entry><literal>sapi</literal></entry>
+									<entry>None.</entry>
+									<entry>The type of the interface running PHP. The equivalent PHP function is <literal>php_sapi_name()</literal>.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2>
+			<title>Configuration namespaces</title>
+			<para>
+				In our previous example, all the settings beginning by <literal>db.</literal> are part of the <literal>db</literal> namespace.
+				You can retrieve values from the namespace either by retrieving a single value:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-cnf.php.xml"/>
+			</para>
+			<para>
+				Or by retrieving the whole namespace as an array:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-cnf-namespace.php.xml"/>
+			</para>
+			<para>
+				Note that the namespace's name is removed from the key name in the returned array.
+				Here, the <literal>db.host</literal> value is stored in the <literal>host</literal> key of the returned array.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Application configuration</title>
+			<para>
+				Web:Extend provides a sample configuration file located in <filename>share/conf/sample.cnf</filename>.
+				This file contains default values that you can use when starting a project.
+			</para>
+			<para>
+				The application framework automatically loads a configuration file.
+				The configuration file is the one specified by <literal>WEE_CONF_FILE</literal> which defaults to <filename>ROOT_PATH/app/conf/wee.cnf</filename>.
+				You may want to change the location of this file.
+				You can do it by manually defining the constant prior to calling <literal>weeApplication::instance()</literal> in your bootstrap file:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-define-conf-file.php.xml"/>
+			</para>
+			<para>
+				The application module will initialize a few things after reading the configuration.
+				It will look for the following parameters:
+				<table>
+					<title>Parameters for application configuration</title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>Name</entry>
+								<entry>Default value</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>app.timezone</literal></entry>
+								<entry>None.</entry>
+								<entry>The default timezone of the application.</entry>
+							</row>
+							<row>
+								<entry><literal>app.toppage</literal></entry>
+								<entry><literal>toppage</literal></entry>
+								<entry>The default frame of the application.</entry>
+							</row>
+							<row>
+								<entry><literal>app.autoload.path</literal></entry>
+								<entry>None.</entry>
+								<entry>A string of colon-separated paths to autoload. Paths starting with <literal>//</literal> are relative to <literal>APP_PATH</literal>.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				See the <link linkend="mod_app_routing">routing section</link> for information about the routing configuration parameters.
+				See below for the driver-specific configuration parameters.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Application drivers</title>
+			<para>
+				A driver is an object defined in the configuration file for use in your application.
+				It can be any class, as long as it accepts one parameter for its constructor.
+				This parameter will be an array containing the configuration for the driver.
+			</para>
+			<para>
+				To add a driver, simply add this to your configuration file:
+				<programlisting>
+mydriver.driver = myDriverClass
+				</programlisting>
+			</para>
+			<para>
+				You can then access this driver in the following way.
+				The driver will be automatically loaded the first time you try to access it.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-driver.php.xml"/>
+			</para>
+			<para>
+				To specify parameters for the constructor, simply add a few more lines in the configuration file.
+				Everything under the <literal>mydriver.</literal> namespace will be sent to the constructor of the driver.
+				<programlisting>
+mydriver.driver = myDriverClass
+mydriver.param = example parameter
+mydriver.another = and another one!
+				</programlisting>
+			</para>
+			<para>
+				The driver's object isn't created when the application starts,
+				to prevent wasting resources on objects that won't be needed.
+				However you might sometimes need one to be started for each request.
+				To start it automatically, you can use the <literal>start.</literal> configuration namespace.
+				For example, you could force start the driver <literal>mydriver</literal> defined earlier by adding this line to the configuration file:
+				<programlisting>
+start.mydriver = 1
+				</programlisting>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_app_events">
+		<title>Events</title>
+		<para>
+		</para>
+
+		<sect2>
+			<title>Setup and access control</title>
+			<para>
+				Before a frame call an event method, it will always call the <literal>setup</literal> method.
+				You can use it to check if an user is authorized to access this event, or to initialize objects used in all the events of the frame.
+			</para>
+			<para>
+				If an user do not have authorized access to a frame or an event, you can throw an <literal>UnauthorizedAccessException</literal>.
+				The frame will catch it and call the method <literal>unauthorizedAccess</literal> where you can handle the problem, redirect the user or create and send a new event.
+				Note that you are not required to define this method. By default it will stop execution and output an error message.
+			</para>
+			<para>
+				Both <literal>setup</literal>, the event methods and the <literal>unauthorizedAccess</literal> method
+				receive an <literal>$aEvent</literal> parameter containing all the event information.
+				It is recommended to access the GET and POST data from the event array instead of using <literal>$_GET</literal>,
+				<literal>$_POST</literal> or <literal>$_REQUEST</literal>, as you can later need to send events to other frames from your code and specify GET or POST data.
+			</para>
+			<para>
+				Following is an example of access control. Assuming the session variable <literal>is_admin</literal> identifies an administrator,
+				the code will prevent non-administrators to access events on this frame, and will redirect them to the login page:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Writing events</title>
+			<para>
+				The event methods usually handle three tasks:
+				they perform an action depending on the event received (example: create an user account);
+				they retrieve data from your persistent storage solution;
+				and they send this data to the templates for output.
+				The frame is responsible for the creation of the template and its subsequent output;
+				note however that the template will be created automatically without you needing to write any code.
+				To send data to the template, you must use the method <literal>set</literal>.
+				For example, the following code will create a variable <literal>$nickname</literal> in the template, containing the string <literal>'essen'</literal>:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame-set.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2 id="mod_app_events_tpl">
+			<title>Template files</title>
+			<para>
+				By default, the template file used corresponds to the name of the class for the frame.
+				For example, the <literal>myFrame</literal> template will use the file <filename>app/tpl/myFrame.tpl</filename> by default.
+				You can customize this behavior by defining the <literal>$sBaseTemplate</literal> property.
+				For example, the following frame will use the template file <filename>app/tpl/example.tpl</filename>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame-basetemplate.php.xml"/>
+			</para>
+			<para>
+				Another property can be used to change the template file.
+				The <literal>$sBaseTemplatePrefix</literal> property will append a prefix to the <literal>$sBaseTemplate</literal> property.
+				This allows you to define a folder under which all templates are to be found for all events of this frame and/or for all childrens.
+				This is especially useful when you define a base class for a type of frames (for example, administration panel frames)
+				and decide to put all the templates for these frames under an <filename>admin</filename> folder.
+				To do this you simply have to define the prefix in the base class once and then inherit it, like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame-basetemplateprefix.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Forwarding events</title>
+			<para>
+				You can trigger other events easily, whether they're in the same frame or a different one.
+				While you can use this to forward the event to the correct method, you shouldn't use it instead of a <literal>Location</literal> HTTP header.
+			</para>
+			<para>
+				There is two different ways to trigger an event in the same frame as the current event.
+				You can either call it directly, or using the <literal>sendEvent</literal> method.
+				Calling it directly will bypass the authorization check and the call to <literal>setup</literal>.
+				When calling it using <literal>sendEvent</literal>, if the authorization fails an <literal>IllegalStateException</literal> is thrown.
+				You can see the two different ways to trigger an event from the same frame in this example:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame-sendevent-inside.php.xml"/>
+			</para>
+			<para>
+				You can trigger an event from another frame using <literal>sendEvent</literal>.
+				The new frame will replace the current frame in the application, unless the event is given a <literal>noframeschange</literal> parameter.
+				Here is an example of its usage:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame-sendevent-outside.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_app_routing">
+		<title>Routing</title>
+		<para>
+			<emphasis>Routing</emphasis> is the process of selecting paths in the controller.
+			In Web:Extend, the controller is divided in 3 parts: the main controller, <literal>weeApplication</literal>; the frames; and the event within the frames.
+			The main controller first receives the request, translate it into an event and then send it.
+			Routing encompass the creation of an event (or translating it from the request received by the server) and its dispatch to the correct method.
+		</para>
+		<para>
+			You can use the default routing as described earlier or you can use a custom routing mechanism.
+			It allows you to customize the paths in the URL of your application and to translate these custom URL into valid routes.
+			It is very similar to using <ulink url="http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html">mod_rewrite</ulink>, but is done in PHP directly.
+		</para>
+
+		<sect2>
+			<title>Route translation</title>
+			<para>
+				Custom routes are applied when translating the event received by the server into an event.
+				This translation happens in <literal>weeApplication</literal>, before the event is sent to your frames.
+			</para>
+			<para>
+				Customizing the route is simply applying a regular expression to it.
+				The regular expression is applied to the pathinfo of the request using <ulink url="http://php.net/preg_replace">preg_replace</ulink>.
+				To specify a route, you have to give a regular expression and its replacement.
+				The replacement must be a valid application route and will be used to determine the frame and event names.
+			</para>
+			<para>
+				Routes are tested one by one iteratively. The first match will be used to translate the route.
+			</para>
+			<para>
+				Since it is applied on the pathinfo, the query string of the request is not modified.
+				However, if a query string is found on the replaced route, its parameters will overwrite the parameters from the query string if they share the same name.
+			</para>
+			<para>
+				For example if you access the URL <ulink url="http://example.org/~worm?user=apple">http://example.org/~worm?user=apple</ulink>
+				and you have the regular expression <literal>/^~(\w+)$/i</literal> and its replacement is <literal>viewuser?user=$1</literal>,
+				then the resulting pathinfo will simply be <literal>viewuser</literal> and the value of <literal>$aEvent['get']['user']</literal>
+				will become <literal>worm</literal> instead of <literal>apple</literal>. The worm <emphasis>eats</emphasis> the apple.
+			</para>
+		</sect2>
+
+		<sect2 id="mod_app_routing_failsafe">
+			<title>Fail-safe routing</title>
+			<para>
+				Sometimes you might need to redirect all non-existing events to the default event.
+				This can be done automatically simply by implementing the <literal>weeFailSafeRouting</literal> interface, like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-frame-failsafe-routing.php.xml"/>
+			</para>
+			<para>
+				All events reaching this frame will be redirected to the default event handler, except for the event named <literal>save</literal>.
+				If you sent an event named <literal>update</literal> to this frame, for example, it will be handled by the default event handler.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Custom routes</title>
+			<para>
+				As we saw, routes are defined by the regular expressions and their respective replacement.
+				All configuration variables under the <literal>route</literal> namespace will be retrieved
+				to be tested as custom routes, in the order they are found in the configuration file.
+			</para>
+			<para>
+				Regular expression and replacement are defined as follow in the configuration file:
+				<programlisting>
+route.regular_expression = replacement
+				</programlisting>
+			</para>
+			<para>
+				The regular expression must not include the slashes and the pattern modifiers.
+				The string <literal>regular_expression</literal> here literally translate to <literal>/^regular_expression$/i</literal>.
+				The case insensitive modifier is applied to the regular expression, so <literal>REGULAR_EXPRESSION</literal> here is the same as <literal>regular_expression</literal>.
+				The reason for this is because PHP class names are case insensitive too.
+			</para>
+			<para>
+				If the pathinfo matches <literal>/^regular_expression$/i</literal>, then it will be replaced by <literal>replacement</literal>,
+				which will create an event that will be dispatched to the default event handler of the frame named <literal>replacement</literal>.
+			</para>
+			<para>
+				Take a look at these lines for a more complete example:
+				<programlisting>
+route.is = aboutus
+route.~(\w+)/(\w+) = $2?user=$1
+route.~(\w+)/(\w+)/(\w+) = $2/$3?user=$1
+route.(\d{4})/(\d{2})/(\d{2})/(.*) = viewpost?year=$1&amp;month=$2&amp;day=$3&amp;uid=$4
+				</programlisting>
+			</para>
+			<para>
+				The first line is pretty straightforward. When the pathinfo equals <literal>is</literal>, the event is sent to the <literal>aboutus</literal> frame.
+			</para>
+			<para>
+				The second line matches words.
+				A pathinfo like <literal>~essen/editprofile</literal> will translate to <literal>editprofile?user=essen</literal>,
+				meaning the event is sent to the <literal>editprofile</literal> frame's default event handler.
+				The value of <literal>user</literal> will be available through <literal>$aEvent['get']['user']</literal>.
+			</para>
+			<para>
+				The last line can be used to format the URL of a blog post, for example.
+				A pathinfo like <literal>2008/11/06/rowo-part-2-simple-is-easy/</literal> will be matched,
+				and will translate to <literal>viewpost?year=2008&amp;month=11&amp;day=06&amp;uid=rowo-part-2-simple-is-easy/</literal>.
+				All the variables from the query string will be accessible through <literal>$aEvent['get']</literal>.
+			</para>
+			<sect3>
+				<title>Strict routing</title>
+				<para>
+					By default, if there is no match with a custom route, the framework will try to use
+					the unmodified request to determine the frame and event names and dispatch the event.
+					There is an option however which you can use to make sure only your defined routes will be valid.
+					Simply activate strict routing in the configuration file by setting <literal>routing.strict</literal> to 1 instead of 0:
+					<programlisting>
+routing.strict = 1
+					</programlisting>
+				</para>
+				<para>
+					When a request do not match any route, a <literal>RouteNotFoundException</literal> will be thrown.
+				</para>
+			</sect3>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_app_taconite">
+		<title>Taconite for AJAX integration</title>
+		<para>
+			Web:Extend includes a Taconite component that allows you to perform simple DOM updates against an XML document either server or client-side.
+		</para>
+		<para>
+			Taconite is a method to perform multiple DOM updates with an XML document. This document contains instructions which describe the DOM updates.
+		</para>
+		<para>
+			Here is an example of a Taconite document:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-document.xml.xml"/>
+		</para>
+		<para>
+			This neat document may be used to implement a pseudo real-time activity logger in a social network application.
+			The user agent will then periodically checks the server for new activity and the user will see new items at the beginning of the list <literal>#log</literal> on the page.
+		</para>
+		<para>
+			Web:Extend includes mechanisms to generate Taconite documents.
+			It will send a Taconite document only if the context is <literal>xmlhttprequest</literal> and if you used Taconite, otherwise it sends the template file.
+			When the context is <literal>http</literal> and you use Taconite anyway,
+			the template will first be rendered as usual, and then the Taconite you sent will be applied to it server-side.
+			This allows you to easily make an event compatible with both contexts without any need for duplicate code.
+		</para>
+		<para>
+			We recommend using the Taconite mechanisms included in the framework with the <ulink url="http://jquery.com">jQuery</ulink>
+			library for client-side processing, because it includes a <ulink url="http://malsup.com/jquery/form/">form plugin</ulink>
+			and a <ulink url="http://malsup.com/jquery/taconite/">taconite plugin</ulink>, that will make using Taconite a real bliss.
+			The jQuery taconite plugin will detect Taconite AJAX responses and act accordingly without you needing to do anything other than initiate AJAX calls.
+		</para>
+		<para>
+			As the most common updates can be performed both server and client-side, this tool greatly reduces the need of specific and duplicate code for AJAX requests.
+			If the user do not have javascript available, weeTaconite will gracefully handle the request by regenerating the page and applying any DOM update on the server-side;
+			otherwise only the XML Taconite document is sent to the user which is then processed locally.
+			This behaviour lighten the server charge in both processor time and bandwidth volume, as only the XML Taconite is returned.
+		</para>
+
+		<sect2>
+			<title>Usage</title>
+			<para>
+				We're going to demonstrate Taconite first by writing an <literal>update</literal> link that will refresh a part of the page using AJAX.
+				The event used to display the page and to update it will be the same.
+			</para>
+			<para>
+				The following event will do the job for you.
+				For this example we will only display and update the current date and time
+				but know that you can update more than one thing at once.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-example.php.xml"/>
+			</para>
+			<para>
+				The template <filename>example.tpl</filename> can look like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-tpl.html.xml"/>
+			</para>
+			<para>
+				The template displays the date sent by the frame, and define an AJAX action whenever the update link is clicked.
+				There's nothing else to do, Taconite will handle it automatically.
+				Whenever an AJAX request will be sent to the <literal>example</literal> frame,
+				a Taconite response will replace the contents of the <literal>#date div</literal> with the current date.
+			</para>
+			<para>
+				Alternatively, you can also give a template to Taconite.
+				This allows you to easily separate concerns and render the same template for both normal and Taconite response.
+			</para>
+			<para>
+				Instead of simply giving the date as in the example above, we could give the contents of a template.
+				We'll transform our example above to make it send the date through a template.
+				I know, making a template only to display a date isn't that useful but it should showcase how it works without complicating the example.
+			</para>
+			<para>
+				The main difference lies in the frame. Instead of giving the date we need to create a template and send its output:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-example2.php.xml"/>
+			</para>
+			<para>
+				The template only has the date line to be changed.
+				We just need to render the template instead of outputting directly,
+				like you would do normally when separating concerns into different templates.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-tpl2.html.xml"/>
+			</para>
+			<para>
+				The template <filename>the_date.tpl</filename> can then simply output the date.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-tpl2-the_date.php.xml"/>
+			</para>
+			<para>
+				You can also put the <literal>#date div</literal> inside the new template and
+				use the <literal>replace</literal> transformation command instead of <literal>replaceContent</literal> in the frame.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Alongside forms</title>
+			<para>
+				You can also use Taconite to provide immediate feedback to users submitting form data.
+				Let's take a look at our <literal>edit</literal> event, responsible for editing a specific resource of our application.
+				The event is written pretty much like a <link linkend="mod_form">standard form handling</link> but we've added 3 lines for the AJAX specific code.
+				The workflow is exactly the same however, as you can see.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-example3.php.xml"/>
+			</para>
+			<para>
+				The form could be output as follow in the template:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/app-taconite-tpl3.php.xml"/>
+			</para>
+			<para>
+				The header of the template is slightly different than before.
+				We use jQuery's form plugin to process the form through AJAX.
+				To do that we include an additional javascript file and initialize the plugin.
+				No additional operations required.
+			</para>
+			<para>
+				Every form submissions will be done using AJAX.
+				The jQuery taconite plugin will detect Taconite responses and act automatically,
+				replacing the form and the message with the information sent by the server.
+			</para>
+			<para>
+				If the user doesn't have javascript support, the operations will be done server-side and the complete page will be returned modified accordingly.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Limitations</title>
+			<para>
+				There exists no real limitations client-side.
+				You can pretty much use any transformation command you want.
+				You can even use custom commands, so you would be able to send commands to start visual effects if you wanted to.
+				Read the <ulink url="http://malsup.com/jquery/taconite/#extend">documentation about extending the taconite plugin</ulink> for more details.
+			</para>
+			<para>
+				At the time of the redaction of this documentation,
+				the server-side taconite processor suffers a few limitations compared to its javaScript client-side counterpart:
+				<itemizedlist>
+					<listitem><para>Only <literal>#id</literal>, <literal>//xpath</literal> and tags selectors are supported.</para></listitem>
+					<listitem><para>Multiple selectors cannot be specified using the comma operator.</para></listitem>
+					<listitem><para>Only a subset of the transformations commands of jQuery is supported.</para></listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				The supported transformation commands for server-side processing are listed in the following table.
+				<table>
+					<title>Server-side taconite supported commands</title>
+					<tgroup cols="2">
+						<thead>
+							<row>
+								<entry>Command</entry>
+								<entry>Summary</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><ulink url="http://docs.jquery.com/Manipulation/after">after</ulink></entry>
+								<entry>Insert content after each of the matched elements.</entry>
+							</row>
+							<row>
+								<entry><ulink url="http://docs.jquery.com/Manipulation/append">append</ulink></entry>
+								<entry>Append content to the inside of every matched element.</entry>
+							</row>
+							<row>
+								<entry><ulink url="http://docs.jquery.com/Manipulation/before">before</ulink></entry>
+								<entry>Insert content before each of the matched elements.</entry>
+							</row>
+							<row>
+								<entry><ulink url="http://docs.jquery.com/Manipulation/prepend">prepend</ulink></entry>
+								<entry>Prepend content to the inside of every matched element.</entry>
+							</row>
+							<row>
+								<entry><ulink url="http://docs.jquery.com/Manipulation/remove">remove</ulink></entry>
+								<entry>Remove all matched elements from the DOM.</entry>
+							</row>
+							<row>
+								<entry><ulink url="http://malsup.com/jquery/taconite/#extend">replace</ulink></entry>
+								<entry>Replace all matched elements with the given content.</entry>
+							</row>
+							<row>
+								<entry><ulink url="http://malsup.com/jquery/taconite/#extend">replaceContent</ulink></entry>
+								<entry>Replace content of every matched element with the given content.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				Feel free to submit patches to support new selectors and/or new commands!
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

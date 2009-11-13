@@ -1,0 +1,3 @@
+<?php
+
+$sQuotedName = $o->quotedName();

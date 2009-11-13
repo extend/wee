@@ -1,0 +1,3 @@
+<?php
+
+$iCount = count($oSet);

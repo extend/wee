@@ -1,0 +1,3 @@
+<?php
+
+$aTablesNames = $o->tablesNames();

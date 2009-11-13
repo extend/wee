@@ -1,0 +1,298 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="tools">
+	<title>Tools</title>
+	<para>
+		Web:Extend provides a few tools to ease your development.
+	</para>
+
+	<sect1 id="tools_makefile">
+		<title>Makefile</title>
+		<para>
+			Web:Extend includes a Makefile to provide a few useful functions.
+			The Makefile contains targets for performing a syntax check on all files,
+			for building the API, for running the framework's test suite,
+			for removing the temporary files, and for grep-ing files looking for <literal>todo</literal> comments.
+		</para>
+		<para>
+			The Makefile currently do not work fully on Windows.
+			You are welcome to help improve it.
+		</para>
+		<para>
+			On Unix systems you must install <literal>make</literal> to use the Makefile.
+			Both the GNU and BSD flavors should work.
+			Once installed, you can use it by going to the folder containing the Makefile in a terminal,
+			and then typing <literal>make</literal> or any of the following commands:
+		</para>
+
+		<sect2>
+			<title><literal>make all</literal></title>
+			<para>
+				This is the default target.
+				This performs a <literal>make lint</literal>,
+				followed by a <literal>make api</literal>
+				and a <literal>make test</literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title><literal>make lint</literal></title>
+			<para>
+				Performs a syntax check of all the <literal>*.php</literal> and <literal>*.tpl</literal> files.
+				The Makefile invokes the <literal>php -l</literal> command on all the files.
+				This command will only display the files where an error occurred.
+				A successful syntax check will display nothing.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title><literal>make api</literal></title>
+			<para>
+				Execute <filename>tools/api/makeapi.php</filename> that generates the API file for the Web:Extend's framework.
+				You can modify this file to generate the API for your project too.
+				The generated file will be written to <filename>tools/api/api.xml</filename>.
+				You can then load <filename>tools/api/api.html</filename> in your browser to browse the API locally.
+			</para>
+			<para>
+				<link linkend="tools_api">Read more about the API Generator...</link>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title><literal>make test</literal></title>
+			<para>
+				Execute the test suite, located at <filename>tools/tests/maketests.php</filename>.
+				The test suite will run all the tests located in <filename>tools/tests</filename> and indicates the result for each one.
+			</para>
+			<para>
+				<link linkend="tools_cli_tests">Read more about the Unit Testing Tool...</link>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title><literal>make clean</literal></title>
+			<para>
+				Removes all files in the temporary folder, <filename>app/tmp</filename>.
+				Temporary files include mostly cache files and test files (created by running the <literal>make test</literal> command).
+			</para>
+			<para>
+				Some of the files might not be writable by yourself because they were created by the web server process.
+				This means these files won't be deleted.
+				In this case you might want to run <literal>sudo make clean</literal> instead.
+				Note that the framework will not create temporary files if you have <literal>DEBUG</literal> mode enabled.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title><literal>make fclean</literal></title>
+			<para>
+				Performs a <literal>make clean</literal> and also remove the API file generated using <literal>make api</literal>, if it exists.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title><literal>make todo</literal></title>
+			<para>
+				Parse all the <literal>*.php</literal> and <literal>*.tpl</literal> files
+				and grep all the lines containing <literal>todo</literal> (case insensitive).
+			</para>
+			<para>
+				This is pretty useful to detect things you have left earlier without finishing.
+				When you leave something unfinished, simply put a comment containing <literal>todo</literal>.
+				This command will retrieve all the unfinished code and ensure you don't forget anything,
+				as long as you put a <literal>todo</literal>.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="tools_api">
+		<title>API generator</title>
+		<para>
+			The Web:Extend features an API Generator.
+			Its role is to build an XML file containing API information gathered using <ulink url="http://php.net/reflection">PHP Reflection</ulink>.
+			The framework includes both a generator and a basic viewer.
+			Because the API is stored as an XML file, other tools might be created at a later time to perform a great variety of functions.
+		</para>
+		<para>
+			The generator, located at <filename>tools/api/makeapi.php</filename>,
+			uses the <!-- todo:link insted --><literal>weeDocumentorXML</literal> class to generate the XML file.
+			It will document all the functions and classes available in the framework's path.
+			Note that it won't document the classes in your project by default.
+		</para>
+		<para>
+			The main purpose of the API generator is to make the API available to anyone without needing an Internet connection to consult it.
+			This way you still have access to the API even if the framework's website is unavailable.
+		</para>
+		<para>
+			It only accepts one argument, the output file path. For example: <literal>php makeapi.php api.xml</literal>.
+		</para>
+		<para>
+			Note that the generator is usually invoked using <literal>make api</literal>.
+		</para>
+		<para>
+			Along with the generator is provided a simple API viewer.
+			This API viewer is located at <filename>tools/api/api.html</filename>.
+		</para>
+		<para>
+			To use it, simply load it in your browser.
+			If your project is located at <literal>http://localhost/myproject/</literal>,
+			open <literal>http://localhost/myproject/tools/api/api.html</literal> to consult the API.
+			Note that you must first generate the XML file using the API generator.
+		</para>
+		<para>
+			The API viewer will load the XML file and allow you to consult it.
+			Even if it is an all-in-one-page application, bookmarking is supported.
+			If the API XML file changed, simply reload the page to get the new updated API.
+		</para>
+	</sect1>
+
+	<sect1 id="tools_cli_tests">
+		<title>CLI test suite runner</title>
+		<para>
+			Web:Extend features an unit testing tool used to test the framework itself.
+			Its role is to ensure that the framework is working properly in the environment it is used into.
+			The unit testing tool can also be used for code coverage analysis.
+		</para>
+		<para>
+			This chapter describe the command-line tool. For more information about writing tests,
+			refer to the <link linkend="mod_tests">unit testing module documentation</link>.
+		</para>
+
+		<sect2>
+			<title>Usage</title>
+			<para>
+				The unit testing tool has one required option, the path containing the unit tests,
+				and an optional option that will activate the code coverage analysis if present.
+			</para>
+			<para>
+				To perform simple unit testing, type this in a terminal:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tools-maketests.sh.xml"/>
+			</para>
+			<para>
+				Tests can be successful, failed or skipped.
+				Tests are usually skipped when a resource or extension is not available for testing.
+			</para>
+			<para>
+				When a test fails, the tool tries to output relevant information about the failure,
+				including an error message and the line where the test is located.
+				This information can then be used to determine what went wrong and how to fix the problem.
+			</para>
+			<para>
+				Here is an example output of a failed test:
+				<programlisting>
+--
+/home/essen/web/wee/trunk/tools/tests/output/template.php: failure
+Message: weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::decode method before encoding them with the urlencode function.
+Line: 25
+Expected: '/foo/bar?entity=%26'
+Actual: '/foo/bar?entito=%26'
+--
+				</programlisting>
+			</para>
+			<para>
+				Note that the unit testing tool is usually invoked using <literal>make test</literal>.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Code coverage analysis</title>
+			<para>
+				To perform unit testing and get a code coverage analysis report, type this in a terminal:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tools-maketests-c.sh.xml"/>
+			</para>
+			<para>
+				This will output the regular unit testing output followed by the code coverage analysis report.
+				Here is an example of this report:
+				<programlisting>
+/home/essen/web/wee/trunk/wee/db/mysql/weeMySQLDatabase.class.php
+Covered: 22;28;57;61-63;67-68;71-72;77-79;90;102;104-106;108-110;122-125;127;140;151;165;167;169;182;194;207;209;212;214;
+Non-covered: 58-59;64-65;168;210-211;
+Dead code: 73-74;
+				</programlisting>
+			</para>
+			<para>
+				The numbers represent lines that are covered, non-covered or dead code.
+				Dead code means that these lines will potentially never be reached (but this is not always accurate).
+			</para>
+			<para>
+				There is currently no tool to process this result and present an easier-to-read report.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="tools_qunit_tests">
+		<title>QUnit test suite runner</title>
+		<para>
+			In addition to the command-line test suite runner, Web:Extend provides a web interface for running tests.
+			This allows us to test the framework both in a command-line context and in a web context.
+			We can thus use this runner to run tests relating to the <link linkend="mod_http">HTTP module</link>,
+			including cookies, sessions and file upload handling tests.
+		</para>
+		<para>
+			To use it, simply point your browser to the QUnit folder, located in <filename>tools/qunit</filename>.
+			Such URL could be for example <filename>http://example.org/tools/qunit/</filename>.
+			QUnit will run the tests and provide you with an error message for each failed tests.
+			You will obtain a page similar to this one:
+			<screenshot>
+				<screeninfo>QUnit test suite runner</screeninfo>
+				<mediaobject>
+					<imageobject><imagedata fileref="snap/qunit.png" format="PNG"/></imageobject>
+					<textobject><phrase>QUnit test suite runner</phrase></textobject>
+					<caption><para>QUnit test suite runner</para></caption>
+				</mediaobject>
+			</screenshot>
+		</para>
+		<para>
+			A summary is provided at the bottom of the page.
+		</para>
+		<para>
+			If a test can't be ran on your configuration, it may fail with the message "skip".
+			This means that your configuration do not allow for the test to be ran.
+		</para>
+
+		<sect2>
+			<title>Writing QUnit tests</title>
+			<para>
+				The best way to learn how to write tests is to take a look at the session set unit test located in <filename>tools/qunit/session/set.php</filename>.
+			</para>
+			<para>
+				The first step is to load the framework by including <filename>wee.php</filename>.
+				Don't forget to define <literal>ROOT_PATH</literal> to the path of the folder containing your bootstrap file.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tools-qunit-part1.php.xml"/>
+			</para>
+			<para>
+				If you need to call this file multiple times to test code between different requests, you can use the <literal>step</literal> variable.
+				This is extremely useful if the code you need to test requires cookies for example.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tools-qunit-part2.php.xml"/>
+			</para>
+			<para>
+				Then write the tests for each steps. Wrap the tests inside a <literal>try .. catch</literal> construct
+				in order to output the error message if any, and otherwise output <literal>success</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tools-qunit-part3.php.xml"/>
+			</para>
+			<para>
+				Then you must add the test to the test runner.
+				Simply add the file to the QUnit <filename>index.php</filename> file like this:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/tools-qunit-part4.js.xml"/>
+			</para>
+			<para>
+				In this example, the test will have 3 different steps that will be executed sequentially.
+				Please read the QUnit documentation for more informations.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>QUnit reference</title>
+			<para>
+				<ulink url="http://docs.jquery.com/QUnit">QUnit</ulink> is the unit test runner for the jQuery project.
+			</para>
+			<para>
+				As of today the QUnit files are not included with the framework.
+				Instead, the PHP file load them directly from jQuery's repository, as explained in the QUnit documentation.
+				This means that you must have Internet access in order to run the tests using QUnit.
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

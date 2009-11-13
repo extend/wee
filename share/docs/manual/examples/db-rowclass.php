@@ -1,0 +1,3 @@
+<?php
+
+$oResults->rowClass('myClass');

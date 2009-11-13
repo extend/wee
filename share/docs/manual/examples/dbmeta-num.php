@@ -1,0 +1,3 @@
+<?php
+
+$iPos = $oColumn->num();

@@ -1,0 +1,3 @@
+<?php
+
+$bIsNullable = $oColumn->isNullable();

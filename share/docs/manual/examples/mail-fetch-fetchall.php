@@ -1,0 +1,3 @@
+<?php
+
+$aAllMessages = $oMailbox->fetchAll();

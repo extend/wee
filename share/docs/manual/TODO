@@ -1,0 +1,336 @@
+This file contains the documentation that was removed when converting
+to the DocBook format.
+
+
+
+<!--
+
+== Helping the Users ==
+
+=== API ===
+
+The [http://api.extend.ws/ API] is automatically generated using the [wiki:Documentation/Tools/API make api command]. The API is actually an XML file. An HTML page is provided with it to read and render it. You could easily write your own tools to query the API. There is two advantages to this approach. The first is that any developer can generate this file automatically without anything other than the framework itself. Meaning you can find help easily even if you can't access Internet. The second advantage is that this file is loaded only once. You don't have to wait to get your help if the API server is busy.
+
+=== Documentation ===
+
+The documentation aims to provide a complete reference for the Web:Extend framework. When completed (for the final release), it will explain not only how to use the framework, but also its internals. The documentation will provide a good amount of tutorials each building an application demonstrating one or more concepts provided by the framework.
+
+We wish to provide a great documentation, but to reach this goal we need your input. Please send us comments about things we need to clarify, things we have forgotten, errors, typos, so that we can improve it. Comments are always welcome.
+
+You can also get good information from the [http://blog.extend.ws blog].
+
+=== Getting Help ===
+
+If you need to get direct help, you can try asking on the [irc://irc.freenode.net/webextend IRC channel] or the [http://groups.google.com/group/wee-users Mailing List]. We will always be there to reply to any question you might have. Do not wait too long if you have a problem, come ask us directly!
+
+----
+
+[[AddComment(appendonly)]]
+-->
+
+
+
+
+
+[[TOC]]
+
+= Features =
+
+== Components ==
+
+ * Application
+  * Architecture derivated from MVC, implemented with a passive view
+  * [http://taconite.sourceforge.net Taconite] integration for transparent AJAX
+ * Database abstraction
+  * MySQL, PostgreSQL, SQLite and Oracle adapters
+  * Named parameters (implicit or explicit)
+  * Meta information retrieval
+ * LDAP abstraction
+ * Integrated unit testing
+ * Integrated API documentation generator
+ * Emails
+  * Using [http://phpmailer.sourceforge.net phpMailer]
+  * Email templates
+ * Feeds creation
+  * Atom 1.0 adapter
+  * RSS 2.0 adapter
+ * Improved file upload handling
+ * Improved session handling
+ * Authentification drivers
+  * Database table authentification
+ * Internationalization
+  * UTF-8 support
+ * Template system
+  * Supports cached templates
+ * PDF generation using LaTeX
+ * XML-based form handling
+  * Form generation using XSLT
+  * Input validation
+
+== Language ==
+
+ * [http://en.wikipedia.org/wiki/Object-oriented_programming Oriented-object programming]
+ * Use [http://php.net/manual/en/language.oop5.php advanced PHP5 features]
+ * Use [http://php.net/manual/en/language.exceptions.php exceptions] for error handling
+ * Use [http://php.net/manual/en/ref.spl.php SPL] and [http://php.net/manual/en/ref.simplexml.php SimpleXML] extensions
+ * Use the PHP language for template processing
+
+== Security ==
+
+ * Automatically prevent:
+  * [http://en.wikipedia.org/wiki/Cross-site_request_forgery Cross-site request forgery]
+  * [http://en.wikipedia.org/wiki/Cross-site_scripting Cross-site scripting]
+  * [http://en.wikipedia.org/wiki/HTTP_response_splitting HTTP response splitting]
+  * [http://en.wikipedia.org/wiki/Session_fixation Session fixation]
+  * [http://en.wikipedia.org/wiki/SQL_injection SQL injection]
+ * Facilitates the [http://php.net/manual/en/security.variables.php validation of user input]
+
+----
+
+[[AddComment(appendonly)]]
+
+
+
+
+
+
+
+[[TOC(Documentation/Modules/Application*)]]
+
+= Application Module =
+
+The application module encapsulate the controller aspect of the MVC design pattern. It uses a file for its configuration, translate the HTTP requests received by the server and execute the appropriate methods. The controller has been separated in two distinct parts: the application and the frames. The application part is fully handled by the framework, while the frames are to be written by the developer.
+
+The controller translate requests into events. An event is defined by its name, the name of the frame containing the event, an optional pathinfo, GET and POST data, a request method and a context. It is stored in an array.
+
+The names of the frame and the event are retrieved from the PATH_INFO. The PATH_INFO is the part after the file/folder name in a query. For example, in `http://www.example.com/index.php/this/is/a/path/info`, the PATH_INFO is `/this/is/a/path/info`. By default, the PATH_INFO is divided in three parts: `/frame/event/pahtinfo`. All are optional, however. If no event name is given, the event will be processed by the frame's default event. If no frame is given, the event will be processed by the default frame, `toppage`. Note that you can customize this operation by [wiki:Documentation/Modules/Application/Routing defining custom routes].
+
+The request method is the method which was used to access the page (e.g. GET, POST) in lowercase and the context can be either `http` or `xmlhttprequest` to help differentiate between normal and AJAX requests.
+
+CLI is also supported by the module. The context is `cli` when the script is called from command line. Furthermore, if the script is called with a standard input, the request method will be `put` or otherwise `get`.
+
+== Flowchart ==
+
+When the server receives a request, it is processed according to this detailed flowchart:
+
+[[Image(app-flowchart.png)]]
+
+
+
+
+--------
+
+
+[[TOC(Documentation/Modules/Feeds)]]
+
+= Feeds Module =
+
+Nowadays, the Web is all about [Wikipedia:Web_syndication content syndication]. The most common method of syndication is to provide users a standardised way to access the content of the website through [Wikipedia:Web_feed feeds]. Web:Extend can generate feeds for the two main families of XML feeds: [Wikipedia:RSS RSS] and [Wikipedia:Atom Atom].
+
+== What Is a Feed? ==
+
+To quote [http://www.wikipedia.org/ Wikipedia]:
+> A web feed is a document (often XML-based) which contains content items with web links to longer versions. News websites and blogs are common sources for web feeds, but feeds are also used to deliver structured information ranging from weather data to "top ten" lists of hit tunes to search results. The two main web feed formats are RSS and Atom.[[BR]]
+> Web feeds are designed to be machine-readable rather than human-readable, which tends to be a source of confusion when people first encounter web feeds. This means that web feeds can also be used to automatically transfer information from one website to another, without any human intervention.
+
+In Web:Extend, feeds are generated by [API:weeFeed weeFeed] and its subclasses. A feed is a list of elements describing the website from which is taken the content (e.g. author, URL) and a list of entries with the content itself and its description (e.g. a list of comments on a blog with their post date, their author).
+
+== Creating a Feed ==
+
+To create a feed, just create a new instance of either [API:weeRSSFeed weeRSSFeed] for a RSS feed or [API:weeAtomFeed weeAtomFeed] for an Atom feed.
+
+{{{
+#!php
+<?php
+
+$oRSSFeed   = new weeRSSFeed;
+$oAtomFeed  = new weeAtomFeed;
+}}}
+
+== Describing a Feed ==
+
+To describe a feed, you just have to call the corresponding methods with adequate arguments.
+
+=== Title ===
+
+The [API:weeFeed/title title] method takes the title of the feed as its single argument.
+
+{{{
+#!php
+<?php
+$oFeed->title(sprintf('Comments on %s', $aPost['title']));
+}}}
+
+=== Subtitle ===
+
+The [API:weeFeed/subtitle subtitle] method takes the subtitle of the feed as its single argument.
+
+{{{
+#!php
+<?php
+$oFeed->subtitle($aPost['subtitle']);
+}}}
+
+=== Author ===
+
+The [API:weeFeed/author author] method takes an array which can contain 3 keys:
+ * `name`: The name of the author;
+ * `email`: His email address;
+ * `uri`:  His URI (e.g. the URL of his website).
+
+{{{
+#!php
+<?php
+$oFeed->author(array(
+    'name'  => 'nox',
+    'email' => 'nox@example.com',
+    'uri'   => 'http://wee.extend.ws/',
+));
+}}}
+
+=== Rights ===
+
+To describe the legal rights associated with the content of the feed, use the [API:weeFeed/rights rights] method.
+
+{{{
+#!php
+<?php
+$oFeed->rights('(c) 2006-2009 Dev:Extend');
+}}}
+
+=== Link ===
+
+The [API:weeFeed/link link] method should receive the `URL` pointing to the page corresponding to the content syndicated in the feed. For example, the link of a feed syndicating comments of a post should be the [Wikipedia:Permalink permalink] of the post.
+
+{{{
+#!php
+<?php
+$oFeed->link($aPost['permalink']);
+}}}
+
+=== Logo ===
+
+The [API:weeFeed/logo logo] method should receive the `URL` pointing to a logo. This could be the logo of your society or of your website.
+
+{{{
+#!php
+<?php
+$oFeed->logo('http://example.com/logo.png');
+}}}
+
+=== Category ===
+
+The category to which belongs the feed. There is currently no precise documentation about what should be a category for a feed or one of its entries.
+
+{{{
+#!php
+<?php
+$oFeed->category($sCategory);
+}}}
+
+=== Last Update Date ===
+
+The [API:weeFeed/updated updated] method is used to set the last update date of the feed. For a comments feed, it should be the date of the publication of the last comment.
+
+{{{
+#!php
+<?php
+$oFeed->updated($sLastCommentDate);
+}}}
+
+=== Chaining Properties Settings ===
+
+As in everywhere in Web:Extend, we promote use of methods chaining. All of the previous methods can be chained to ease write and read the code generating the feed:
+
+{{{
+#!php
+<?php
+$oFeed
+    ->title('Comments on the Documentation')
+    ->rights('(c) 2006-2009 Dev:Extend');
+}}}
+
+== Adding Entries ==
+
+Entries are arrays containing informations about the syndicated data. Each entry may contain the following keys:
+
+|| '''Name''' || '''Description''' ||
+|| `title` || The title of the entry (same as the `title` method) ||
+|| `summary` || A short summary describing the syndicated content ||
+|| `link` || The link to the syndicated content described in the entry (same as the `link` method) ||
+|| `author` || The author of the entry (same as the `author` method) ||
+|| `category` || The category of the entry (same as the `category` method) ||
+|| `updated` || The date of the last update of the syndicated content (same as the `updated` method) ||
+
+=== Adding a Single Entry ===
+
+To add an entry to a feed, use the [API:weeFeed/entry entry] method.
+
+{{{
+#!php
+<?php
+$oFeed->entry(array(
+    'title'     => 'An example of entry',
+    'summary'   => 'As an exemplary example, my content must be the infamous Lorem Ipsum placeholder text.',
+    'author'    => array(
+        'name'  => 'nox',
+        'email' => 'nox@example.com',
+        'uri'   => 'http://wee.extend.ws/',
+    ),
+    'updated'   => '2012-12-21',
+));
+}}}
+
+=== Adding Multiple Entries ===
+
+To add multiple entries, pass the array of entries to the [API:weeFeed/entries entries] method.
+
+{{{
+#!php
+<?php
+$oFeed->entries($aEntries);
+}}}
+
+== Outputting ==
+
+You can use the [API:weeFeed/render render] method to output the feed with an adequate Content-Type header.
+
+{{{
+#!php
+<?php
+$oFeed->render();
+}}}
+
+You can also use the [API:weeFeed/toString toString] method to obtain the content of the feed. You can then save it to a file or do whatever fits your needs.
+
+{{{
+#!php
+<?php
+file_put_contents('feed.xml', $oFeed->toString());
+}}}
+
+=== Integration with the Application Module ===
+
+If you are using [wiki:Documentation/Modules/Application weeApplication and its friends], you will want to be able to output a feed directly from one of your frames' events. Use the [API:weeFeed/render render] method to send the feed, then exits the script at the end of your event.
+
+{{{
+#!php
+<?php
+
+class feed extends weeFrame
+{
+    public function defaultEvent()
+    {
+        // ...
+        // construct and fill the feed $oFeed
+        // ...
+
+        $oFeed->render();
+        exit;
+    }
+}
+}}}
+
+----
+
+[[AddComment(AppendOnly)]]

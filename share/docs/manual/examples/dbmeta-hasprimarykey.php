@@ -1,0 +1,3 @@
+<?php
+
+$bHasPrimaryKey = $oTable->hasPrimaryKey();

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<form>
+	<formkey>0</formkey>		<!-- disable form key protection -->
+	<method>post</method>		<!-- uses POST when submitting the form -->
+	<uri>/path/to/target</uri>	<!-- target changed to "/path/to/target" -->
+
+	<widgets>
+		<!-- Contents: widgets and embedded HTML here -->
+	</widgets>
+</form>

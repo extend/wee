@@ -1,0 +1,422 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="mod_dbmeta">
+	<title>Database metadata access layer module</title>
+	<para>
+		Sometimes, you don't want to fetch data from a database table.
+		Instead, you want to fetch data <emphasis>about</emphasis> a database table.
+		DbMeta is our answer to this problem.
+		Using this API, you can easily retrieve the columns or the primary key of a table and much more.
+		Useful examples include writing automatically various queries or writing a differential tool
+		to compare two different versions of a table in a database.
+	</para>
+	<para>
+		All the database drivers and their PDO counterparts have DbMeta support.
+		They all provide access to the tables, columns and primary and foreign keys of the database.
+		The PostgreSQL and Oracle ones also provide methods to retrieve data about database schemas.
+	</para>
+	<para>
+		This documentation comes in the form of a function reference of everything you can do using DbMeta.
+		The usage is rather straightforward and the examples should explain a lot.
+	</para>
+	<para>
+		To query the database you must use the DbMeta object.
+		To retrieve an instance of this object for your database,
+		simply call the method <literal>meta</literal> of your database driver.
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-meta.php.xml"/>
+	</para>
+
+	<sect1 id="mod_dbmeta_common">
+		<title>Common interface for all meta objects</title>
+		<para>
+			Every database object represented in DbMeta is an instance of <literal>weeDbMetaObject</literal>.
+		</para>
+		<para>
+			A database object can be a schema, a table, a column, a primary key,
+			a foreign key, a sequence... and much more depending on the database you use.
+		</para>
+
+		<sect2>
+			<title>Retrieving an object's name</title>
+			<para>
+				Every database object have a name.
+				You can retrieve this name by using the <literal>name</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-name.php.xml"/>
+			</para>
+			<para>
+				Alternatively, you can also directly obtain the quoted name of the database object by using the <literal>quotedName</literal> method.
+				The name returned will be quoted using the <literal>escapeIdent</literal> method of the associated driver and will thus be safe to use in a query.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-quotedname.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_dbmeta_schemas">
+		<title>Schemas</title>
+		<para>
+			DbMeta supports schemas through the <literal>weeDbMetaSchemaProvider</literal> interface.
+			A schema is an instance of <literal>weeDbMetaSchema</literal> and contains methods to fetch database objects related to this schema.
+		</para>
+		<para>
+			Schemas are supported in PostgreSQL and Oracle.
+		</para>
+
+		<sect2>
+			<title>Fetching the schema list</title>
+			<para>
+				You can use the following snippet to retrieve the list of schemas. The list is ordered by name.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schemas.php.xml"/>
+			</para>
+			<para>
+				Additionally, may you require nothing more, you can obtain an array containing
+				only the names of these schemas through the <literal>schemasNames</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schemasnames.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Checking whether a schema exists</title>
+			<para>
+				You can use the <literal>schemaExists</literal> method of the DbMeta object to check whether a schema exist.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schemaexists.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching a specific schema</title>
+			<para>
+				You can retrieve a schema object in order to get more information about it and the objects it contains.
+				If the schema does not exist in the database, an <literal>UnexpectedValueException</literal> is thrown.
+			</para>
+			<para>
+				To retrieve this object, use the <literal>schema</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schema.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the name of an object's schema</title>
+			<para>
+				All schema-enabled database drivers allow you to retrieve their objects' schema's name.
+				You can retrieve the name of an object's schema by using the <literal>schemaName</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schemaname.php.xml"/>
+			</para>
+			<para>
+				The only class that do not implement this method is of course the schema itself.
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Schemas and qualified names</title>
+			<para>
+				It should be noted that all the DbMeta classes representing database objects in schema-enabled database drivers
+				will return a fully-qualified name when you use the method <literal>quotedName</literal> on them.
+				Let's take a look with an example:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schema-quotedname.php.xml"/>
+			</para>
+			<para>
+				As you can see, you do not have to worry about the schema when you use this method.
+				You can be sure that it will return a fully-qualified name that can be used without any ambiguity.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_dbmeta_tables">
+		<title>Tables</title>
+		<para>
+			<literal>weeDbMeta</literal> and <literal>weeDbMetaSchema</literal> allow you to retrieve a list of their associated tables.
+		</para>
+		<para>
+			A table is an instance of <literal>weeDbMetaTable</literal> and
+			contains methods to fetch information about the table or database objects it contains.
+		</para>
+
+		<sect2>
+			<title>Fetching the table list</title>
+			<para>
+				You can use the <literal>tables</literal> method to retrieve a list of tables.
+				You will receive an array of <literal>weeDbMetaTable</literal> objects
+				that you can then use to get information about the table.
+			</para>
+			<para>
+				The tables are returned ordered by name.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-tables.php.xml"/>
+			</para>
+			<para>
+				The exact meaning of the <literal>tables</literal> method may vary when the underlying RDBMS also supports schemas.
+				For example, the PostgreSQL DbMeta object's <literal>tables</literal> method only returns the visible tables,
+				based on the <ulink url="http://www.postgresql.org/docs/8.3/static/ddl-schemas.html#DDL-SCHEMAS-PATH">schema search path</ulink>.
+			</para>
+			<para>
+				You may also want to fetch all the tables from a specific schema, if the database driver you use support them.
+				The schema object allows you to retrieve all the tables associated with itself.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schema-tables.php.xml"/>
+			</para>
+			<para>
+				Additionally, may you require nothing more, you can obtain an array containing only the names
+				of these tables through the <literal>tablesNames</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-tablesnames.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Checking whether a table exists</title>
+			<para>
+				To check for a table existence, you can use the <literal>tableExists</literal> method.
+				You can use this method both with the DbMeta object or the schema object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-tableexists.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching a specific table</title>
+			<para>
+				To fetch a table, use the method of the same name.
+				The <literal>table</literal> method is available both on the DbMeta and the schema objects.
+				The returned object is an instance of <literal>weeDbMetaTable</literal>.
+			</para>
+			<para>
+				If the table does not exist in the database or the schema, an <literal>UnexpectedValueException</literal> is thrown.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-table.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the name of an object's table</title>
+			<para>
+				When you need the name of the table where a column or a key reside,
+				you can use the <literal>tableName</literal> method of this column's or key's meta object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-tablename.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_dbmeta_columns">
+		<title>Columns</title>
+		<para>
+			A column is an instance of <literal>weeDbMetaColumn</literal>.
+		</para>
+
+		<sect2>
+			<title>Fetching a table's columns list</title>
+			<para>
+				You can retrieve all the columns using the <literal>columns</literal> method of your table object.
+				The columns of the table are ordered by their position.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-columns.php.xml"/>
+			</para>
+			<para>
+				Additionally, may you require nothing more, you can obtain an array
+				containing only the names of these columns, with the method <literal>columnsNames</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-columnsnames.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Checking whether a column exists in a table</title>
+			<para>
+				You can use for this purpose the <literal>columnExists</literal> method of your table object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-columnexists.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching a given column from a table</title>
+			<para>
+				Use the <literal>column</literal> method of your table object.
+				The returned object is an instance of <literal>weeDbMetaColumn</literal>.
+			</para>
+			<para>
+				If the column does not exist in the table, an <literal>UnexpectedValueException</literal> is thrown.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-column.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Checking whether a column has a default value</title>
+			<para>
+				To know if a column has a default value, use the method <literal>hasDefault</literal> on the column object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-hasdefault.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the expression of the default value</title>
+			<para>
+				When the column has a default value, you can retrieve its expression using the method <literal>defaultValue</literal>.
+				The returned string is an SQL expression that will vary depending on the underlying database.
+			</para>
+			<para>
+				If the column do not have a default value, an <literal>IllegalStateException</literal> is thrown.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-defaultvalue.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Checking whether a column is nullable</title>
+			<para>
+				A column is nullable when its <literal>isNullable</literal> method returns <literal>true</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-isnullable.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the position of a column in the table</title>
+			<para>
+				To obtain the position of an arbitrary column, take a look to its <literal>num</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-num.php.xml"/>
+			</para>
+			<para>
+				Since columns are ordered by position when they are retrieved using the <literal>columns</literal> method,
+				you can alternatively retrieve the column position by using the array's index when iterating through it.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-num-columns.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Generating a validator for a column</title>
+			<para>
+				As explained in the <link linkend="mod_validators">validators module documentation</link>,
+				you should always validate the user input before storing it in a database.
+				DbMeta has a basic support of SQL types through the <literal>hasValidator</literal>
+				and <literal>getValidator</literal> methods.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-getvalidator.php.xml"/>
+			</para>
+			<para>
+				If the column type is not handled by DbMeta but you call <literal>getValidator</literal> anyway,
+				an <literal>UnhandledTypeException</literal> is thrown.
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_dbmeta_pkeys">
+		<title>Primary keys</title>
+
+		<sect2>
+			<title>Checking whether a table has a primary key</title>
+			<para>
+				To check whether a table has a primary key, use the <literal>hasPrimaryKey</literal> method of your table object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-hasprimarykey.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching the primary key of a table</title>
+			<para>
+				When you need to retrieve the primary key of a table, you can use the <literal>primaryKey</literal> method of your table object.
+				The returned object is an instance of <literal>weeDbMetaPrimaryKey</literal>.
+			</para>
+			<para>
+				If the table does not have a primary key, an <literal>IllegalStateException</literal> is thrown.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-primarykey.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching the names of the columns of a primary key</title>
+			<para>
+				An instance of <literal>weeDbMetaPrimaryKey</literal> is not so useful by itself.
+				The real bit of important data is the names of the columns of the primary key.
+				These names are returned by the primary key's object <literal>columnsNames</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-primarykey-columnsnames.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_dbmeta_fkeys">
+		<title>Foreign keys</title>
+		<para>
+			When an RDBMS supports foreign keys, its table class implements the <literal>weeDbMetaForeignKeyProvider</literal>.
+		</para>
+
+		<sect2>
+			<title>Fetching a table's foreign keys list</title>
+			<para>
+				A table can have many foreign keys.
+				To retrieve them all, use the table object's <literal>foreignKeys</literal> method.
+				A foreign key is an instance of <literal>weeDbMetaForeignKey</literal>.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-foreignkeys.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Checking whether a foreign key exists in a table</title>
+			<para>
+				To check whether a foreign key exists in a table, call the <literal>foreignKeyExists</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-foreignkeyexists.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching a given foreign key from a table</title>
+			<para>
+				To fetch a given foreign key from a table, please use the <literal>foreignKey</literal> method of your table object.
+				The returned object is an instance of <literal>weeDbMetaForeignKey</literal>.
+			</para>
+			<para>
+				If the foreign key does not exist in the table, an <literal>UnexpectedValueException</literal> is thrown.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-foreignkey.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Fetching the names of the columns of a foreign key</title>
+			<para>
+				To retrieve the names of the columns of a foreign key, take a look to the <literal>columnsNames</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-foreignkey-columnsnames.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the name of the referenced table</title>
+			<para>
+				A foreign key references a table in the database.
+				To obtain the name of this table, you can use the <literal>referencedTableName</literal> method of your foreign key object.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-referencedtablename.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the name of the referenced schema</title>
+			<para>
+				When the underlying database supports both schemas and foreign keys, its foreign key class extends <literal>weeDbMetaSchemaForeignKey</literal>.
+				To retrieve the name of the schema of the referenced table, use the <literal>referencedSchemaName</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-referencedschemaname.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the names of the referenced columns</title>
+			<para>
+				When you want to know which are the columns from the referenced table referenced to by the foreign key, use the <literal>referencedColumnsNames</literal> method.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-referencedcolumnsnames.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1 id="mod_dbmeta_commentable">
+		<title>Commentable objects</title>
+		<para>
+			Some RDBMS provide a way to comment various database objects.
+			DbMeta can retrieve those comments through the <literal>weeDbMetaCommentable</literal> interface.
+		</para>
+
+		<sect2>
+			<title>Checking whether a database object is commentable</title>
+			<para>
+				When a database object is commentable, its class implements the <literal>weeDbMetaCommentable</literal> interface.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-iscommentable.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Retrieving the comment of a database object</title>
+			<para>
+				To get the comment of a commentable database object, use the <literal>comment</literal> method.
+				If the database object does not have a comment, <literal>null</literal> is returned.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-comment.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+</chapter>

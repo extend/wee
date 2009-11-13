@@ -1,0 +1,7 @@
+<?php echo $this->template('header', array('title' => 'Example'))?> 
+
+<?php foreach ($frames as $name => $frame):?> 
+	<div id="<?php echo $name?>"><?php echo $frame->render()?></div>
+<?php endforeach?> 
+
+<?php echo $this->template('footer')?> 
