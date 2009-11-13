@@ -1,0 +1,113 @@
+<chapter id="guidelines_php">
+	<title>PHP style guidelines</title>
+	<para>
+		The <emphasis>PHP style guidelines</emphasis> are intended to provide a consistent style over all the framework's code.
+		Although they aren't strictly enforced, you might consider following them.
+		We may refuse code temporarily or ask to rewrite it if its style differ
+		too much from the guidelines, in order to keep our code base clean.
+	</para>
+
+	<sect1>
+		<title>Indentation</title>
+		<para>
+			You must use tabs, with the equivalent of 4 columns per tab.
+		</para>
+		<para>
+			A tab must always end on a column number multiple of 4,
+			which means that not all tabs necessarily spans 4 columns:
+			they can span over 1, 2 or 3 columns depending on the tab position.
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>Curly braces</title>
+		<para>
+			For class and function definitions, you must add a line break before the opening curly brace.
+			For control structures you <emphasis>can</emphasis> write it directly on the structure's line with a space after the closing parenthesis.
+			Closing curly braces must have a line break before them. This means:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-curly.php.xml"/>
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>Control structures</title>
+		<para>
+			These include <literal>if</literal>, <literal>for</literal>, <literal>while</literal>, <literal>switch</literal>, etc.
+		</para>
+		<para>
+			Control structures should have one space between the control keyword
+			and opening parenthesis, to distinguish them from function calls.
+			Curly braces are optional. You don't have to use them if they are not required.
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>Arrays</title>
+		<para>
+			Arrays should be formatted with a space separating each element and assignment operator, if applicable:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-array.php.xml"/>
+		</para>
+		<para>
+			Note that if the array contains too many items, each element should be broken
+			into its own line, and, unless it would require adding too many tabs, aligned:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-array-align.php.xml"/>
+		</para>
+		<para>
+			Note that the last comma is <link linkend="standards_array_comma">not a typo</link>.
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>Classes</title>
+		<para>
+			You must define class members in this order: constants, properties, methods.
+			When inheriting, you must first write the classes inherited and then the interface implemented.
+		</para>
+		<para>
+			Try to keep everything ordered alphabetically, especially the methods, for easier lookup.
+			When ordering variables alphabetically, you must ignore the first character, as it identifies the type, not the variable name.
+		</para>
+		<para>
+			Always put the <literal>public</literal> keyword on public elements to prevent confusion.
+			Similarly, do not use <literal>var</literal> instead of <literal>public</literal> for a property.
+		</para>
+		<para>
+			This would look like this:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-class.php.xml"/>
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>Functions</title>
+		<para>
+			There is no space before the parenthesis when declaring a function.
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-function.php.xml"/>
+		</para>
+
+		<sect2>
+			<title>Function calls</title>
+			<para>
+				There is no space before the parenthesis when calling a function either.
+				Do not put space between the parenthesis and the first and last parameter.
+				Separate each parameter by a comma followed by one space.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-function-call.php.xml"/>
+			</para>
+		</sect2>
+	</sect1>
+
+	<sect1>
+		<title>Operators</title>
+		<para>
+			There should be one space before and after any operator,
+			with the exception of <literal>++</literal>, <literal>--</literal> and <literal>!</literal>.
+		</para>
+		<para>
+			In the case of a block of related assignments, you may insert tabs to promote readability:
+			<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/php-assign-align.php.xml"/>
+		</para>
+		<para>
+			Note that tabs are here to <emphasis>improve readability</emphasis>.
+			Too many tabs for no obvious reason (such as aligning all assignment operations over a whole file) <emphasis>reduce readability</emphasis>.
+		</para>
+	</sect1>
+</chapter>
