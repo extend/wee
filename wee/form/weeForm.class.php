@@ -113,7 +113,7 @@ class weeForm implements Printable
 
 	protected function buildXSLStylesheet()
 	{
-		$oWeeStylesheets = new DirectoryIterator(ROOT_PATH . 'wee/form/xslt/');
+		$oWeeStylesheets = new DirectoryIterator(WEE_PATH . 'form/xslt/');
 		$oUserStylesheets = empty($this->sUserStylesheetsPath) ? array() : new DirectoryIterator($this->sUserStylesheetsPath);
 
 		if ((int)$this->oXML->formkey)
@@ -128,7 +128,7 @@ class weeForm implements Printable
 		}
 
 		ob_start();
-		require(ROOT_PATH . 'wee/form/stylesheet.xsl');
+		require(WEE_PATH . 'form/stylesheet.xsl');
 		return ob_get_clean();
 	}
 
