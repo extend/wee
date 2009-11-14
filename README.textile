@@ -1,0 +1,33 @@
+h1. Web:Extend PHP framework README
+
+Web:Extend is a simple yet powerful PHP5 API that makes web development easy.
+
+Web:Extend is currently beta software. It is used by a few people in
+production environments but you should be aware that it has not been
+tested enough to be considered stable.
+
+h2. Project information
+
+* Web: http://extend.ws
+* Source: http://github.com/essen/wee
+* License: LGPL (see LICENSE)
+* Documentation and API: http://extend.ws/documentation
+* Bug tracking: http://github.com/essen/wee/issues
+* Discussion: http://groups.google.com/group/wee-users
+
+h2. Help test the software
+
+Please download the framework and help testing it by running the following
+command on your environment. It will only take a minute.
+
+* make test
+
+Some operations might fail if the app/tmp folder isn't writable.
+
+Database drivers can also be tested by creating an user "wee" with a
+password "wee", owner of a database "wee_tests". The double quotes are
+not part of the credentials.
+
+Report any error message you may see.
+
+Thank you for trying this software.
