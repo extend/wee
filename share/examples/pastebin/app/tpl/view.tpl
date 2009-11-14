@@ -8,7 +8,8 @@
 	<?php endif?> 
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
 
-	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/yui/reset-fonts.css"/>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo APP_PATH?>res/blueprint-css/blueprint/screen.css"/>
+	<link rel="stylesheet" type="text/css" media="print" href="<?php echo APP_PATH?>res/blueprint-css/blueprint/print.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>res/wee/form.block.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php echo APP_PATH?>pub/pastebin.css"/>
 </head>

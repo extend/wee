@@ -9,4 +9,5 @@ pre.pastebin {background:#ddd;border:1px solid #888;max-height:40em;line-height:
 
 form.block label {display:none}
 form.finder {padding-left:1em}
-textarea {height:20em;width:38em}
+textarea {height:20em;width:37em}
+input[type=text] {margin:0}
