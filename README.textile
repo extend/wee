@@ -8,12 +8,12 @@ tested enough to be considered stable.
 
 h2. Project information
 
-* Web: http://extend.ws
-* Source: http://github.com/essen/wee
+* Web: "http://extend.ws":http://extend.ws
+* Source: "http://github.com/essen/wee":http://github.com/essen/wee
 * License: LGPL (see LICENSE)
-* Documentation and API: http://extend.ws/documentation
-* Bug tracking: http://github.com/essen/wee/issues
-* Discussion: http://groups.google.com/group/wee-users
+* Documentation and API: "http://extend.ws/documentation":http://extend.ws/documentation
+* Bug tracking: "http://github.com/essen/wee/issues":http://github.com/essen/wee/issues
+* Discussion: "http://groups.google.com/group/wee-users":http://groups.google.com/group/wee-users
 
 h2. Help test the software
 
@@ -21,6 +21,9 @@ Please download the framework and help testing it by running the following
 command on your environment. It will only take a minute.
 
 * make test
+
+You might need to install the development tools if they are not available
+by default on your OS. Both BSD and GNU make will work.
 
 Some operations might fail if the app/tmp folder isn't writable.
 
