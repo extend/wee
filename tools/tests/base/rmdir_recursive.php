@@ -41,10 +41,8 @@ try {
 
 $this->isTrue(file_exists($sDirname),
 	_WT('rmdir_recursive should not remove the given directory itself when its second argument is true.'));
-
-$o = new RecursiveDirectoryIterator($sDirname);
-
-$this->isTrue(count(iterator_to_array($o->getChildren())) == 0,
+// It should only contain . and .. now
+$this->isEqual(2, iterator_count(new DirectoryIterator($sDirname)),
 	_WT('rmdir_recursive should empty the directory that was passed to it.'));
 
 touch($sFilename);
