@@ -23,8 +23,8 @@ all: lint api test
 lint:
 	@@for file in `find . -type f -name "*.php" -o -name "*.tpl"`; do php -l $$file | grep -v "^No syntax errors detected"; done
 
-svnlint:
-	@@svn stat | grep 'php' | awk '{print "php -l " $$2}' | sh
+clint:
+	@@git diff --name-only | grep 'php' | awk '{print "php -l " $$1}' | sh
 
 api: tools/api/api.xml
 	@@php tools/api/makeapi.php tools/api/
