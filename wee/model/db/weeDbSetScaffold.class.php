@@ -26,8 +26,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 	To use it, simply extend it and define the $sModel property to the name of the weeDbModelScaffold class,
 	and the $sTableName to the name of the table in the database represented by this set.
-
-	@todo automatically fetch reference tables data
 */
 
 abstract class weeDbSetScaffold extends weeDbSet implements Countable
@@ -69,7 +67,26 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected $sTableName;
 
 	/**
-		Valid criteria operators for use with the search methods.
+		The criteria used to determine the subset.
+
+		@see weeDbSetScaffold::__construct
+	*/
+
+	protected $aSubsetCriteria;
+
+	/**
+		Valid criteria logical operators for use when defining subsets.
+	*/
+
+	protected $aValidCriteriaLogicalOperators = array(
+		'OR',		// union of A and B
+		'AND',		// intersection of A and B
+		'AND NOT',	// complement of B in A (in other words: A - B)
+		'XOR',		// symmetric difference of A and B
+	);
+
+	/**
+		Valid criteria operators for use when defining subsets.
 	*/
 
 	protected $aValidCriteriaOperators = array(
@@ -89,6 +106,47 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected $aValidOrderByModifiers = array(
 		'ASC', 'DESC',
 	);
+
+	/**
+		Filter rows according to the given criteria. This effectively creates a subset.
+
+		Note that delete, fetch, insert and update operations do not try to restrict
+		you to the subset. The result of these operations may or may not affect the
+		subset. By convention, you shouldn't use those methods on subset objects.
+
+		The criteria must be an associative array with the keys being the field names
+		and the values the operation to perform. The operation can be either a single
+		value (the name of the operation), or an array containing the name of the operation
+		along with one or more values. Here is the representation of all the possible
+		forms of a single criteria:
+
+		{{{
+		$aCriteria = array(
+			'field_1' => 'operation',
+			'field_2' => array('operation'),
+			'field_3' => array('operation', 'value'),
+			'field_4' => array('operation', 'value', 'more values', ...),
+		);
+		}}}
+
+		All the criteria are logically connected with the operator AND.
+		In our example, that means field_1 AND field_2 AND field_3 AND field_4.
+		You can however also use following construct to logically connect criteria:
+
+		{{{
+		$aCriteria = array('logical operator', $aCriteriaA, $aCriteriaB)
+		}}}
+
+		Most of the time though you won't need to use this directly.
+		The subset* methods are doing the job for you.
+
+		@param $aCriteria The criteria to filter with.
+	*/
+
+	public function __construct($aSubsetCriteria = array())
+	{
+		$this->aSubsetCriteria = $aSubsetCriteria;
+	}
 
 	/**
 		Build various JOINs defined using the $aRefSets property.
@@ -141,6 +199,99 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	}
 
 	/**
+		Build the WHERE clause for the subset's criteria.
+
+		@see weeDbSetScaffold::__construct
+		@return string The WHERE clause built according to the criteria.
+		@throw InvalidArgumentException A criteria operation or logical operation is invalid.
+	*/
+
+	protected function buildWhere()
+	{
+		if (empty($this->aSubsetCriteria))
+			return ' WHERE TRUE';
+
+		if (is_int(key($this->aSubsetCriteria)))
+			return ' WHERE ' . $this->buildWhereLogical($this->getDb(), $this->aSubsetCriteria);
+		return ' WHERE ' . $this->buildWhereCriteria($this->getDb(), $this->aSubsetCriteria);
+	}
+
+	/**
+		Build a criteria part of the WHERE clause.
+
+		@see weeDbSetScaffold::__construct
+		@param $oDb The database associated with this set.
+		@param $aCriteria The criteria.
+		@return string The criteria part of the WHERE clause built according to the criteria.
+		@throw InvalidArgumentException The criteria operation is not in the list of valid operations.
+	*/
+
+	protected function buildWhereCriteria($oDb, $aCriteria)
+	{
+		$sWhere = 'TRUE';
+
+		foreach ($aCriteria as $sField => $mOperation) {
+			$sWhere .= ' AND ' . $oDb->escapeIdent($sField) . ' ';
+
+			if (is_array($mOperation)) {
+				in_array($mOperation[0], $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
+					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation[0]));
+
+				$sWhere .= $mOperation[0] . ' ';
+
+				$iCount = count($mOperation);
+				if ($iCount == 2)
+					$sWhere .= $oDb->escape($mOperation[1]);
+				elseif ($iCount > 2) {
+					$sWhere .= '(';
+					for ($i = 1; $i < $iCount; $i++)
+						$sWhere .= $oDb->escape($mOperation[$i]) . ',';
+					$sWhere = substr($sWhere, 0, -1) . ')';
+				}
+			} else {
+				in_array($mOperation, $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
+					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation));
+
+				$sWhere .= $mOperation;
+			}
+		}
+
+		return $sWhere;
+	}
+
+	/**
+		Build a logical part of a WHERE clause.
+
+		@see weeDbSetScaffold::__construct
+		@param $oDb The database associated with this set.
+		@param $aCriteria The logical criteria.
+		@return string The logical part of the WHERE clause built according to the criteria.
+		@throw InvalidArgumentException The criteria logical operation is not in the list of valid logical operations.
+	*/
+
+	protected function buildWhereLogical($oDb, $aCriteria)
+	{
+		in_array($aCriteria[0], $this->aValidCriteriaLogicalOperators) or burn('InvalidArgumentException',
+			sprintf(_WT('The criteria logical operator given, "%s", do not exist.'), $aCriteria[0]));
+
+		$sWhere = '(';
+
+		if (is_int(key($aCriteria[1])))
+			$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[1]);
+		else
+			$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[1]);
+
+		$sWhere .= ') ' . $aCriteria[0] . ' (';
+
+		if (is_int(key($aCriteria[2])))
+			$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[2]);
+		else
+			$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[2]);
+
+		return $sWhere . ')';
+	}
+
+	/**
 		Count the number of rows that would be returned by a fetchAll query.
 		A JOIN is performed on the reference tables if any are provided.
 
@@ -152,10 +303,10 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$aMeta = $this->getMeta();
 
 		// Faster equivalent
-		if ($this->sJoinType == 'LEFT OUTER JOIN')
+		if ($this->sJoinType == 'LEFT OUTER JOIN' && empty($this->aSubsetCriteria))
 			return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table']);
 
-		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table'] . $this->buildJoin($aMeta));
+		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . $this->buildWhere());
 	}
 
 	/**
@@ -231,7 +382,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 		$aMeta = $this->getMeta();
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE TRUE';
+		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . $this->buildWhere();
 		if (!empty($this->sOrderBy))
 			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
 		if (!empty($iCount))
@@ -261,6 +412,18 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		empty($aDiff) or burn('InvalidArgumentException', _WT('The primary key value is incomplete.'));
 
 		return $mPrimaryKey;
+	}
+
+	/**
+		Get the criteria defining the subset.
+
+		@see weeDbSetScaffold::__construct
+		@return array The criteria used to define the subset.
+	*/
+
+	public function getSubsetCriteria()
+	{
+		return $this->aSubsetCriteria;
 	}
 
 	/**
@@ -334,7 +497,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	}
 
 	/**
-		Defines the order of the rows returned by the fetchAll, fetchSubset and search operations.
+		Defines the order of the rows returned by the fetchAll and fetchSubset methods.
 
 		The parameter can be either a scalar value (for example, the name of the column to use for sorting)
 		or an associative array. When providing an array, you can give as many sort options as you want,
@@ -374,132 +537,75 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	}
 
 	/**
-		Search rows matching the given criteria.
+		Create a new subset based on a logical operation between two sets.
+		The logical operation is: A op B. Set A is the $this object.
+		Set B is the set given with the $mSet argument.
 
-		The criteria must be an associative array with the keys being the field names
-		and the values the operation to perform. The operation can be either a single
-		value (the name of the operation), or an array containing the name of the operation
-		along with one or more values. Here is the representation of all the possible
-		forms of a single criteria:
-
-		{{{
-		$aCriteria = array(
-			'field_1' => 'operation',
-			'field_2' => array('operation'),
-			'field_3' => array('operation', 'value'),
-			'field_4' => array('operation', 'value', 'more values', ...),
-		);
-		}}}
-
-		@param $aCriteria The criteria to search for.
-		@param $iOffset Start fetching from this offset.
-		@param $iCount The number of rows to fetch.
-		@return mixed An instance of weeDatabaseResult.
-		@throw InvalidArgumentException $iOffset and $iCount must be integers.
-		@throw InvalidArgumentException $iCount must be provided if $iOffset is given.
+		@param $sLogical The logical operation to perform between the two sets.
+		@param $mSet Set B of the operation. This can be either a criteria array or a weeDbSetScaffold object.
+		@return weeDbSetScaffold The subset created as a result of the operation.
 	*/
 
-	public function search($aCriteria, $iOffset = 0, $iCount = 0)
+	protected function subset($sLogical, $mSet)
 	{
-		is_int($iOffset) or burn('InvalidArgumentException', _WT('$iOffset must be an integer.'));
-		is_int($iCount) or burn('InvalidArgumentException', _WT('$iCount must be an integer.'));
-		(empty($iCount) && !empty($iOffset)) and burn('InvalidArgumentException',
-			_WT('$iCount must be provided when $iOffset is given.'));
+		if (is_object($mSet))
+			$mSet = $mSet->getSubsetCriteria();
 
-		$aMeta = $this->getMeta();
-
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE ' . $this->searchBuildWhere($aCriteria);
-		if (!empty($this->sOrderBy))
-			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
-		if (!empty($iCount))
-			$sQuery .= ' LIMIT ' . $iCount . ' OFFSET ' . $iOffset;
-
-		return $this->query($sQuery);
+		$sClass = get_class($this);
+		$o = new $sClass(array(
+			$sLogical,
+			$this->aSubsetCriteria,
+			$mSet,
+		));
+		$o->setDb($this->getDb());
+		return $o;
 	}
 
 	/**
-		Build the body of the WHERE clause based on the given criteria.
+		Returns a subset representing the complement of $mSet in $this. In other words: $this - $mSet.
 
-		The criteria must be an associative array with the keys being the field names
-		and the values the operation to perform. The operation can be either a single
-		value (the name of the operation), or an array containing the name of the operation
-		along with one or more values. Here is the representation of all the possible
-		forms of a single criteria:
-
-		{{{
-		$aCriteria = array(
-			'field_1' => 'operation',
-			'field_2' => array('operation'),
-			'field_3' => array('operation', 'value'),
-			'field_4' => array('operation', 'value', 'more values', ...),
-		);
-		}}}
-
-		@param $aCriteria The criteria to search for.
-		@return string The body of the WHERE clause built according to the criteria.
-		@throw InvalidArgumentException The criteria operation is not in the list of valid operations.
+		@param $mSet The set to obtain the complement of.
+		@return weeDbSetScaffold The subset created as a result of the operation.
 	*/
 
-	protected function searchBuildWhere($aCriteria)
+	public function subsetComplementOf($mSet)
 	{
-		$oDb = $this->getDb();
-		$sWhere = 'TRUE';
-
-		foreach ($aCriteria as $sField => $mOperation) {
-			$sWhere .= ' AND ' . $oDb->escapeIdent($sField) . ' ';
-
-			if (is_array($mOperation)) {
-				in_array(strtoupper($mOperation[0]), $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
-					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation[0]));
-
-				$sWhere .= $mOperation[0] . ' ';
-
-				$iCount = count($mOperation);
-				if ($iCount == 2)
-					$sWhere .= $oDb->escape($mOperation[1]);
-				elseif ($iCount > 2) {
-					$sWhere .= '(';
-					for ($i = 1; $i < $iCount; $i++)
-						$sWhere .= $oDb->escape($mOperation[$i]) . ',';
-					$sWhere = substr($sWhere, 0, -1) . ')';
-				}
-			} else {
-				in_array(strtoupper($mOperation), $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
-					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation));
-
-				$sWhere .= $mOperation;
-			}
-		}
-
-		return $sWhere;
+		return $this->subset('AND NOT', $mSet);
 	}
 
 	/**
-		Return the total count of rows returned by a search on the given criteria.
+		Returns a subset representing the intersection of $mSet and $this.
 
-		The criteria must be an associative array with the keys being the field names
-		and the values the operation to perform. The operation can be either a single
-		value (the name of the operation), or an array containing the name of the operation
-		along with one or more values. Here is the representation of all the possible
-		forms of a single criteria:
-
-		{{{
-		$aCriteria = array(
-			'field_1' => 'operation',
-			'field_2' => array('operation'),
-			'field_3' => array('operation', 'value'),
-			'field_4' => array('operation', 'value', 'more values', ...),
-		);
-		}}}
-
-		@param $aCriteria The criteria to search for.
-		@return integer The number of rows returned by a search using this criteria.
+		@param $mSet The set to intersect with.
+		@return weeDbSetScaffold The subset created as a result of the operation.
 	*/
 
-	public function searchCount($aCriteria)
+	public function subsetIntersect($mSet)
 	{
-		$aMeta = $this->getMeta();
-		return $this->queryValue('SELECT COUNT(*) FROM ' . $aMeta['table']
-			. $this->buildJoin($aMeta) . ' WHERE ' . $this->searchBuildWhere($aCriteria));
+		return $this->subset('AND', $mSet);
+	}
+
+	/**
+		Returns a subset representing the symmetric difference of $mSet and $this.
+
+		@param $mSet The set to do the symmetric difference with.
+		@return weeDbSetScaffold The subset created as a result of the operation.
+	*/
+
+	public function subsetSymDiff($mSet)
+	{
+		return $this->subset('XOR', $mSet);
+	}
+
+	/**
+		Returns a subset representing the union of $mSet and $this.
+
+		@param $mSet The set to unite with.
+		@return weeDbSetScaffold The subset created as a result of the operation.
+	*/
+
+	public function subsetUnion($mSet)
+	{
+		return $this->subset('OR', $mSet);
 	}
 }

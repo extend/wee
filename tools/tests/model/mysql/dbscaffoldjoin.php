@@ -1,5 +1,7 @@
 <?php
 
+require(ROOT_PATH . 'tools/tests/db/mysql/connect.php.inc');
+
 if (!class_exists('myDbScaffoldSetProfile')) {
 	class myDbScaffoldSetProfile extends weeDbSetScaffold
 	{
@@ -42,8 +44,6 @@ if (!class_exists('myDbScaffoldSetProfile')) {
 		}
 	}
 }
-
-require(ROOT_PATH . 'tools/tests/db/mysql/connect.php.inc');
 
 try {
 	$oDb->query('CREATE TABLE IF NOT EXISTS dbscaffoldjoin (pkey integer, profile_id integer, rank_id integer, rank_type integer, country integer, year integer, PRIMARY KEY (pkey))');
@@ -149,13 +149,22 @@ try {
 		'country_label'	=> null,
 	), _WT('weeDbSetScaffold::fetch returned bad data when the keys to reference tables are NULL.'));
 
-	// weeDbSetScaffold::searchCount
+	// weeDbSetScaffold's subsets
 
-	$this->isEqual(3, $oSet->searchCount(array('profile_label' => array('LIKE', '%tor'))),
-		_WT('weeDbSetScaffold::searchCount on a reference table returned the wrong number of results.'));
+	$oSubset = new myDbScaffoldSetJoin(array('profile_label' => array('LIKE', '%tor')));
+	$oSubset->setDb($oDb);
+	$this->isEqual(3, count($oSubset),
+		_WT('Using subsets with a reference table returned the wrong number of results.'));
 
-	$this->isEqual(2, $oSet->searchCount(array('country_label' => array('=', 'Moon'))),
-		_WT('weeDbSetScaffold::searchCount on a reference table returned the wrong number of results.'));
+	$oSubset = new myDbScaffoldSetJoin(array('country_label' => array('=', 'Moon')));
+	$oSubset->setDb($oDb);
+	$this->isEqual(2, count($oSubset),
+		_WT('Using subsets with a reference table returned the wrong number of results.'));
+
+	$oSubset = new myDbScaffoldSetJoin(array('profile_label' => array('LIKE', '%tor')));
+	$oSubset->setDb($oDb);
+	$oSubset = $oSubset->subsetComplementOf(array('country_label' => array('=', 'Other')));
+	$this->isEqual(2, count($oSubset), _WT('The subset count method returned a wrong number of results.'));
 
 } catch (Exception $oException) {}
 

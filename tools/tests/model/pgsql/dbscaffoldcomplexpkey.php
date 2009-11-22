@@ -1,5 +1,7 @@
 <?php
 
+require(ROOT_PATH . 'tools/tests/db/pgsql/connect.php.inc');
+
 if (!class_exists('myDbScaffoldModelComplexPKey')) {
 	class myDbScaffoldModelComplexPKey extends weeDbModelScaffold
 	{
@@ -15,14 +17,12 @@ if (!class_exists('myDbScaffoldModelComplexPKey')) {
 
 		public $sOrderBy;
 
-		public function searchBuildWhere($aCriteria)
+		public function buildWhere()
 		{
-			return parent::searchBuildWhere($aCriteria);
+			return parent::buildWhere();
 		}
 	}
 }
-
-require(ROOT_PATH . 'tools/tests/db/pgsql/connect.php.inc');
 
 $oDb->query('BEGIN');
 
@@ -143,43 +143,53 @@ try {
 	} catch (InvalidArgumentException $e) {
 	}
 
-	// weeDbSetScaffold::search
+	// weeDbSetScaffold's subsets
 
-	$oResults = $oSet->search(array('pkey' => array('<=', 10)));
-	$this->isEqual(10, count($oResults), _WT('The weeDbSetScaffold::search method returned a wrong number of results.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('<=', 10)));
+	$oSubset->setDb($oDb);
+	$this->isEqual(10, count($oSubset), _WT('The subset count method returned a wrong number of results.'));
 
 	try {
-		$oResults = $oSet->search(array('pkey' => array('<=', 10)), 3);
-		$this->fail(_WT('weeDbSetScaffold::fetchSubset should throw an InvalidArgumentException when only 2 arguments are given.'));
+		$oResults = $oSubset->fetchSubset(3);
+		$this->fail(_WT('weeDbSetScaffold::fetchSubset should throw an InvalidArgumentException when only 1 arguments are given.'));
 	} catch (InvalidArgumentException $e) {
 	}
 
-	$oResults = $oSet->search(array('pkey' => array('<=', 10)), 3 , 5);
-	$this->isEqual(5, count($oResults), _WT('The weeDbSetScaffold::search method returned a wrong number of results.'));
+	$oResults = $oSubset->fetchSubset(3, 5);
+	$this->isEqual(5, count($oResults), _WT('The weeDbSetScaffold::fetchSubset method returned a wrong number of results.'));
 
-	// weeDbSetScaffold::searchBuildWhere
+	// weeDbSetScaffold::buildWhere
 
-	$sWhere = $oSet->searchBuildWhere(array());
-	$this->isEqual('TRUE', $sWhere, _WT('The weeDbSetScaffold::searchBuildWhere method returned an incorrect WHERE clause.'));
+	$oSubset = new myDbScaffoldSetComplexPKey();
+	$oSubset->setDb($oDb);
+	$this->isEqual(' WHERE TRUE', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
-	$sWhere = $oSet->searchBuildWhere(array('pkey' => 'IS NOT NULL'));
-	$this->isEqual('TRUE AND "pkey" IS NOT NULL', $sWhere, _WT('The weeDbSetScaffold::searchBuildWhere method returned an incorrect WHERE clause.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => 'IS NOT NULL'));
+	$oSubset->setDb($oDb);
+	$this->isEqual(' WHERE TRUE AND "pkey" IS NOT NULL', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
-	$sWhere = $oSet->searchBuildWhere(array('pkey' => array('!=', 17)));
-	$this->isEqual('TRUE AND "pkey" != \'17\'', $sWhere, _WT('The weeDbSetScaffold::searchBuildWhere method returned an incorrect WHERE clause.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('!=', 17)));
+	$oSubset->setDb($oDb);
+	$this->isEqual(' WHERE TRUE AND "pkey" != \'17\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
-	$sWhere = $oSet->searchBuildWhere(array('pkey' => array('IN', 1, 3, 5, 7, 9)));
-	$this->isEqual('TRUE AND "pkey" IN (\'1\',\'3\',\'5\',\'7\',\'9\')', $sWhere, _WT('The weeDbSetScaffold::searchBuildWhere method returned an incorrect WHERE clause.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('IN', 1, 3, 5, 7, 9)));
+	$oSubset->setDb($oDb);
+	$this->isEqual(' WHERE TRUE AND "pkey" IN (\'1\',\'3\',\'5\',\'7\',\'9\')', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
-	$sWhere = $oSet->searchBuildWhere(array('other' => array('LIKE', '%test%')));
-	$this->isEqual('TRUE AND "other" LIKE \'%test%\'', $sWhere, _WT('The weeDbSetScaffold::searchBuildWhere method returned an incorrect WHERE clause.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('other' => array('LIKE', '%test%')));
+	$oSubset->setDb($oDb);
+	$this->isEqual(' WHERE TRUE AND "other" LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
-	$sWhere = $oSet->searchBuildWhere(array('pkey' => array('NOT IN', 1, 3, 5, 7, 9), 'other' => array('LIKE', '%test%')));
-	$this->isEqual('TRUE AND "pkey" NOT IN (\'1\',\'3\',\'5\',\'7\',\'9\') AND "other" LIKE \'%test%\'', $sWhere, _WT('The weeDbSetScaffold::searchBuildWhere method returned an incorrect WHERE clause.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('NOT IN', 1, 3, 5, 7, 9), 'other' => array('LIKE', '%test%')));
+	$oSubset->setDb($oDb);
+	$this->isEqual(' WHERE TRUE AND "pkey" NOT IN (\'1\',\'3\',\'5\',\'7\',\'9\') AND "other" LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
-	// weeDbSetScaffold::searchCount
+	// subset operations
 
-	$this->isEqual(10, $oSet->searchCount(array('pkey' => array('<=', 10))), _WT('The weeDbSetScaffold::searchCount method returned a wrong number of results.'));
+	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('<=', 10)));
+	$oSubset->setDb($oDb);
+	$oSubset = $oSubset->subsetIntersect(array('pkey' => array('>=', 5)));
+	$this->isEqual(6, count($oSubset), _WT('The subset count method returned a wrong number of results.'));
 
 	// weeDbModelScaffold::update
 

@@ -393,47 +393,10 @@
 		</sect2>
 
 		<sect2>
-			<title>Searching</title>
-			<para>
-				You can also search in the table according to various criteria.
-				The framework defines a few <emphasis>safe criteria</emphasis>
-				available in all RDBMS, but is flexible enough to allow you to define your own.
-			</para>
-			<para>
-				To search in the table, simply use the method <literal>search</literal>.
-				Depending on the criteria operator, you may need to create an array
-				to contain the operator and the values associated with a field.
-				See the <ulink url="http://api.extend.ws/#weeDbSetScaffold/search">search API</ulink> for more information.
-				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search.php.xml"/>
-			</para>
-			<para>
-				You can count the number of rows you would have obtained if you were trying
-				to retrieve all the results by calling the <literal>searchCount</literal> method.
-				If the criteria you gave matches 77 rows but you retrieve only 10,
-				using <literal>searchCount</literal> will allow you to know that there's 67 more you can retrieve.
-				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-searchcount.php.xml"/>
-			</para>
-			<para>
-				The following criteria operators are defined by default:
-				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search-criteria.php.xml"/>
-			</para>
-			<para>
-				If a criteria operator you need is not available by default,
-				you can use it by adding it to the operators array when you extend the scaffolding set class.
-				For example you could add <ulink url="http://dev.mysql.com/doc/refman/5.1/en/regexp.html">MySQL's regular expression functions</ulink> to the list of criteria operators.
-				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search-regexp.php.xml"/>
-			</para>
-			<para>
-				You can then use these criteria operators in your <literal>search</literal> calls.
-				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-search-use-regexp.php.xml"/>
-			</para>
-		</sect2>
-
-		<sect2>
 			<title>Custom results order</title>
 			<para>
-				The order in which all the results are returned when using <literal>fetchSubset</literal>,
-				<literal>fetchAll</literal> or <literal>search</literal> is undetermined by default.
+				The order in which all the results are returned when using <literal>fetchSubset</literal>
+				and <literal>fetchAll</literal> is undetermined by default.
 				If you wish to order the results you can use the <literal>orderBy</literal> method before trying to retrieve the rows.
 			</para>
 			<para>
@@ -506,6 +469,57 @@
 			<para>
 				To use <literal>INNER JOIN</literal> instead of the default join type:
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-join-type.php.xml"/>
+			</para>
+		</sect2>
+
+		<sect2>
+			<title>Subsets</title>
+			<para>
+				The scaffold class can also be used to represent <ulink url="http://en.wikipedia.org/wiki/Subset">subsets</ulink>.
+				It works by filtering the rows according to various criteria given to the class' constructor.
+				The resulting object is a normal set object that will automatically filter rows
+				when calling <literal>count</literal>, <literal>fetchAll</literal> or <literal>fetchSubset</literal>.
+				This means the same code will work for both sets and subsets.
+			</para>
+			<para>
+				The framework restricts by default to a few <emphasis>safe criteria</emphasis>
+				available in all RDBMS, but is flexible enough to allow you to define your own.
+			</para>
+			<para>
+				To create a subset, simply give a criteria to its constructor.
+				See the <ulink url="http://api.extend.ws/#weeDbSetScaffold">weeDbSetScaffold::__construct</ulink> API for more information.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-subset.php.xml"/>
+			</para>
+			<para>
+				When counting the number of rows on a subset, only call the function <literal>count</literal> on the subset.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-subset-count.php.xml"/>
+				As you can see, subsets work exactly like sets.
+			</para>
+			<para>
+				The following criteria operators are defined by default:
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-criteria.php.xml"/>
+			</para>
+			<para>
+				If a criteria operator you need is not available by default,
+				you can use it by adding it to the operators array when you extend the scaffolding set class.
+				For example you could add <ulink url="http://dev.mysql.com/doc/refman/5.1/en/regexp.html">MySQL's regular expression functions</ulink> to the list of criteria operators.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-criteria-add.php.xml"/>
+			</para>
+			<para>
+				You can then use these criteria operators when creating your subsets.
+				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-criteria-add-example.php.xml"/>
+			</para>
+			<para>
+				Subsets can be used just like sets with UI components.
+				They can also be defined as specific classes if you work a lot with a specific subset.
+				Simply call the parent constructor with the criteria and you're good to go!
+			</para>
+			<para>
+				You can perform operations on two subsets that will result in a new, third subset.
+				Available operations are <ulink url="http://en.wikipedia.org/wiki/Union_(set_theory)">union</ulink> with <literal>subsetUnion</literal>,
+				<ulink url="http://en.wikipedia.org/wiki/Intersection_(set_theory)">intersection</ulink> with <literal>subsetIntersect</literal>,
+				<ulink url="http://en.wikipedia.org/wiki/Complement_(set_theory)">complement</ulink> with <literal>subsetComplementOf</literal> and
+				<ulink url="http://en.wikipedia.org/wiki/Symmetric_difference">symmetric difference</ulink> with <literal>subsetSymDiff</literal>.
 			</para>
 		</sect2>
 

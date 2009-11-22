@@ -95,9 +95,9 @@ class weeCRUDUI extends weeContainerUI
 			$oItems = $this->aParams['set']->fetchSubset($iFrom, $this->aParams['countperpage']);
 			$iCount = $this->aParams['set']->count();
 		} else {
-			$aCriteria = array($aEvent['get']['in'] => array('LIKE', '%' . $aEvent['get']['q'] . '%'));
-			$oItems = $this->aParams['set']->search($aCriteria, $iFrom, $this->aParams['countperpage']);
-			$iCount = $this->aParams['set']->searchCount($aCriteria, $iFrom, $this->aParams['countperpage']);
+			$oSubset = $this->aParams['set']->subsetIntersect(array($aEvent['get']['in'] => array('LIKE', '%' . $aEvent['get']['q'] . '%')));
+			$oItems = $oSubset->fetchSubset($iFrom, $this->aParams['countperpage']);
+			$iCount = $oSubset->count();
 		}
 
 		($iFrom < 0 || ($iCount > 0 && $iFrom >= $iCount)) and burn('OutOfRangeException',
