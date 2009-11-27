@@ -66,9 +66,10 @@ final class weeException
 
 	protected static function filterTrace(array $aTrace)
 	{
-		while (isset($aTrace[0]['class']) && $aTrace[0]['class'] == __CLASS__
-				|| !isset($aTrace[0]['file']) && !isset($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
-			array_shift($aTrace);
+		if (count($aTrace) > 1)
+			while (isset($aTrace[0]['class']) && $aTrace[0]['class'] == __CLASS__
+					|| !isset($aTrace[0]['file']) && !isset($aTrace[0]['class']) && $aTrace[0]['function'] == 'burn')
+				array_shift($aTrace);
 		return $aTrace;
 	}
 
