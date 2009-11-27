@@ -93,7 +93,7 @@
 			<para>
 				The following table indexes all existing types:
 				<table>
-					<title>List of configuration targets</title>
+					<title>List of variable types</title>
 					<tgroup cols="2">
 						<thead>
 							<row>
