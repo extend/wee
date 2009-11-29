@@ -107,6 +107,31 @@
 		</sect2>
 	</sect1>
 
+	<sect1 id="tools_addons">
+		<title>Addons manager</title>
+		<para>
+			Web:Extend has an addons manager that allows you to install optional features.
+			Some addons are already pre-installed, like <ulink url="http://jquery.com">jQuery</ulink>
+			or <ulink url="http://blueprintcss.org">blueprint-css</ulink> to provide basic functionality
+			out of the box. They can safely be removed if needed.
+		</para>
+		<para>
+			The addons manager currently requires access to Internet to be used. We have plans to
+			allow downloading the complete addons repository at a later time. <!-- TODO -->
+		</para>
+		<para>
+			For more information about using the addons manager, run it with the -h argument:
+			<programlisting>
+php addons.php -h
+			</programlisting>
+		</para>
+		<para>
+			It is currently not possible to list the available packages, but you can browse the
+			repository available at <ulink url="http://addons.extend.ws">addons.extend.ws</ulink>
+			in order to obtain one.
+		</para>
+	</sect1>
+
 	<sect1 id="tools_api">
 		<title>API generator</title>
 		<para>

@@ -40,7 +40,7 @@ if (defined('DEBUG')) {
 // Define the framework's version
 // Its format is compatible with PHP's version_compare function
 
-define('WEE_VERSION', '0.5.0');
+define('WEE_VERSION', '0.6.0a');
 
 // Detect whether we are on Windows
 
