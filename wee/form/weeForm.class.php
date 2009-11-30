@@ -32,16 +32,22 @@ if (!defined('FORM_EXT'))	define('FORM_EXT',	'.form');
 class weeForm implements Printable
 {
 	/**
+		The charset to use when calling toString.
+	*/
+
+	protected $sOutputEncoding = 'utf-8';
+
+	/**
 		Data used to fill the form when generating it.
 	*/
 
-	protected $aData	= array();
+	protected $aData = array();
 
 	/**
 		Error messages shown after each widget if provided.
 	*/
 
-	protected $aErrors	= array();
+	protected $aErrors = array();
 
 	/**
 		Path to user stylesheets.
@@ -331,6 +337,21 @@ class weeForm implements Printable
 				$oNode = dom_import_simplexml($oNode);
 				$oNode->parentNode->removeChild($oNode);
 			}
+	}
+
+	/**
+		Set the output encoding to use when calling toString.
+
+		@param	$sEncoding The new encoding to use.
+		@return	$this
+	*/
+
+	public function setOutputEncoding($sEncoding)
+	{
+		is_string($sEncoding) or burn('InvalidArgumentException',
+			sprintf(_WT('%s should be a string.'), '$sEncoding'));
+		$this->sOutputEncoding = $sEncoding;
+		return $this;
 	}
 
 	/**

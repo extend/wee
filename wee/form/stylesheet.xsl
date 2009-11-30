@@ -8,7 +8,7 @@
 	<xsl:include href="<?php echo str_replace('\\', '/', $oFile->getPathname())?>"/>
 <?php endif; endforeach?> 
 
-<xsl:output method="xml" omit-xml-declaration="yes"/>
+<xsl:output method="xml" omit-xml-declaration="yes" encoding="<?php echo $this->sOutputEncoding?>"/>
 
 <xsl:variable name="formidprefix" select="'form_'"/>
 <xsl:variable name="formidsuffix"/>
