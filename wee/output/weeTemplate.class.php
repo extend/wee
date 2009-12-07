@@ -29,7 +29,7 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 	Load, configure and display templates.
 */
 
-class weeTemplate implements Printable
+class weeTemplate implements Mappable, Printable
 {
 	/**
 		Data to be used in the template.
@@ -177,6 +177,17 @@ class weeTemplate implements Printable
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
 		$o->addLinkArgs($this->aLinkArgs);
 		$o->render();
+	}
+
+	/**
+		Return the data of the template.
+
+		@return array The data of the template.
+	*/
+
+	public function toArray()
+	{
+		return $this->aData;
 	}
 
 	/**
