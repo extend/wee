@@ -52,7 +52,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@todo Normalise paths.
 */
 
-abstract class weeFsModel extends weeModel
+abstract class weeFsModel extends weeDataHolder
 {
 	/**
 		Whether the file exists on the filesystem.
