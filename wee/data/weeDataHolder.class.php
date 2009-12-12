@@ -100,6 +100,28 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
 	}
 
 	/**
+		Add a value to the data.
+
+		If first parameter is an array, the array values will be
+		set with their corresponding keys. If values already exist,
+		they will be replaced by these from this array.
+
+		@param	$mName	Name of the variable inside the template.
+		@param	$mValue	Value of the variable.
+		@return	$this
+	*/
+
+	public function set($mName, $mValue = null)
+	{
+		if (is_array($mName))
+			$this->aData = $mName + $this->aData;
+		else
+			$this->aData[$mName] = $mValue;
+
+		return $this;
+	}
+
+	/**
 		Return data as an array.
 
 		@return array The data as an array.
