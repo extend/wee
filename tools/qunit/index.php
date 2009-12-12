@@ -63,11 +63,11 @@ foreach ($aTests as $i => $sPath):?>
 </head>
 
 <body>
-	<script type="text/javascript" src="http://jqueryjs.googlecode.com/svn/trunk/qunit/testrunner.js"></script>
+	<script type="text/javascript" src="http://jqueryjs.googlecode.com/svn/trunk/qunit/qunit.js"></script>
 	<h1>Web:Extend - QUnit Test Suite</h1>
 	<h2 id="banner"></h2>
 	<h2 id="userAgent"></h2>
-	<ol id="tests"></ol>
+	<ol id="qunit-tests"></ol>
 	<div id="main"></div>
 </body>
 </html>
