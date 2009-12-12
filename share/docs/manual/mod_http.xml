@@ -8,13 +8,13 @@
 		The <emphasis>HTTP module</emphasis> contains all the classes directly related to HTTP.
 		This includes <link linkend="mod_http_cookies">cookies</link>,
 		<link linkend="mod_http_sessions">sessions</link> and <link linkend="mod_http_upload">file upload handling</link>.
-		These classes encapsulate the <literal>$COOKIE</literal>, <literal>$_SESSION</literal> and <literal>$_FILES</literal> superglobal arrays, respectively.
+		These classes encapsulate the <literal>$_COOKIE</literal>, <literal>$_SESSION</literal> and <literal>$_FILES</literal> superglobal arrays, respectively.
 	</para>
 
 	<sect1 id="mod_http_cookies">
 		<title>Cookies</title>
 		<para>
-			Web:Extend provides a class that encapsulates the <literal>$COOKIE</literal> array.
+			Web:Extend provides a class that encapsulates the <literal>$_COOKIE</literal> array.
 		</para>
 		<para>
 			The cookie class can be used both as an application driver or standalone.
@@ -33,7 +33,7 @@
 				There is no overhead if you don't use it.
 			</para>
 			<para>
-				The cookies object acts much like the <literal>$COOKIE</literal> array.
+				The cookies object acts much like the <literal>$_COOKIE</literal> array.
 				You can access your variables like you would with an array:
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-app-access.php.xml"/>
 			</para>
@@ -48,7 +48,7 @@
 			<title>Without the application module</title>
 			<para>
 				If you are not using the application module, you can also create a standalone <literal>weeCookies</literal> object.
-				Once created you can access your cookies exactly like you would with the <literal>$COOKIES</literal> array. For example:
+				Once created you can access your cookies exactly like you would with the <literal>$_COOKIE</literal> array. For example:
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/http-cookies-no-app-create.php.xml"/>
 			</para>
 			<para>
