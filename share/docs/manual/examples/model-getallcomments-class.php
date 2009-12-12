@@ -1,6 +1,6 @@
 <?php
 
-class myUsersModel extends weeModel
+class myUsersModel extends weeDataHolder
 {
 	// skipping other stuff ...
 

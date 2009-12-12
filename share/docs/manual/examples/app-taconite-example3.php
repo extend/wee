@@ -15,7 +15,7 @@ class example3 extends weeFrame
 			try {
 				$oForm->validate($aData);
 
-				$oResource->setFromArray($aData);
+				$oResource->set($aData);
 				$oResource->update();
 
 				$this->update('replaceContent', '#msg', 'The resource has been successfully edited!');

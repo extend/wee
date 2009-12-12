@@ -8,17 +8,16 @@
 
 $a = array('egg' => 'chicken', 'null' => null);
 
-// weeDatabaseRow uses array_key_exists in offsetExists
-class ArrayAccessTest1 extends weeDatabaseRow {}
-$o1 = new ArrayAccessTest1($a);
+// weeDataHolder uses array_key_exists in offsetExists
+$o1 = new weeDataHolder($a);
 
-// We want to test with isset in array_key_exists too
-class ArrayAccessTest2 extends weeDatabaseRow {
-	public function offsetExists($offset) {
-		return isset($this->aRow[$offset]);
+// We want to test with isset in offsetExists too
+class weeDataHolder_testWithIsset extends weeDataHolder {
+	public function offsetExists($sKey) {
+		return isset($this->aData[$sKey]);
 	}
 }
-$o2 = new ArrayAccessTest2($a);
+$o2 = new weeDataHolder_testWithIsset($a);
 
 // is_array
 $this->isTrue(is_array($a), 'is_array $a');

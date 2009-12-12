@@ -161,13 +161,10 @@ try {
 		$this->isTrue(is_int($aRow['q_id']) || ctype_digit($aRow['q_id']), _WT('The field q_id should not be empty.'));
 	}
 
-	if (!class_exists('weeDatabaseResult_testForeach')) {
-		class weeDatabaseResult_testForeach extends weeDatabaseRow {}
-	}
-
-	$oResults = $oDb->query('SELECT * FROM query')->rowClass('weeDatabaseResult_testForeach');
+	$oResults = $oDb->query('SELECT * FROM query')->rowClass('weeDataHolder');
 	foreach ($oResults as $aRow) {
-		$this->isInstanceOf($aRow, 'weeDatabaseResult_testForeach', _WT('The returned row should be an instance of weeDatabaseResult_testForeach.'));
+		$this->isInstanceOf($aRow, 'weeDataHolder',
+			_WT('The returned row should be an instance of weeDataHolder.'));
 		$this->isFalse(empty($aRow), _WT('The returned row should not be empty.'));
 		$this->isTrue(is_int($aRow['q_id']) || ctype_digit($aRow['q_id']), _WT('The field q_id should not be empty.'));
 	}

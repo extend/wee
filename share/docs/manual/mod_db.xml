@@ -344,8 +344,8 @@
 			<para>
 				You can use the <literal>rowClass</literal> method to define the class that will store the rows data.
 				You can use any class, as long as the constructor takes one array parameter.
-				But Web:Extend also defines a base class for rows, <literal>weeDatabaseRow</literal>.
-				This class implements <literal>ArrayAccess</literal> and <literal>Iterator</literal> to make it act like an array when needed.
+				But Web:Extend also defines a base class for objects which contain data, <literal>weeDataHolder</literal>.
+				This class implements <literal>ArrayAccess</literal> and <literal>Mappable</literal> to make it act like an array when needed.
 				You can extend this class to add any method needed.
 				You could for example add a method that will format the row data to your liking.
 			</para>

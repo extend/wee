@@ -87,7 +87,7 @@ class weeDatabaseDummyResult extends weeDatabaseResult
 		This method should not be used when iterating over the rows of the result set
 		through the Iterator interface.
 
-		@return	array(mixed)	An array of arrays or instances of weeDatabaseRow.
+		@return	array(mixed)	An array of arrays or instances of rowClass.
 	*/
 
 	public function fetchAll()
