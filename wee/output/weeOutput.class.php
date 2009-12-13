@@ -130,6 +130,22 @@ abstract class weeOutput
 	}
 
 	/**
+		Output a renderer.
+
+		This method sends an appropriate Content-Type header with the MIME type
+		of its given renderer if WEE_CLI is not defined.
+
+		@param $oRenderer The renderer.
+	*/
+
+	public static function output(weeRenderer $oRenderer)
+	{
+		if (!defined('WEE_CLI'))
+			header('Content-Type: ' . $oRenderer->getMIMEType());
+		$oRenderer->render();
+	}
+
+	/**
 		Select a new output driver and return the previous one.
 
 		@param $oOutput New driver to be used.
