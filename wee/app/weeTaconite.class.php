@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@warning Incomplete.
 */
 
-class weeTaconite implements Printable
+class weeTaconite implements weeRenderer
 {
 	/**
 		The XML taconite document.
@@ -278,6 +278,17 @@ class weeTaconite implements Printable
 	}
 
 	/**
+		Return the MIME type of the taconite object.
+
+		@return string text/xml.
+	*/
+
+	public function getMIMEType()
+	{
+		return 'text/xml';
+	}
+
+	/**
 		Return the taconite string (excluding the <taconite/>s tags).
 
 		@return The taconite string.
@@ -295,8 +306,6 @@ class weeTaconite implements Printable
 
 	public function render()
 	{
-		header('Content-Type: text/xml');
-
 		echo '<?xml version="1.0" encoding="utf-8"?>',
 			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
 			$this->toString();
