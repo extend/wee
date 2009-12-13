@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Wrap a template, dispatch and handle events.
 */
 
-abstract class weeFrame
+abstract class weeFrame implements weeRenderer
 {
 	/**
 		An event has been correctly dispatched.
@@ -71,6 +71,12 @@ abstract class weeFrame
 	protected $oController;
 
 	/**
+		Renderer for the frame.
+	*/
+
+	private $oRenderer;
+
+	/**
 		The current status of the frame.
 	*/
 
@@ -81,12 +87,6 @@ abstract class weeFrame
 	*/
 
 	protected $oTaconite;
-
-	/**
-		Template for the frame.
-	*/
-
-	protected $oTpl;
 
 	/**
 		Create the frame and set the controller associated with it.
@@ -135,6 +135,32 @@ abstract class weeFrame
 	}
 
 	/**
+		Return the MIME type of the frame.
+
+		@return string The MIME type of the frame.
+	*/
+
+	public function getMIMEType()
+	{
+		if ($this->sContext == 'xmlhttprequest' && $this->oTaconite !== null)
+			return $this->oTaconite->getMIMEType();
+		return $this->getRenderer()->getMIMEType();
+	}
+
+	/**
+		Return the renderer of the frame.
+
+		@return weeRenderer The renderer of the frame.
+	*/
+
+	public function getRenderer()
+	{
+		if ($this->oRenderer === null)
+			$this->loadTemplate();
+		return $this->oRenderer;
+	}
+
+	/**
 		Return the status of the frame.
 
 		@return integer The status of the frame.
@@ -163,7 +189,7 @@ abstract class weeFrame
 		else
 			$sTemplatePath .= $sTemplate;
 
-		$this->oTpl = new weeTemplate($sTemplatePath);
+		$this->oRenderer = new weeTemplate($sTemplatePath);
 	}
 
 	/**
@@ -178,13 +204,10 @@ abstract class weeFrame
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
 			return $this->oTaconite->render();
 
-		if (empty($this->oTpl))
-			$this->loadTemplate();
-
 		if (empty($this->oTaconite))
-			return $this->oTpl->render();
+			return $this->getRenderer()->render();
 
-		echo $this->oTaconite->applyTo($this->oTpl);
+		echo $this->oTaconite->applyTo($this->getRenderer());
 	}
 
 	/**
@@ -215,23 +238,35 @@ abstract class weeFrame
 	}
 
 	/**
-		Wrapper for weeTemplate::set method.
+		Wrapper for the set method of the renderer.
 
-		If first parameter is an array, the array values will be
-		set with their corresponding keys. If values already exist,
-		they will be replaced by these from this array.
+		If the renderer of the frame is also an instance of weeDataHolder,
+		this method acts as a wrapper for its set method. Otherwise,
+		an UnexpectedValueException is thrown.
 
 		@param	$mName	Name of the variable inside the template
 		@param	$mValue	Value of the variable
-		@see weeTemplate::set for details
+		@see	weeDataHolder::set for details
 	*/
 
 	public function set($mName, $mValue = null)
 	{
-		if (empty($this->oTpl))
-			$this->loadTemplate();
+		$this->getRenderer() instanceof weeDataHolder or burn(
+			'UnexpectedValueException',
+			_WT('The renderer must be an instance of weeDataHolder to use this method.'));
 
-		$this->oTpl->set($mName, $mValue);
+		$this->getRenderer()->set($mName, $mValue);
+	}
+
+	/**
+		Set the renderer of the frame.
+
+		@param $oRenderer The new renderer.
+	*/
+
+	public function setRenderer(weeRenderer $oRenderer)
+	{
+		$this->oRenderer = $oRenderer;
 	}
 
 	/**
@@ -243,6 +278,19 @@ abstract class weeFrame
 
 	protected function setup($aEvent)
 	{
+	}
+
+	/**
+		Return the output of the frame as a string.
+
+		@return string The output of the frame.
+	*/
+
+	public function toString()
+	{
+		ob_start();
+		$this->render();
+		return ob_get_clean();
 	}
 
 	/**

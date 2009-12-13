@@ -340,7 +340,7 @@ class weeApplication
 			exit;
 		}
 
-		$this->oFrame->render();
+		weeOutput::output($this->oFrame);
 	}
 
 	/**
