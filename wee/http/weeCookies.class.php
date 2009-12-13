@@ -62,8 +62,9 @@ class weeCookies implements ArrayAccess
 
 	protected function getDefaultPath()
 	{
-		if (APP_PATH != BASE_PATH && APP_PATH != BASE_PATH . ROOT_PATH)
-			return APP_PATH; // A custom APP_PATH was defined, use it
+		$sPath = parse_url(APP_PATH, PHP_URL_PATH);
+		if ($sPath != BASE_PATH && $sPath != BASE_PATH . ROOT_PATH)
+			return $sPath; // A custom APP_PATH was defined, use it
 
 		$iCount = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
 			- (int)(isset($_SERVER['REDIRECT_URL']));
