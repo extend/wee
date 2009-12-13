@@ -39,6 +39,17 @@ class weeRSSFeed extends weeFeed
 	}
 
 	/**
+		Return the MIME type of the taconite object.
+
+		@return string application/rss+xml.
+	*/
+
+	public function getMIMEType()
+	{
+		return 'application/rss+xml';
+	}
+
+	/**
 		Converts an element to its XML equivalent.
 		Called when generating the feed's XML.
 
@@ -111,17 +122,6 @@ class weeRSSFeed extends weeFeed
 		}
 
 		$oXMLWriter->endElement();
-	}
-
-	/**
-		Output the feed as application/rss+xml.
-		This method sends the required header automatically.
-	*/
-
-	public function render()
-	{
-		header('Content-Type: application/rss+xml');
-		echo $this->toString();
 	}
 
 	/**
