@@ -29,7 +29,7 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 	Load, configure and display templates.
 */
 
-class weeTemplate extends weeDataHolder implements Printable
+class weeTemplate extends weeDataHolder implements weeRenderer
 {
 	/**
 		Filename of the template, including path and extension.
@@ -42,6 +42,12 @@ class weeTemplate extends weeDataHolder implements Printable
 	*/
 
 	protected $aLinkArgs = array();
+
+	/**
+		The MIME Type of the template.
+	*/
+
+	protected $sMIMEType = 'text/html';
 
 	/**
 		Configure the filename and the data for this template.
@@ -88,6 +94,19 @@ class weeTemplate extends weeDataHolder implements Printable
 		if (ob_get_level() > 0)
 			ob_flush();
 		flush();
+	}
+
+	/**
+		Return the MIME type of the output of the template.
+
+		The default MIME type is text/html.
+
+		@return string the MIME type of the output of the template.
+	*/
+
+	public function getMIMEType()
+	{
+		return $this->sMIMEType;
 	}
 
 	/**
