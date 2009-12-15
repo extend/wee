@@ -37,6 +37,16 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected $sJoinType = 'LEFT OUTER JOIN';
 
 	/**
+		Internal list of ambiguous keys. Those usually are foreign keys with
+		the same name in both linked tables and can't be used directly without
+		the table identifier prepended. We store this identifier here when we
+		detect the problem when building joins, and reuse it on other parts of
+		the generated query.
+	*/
+
+	protected $aJoinAmbiguousKeys = array();
+
+	/**
 		The metadata for the table associated with this set.
 
 		The metadata contains information about:
@@ -48,11 +58,11 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected $aMeta;
 
 	/**
-		ORDER BY part of the SELECT queries.
-		Can be defined here or by using the orderBy method.
+		The ORDER BY part of the SELECT queries.
+		Can be defined directly here or by using the orderBy method.
 	*/
 
-	protected $sOrderBy;
+	protected $mOrderBy;
 
 	/**
 		Reference tables to fetch by doing a JOIN in SELECT queries.
@@ -181,6 +191,8 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 				// Use the linked set's primary key columns names
 
 				foreach ($aRefMeta['primary'] as $sColumn) {
+					$this->aJoinAmbiguousKeys[$sColumn] = $aMeta['table'];
+
 					$sColumn = $oDb->escapeIdent($sColumn);
 					$sJoin .= ' AND ' . $aMeta['table'] . '.' . $sColumn . '=' . $aRefMeta['table'] . '.' . $sColumn;
 				}
@@ -196,6 +208,44 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		}
 
 		return $sJoin;
+	}
+
+	/**
+		Build the contents of the ORDER BY clause to be used to sort queries returned by fetchSubset/fetchAll.
+
+		@return string The contents of the ORDER BY clause.
+		@throw InvalidArgumentException The ORDER BY modifier is not in the list of valid modifiers.
+	*/
+
+	public function buildOrderBy()
+	{
+		$oDb = $this->getDb();
+
+		if (!is_array($this->mOrderBy))
+			return $oDb->escapeIdent($this->mOrderBy);
+
+		$sOrderBy = '';
+
+		foreach ($this->mOrderBy as $mName => $mValue) {
+			$bNoValue = is_int($mName);
+
+			if ($bNoValue)
+				$mName = $mValue;
+
+			$sOrderBy .= ', ';
+			if (isset($this->aJoinAmbiguousKeys[$mName]))
+				$sOrderBy .= $this->aJoinAmbiguousKeys[$mName] . '.';
+			$sOrderBy .= $oDb->escapeIdent($mName);
+
+			if (!$bNoValue) {
+				in_array(strtoupper($mValue), $this->aValidOrderByModifiers)
+					or burn('InvalidArgumentException', sprintf(_WT('The ORDER BY modifier requested, %s, do not exist.'), $mValue));
+
+				$sOrderBy .= ' ' . $mValue;
+			}
+		}
+
+		return substr($sOrderBy, 2);
 	}
 
 	/**
@@ -231,7 +281,10 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$sWhere = 'TRUE';
 
 		foreach ($aCriteria as $sField => $mOperation) {
-			$sWhere .= ' AND ' . $oDb->escapeIdent($sField) . ' ';
+			$sWhere .= ' AND ';
+			if (isset($this->aJoinAmbiguousKeys[$sField]))
+				$sWhere .= $this->aJoinAmbiguousKeys[$sField] . '.';
+			$sWhere .= $oDb->escapeIdent($sField) . ' ';
 
 			if (is_array($mOperation)) {
 				in_array($mOperation[0], $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
@@ -325,8 +378,12 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$mPrimaryKey = $this->filterPrimaryKey($mPrimaryKey, $aMeta);
 
 		$sQuery = 'DELETE FROM ' . $aMeta['table'] . ' WHERE TRUE';
-		foreach ($aMeta['primary'] as $sName)
-			$sQuery .= ' AND ' . $oDb->escapeIdent($sName) . '=' . $oDb->escape($mPrimaryKey[$sName]);
+		foreach ($aMeta['primary'] as $sField) {
+			$sQuery .= ' AND ';
+			if (isset($this->aJoinAmbiguousKeys[$sField]))
+				$sQuery .= $this->aJoinAmbiguousKeys[$sField] . '.';
+			$sQuery .= $oDb->escapeIdent($sField) . '=' . $oDb->escape($mPrimaryKey[$sField]) . ' ';
+		}
 
 		$this->query($sQuery);
 	}
@@ -348,8 +405,12 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$mPrimaryKey = $this->filterPrimaryKey($mPrimaryKey, $aMeta);
 
 		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE TRUE';
-		foreach ($aMeta['primary'] as $sName)
-			$sQuery .= ' AND ' . $oDb->escapeIdent($sName) . '=' . $oDb->escape($mPrimaryKey[$sName]);
+		foreach ($aMeta['primary'] as $sField) {
+			$sQuery .= ' AND ';
+			if (isset($this->aJoinAmbiguousKeys[$sField]))
+				$sQuery .= $this->aJoinAmbiguousKeys[$sField] . '.';
+			$sQuery .= $oDb->escapeIdent($sField) . '=' . $oDb->escape($mPrimaryKey[$sField]) . ' ';
+		}
 
 		return $this->queryRow($sQuery . ' LIMIT 1');
 	}
@@ -383,8 +444,8 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$aMeta = $this->getMeta();
 
 		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . $this->buildWhere();
-		if (!empty($this->sOrderBy))
-			$sQuery .= ' ORDER BY ' . $this->sOrderBy;
+		if (!empty($this->mOrderBy))
+			$sQuery .= ' ORDER BY ' . $this->buildOrderBy();
 		if (!empty($iCount))
 			$sQuery .= ' LIMIT ' . $iCount . ' OFFSET ' . $iOffset;
 
@@ -507,32 +568,11 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 		@param $mOrderBy The order in which the rows should be sorted.
 		@return $this
-		@throw InvalidArgumentException The ORDER BY modifier is not in the list of valid modifiers.
 	*/
 
 	public function orderBy($mOrderBy = array())
 	{
-		$oDb = $this->getDb();
-
-		if (!is_array($mOrderBy))
-			$this->sOrderBy = $oDb->escapeIdent($mOrderBy);
-		else {
-			$this->sOrderBy = '';
-
-			foreach ($mOrderBy as $mName => $mValue) {
-				if (is_int($mName))
-					$this->sOrderBy .= ', ' . $oDb->escapeIdent($mValue);
-				else {
-					in_array(strtoupper($mValue), $this->aValidOrderByModifiers)
-						or burn('InvalidArgumentException', sprintf(_WT('The ORDER BY modifier requested, %s, do not exist.'), $mValue));
-
-					$this->sOrderBy .= ', ' . $oDb->escapeIdent($mName) . ' ' . $mValue;
-				}
-			}
-
-			$this->sOrderBy = substr($this->sOrderBy, 2);
-		}
-
+		$this->mOrderBy = $mOrderBy;
 		return $this;
 	}
 
