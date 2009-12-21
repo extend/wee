@@ -111,7 +111,8 @@ class weeTemplate implements Mappable, Printable
 		if (empty($aArgs))
 			return weeOutput::instance()->encode($sLink);
 
-		$aURL = explode('?', $sLink, 2);
+		$aHash = explode('#', $sLink, 2);
+		$aURL = explode('?', $aHash[0], 2);
 
 		if (sizeof($aURL) > 1) {
 			$aOldArgs = array();
@@ -129,7 +130,12 @@ class weeTemplate implements Mappable, Printable
 			$sLink .= $sName . '=' . urlencode(weeOutput::instance()->decode($sValue)) . '&';
 		}
 
-		return weeOutput::instance()->encode(substr($sLink, 0, -1));
+		$sLink = weeOutput::instance()->encode(substr($sLink, 0, -1));
+
+		if (sizeof($aHash) > 1)
+			$sLink .= '#' . $aHash[1];
+
+		return $sLink;
 	}
 
 	/**
