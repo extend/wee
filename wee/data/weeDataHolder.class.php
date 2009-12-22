@@ -96,7 +96,7 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
 
 	public function offsetUnset($sKey)
 	{
-		unset($this->aData[$sData]);
+		unset($this->aData[$sKey]);
 	}
 
 	/**
