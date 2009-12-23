@@ -37,6 +37,12 @@ $this->isEqual('/foo/bar?space=a+b', $o->mkLink('/foo/bar', array('space' => 'a 
 $this->isEqual('/foo/bar?entity=%26', $o->mkLink('/foo/bar', array('entity' => '&')),
 	_WT('weeTemplate::mkLink should decode the values of the URL parameters with the weeOutput::instance()->decode method before encoding them with the urlencode function.'));
 
+$this->isEqual('/foo#bar', $o->mkLink('/foo#bar'),
+	_WT('weeTemplate::mkLink should return the link as-is if no new parameter are to be added to the query string, even with a hash.'));
+
+$this->isEqual('/foo/bar?b=2&amp;a=1#tender', $o->mkLink('/foo/bar?a=1#tender', array('b' => '2')),
+	_WT('weeTemplate::mkLink should add the given parameters to the base link even if it already contains a query string and a hash.'));
+
 // weeTemplate::addLinkArgs
 
 $o->addLinkArgs(array('arg' => 'value'));
@@ -46,6 +52,9 @@ $this->isEqual('/foo/bar?fish=spam&amp;arg=value', $o->mkLink('/foo/bar', array(
 
 $this->isEqual('/foo/bar?arg=another+value', $o->mkLink('/foo/bar', array('arg' => 'another value')),
 	_WT('weeTemplate::mkLink should override the arguments added through weeTemplate::addLinkArgs.'));
+
+$this->isEqual('/foo/bar?arg=another+value#tender', $o->mkLink('/foo/bar#tender', array('arg' => 'another value')),
+	_WT('weeTemplate::mkLink should override the arguments added through weeTemplate::addLinkArgs even with a hash.'));
 
 // weeTemplate::set
 

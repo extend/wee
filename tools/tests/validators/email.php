@@ -1,11 +1,5 @@
 <?php
 
-class PrintableInput_testEmailValidator implements Printable {
-	public function toString() {
-		return 'valid@email.com';
-	}
-}
-
 class CastableInput_testEmailValidator {
 	public function __toString() {
 		return 'valid@email.com';
@@ -54,7 +48,7 @@ try {
 }
 
 try {
-	$o->setValue(new PrintableInput_testEmailValidator);
+	$o->setValue(new weeDummyPrintable('valid@email.com'));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeEmailValidator should not throw a DomainException when the value is an instance of Printable.'));
 }
@@ -93,7 +87,7 @@ $this->isFalse(weeEmailValidator::test('test@test@example.com'),
 
 // Objects
 
-$this->isTrue(weeEmailValidator::test(new PrintableInput_testEmailValidator),
+$this->isTrue(weeEmailValidator::test(new weeDummyPrintable('valid@email.com')),
 	_WT('weeEmailValidator::test should return true when the value is an instance of Printable which returns a valid number.'));
 
 $this->isTrue(weeEmailValidator::test(new CastableInput_testEmailValidator),

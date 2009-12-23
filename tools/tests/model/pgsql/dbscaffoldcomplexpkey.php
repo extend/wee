@@ -15,7 +15,10 @@ if (!class_exists('myDbScaffoldModelComplexPKey')) {
 
 		// Making a few things public for testing
 
-		public $sOrderBy;
+		public function buildOrderBy()
+		{
+			return parent::buildOrderBy();
+		}
 
 		public function buildWhere()
 		{
@@ -123,23 +126,24 @@ try {
 	// weeDbSetScaffold::orderBy
 
 	$oSet->orderBy(array());
-	$this->isEqual('', $oSet->sOrderBy, _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'ASC'));
-	$this->isEqual('"pkey" ASC', $oSet->sOrderBy, _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('"pkey" ASC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'DESC'));
-	$this->isEqual('"pkey" DESC', $oSet->sOrderBy, _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('"pkey" DESC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'DESC', 'other'));
-	$this->isEqual('"pkey" DESC, "other"', $oSet->sOrderBy, _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('"pkey" DESC, "other"', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'DESC', 'other' => 'DESC'));
-	$this->isEqual('"pkey" DESC, "other" DESC', $oSet->sOrderBy, _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('"pkey" DESC, "other" DESC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	try {
 		$oSet->orderBy(array('pkey' => 'BAD'));
-		$this->fail(_WT('The weeDbSetScaffold::orderBy method should fail when the modifier is unknown.'));
+		$oSet->buildOrderBy();
+		$this->fail(_WT('The weeDbSetScaffold::buildOrderBy method should fail when the modifier is unknown.'));
 	} catch (InvalidArgumentException $e) {
 	}
 
