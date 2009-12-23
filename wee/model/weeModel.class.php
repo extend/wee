@@ -25,5 +25,5 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for defining a model.
 */
 
-class weeModel extends weeDataHolder
+abstract class weeModel extends weeDataHolder
 {}

@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for defining a model for a database table.
 */
 
-class weeDbModel extends weeModel
+abstract class weeDbModel extends weeModel
 {
 	/**
 		The database this model is associated to.
