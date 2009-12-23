@@ -1,11 +1,5 @@
 <?php
 
-class PrintableInput_testConfirmValidator implements Printable {
-	public function toString() {
-		return '42';
-	}
-}
-
 class CastableInput_testConfirmValidator {
 	public function __toString() {
 		return '42';
@@ -44,7 +38,7 @@ try {
 } catch (DomainException $e) {}
 
 try {
-	$o->setValue(new PrintableInput_testConfirmValidator);
+	$o->setValue(new weeDummyPrintable('42'));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeConfirmValidator::setValue should not throw a DomainException when the value is an instance of Printable.'));
 }

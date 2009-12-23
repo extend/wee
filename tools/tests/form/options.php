@@ -67,25 +67,10 @@ $this->isFalse($oHelper->isSelected(44), _WT('Only 43 should have been selected.
 $oForm		= new weeForm('options', 'update');
 $oHelper	= $oForm->helper('weeFormOptionsHelper', 'choice');
 
-class Printable_concrete implements Printable
-{
-	private $s;
-
-	public function __construct($s)
-	{
-		$this->s = $s;
-	}
-
-	public function toString()
-	{
-		return $this->s;
-	}
-}
-
 $oHelper->addOption('string');
 $this->isTrue($oHelper->isInOptions('string'), _WT('Adding an option as a string does not work.'));
 
-$oHelper->addOption(new Printable_concrete('printable'));
+$oHelper->addOption(new weeDummyPrintable('printable'));
 $this->isTrue($oHelper->isInOptions('printable'), _WT('Adding an option as a printable object does not work.'));
 
 $oHelper->select('string');
