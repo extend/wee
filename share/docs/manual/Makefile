@@ -19,9 +19,15 @@
 
 all: clean
 	-mkdir build
-	dia -t png dia/*
 	-mkdir build/dia
-	mv dia/*.png build/dia/
+# The behavior of 'dia -t' changed in 0.97.
+# It now uses an -O OUTPUT parameter to define the output directory.
+# Since we want to support both behaviors at the moment, we can't use
+# that parameter, so we instead try to copy from both expected output directories.
+	dia -t png dia/*
+	-mv *.png build/dia/
+	-mv dia/*.png build/dia/
+# Proceed normally past this point.
 	-mkdir build/snap
 	cp snap/* build/snap/
 	-mkdir examples/build
