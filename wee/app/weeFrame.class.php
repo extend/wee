@@ -217,9 +217,9 @@ abstract class weeFrame
 	/**
 		Wrapper for weeTemplate::set method.
 
-		If first parameter is an array, the array values will be
-		set with their corresponding keys. If values already exist,
-		they will be replaced by these from this array.
+		If first parameter is an array or a mappable or traversable object, the
+		array values will be set with their corresponding keys. If values
+		already exist, they will be replaced by these from this array.
 
 		@param	$mName	Name of the variable inside the template
 		@param	$mValue	Value of the variable
@@ -231,10 +231,11 @@ abstract class weeFrame
 		if (empty($this->oTpl))
 			$this->loadTemplate();
 
-		if (is_string($mName))
-			$this->oTpl[$mName] = $mValue;
-		else
+		if (is_array($mName) || is_object($mName) &&
+				($mName instanceof Mappable || $mName instanceof Traversable))
 			$this->oTpl->setFromArray($mName);
+		else
+			$this->oTpl[$mName] = $mValue;
 	}
 
 	/**
