@@ -59,16 +59,16 @@ $this->isEqual('/foo/bar?arg=another+value#tender', $o->mkLink('/foo/bar#tender'
 // weeTemplate::set
 
 $this->isEqual(array(), $o->aData,
-	_WT('weeTemplate::aData should be empty before any weeTemplate::set call.'));
+	_WT('weeTemplate::aData should be empty before any weeTemplate::offsetSet or weeTemplate::setFromArray call.'));
 
-$o->set('one', 'value');
+$o['one'] = 'value';
 $this->isEqual(array('one' => 'value'), $o->aData,
-	_WT('weeTemplate::aData should contain the variable/value pair passed to weeTemplate::set when called with two arguments.'));
+	_WT('weeTemplate::aData should contain the variable/value pair passed to weeTemplate::offsetSet when called with two arguments.'));
 
-$o->set(array('two' => 2, 'three' => 3));
+$o->setFromArray(array('two' => 2, 'three' => 3));
 $this->isEqual(array('one' => 'value', 'two' => 2, 'three' => 3), $o->aData,
-	_WT('weeTemplate::aData should contain the array of variable/value pairs passed to weeTemplate::set when called with one argument.'));
+	_WT('weeTemplate::aData should contain the array of variable/value pairs passed to weeTemplate::setFromArray when called with one argument.'));
 
-$o->set(array('one' => 'another_value'));
+$o->setFromArray(array('one' => 'another_value'));
 $this->isEqual(array('one' => 'another_value', 'two' => 2, 'three' => 3), $o->aData,
-	_WT('weeTemplate::aData should be updated when calling weeTemplate::set with existing variables.'));
+	_WT('weeTemplate::aData should be updated when calling weeTemplate::setFromArray with existing variables.'));

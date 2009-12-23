@@ -231,7 +231,10 @@ abstract class weeFrame
 		if (empty($this->oTpl))
 			$this->loadTemplate();
 
-		$this->oTpl->set($mName, $mValue);
+		if (is_string($mName))
+			$this->oTpl[$mName] = $mValue;
+		else
+			$this->oTpl->setFromArray($mName);
 	}
 
 	/**
