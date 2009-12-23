@@ -118,7 +118,7 @@
 	<sect1 id="mod_model_db">
 		<title>Database model</title>
 		<para>
-			The database model classes extend <literal>weeSet</literal> and <literal>weeDataHolder</literal>
+			The database model classes extend <literal>weeSet</literal> and <literal>weeModel</literal>
 			and provide you with a number of methods that will make writing queries much easier than it would be otherwise.
 			Each class implements their own methods that are directly related to our previous description of what a set and a model are.
 		</para>
