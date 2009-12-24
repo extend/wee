@@ -1,11 +1,5 @@
 <?php
 
-class PrintableInput_testURLValidator implements Printable {
-	public function toString() {
-		return 'http://example.com';
-	}
-}
-
 class CastableInput_testURLValidator {
 	public function __toString() {
 		return 'http://example.com';
@@ -53,7 +47,7 @@ try {
 }
 
 try {
-	$o->setValue(new PrintableInput_testURLValidator);
+	$o->setValue(new weeDummyPrintable('http://example.com'));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeURLValidator should not throw a DomainException when the value is an instance of Printable.'));
 }

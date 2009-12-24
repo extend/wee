@@ -1,11 +1,5 @@
 <?php
 
-class PrintableInput_testTimeValidator implements Printable {
-	public function toString() {
-		return '09:42';
-	}
-}
-
 class CastableInput_testTimeValidator {
 	public function __toString() {
 		return '09:42';
@@ -57,7 +51,7 @@ try {
 	}
 
 	try {
-		$o->setValue(new PrintableInput_testTimeValidator);
+		$o->setValue(new weeDummyPrintable('09:42'));
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeTimeValidator should not throw a DomainException when the value is an instance of Printable.'));
 	}
@@ -76,7 +70,7 @@ try {
 	$this->isTrue(weeTimeValidator::test('21:42'),
 		_WT('weeTimeValidator::test should return true when the value is a valid 24-hour time.'));
 
-	$this->isTrue(weeTimeValidator::test(new PrintableInput_testTimeValidator),
+	$this->isTrue(weeTimeValidator::test(new weeDummyPrintable('09:42')),
 		_WT('weeTimeValidator::test should return true when the value is an instance of Printable which returns a valid time.'));
 
 	$this->isTrue(weeTimeValidator::test(new CastableInput_testTimeValidator),

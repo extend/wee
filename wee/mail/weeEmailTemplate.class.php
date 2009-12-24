@@ -39,41 +39,68 @@ class weeEmailTemplate extends weeTemplate
 		for example, you must set From and FromName.
 	*/
 
-	public $aHeaders = array();
+	protected $aHeaders = array();
+
+	/**
+		Return the array of headers defined from the template.
+
+		@return array The headers defined from the template.
+	*/
+
+	public function getHeaders()
+	{
+		return $this->aHeaders;
+	}
+
+	/**
+		Define an additional header for this email.
+		This method can be called directly from the template itself.
+
+		@param $sName The header name.
+		@param $sValue New value for that header.
+	*/
+
+	public function header($sName, $sValue)
+	{
+		empty($sName) and burn('UnexpectedValueException',
+			_WT('The argument $sName must not be empty.'));
+		empty($sValue) and burn('UnexpectedValueException',
+			_WT('The argument $sValue must not be empty.'));
+
+		(strpos($sName, "\r") !== false || strpos($sName, "\n") !== false ||
+		strpos($sValue, "\r") !== false || strpos($sValue, "\n") !== false) and burn('UnexpectedValueException',
+			_WT('Line breaks are not allowed in headers to prevent HTTP Response Splitting.'));
+		(strpos($sName, "\0") !== false || strpos($sValue, "\0") !== false) and burn('UnexpectedValueException',
+			_WT('NUL characters are not allowed in headers.'));
+
+		$this->aHeaders[$sName] = $sValue;
+	}
+
+	/**
+		Define additional headers for this email.
+		This method can be called directly from the template itself.
+
+		@param $aHeaders The headers to define (name => value).
+	*/
+
+	public function headers($aHeaders)
+	{
+		foreach ($aHeaders as $sName => $sValue)
+			$this->header($sName, $sValue);
+	}
 
 	/**
 		Return the template as a string after extracting the headers
-		from the template and making them accessible in $aHeaders.
+		from the template and making them accessible through getHeaders.
 
 		@return string The template.
 	*/
 
 	public function toString()
 	{
-		// Switch to text output, get email string, switch back
-
 		$oOutput = weeOutput::select(new weeTextOutput);
 		$sEmail = parent::toString();
 		weeOutput::select($oOutput);
-
-		// Retrieve email headers
-
-		while (true) {
-			$i = strpos($sEmail, "\n");
-			$sLine = substr($sEmail, 0, $i);
-			$sEmail = substr($sEmail, $i + 1);
-
-			if (empty($sLine))
-				break;
-
-			// Malformed email header
-			strpos($sLine, ': ') === false and burn('UnexpectedValueException',
-				_WT('Malformed email header. Please make sure name and value are separated by ": ".' .
-				" If you didn't specify any header in the template file please check that you added an empty line at the top."));
-
-			$a = explode(': ', $sLine);
-			$this->aHeaders[$a[0]] = $a[1];
-		};
 
 		return $sEmail;
 	}

@@ -106,7 +106,7 @@ class weeFormOptionsHelper
 		if ($mOption instanceof Printable)
 			$mOption = $mOption->toString();
 
-		if (!is_array($mOption))
+		if (!is_array($mOption) && !($mOption instanceof ArrayAccess))
 			$mOption = array('label' => $mOption);
 
 		// We'll use DOM to create our nodes

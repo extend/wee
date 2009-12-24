@@ -1,11 +1,5 @@
 <?php
 
-class PrintableInput_testDateValidator implements Printable {
-	public function toString() {
-		return '1987-10-29';
-	}
-}
-
 class CastableInput_testDateValidator {
 	public function __toString() {
 		return '1987-10-29';
@@ -60,7 +54,7 @@ try {
 	}
 
 	try {
-		$o->setValue(new PrintableInput_testDateValidator);
+		$o->setValue(new weeDummyPrintable('1987-10-29'));
 	} catch (DomainException $e) {
 		$this->fail(_WT('weeDateValidator should not throw a DomainException when the value is an instance of Printable.'));
 	}
@@ -154,7 +148,7 @@ try {
 	$this->isTrue(weeDateValidator::test('1987-10-29'),
 		_WT('weeDateValidator::test should return true when the value is a valid date.'));
 
-	$this->isTrue(weeDateValidator::test(new PrintableInput_testDateValidator),
+	$this->isTrue(weeDateValidator::test(new weeDummyPrintable('1987-10-29')),
 		_WT('weeDateValidator::test should return true when the value is an instance of Printable which returns a valid date.'));
 
 	$this->isTrue(weeDateValidator::test(new CastableInput_testDateValidator),

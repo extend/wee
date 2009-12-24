@@ -243,6 +243,9 @@ abstract class weeFrame implements weeRenderer
 		If the renderer of the frame is also an instance of weeDataHolder,
 		this method acts as a wrapper for its set method. Otherwise,
 		an UnexpectedValueException is thrown.
+		If first parameter is an array or a mappable or traversable object, the
+		array values will be set with their corresponding keys. If values
+		already exist, they will be replaced by these from this array.
 
 		@param	$mName	Name of the variable inside the template
 		@param	$mValue	Value of the variable
@@ -251,11 +254,17 @@ abstract class weeFrame implements weeRenderer
 
 	public function set($mName, $mValue = null)
 	{
-		$this->getRenderer() instanceof weeDataHolder or burn(
+		$oRenderer = $this->getRenderer();
+
+		$oRenderer instanceof weeDataHolder or burn(
 			'UnexpectedValueException',
 			_WT('The renderer must be an instance of weeDataHolder to use this method.'));
 
-		$this->getRenderer()->set($mName, $mValue);
+		if (is_array($mName) || is_object($mName) &&
+				($mName instanceof Mappable || $mName instanceof Traversable))
+			$oRenderer->setFromArray($mName);
+		else
+			$oRenderer[$mName] = $mValue;
 	}
 
 	/**

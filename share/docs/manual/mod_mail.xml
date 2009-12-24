@@ -62,9 +62,9 @@
 			<title>Using templates</title>
 			<para>
 				If you choose to use <link linkend="mod_output_tpl">templates</link>, a few things will change.
-				The template can set the body, but also the subject or any other header.
-				Templates format are identical to the format used by the UNIX <literal>sendmail</literal> tool.
-				First you define the headers, then add an empty line, and everything following is the message body.
+				The template defines the body but can also set headers through the use of the <literal>header</literal> and <literal>headers</literal> methods.
+				The first accepts a name and a value for the header; the second accepts an array of name/value items.
+				Those methods can be called from anywhere within the template, but by convention you should start the template with those calls.
 			</para>
 			<para>
 				You can pass variables to the templates.

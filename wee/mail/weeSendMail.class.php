@@ -62,7 +62,8 @@ class weeSendMail extends PHPMailer
 		$oTpl = new weeEmailTemplate($sTemplate, $aData);
 		$this->Body = $oTpl->toString();
 
-		foreach ($oTpl->aHeaders as $sName => $sValue)
+		$aHeaders = $oTpl->getHeaders();
+		foreach ($aHeaders as $sName => $sValue)
 			if (isset($this->$sName) && !is_array($this->$sName))
 				$this->$sName = $sValue;
 	}

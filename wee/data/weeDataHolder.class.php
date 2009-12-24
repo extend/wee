@@ -96,28 +96,35 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
 
 	public function offsetUnset($sKey)
 	{
-		unset($this->aData[$sData]);
+		unset($this->aData[$sKey]);
 	}
 
 	/**
 		Add a value to the data.
 
-		If first parameter is an array, the array values will be
-		set with their corresponding keys. If values already exist,
-		they will be replaced by these from this array.
+		The values may be given as an array or a mappable or traversable object.
 
-		@param	$mName	Name of the variable inside the template.
-		@param	$mValue	Value of the variable.
+		@param	$mValues The values to set.
 		@return	$this
+		@throw	InvalidArgumentException The given argument is not valid.
 	*/
 
-	public function set($mName, $mValue = null)
+	public function setFromArray($mValues)
 	{
-		if (is_array($mName))
-			$this->aData = $mName + $this->aData;
-		else
-			$this->aData[$mName] = $mValue;
+		if (is_object($mValues)) {
+			if ($mValues instanceof Mappable)
+				$mValues = $mValues->toArray();
+			elseif ($mValues instanceof Traversable)
+				$mValues = iterator_to_array($mValues);
 
+			throw new InvalidArgumentException(
+				_WT('$mValues is an object but cannot be transformed as an array.'));
+		}
+		else
+			is_array($mValues) or burn('InvalidArgumentException',
+				_WT('$mValues must be an array or a mappable or traversable object.'));
+
+		$this->aData = $mValues + $this->aData;
 		return $this;
 	}
 

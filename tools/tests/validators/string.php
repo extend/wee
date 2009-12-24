@@ -1,11 +1,5 @@
 <?php
 
-class PrintableInput_testStringValidator implements Printable {
-	public function toString() {
-		return '42';
-	}
-}
-
 class CastableInput_testStringValidator {
 	public function __toString() {
 		return '42';
@@ -59,7 +53,7 @@ try {
 }
 
 try {
-	$o->setValue(new PrintableInput_testStringValidator);
+	$o->setValue(new weeDummyPrintable('42'));
 } catch (DomainException $e) {
 	$this->fail(_WT('weeStringValidator should not throw a DomainException when the value is an instance of Printable.'));
 }
@@ -244,7 +238,7 @@ $this->isFalse(weeStringValidator::test("string \0 possible hack if this string 
 
 // Objects
 
-$this->isTrue(weeStringValidator::test(new PrintableInput_testStringValidator),
+$this->isTrue(weeStringValidator::test(new weeDummyPrintable('42')),
 	_WT('weeStringValidator::test should return true when the value is an instance of Printable which returns a valid string.'));
 
 $this->isTrue(weeStringValidator::test(new CastableInput_testStringValidator),
