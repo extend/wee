@@ -60,7 +60,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 	/**
 		Returns the current row.
 
-		@return	mixed	Either an array or an instance of weeDatabaseRow or false if there is no current row.
+		@return	mixed	Either an array or an instance of rowClass or false if there is no current row.
 		@see			http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 
@@ -97,7 +97,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 		The return value type can differ depending on the row class.
 		The row class can be changed using the rowClass method.
 
-		@return	mixed				An array or an instance of weeDatabaseRow.
+		@return	mixed				An array or an instance of rowClass.
 		@throw	DatabaseException	The result set does not contain exactly one row.
 	*/
 
@@ -118,7 +118,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 		This method should not be used when iterating over the rows of the result set
 		through the Iterator interface.
 
-		@return	array(mixed)	An array of arrays or instances of weeDatabaseRow.
+		@return	array(mixed)	An array of arrays or instances of rowClass.
 	*/
 
 	public function fetchAll()
@@ -191,8 +191,9 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 		Iterator interface.
 
 		By default they return an array containing the row values,
-		but a child class of weeDatabaseRow can be specified that will be used
-		to create objects containing the row values.
+		but a child class of weeDataHolder can be specified that will be used
+		to create objects containing the row values. In fact, any class which
+		accepts an array as its only constructor argument can be used.
 
 		This can be used after a query if you want to abstract your result in
 		an object and add methods for easy manipulation of this result.

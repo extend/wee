@@ -29,14 +29,8 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 	Load, configure and display templates.
 */
 
-class weeTemplate implements Mappable, Printable
+class weeTemplate extends weeDataHolder implements Printable
 {
-	/**
-		Data to be used in the template.
-	*/
-
-	protected $aData;
-
 	/**
 		Filename of the template, including path and extension.
 	*/
@@ -58,11 +52,12 @@ class weeTemplate implements Mappable, Printable
 
 	public function __construct($sTemplate, array $aData = array())
 	{
-		$this->sFilename	= TPL_PATH . $sTemplate . TPL_EXT;
-		$this->aData		= $aData;
+		$this->sFilename = TPL_PATH . $sTemplate . TPL_EXT;
 
 		file_exists($this->sFilename) or burn('FileNotFoundException',
 			sprintf(_WT('The file %s does not exist.'), $this->sFilename));
+
+		parent::__construct($aData);
 	}
 
 	/**
@@ -149,28 +144,6 @@ class weeTemplate implements Mappable, Printable
 	}
 
 	/**
-		Adds a value to the data array.
-
-		If first parameter is an array, the array values will be
-		set with their corresponding keys. If values already exist,
-		they will be replaced by these from this array.
-
-		@param	$mName	Name of the variable inside the template.
-		@param	$mValue	Value of the variable.
-		@return	$this
-	*/
-
-	public function set($mName, $mValue = null)
-	{
-		if (is_array($mName))
-			$this->aData = $mName + $this->aData;
-		else
-			$this->aData[$mName] = $mValue;
-
-		return $this;
-	}
-
-	/**
 		Output another template.
 		Use this to embed a template inside another.
 
@@ -183,17 +156,6 @@ class weeTemplate implements Mappable, Printable
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
 		$o->addLinkArgs($this->aLinkArgs);
 		$o->render();
-	}
-
-	/**
-		Return the data of the template.
-
-		@return array The data of the template.
-	*/
-
-	public function toArray()
-	{
-		return $this->aData;
 	}
 
 	/**
