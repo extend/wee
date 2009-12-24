@@ -55,6 +55,42 @@ class weeConfigFile implements Mappable
 	}
 
 	/**
+		Cache-aware configuration loading.
+
+		If a cache file is available, load directly the configuration array from the cache.
+		Otherwise, create a weeConfigFile object, retrieve the configuration as an array,
+		save that array into a cache file and return it.
+
+		No cached data is loaded if DEBUG or NO_CACHE is defined.
+
+		@param $sFilename The configuration file's filename.
+		@param $sCacheFilename The configuration file's cache filename.
+		@return array The configuration data that has been loaded.
+	*/
+
+	public static function cachedLoad($sFilename, $sCacheFilename)
+	{
+		// Load from the cache if possible
+
+		if (!defined('DEBUG') && !defined('NO_CACHE') && is_readable($sCacheFilename))
+			return require($sCacheFilename);
+
+		// Otherwise try to load the configuration file
+
+		$oConfigFile = new weeConfigFile($sFilename);
+		$aConfig = $oConfigFile->toArray();
+
+		// Configuration file has been loaded, cache it for later if possible
+
+		if (!defined('DEBUG')) {
+			file_put_contents($sCacheFilename, '<?php return ' . var_export($aConfig, true) . ';');
+			chmod($sCacheFilename, 0600);
+		}
+
+		return $aConfig;
+	}
+
+	/**
 		Return the filename of the configuration file which is to be included.
 
 		If the path of the configuration file begins with {{{ "//" }}} the path is relative to ROOT_PATH,

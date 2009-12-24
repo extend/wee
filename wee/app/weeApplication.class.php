@@ -32,7 +32,7 @@ if (!defined('WEE_CONF_FILE'))
 	Main class of a wee application.
 
 	This class basically translate events and redirect them.
-	It also loads a configuration file and acts as a central point
+	It also loads a configuration file and can act as a central point
 	for various application components, like database and session.
 */
 
@@ -57,47 +57,21 @@ class weeApplication
 	protected $oFrame;
 
 	/**
-		Instance of the current singleton.
-		There can only be one.
+		Current shared instance.
 	*/
 
-	protected static $oSingleton;
+	protected static $oSharedInstance;
 
 	/**
-		Load the configuration file WEE_CONF_FILE and initialize
-		automatically the various components of the application.
+		Initialize automatically the various components of the application
+		according to the configuration data.
+
+		@param $aConfig The configuration data for this application.
 	*/
 
-	protected function __construct()
+	public function __construct($aConfig)
 	{
-		// Loads from cache if possible, otherwise tries to load the configuration file
-		// and then, if cache is enabled, cache the configuration array
-
-		if (!defined('DEBUG') && !defined('NO_CACHE') && defined('WEE_CONF_CACHE') && is_readable(WEE_CONF_CACHE))
-			$this->aConfig = require(WEE_CONF_CACHE);
-		else try {
-			$oConfigFile = new weeConfigFile(WEE_CONF_FILE);
-			$this->aConfig = $oConfigFile->toArray();
-
-			if (!defined('DEBUG') && defined('WEE_CONF_CACHE')) {
-				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->aConfig, true) . ';');
-				chmod(WEE_CONF_CACHE, 0600);
-			}
-		} catch (FileNotFoundException $e) {
-			// No configuration file. Stop here and display a friendly message.
-
-			if (defined('WEE_CLI'))
-				echo _WT('The configuration file was not found.'), "\n",
-					_WT('Please consult the documentation for more information.'), "\n";
-			else {
-				if (defined('DEBUG'))
-					FirePHP::getInstance(true)->fb($e);
-
-				header('HTTP/1.0 500 Internal Server Error');
-				require(ROOT_PATH . 'res/wee/noconfig.htm');
-			}
-			exit;
-		}
+		$this->aConfig = $aConfig;
 
 		// Add path to autoload
 		// - All path are separated by : like in PATH environment variable
@@ -120,14 +94,6 @@ class weeApplication
 		foreach ($aStart as $sName => $b)
 			if (!empty($b))
 				$this->__get($sName);
-	}
-
-	/**
-		Because there can only be one application object, we disable cloning.
-	*/
-
-	final private function __clone()
-	{
 	}
 
 	/**
@@ -276,31 +242,6 @@ class weeApplication
 	}
 
 	/**
-		Returns an instance of the weeApplication singleton.
-
-		At the time of the first call of this method, a shortcut function to this method called weeApp is created.
-
-		@return weeApplication The weeApplication object for this process
-	*/
-
-	public static function instance()
-	{
-		if (self::$oSingleton === null) {
-			static $iInstance = 0;
-			$iInstance++ == 0 or
-				burn('IllegalStateException',
-					_WT('Trying to instanciate weeApplication within its own constructor. ' .
-						'This error can happen if you inherited a class created in the constructor ' .
-						'and put logic that uses weeApplication in it (models, for example).'));
-
-			function weeApp() { return weeApplication::instance(); }
-			self::$oSingleton = new self;
-		}
-
-		return self::$oSingleton;
-	}
-
-	/**
 		Load and initialize the specified frame.
 
 		@param	$sFrame						Frame's class name
@@ -341,6 +282,31 @@ class weeApplication
 		}
 
 		$this->oFrame->render();
+	}
+
+	/**
+		Set the shared instance for this object.
+		@param $oInstance The shared instance.
+	*/
+
+	public static function setSharedInstance(weeApplication $oInstance)
+	{
+		self::$oSharedInstance = $oInstance;
+	}
+
+	/**
+		Return the current shared instance for this object.
+		@return weeApplication The weeApplication object for this process
+	*/
+
+	public static function sharedInstance()
+	{
+		self::$oSingleton === null && burn('IllegalStateException',
+			_WT('No shared instance for weeApplication currently exists. ' .
+				'This error can happen if you inherited a class created in the constructor ' .
+				'and put logic that uses weeApplication in it (models, for example).'));
+
+		return self::$oSharedInstance;
 	}
 
 	/**
