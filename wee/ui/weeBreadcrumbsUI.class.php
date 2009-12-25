@@ -51,7 +51,7 @@ class weeBreadcrumbsUI extends weeUI
 	protected function defaultEvent($aEvent)
 	{
 		if (empty($this->aPath)) {
-			$sPath = substr(weeApplication::getPathInfo(), 1);
+			$sPath = substr(safe_path_info(), 1);
 
 			if (empty($sPath))
 				$this->setPath(array($aEvent['frame'] => $aEvent['frame']));

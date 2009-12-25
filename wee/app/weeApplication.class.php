@@ -192,56 +192,6 @@ class weeApplication
 	}
 
 	/**
-		Returns the path information with some path translation.
-		The path information is the text after the file and before the query string in an URI.
-		Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
-
-		@return	string The path information
-	*/
-
-	public static function getPathInfo()
-	{
-		$sPathInfo = null;
-
-		if (isset($_SERVER['PATH_INFO']))
-			$sPathInfo = $_SERVER['PATH_INFO'];
-		elseif (isset($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] != $_SERVER['PHP_SELF'])
-			$sPathInfo = $_SERVER['ORIG_PATH_INFO'];
-		elseif (isset($_SERVER['REDIRECT_URL']))
-			$sPathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
-
-		if ($sPathInfo !== null) {
-			// We found the path info from either PATH_INFO or PHP_SELF server variables.
-
-			if (empty($_SERVER['QUERY_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
-				// If the query string is empty, but that an interrogation mark has been
-				// explicitely included in the request URI, we keep it.
-				$sPathInfo .= '?';
-
-			return $sPathInfo;
-		}
-
-		// The path info begins after the script name part of the request URI.
-		
-		$iScriptLength	= strlen($_SERVER['SCRIPT_NAME']);
-		$sName			= basename($_SERVER['SCRIPT_NAME']);
-		$iNameLength	= strlen($sName);
-		$sPathInfo		= substr($_SERVER['REQUEST_URI'], $iScriptLength - $iNameLength);
-
-		if (substr($sPathInfo, 0, $iNameLength) == $sName)
-			$sPathInfo	= substr($sPathInfo, $iNameLength);
-
-		if (!empty($_SERVER['QUERY_STRING'])) {
-			// We need to remove the query string from the path info.
-			$i = strlen($_SERVER['QUERY_STRING']);
-			if (substr($sPathInfo, -$i) == $_SERVER['QUERY_STRING'])
-				$sPathInfo = substr($sPathInfo, 0, -$i - 1);
-		}
-
-		return urldecode($sPathInfo);
-	}
-
-	/**
 		Load and initialize the specified frame.
 
 		@param	$sFrame						Frame's class name
@@ -337,7 +287,7 @@ class weeApplication
 			$aEvent['method']	= strtolower($_SERVER['REQUEST_METHOD']);
 		}
 
-		$sPathInfo = substr(self::getPathInfo(), 1);
+		$sPathInfo = substr(safe_path_info(), 1);
 
 		// Apply the locale found in the pathinfo if the locale module is started
 		if (!empty($sPathInfo) && !empty($this->aDrivers['locale']))
