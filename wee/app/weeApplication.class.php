@@ -32,8 +32,8 @@ if (!defined('WEE_CONF_FILE'))
 	Main class of a wee application.
 
 	This class basically translate events and redirect them.
-	It also loads a configuration file and can act as a central point
-	for various application components, like database and session.
+	It also can act as a central point for various application
+	components, like database and session.
 */
 
 class weeApplication
@@ -87,6 +87,11 @@ class weeApplication
 
 		if (!empty($this->aConfig['app.timezone']))
 			date_default_timezone_set($this->aConfig['app.timezone']);
+
+		// Define the default error page from the configuration
+
+		if (!empty($this->aConfig['app.error.default']))
+			weeException::setErrorPage($this->aConfig['app.error.default']);
 
 		// Force selected drivers to start
 
@@ -217,21 +222,25 @@ class weeApplication
 
 	public function main()
 	{
-		$aEvent = $this->translateEvent();
+		$this->dispatchEvent($this->translateEvent());
 
-		$this->dispatchEvent($aEvent);
+		if ($this->oFrame->getStatus() != weeFrame::UNAUTHORIZED_ACCESS)
+			return $this->oFrame->render();
 
-		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
-			if (defined('WEE_CLI'))
-				echo _WT('You are not allowed to access the specified frame/event.'), "\n";
-			else {
-				header('HTTP/1.0 403 Forbidden');
-				require(ROOT_PATH . 'res/wee/unauthorized.htm');
-			}
-			exit;
+		// Otherwise an UnauthorizedAccessException was thrown; show an error and exit.
+
+		if (defined('WEE_CLI'))
+			echo _WT('You are not allowed to access the specified frame/event.'), "\n";
+		else {
+			header('HTTP/1.0 403 Forbidden');
+
+			$sPath = $this->cnf('app.error.unauthorized');
+			empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
+
+			require($sPath);
 		}
 
-		$this->oFrame->render();
+		exit;
 	}
 
 	/**
