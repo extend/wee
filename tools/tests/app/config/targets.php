@@ -20,9 +20,9 @@ class weeConfigFile_isTargetedSystem extends weeConfigFile
 			return parent::getTargetFunctions();
 
 		static $aFunc = array(
-			'multi'		=> '"Windows NT"',
-			'os'		=> 'php_uname("s")',
-			'extver'	=> 'phpversion(":1")'
+			'multi'		=> '"Windows NT" == ":1"',
+			'os'		=> 'php_uname("s") == ":1"',
+			'extver'	=> 'phpversion(":1") == ":2"'
 		);
 
 		return $aFunc;

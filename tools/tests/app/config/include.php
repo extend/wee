@@ -32,11 +32,11 @@ class weeConfigFile_include extends weeConfigFile
 		return $s;
 	}
 
-	// Overlooaded to check whether onditional inclusion works.
+	// Overlooaded to check whether conditional inclusion works.
 	protected function getTargetFunctions()
 	{
 		static $aFunc = array(
-			'is_foo' => '"foo"'
+			'is_foo' => '"foo" == ":1"'
 		);
 
 		return $aFunc;

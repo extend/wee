@@ -123,12 +123,14 @@ class weeConfigFile implements Mappable
 	protected function getTargetFunctions()
 	{
 		static $aFunc = array(
-			'os'		=> 'php_uname("s")',
-			'host'		=> 'php_uname("n")',
-			'phpver'	=> 'phpversion()',
-			'extver'	=> 'phpversion(":1")',
-			'sapi'		=> 'php_sapi_name()',
-			'path'		=> 'dirname(dirname(dirname(__FILE__)))',
+			'os'		=> 'php_uname("s") == ":1"',
+			'host'		=> 'php_uname("n") == ":1"',
+			'phpver'	=> 'phpversion() == ":1"',
+			'extver'	=> 'phpversion(":1") == ":2"',
+			'sapi'		=> 'php_sapi_name() == ":1"',
+			'path'		=> 'dirname(dirname(dirname(__FILE__))) == ":1"',
+			'isfile'	=> 'is_file(":1")',
+			'isdir'		=> 'is_dir(":1")',
 		);
 
 		return $aFunc;
@@ -143,10 +145,13 @@ class weeConfigFile implements Mappable
 
 		With function one of these:
 			* os:		Operating System name, e.g. NetBSD.
-			* host:	Hostname, like localhost.example.com.
+			* host:		Hostname, like localhost.example.com.
 			* phpver:	PHP version.
 			* extver:	PHP extension version. Needs one parameter: the extension's name.
-			* sapi:	Type of interface between web server and PHP.
+			* sapi:		Type of interface between web server and PHP.
+			* path:		The path to the folder containing the bootstrap file.
+			* isfile:	Whether the given file exists and is a regular file.
+			* isdir:	Whether the given directory exists and is a directory.
 
 		And target is the value wanted.
 
@@ -211,7 +216,6 @@ class weeConfigFile implements Mappable
 			$sInstruction	= substr($sInstruction, $i + 1);
 		}
 
-		$sWanted		= array_pop($aArgs);
 		$sEval			= $aFuncs[$sFunction];
 		$iExpectedArgs	= substr_count($sEval, ':');
 		$iActualArgs	= count($aArgs);
@@ -220,10 +224,14 @@ class weeConfigFile implements Mappable
 			or burn('UnexpectedValueException',
 				sprintf(_WT('The target function expects %d arguments but %d were given.'), $iExpectedArgs, $iActualArgs));
 
-		foreach ($aArgs as $i => $sArg)
-			$sEval = str_replace(':' . $i, addslashes($sArg), $sEval);
+		// Special case for isfile and isdir, the argument is a filename
+		if ($sFunction == 'isfile' || $sFunction == 'isdir')
+			$aArgs[0] = $this->getIncludeFilename($aArgs[0]);
 
-		return eval('return ' . $sEval . ';') == $sWanted;
+		foreach ($aArgs as $i => $sArg)
+			$sEval = str_replace(':' . ($i + 1), addslashes($sArg), $sEval);
+
+		return eval('return ' . $sEval . ';');
 	}
 
 	/**
