@@ -73,18 +73,11 @@ foreach ($o->getTargetFunctions(true) as $sFunction => $sEval)
 	$this->isEqual(0, $i, sprintf(_WT('Builtin weeConfigFile %s target is not a valid PHP function call.'), $sFunction));
 }
 
-try
-{
-	$this->isTrue($o->isTargetedSystem('$(os ' . php_uname('s') . ')'),
-		_WT('weeConfigFile fails to see that the targeted system is the one currently used.'));
+$this->isTrue($o->isTargetedSystem('$(os "' . php_uname('s') . '")'),
+	_WT('weeConfigFile fails to see that the targeted system is the one currently used.'));
 
-	$this->isFalse($o->isTargetedSystem('$(os os_which_is_not_the_one_currently_used)'),
-		_WT('weeConfigFile fails to see that the targeted system is not the one currently used.'));
+$this->isFalse($o->isTargetedSystem('$(os os_which_is_not_the_one_currently_used)'),
+	_WT('weeConfigFile fails to see that the targeted system is not the one currently used.'));
 
-	$this->isTrue($o->isTargetedSystem('$(multi "Windows NT")'),
-		_WT('weeConfigFile fails when the operating system name uses two words.'));
-}
-catch (UnexpectedValueException $e)
-{
-	$this->fail(_WT('weeConfigFile throws an UnexpectedValueException when the given instruction is valid.'));
-}
+$this->isTrue($o->isTargetedSystem('$(multi "Windows NT")'),
+	_WT('weeConfigFile fails when the operating system name uses two words.'));
