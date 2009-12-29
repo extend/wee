@@ -12,23 +12,23 @@
 	<sect1 id="introduction_philosophy">
 		<title>Philosophy</title>
 		<para>
-			The development team tries to apply the following philosophy whenever possible.
+			The development team tries to adhere to the following philosophy whenever possible.
 		</para>
 
 		<sect2>
 			<title>Simplicity</title>
 			<para>
 				<ulink url="http://en.wikipedia.org/wiki/Simplicity">Simplicity</ulink> is the property,
-				condition, or quality of being simple or un-combined. It often denotes beauty, purity or clarity.
-				Simple things are usually easier to explain and understand than complicated ones.
-				Simplicity can mean freedom from hardship, effort or confusion.
+				condition, or quality of being straightforward or uncomplicated. In some circumstances it 
+				denotes beauty,	purity or clarity. Simple things are usually easier to explain and understand 
+				than complicated ones, and can indicate freedom from hardship, effort or confusion.
 			</para>
 			<para>
-				In other words, a developer who uses Web:Extend should be able to translate her project's
-				requirements into a finished application with the least thinking and writing needed.
-				Ideally, the developer should not have to worry about anything other than the project's requirements.
-				The tools she use should be easy to use and understand.
-				They also should get out of the way to let her get the work done.
+				In context, a developer using Web:Extend should be able to translate any project
+				requirements into a finished application with minimal planning and implementation.
+				Ideally, the developer should not have to focus on anything other than the requirements themselves.
+				The tools available should be easy to use and understand, and should also present as few 
+				disruptions as possible in the implemtation of any task.
 			</para>
 		</sect2>
 
