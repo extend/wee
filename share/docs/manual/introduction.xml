@@ -48,30 +48,34 @@
 				</para>
 			</sect3>
 			<sect3>
-				<title>Minimal interface</title>
+				<title>Minimal Interface</title>
 				<para>
-					The framework is designed as a <ulink url="http://martinfowler.com/bliki/MinimalInterface.html">Minimal Interface</ulink>.
-					This means classes will only have methods that are strictly needed for its purpose.
-					This allows you to learn it much more easily because classes are small and go to the point.
-					We sometimes also add convenience methods when there's a noticeable pattern in the class use.
+					The framework is designed using the 
+					<ulink url="http://martinfowler.com/bliki/MinimalInterface.html">Minimal Interface</ulink> 
+					style, which means classes only have methods that are strictly necessary for 
+					their function. This allows a developer to become familiar with the framework with relative ease as 
+					all classes involved are small and concise. On occasion there will be methods included 
+					for convenience when a noticeable pattern in class usage is observed.
 				</para>
 			</sect3>
 			<sect3>
 				<title>Write less but better code</title>
 				<para>
-					By keeping things simple, the framework helps you write better code.
-					We think the developer should be able to create an application with very few lines of code.
-					You should not have to handle technicalities, the framework can do it for you.
+					By keeping things simple, the framework assists in the creation of better code.
+					A developer should be able to create an application with very few lines of code without the 
+					need to handle technicalities. The intention of this framework is to carry out the coding 
+					details	on behalf of the developer.
 				</para>
 			</sect3>
 			<sect3>
 				<title>Automating security where possible</title>
 				<para>
-					We think the developer shouldn't have to worry about security.
-					It's the job of the framework to make sure the application is secure.
-					This can be enforced by adding various checks and security measures
-					inside the framework, along with a set of recommendations.
-					We also provide information about the various security issues that can arise directly in the documentation.
+					A developer should not be concerned with security where it is more suitable for 
+					the framework to ensure that an application is as free from vunerabilities as possible.	
+					This can be enforced with the provision of various checks and security measures
+					inside the framework, along with a set of recommendations of coding practices for the 
+					developer. The documentation also includes information on the various security issues that can 
+					arise within applications.
 				</para>
 			</sect3>
 			<sect3>
