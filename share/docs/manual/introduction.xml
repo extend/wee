@@ -35,14 +35,16 @@
 		<sect2>
 			<title>Small and efficient framework</title>
 			<sect3>
-				<title>Passive view MVC</title>
+				<title>Passive View MVC</title>
 				<para>
-					The framework gives you the possibility to use a variant of the MVC pattern.
-					This variant is explained in details by <ulink url="http://martinfowler.com">Martin Fowler</ulink>
-					in his <ulink url="http://martinfowler.com/eaaDev/PassiveScreen.html">passive view article</ulink>.
-					It is designed to enhance testability, but it also gives a much simpler approach to MVC.
-					The passive view receives data from the controller and renders the page. That's it.
-					The passive view do not need to access the model or the controller. <link linkend="mod_app_mvc">Read more about the MVC architecture...</link>
+                    The framework provides a method of using a variation of the MVC (Model-View-Controller) pattern.
+                    This variant is explained in detail by <ulink url="http://martinfowler.com">Martin Fowler</ulink>
+                    in his <ulink url="http://martinfowler.com/eaaDev/PassiveScreen.html">Passive View article</ulink>.
+                    It is designed to enhance testability, but it also provides a much simpler approach to MVC.
+                    The Passive View receives data from the controller and from this renders the page. No further
+                    action is carried out by the Passive View, as further access to the model or the controller 
+					is deemed to be unnecessary. Further information regarding this structure is available in 
+					<xref linkend="mod_app_mvc"/>.
 				</para>
 			</sect3>
 			<sect3>
