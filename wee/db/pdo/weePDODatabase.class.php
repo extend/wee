@@ -47,6 +47,11 @@ class weePDODatabase extends weeDatabase
 		 * user:		The user for the database.
 		 * password:	The password of the user.
 
+		If you have pdo_mysql installed but it doesn't want to connect,
+		consider adding the path to the mysql.sock file in your `dsn`.
+		For example on Ubuntu you would add ";unix_socket=/var/run/mysqld/mysqld.sock".
+		This forces the driver to use that socket to connect to the server.
+
 		@param	$aParams					The parameters of the driver.
 		@throw	ConfigurationException		The PDO PHP extension is missing.
 		@throw	InvalidArgumentException	Parameter "dsn" is missing.
