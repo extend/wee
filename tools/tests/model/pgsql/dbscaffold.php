@@ -165,27 +165,27 @@ try {
 
 	$oSubset = new myDbScaffoldSet();
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE TRUE', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual('', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method should have returned an empty WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSet(array('pkey' => 'IS NOT NULL'));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE TRUE AND "pkey" IS NOT NULL', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE "pkey" IS NOT NULL', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSet(array('pkey' => array('!=', 17)));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE TRUE AND "pkey" != \'17\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE "pkey" != \'17\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSet(array('pkey' => array('IN', 1, 3, 5, 7, 9)));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE TRUE AND "pkey" IN (\'1\',\'3\',\'5\',\'7\',\'9\')', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE "pkey" IN (\'1\',\'3\',\'5\',\'7\',\'9\')', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSet(array('other' => array('LIKE', '%test%')));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE TRUE AND "other" LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE "other" LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSet(array('pkey' => array('NOT IN', 1, 3, 5, 7, 9), 'other' => array('LIKE', '%test%')));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE TRUE AND "pkey" NOT IN (\'1\',\'3\',\'5\',\'7\',\'9\') AND "other" LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE "pkey" NOT IN (\'1\',\'3\',\'5\',\'7\',\'9\') AND "other" LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	// subset operations
 

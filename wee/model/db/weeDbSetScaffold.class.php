@@ -24,6 +24,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Scaffolding for database elements.
 
+	This class currently supports PostgreSQL, MySQL and SQLite.
+
 	To use it, simply extend it and define the $sModel property to the name of the weeDbModelScaffold class,
 	and the $sTableName to the name of the table in the database represented by this set.
 */
@@ -185,7 +187,8 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
 				sprintf(_WT('The reference table %s do not have a primary key.'), $aRefMeta['table']));
 
-			$sJoin .= ' ' . $this->sJoinType . ' ' . $aRefMeta['table'] . ' ON (TRUE';
+			$sJoin .= ' ' . $this->sJoinType . ' ' . $aRefMeta['table'] . ' ON (';
+			$sAnd = '';
 
 			if (empty($aRef['key'])) {
 				// Use the linked set's primary key columns names
@@ -194,14 +197,17 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 					$this->aJoinAmbiguousKeys[$sColumn] = $aMeta['table'];
 
 					$sColumn = $oDb->escapeIdent($sColumn);
-					$sJoin .= ' AND ' . $aMeta['table'] . '.' . $sColumn . '=' . $aRefMeta['table'] . '.' . $sColumn;
+					$sJoin .= $sAnd . $aMeta['table'] . '.' . $sColumn . '=' . $aRefMeta['table'] . '.' . $sColumn;
+					$sAnd = ' AND ';
 				}
 			} else {
 				// Use the given column names association
 
-				foreach ($aRef['key'] as $sColumn => $sRefColumn)
-					$sJoin .= ' AND ' . $aMeta['table'] . '.' . $oDb->escapeIdent($sColumn)
+				foreach ($aRef['key'] as $sColumn => $sRefColumn) {
+					$sJoin .= $sAnd . $aMeta['table'] . '.' . $oDb->escapeIdent($sColumn)
 						. '=' . $aRefMeta['table'] . '.' . $oDb->escapeIdent($sRefColumn);
+					$sAnd = ' AND ';
+				}
 			}
 
 			$sJoin .= ')';
@@ -259,7 +265,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected function buildWhere()
 	{
 		if (empty($this->aSubsetCriteria))
-			return ' WHERE TRUE';
+			return ''; // equivalent to WHERE TRUE
 
 		if (is_int(key($this->aSubsetCriteria)))
 			return ' WHERE ' . $this->buildWhereLogical($this->getDb(), $this->aSubsetCriteria);
@@ -278,10 +284,13 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 	protected function buildWhereCriteria($oDb, $aCriteria)
 	{
-		$sWhere = 'TRUE';
+		$sWhere = ''; // equivalent to TRUE
+		$sAnd = '';
 
 		foreach ($aCriteria as $sField => $mOperation) {
-			$sWhere .= ' AND ';
+			$sWhere .= $sAnd;
+			$sAnd = ' AND ';
+
 			if (isset($this->aJoinAmbiguousKeys[$sField]))
 				$sWhere .= $this->aJoinAmbiguousKeys[$sField] . '.';
 			$sWhere .= $oDb->escapeIdent($sField) . ' ';
@@ -377,9 +386,13 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$aMeta = $this->getMeta();
 		$mPrimaryKey = $this->filterPrimaryKey($mPrimaryKey, $aMeta);
 
-		$sQuery = 'DELETE FROM ' . $aMeta['table'] . ' WHERE TRUE';
+		$sQuery = 'DELETE FROM ' . $aMeta['table'] . ' WHERE';
+		$sAnd = '';
+
 		foreach ($aMeta['primary'] as $sField) {
-			$sQuery .= ' AND ';
+			$sQuery .= $sAnd;
+			$sAnd = ' AND ';
+
 			if (isset($this->aJoinAmbiguousKeys[$sField]))
 				$sQuery .= $this->aJoinAmbiguousKeys[$sField] . '.';
 			$sQuery .= $oDb->escapeIdent($sField) . '=' . $oDb->escape($mPrimaryKey[$sField]) . ' ';
@@ -404,9 +417,13 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$aMeta = $this->getMeta();
 		$mPrimaryKey = $this->filterPrimaryKey($mPrimaryKey, $aMeta);
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE TRUE';
+		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE';
+		$sAnd = '';
+
 		foreach ($aMeta['primary'] as $sField) {
-			$sQuery .= ' AND ';
+			$sQuery .= $sAnd;
+			$sAnd = ' AND ';
+
 			if (isset($this->aJoinAmbiguousKeys[$sField]))
 				$sQuery .= $this->aJoinAmbiguousKeys[$sField] . '.';
 			$sQuery .= $oDb->escapeIdent($sField) . '=' . $oDb->escape($mPrimaryKey[$sField]) . ' ';

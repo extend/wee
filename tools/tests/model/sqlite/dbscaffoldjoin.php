@@ -1,6 +1,6 @@
 <?php
 
-require(ROOT_PATH . 'tools/tests/db/mysql/connect.php.inc');
+require(ROOT_PATH . 'tools/tests/db/sqlite/connect.php.inc');
 
 if (!class_exists('myDbScaffoldSetProfile')) {
 	class myDbScaffoldSetProfile extends weeDbSetScaffold
@@ -45,11 +45,13 @@ if (!class_exists('myDbScaffoldSetProfile')) {
 	}
 }
 
+$oDb->query('BEGIN');
+
 try {
-	$oDb->query('CREATE TABLE IF NOT EXISTS dbscaffoldjoin (pkey integer, profile_id integer, rank_id integer, rank_type integer, country integer, year integer, PRIMARY KEY (pkey))');
-	$oDb->query('CREATE TABLE IF NOT EXISTS dbscaffoldjoinprofile (profile_id integer, profile_label varchar(50), PRIMARY KEY (profile_id))');
-	$oDb->query('CREATE TABLE IF NOT EXISTS dbscaffoldjoinrank (rank_id integer, rank_type integer, rank_label varchar(50), PRIMARY KEY (rank_id, rank_type))');
-	$oDb->query('CREATE TABLE IF NOT EXISTS dbscaffoldjoincountry (country_id integer, country_year integer, country_label varchar(50), PRIMARY KEY (country_id, country_year))');
+	$oDb->query('CREATE TABLE dbscaffoldjoin (pkey integer, profile_id integer, rank_id integer, rank_type integer, country integer, year integer, PRIMARY KEY (pkey))');
+	$oDb->query('CREATE TABLE dbscaffoldjoinprofile (profile_id integer, profile_label varchar(50), PRIMARY KEY (profile_id))');
+	$oDb->query('CREATE TABLE dbscaffoldjoinrank (rank_id integer, rank_type integer, rank_label varchar(50), PRIMARY KEY (rank_id, rank_type))');
+	$oDb->query('CREATE TABLE dbscaffoldjoincountry (country_id integer, country_year integer, country_label varchar(50), PRIMARY KEY (country_id, country_year))');
 
 	$oDb->query('INSERT INTO dbscaffoldjoin VALUES (1, 1, 2, 1, 3, 2008)');
 	$oDb->query('INSERT INTO dbscaffoldjoin VALUES (2, 2, 1, 1, 6, 2008)');
@@ -102,9 +104,9 @@ try {
 	// weeDbSetScaffold::buildJoin
 
 	$this->isEqual(
-		' LEFT OUTER JOIN ' . $aProfileMeta['table'] . ' ON (' . $aMeta['table'] . '.`profile_id`=' . $aProfileMeta['table'] . '.`profile_id`)' . 
-		' LEFT OUTER JOIN ' . $aRankMeta['table'] . ' ON (' . $aMeta['table'] . '.`rank_id`=' . $aRankMeta['table'] . '.`rank_id` AND ' . $aMeta['table'] . '.`rank_type`=' . $aRankMeta['table'] . '.`rank_type`)' . 
-		' LEFT OUTER JOIN ' . $aCountryMeta['table'] . ' ON (' . $aMeta['table'] . '.`country`=' . $aCountryMeta['table'] . '.`country_id` AND ' . $aMeta['table'] . '.`year`=' . $aCountryMeta['table'] . '.`country_year`)',
+		' LEFT OUTER JOIN ' . $aProfileMeta['table'] . ' ON (' . $aMeta['table'] . '.[profile_id]=' . $aProfileMeta['table'] . '.[profile_id])' .
+		' LEFT OUTER JOIN ' . $aRankMeta['table'] . ' ON (' . $aMeta['table'] . '.[rank_id]=' . $aRankMeta['table'] . '.[rank_id] AND ' . $aMeta['table'] . '.[rank_type]=' . $aRankMeta['table'] . '.[rank_type])' .
+		' LEFT OUTER JOIN ' . $aCountryMeta['table'] . ' ON (' . $aMeta['table'] . '.[country]=' . $aCountryMeta['table'] . '.[country_id] AND ' . $aMeta['table'] . '.[year]=' . $aCountryMeta['table'] . '.[country_year])',
 		$oSet->buildJoin($oSet->getMeta()),
 		_WT('weeDbSetScaffold::buildJoin failed to build the correct statement.')
 	);
@@ -168,10 +170,6 @@ try {
 
 } catch (Exception $oException) {}
 
-$oDb->query('DROP TABLE IF EXISTS dbscaffoldjoin');
-$oDb->query('DROP TABLE IF EXISTS dbscaffoldjoinprofile');
-$oDb->query('DROP TABLE IF EXISTS dbscaffoldjoinrank');
-$oDb->query('DROP TABLE IF EXISTS dbscaffoldjoincountry');
-
+$oDb->query('ROLLBACK');
 if (isset($oException))
 	throw $oException;
