@@ -1,7 +1,5 @@
 <?php
 
-require(ROOT_PATH . 'tools/tests/db/sqlite/connect.php.inc');
-
 if (!class_exists('myDbScaffoldSetProfile')) {
 	class myDbScaffoldSetProfile extends weeDbSetScaffold
 	{

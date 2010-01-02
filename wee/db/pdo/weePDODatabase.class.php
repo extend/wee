@@ -82,6 +82,11 @@ class weePDODatabase extends weeDatabase
 			$this->sDBMS = 'mssql';
 		else
 			$this->sDBMS = $sDriver;
+
+		// By default SQLite 2 returns full column names when there's joins
+		// For better interoperability with other DBMS we prefer short names
+		if ($sDriver == 'sqlite2')
+			$this->doQuery('PRAGMA short_column_names = ON');
 	}
 
 	/**
@@ -93,9 +98,11 @@ class weePDODatabase extends weeDatabase
 
 	protected function doEscape($mValue)
 	{
-		// see http://wee.extend.ws/ticket/73
+		// Convert bool to int for PostgreSQL, as the PHP driver returns
+		// the character F for false and T for true, which is impractical
 		if ($this->sDBMS == 'pgsql' && is_bool($mValue))
 			$mValue = (int)$mValue;
+
 		return $this->oDb->quote($mValue);
 	}
 
