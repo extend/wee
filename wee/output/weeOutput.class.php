@@ -28,32 +28,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 abstract class weeOutput
 {
 	/**
-		Instance of the current output driver.
-		There can only be one at the same time.
-	*/
-
-	protected static $oInstance;
-
-	/**
-		Initialize the output driver. Start output buffering if requested.
-	*/
-
-	public function __construct($aParams = array())
-	{
-		if (empty(self::$oInstance))
-			self::$oInstance = $this;
-
-		if (!empty($aParams['buffer']))
-			$this->bufferize(!empty($aParams['buffer.gzip']));
-	}
-
-	/**
 		Bufferize the output. Enable GZIP compression on demand if available.
 
 		@param $bCompressOutput Whether to compress the output before sending it to the browser (if available).
 	*/
 
-	public function bufferize($bCompressOutput = true)
+	public static function bufferize($bCompressOutput = true)
 	{
 		$bGZIP = $bCompressOutput && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
 			&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
@@ -70,22 +50,6 @@ abstract class weeOutput
 	}
 
 	/**
-		Return the currently selected instance.
-		Throw an exception if no instances are selected.
-
-		@return weeOutput The selected output instance.
-	*/
-
-	public static function instance()
-	{
-		empty(self::$oInstance) and burn('IllegalStateException',
-			_WT('An instance of weeOutput must be created before it can be retrieved. Please make sure that you have '
-				. 'an output driver started before doing any code related to output, be it forms or templates.'));
-
-		return self::$oInstance;
-	}
-
-	/**
 		Output a renderer.
 
 		This method sends an appropriate Content-Type header with the MIME type
@@ -99,19 +63,5 @@ abstract class weeOutput
 		if (!defined('WEE_CLI'))
 			header('Content-Type: ' . $oRenderer->getMIMEType());
 		$oRenderer->render();
-	}
-
-	/**
-		Select a new output driver and return the previous one.
-
-		@param $oOutput New driver to be used.
-		@return weeOutput The driver being replaced.
-	*/
-
-	public static function select(weeOutput $oOutput)
-	{
-		$oOld = weeOutput::$oInstance;
-		weeOutput::$oInstance = $oOutput;
-		return $oOld;
 	}
 }

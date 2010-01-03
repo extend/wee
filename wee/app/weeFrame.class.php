@@ -71,6 +71,12 @@ abstract class weeFrame implements weeRenderer
 	protected $oController;
 
 	/**
+		The pipes used by this frame.
+	*/
+
+	protected $aPipes = array();
+
+	/**
 		Renderer for the frame.
 	*/
 
@@ -101,6 +107,15 @@ abstract class weeFrame implements weeRenderer
 			_WT('You need to specify a controller that weeFrame can use to dispatch events.'));
 
 		$this->oController = is_null($oController) ? weeApp() : $oController;
+	}
+
+	/**
+		Add a pipe to the rendering process.
+	*/
+
+	public function addPipe(weePipe $oPipe)
+	{
+		$this->aPipes[] = $oPipe;
 	}
 
 	/**
@@ -204,8 +219,17 @@ abstract class weeFrame implements weeRenderer
 		if ($this->sContext == 'xmlhttprequest' && !empty($this->oTaconite))
 			return $this->oTaconite->render();
 
-		if (empty($this->oTaconite))
-			return $this->getRenderer()->render();
+		if (empty($this->oTaconite)) {
+			if (empty($this->aPipes))
+				return weeOutput::output($this->getRenderer());
+
+			foreach ($this->aPipes as $oPipe)
+				$oPipe->init();
+			$this->getRenderer()->render();
+			foreach (array_reverse($this->aPipes) as $oPipe)
+				$oPipe->process();
+			return;
+		}
 
 		echo $this->oTaconite->applyTo($this->getRenderer());
 	}
