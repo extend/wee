@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
 	Web:Extend
 	Copyright (c) 2006-2009 Dev:Extend
 
@@ -22,34 +22,32 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	LaTeX output driver.
+	Base interface for encoders
 */
 
-class weeLaTeXOutput extends weeOutput
+class weeLaTeXEncoder implements weeEncoder
 {
 	/**
 		Decode a given value.
 
-		@param	$mValue	The value to decode.
-		@return	string	The decoded value.
+		@param	$sValue	The value to decode.
+		@return	mixed	The decoded value.
 	*/
 
-	public function decode($mValue)
+	public function decode($sValue)
 	{
 		return str_replace(
 			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
 			array('\\', '#', '$', '%', '&', '~', '_', '^', '{', '}'),
-			$mValue
+			$sValue
 		);
 	}
 
 	/**
-		Encode data to be displayed.
+		Encode a given value.
 
-		According to the LaTeX tutorial, the following need escaping: # $ % & ~ _ ^ \ { }
-
-		@param	$mValue	Data to encode.
-		@return	string	Data encoded.
+		@param	$mValue	The value to encode.
+		@return	string	The encoded value.
 	*/
 
 	public function encode($mValue)
@@ -59,5 +57,16 @@ class weeLaTeXOutput extends weeOutput
 			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
 			$mValue
 		);
+	}
+
+	/**
+		Return the MIME type of the format which uses this encoding.
+
+		@return string The MIME type of the format which uses this encoding.
+	*/
+
+	public function getMIMEType()
+	{
+		return 'application/x-latex';
 	}
 }

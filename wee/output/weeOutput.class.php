@@ -70,50 +70,6 @@ abstract class weeOutput
 	}
 
 	/**
-		Decode a given value.
-
-		@param	$mValue	The value to decode.
-		@return	string	The decoded value.
-	*/
-
-	public abstract function decode($mValue);
-
-	/**
-		Encodes data to be displayed.
-
-		@param	$mValue	Data to encode.
-		@return	string	Data encoded.
-	*/
-
-	public abstract function encode($mValue);
-
-	/**
-		Encode an array of data to be displayed.
-
-		Mainly used by weeTemplate to encode the data it received.
-		You should not have to use this method.
-
-		@param	$a		Data array to encode.
-		@return	array	Data array encoded.
-	*/
-
-	public function encodeArray($a)
-	{
-		foreach ($a as $mName => $mValue) {
-			if ($mValue instanceof weeDataSource)
-				$a[$mName] = $mValue->encodeData();
-			elseif (is_object($mValue))
-				continue;
-			elseif (is_array($mValue))
-				$a[$mName] = $this->encodeArray($mValue);
-			else
-				$a[$mName] = $this->encode($mValue);
-		}
-
-		return $a;
-	}
-
-	/**
 		Return the currently selected instance.
 		Throw an exception if no instances are selected.
 

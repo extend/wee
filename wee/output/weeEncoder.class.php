@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
 	Web:Extend
 	Copyright (c) 2006-2009 Dev:Extend
 
@@ -22,42 +22,34 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	Text output driver.
+	Base interface for encoders
 */
 
-class weeTextOutput extends weeOutput
+interface weeEncoder
 {
 	/**
 		Decode a given value.
 
-		In this output driver, the method always return its argument.
-
-		@param	$mValue						The value to decode.
-		@return	string						The decoded value.
-		@throw	InvalidArgumentException	$mValue contain a NUL character.
+		@param	string	The value to decode.
+		@return	mixed	The decoded value.
 	*/
 
-	public function decode($mValue)
-	{
-		strpos($mValue, "\0") === false
-			or burn('InvalidArgumentException',
-				_WT('$mValue should not contain any NUL character.'));
-		return $mValue;
-	}
+	public function decode($sValue);
 
 	/**
-		Encode data to be displayed.
+		Encode a given value.
 
-		Text does not need to be encoded for text output.
-		However the value given will be stripped of all its
-		NUL characters, to prevent attacks based on it.
-
-		@param	$mValue						Data to encode.
-		@return	string						Data encoded.
+		@param	mixed	The value to encode.
+		@return	string	The encoded value.
 	*/
 
-	public function encode($mValue)
-	{
-		return str_replace("\0", '', $mValue);
-	}
+	public function encode($mValue);
+
+	/**
+		Return the MIME type of the format which uses this encoding.
+
+		@return string The MIME type of the format which uses this encoding.
+	*/
+
+	public function getMIMEType();
 }

@@ -96,8 +96,8 @@ class weeSQLiteResult extends weeDatabaseResult
 			return parent::fetchAll();
 
 		$a = $this->oResult->fetchAll(SQLITE_ASSOC);
-		if ($this->bMustEncodeData)
-			return weeOutput::instance()->encodeArray($a);
+		if ($this->getEncoder() !== null)
+			return $this->encodeArray($a);
 		return $a;
 	}
 }

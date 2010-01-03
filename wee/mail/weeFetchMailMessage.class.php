@@ -153,8 +153,8 @@ class weeFetchMailMessage extends weeDataSource implements ArrayAccess
 		isset($this->oHeader->$offset) or burn('InvalidArgumentException',
 			sprintf(_WT('The value for offset "%s" was not found in the data.'), $offset));
 
-		if ($this->bMustEncodeData)
-			return weeOutput::instance()->encode($this->oHeader->$offset);
+		if ($this->getEncoder() !== null)
+			return $this->getEncoder()->encode($this->oHeader->$offset);
 		return $this->oHeader->$offset;
 	}
 
