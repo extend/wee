@@ -27,15 +27,13 @@ if (version_compare(phpversion(), '5.2.0', '<')) die('PHP 5.2.x or greater is re
 !defined('MAGIC_STRING') or MAGIC_STRING != 'This is a magic string used to salt various hash throughout the framework.'
 	or die('The constant MAGIC_STRING defined in your script is using the default value. Please change its value before retrying.');
 
-// Enable/disable error reporting depending on DEBUG
+// Enable error reporting; errors are displayed depending on DEBUG.
+// Note that we always keep the environment strict even without DEBUG
+// because some features rely on error_reporting being non-null.
+// Technically, at least E_WARNING is required, but better be safe than sorry.
 
-if (defined('DEBUG')) {
-	error_reporting(E_ALL | E_STRICT);
-	ini_set('display_errors', 1);
-} else {
-	error_reporting(0);
-	ini_set('display_errors', 0);
-}
+error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', (int)defined('DEBUG'));
 
 // Define the framework's version
 // Its format is compatible with PHP's version_compare function
