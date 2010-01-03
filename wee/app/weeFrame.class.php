@@ -223,10 +223,10 @@ abstract class weeFrame implements weeRenderer
 			if (empty($this->aPipes))
 				return weeOutput::output($this->getRenderer());
 
-			foreach ($this->aPipes as $oPipe)
+			foreach (array_reverse($this->aPipes) as $oPipe)
 				$oPipe->init();
 			$this->getRenderer()->render();
-			foreach (array_reverse($this->aPipes) as $oPipe)
+			foreach ($this->aPipes as $oPipe)
 				$oPipe->process();
 			return;
 		}
