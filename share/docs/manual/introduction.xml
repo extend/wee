@@ -95,18 +95,21 @@
 			<sect3>
 				<title>No bloat</title>
 				<para>
-					Bloat is not exactly the opposite of simplicity, but it's certainly
-					one of the causes leading to complexity in a lot of softwares.
-					We think bloat is bad. Bloat can happen for various reasons:
-						following trends to look cool,
-						focusing on adding features for only a small subset of users,
-						generating code automatically,
-						adding features already available by other means,
-						etc.
-					That's something we can promise to never do.
-					You might think generating code is a good thing,
-					well maybe it is, but we think we have a better solution.
-					And for everything else, there will be plugins.
+					Bloat is not the exact opposite of simplicity, but it is a significant
+					cause of complexity in a lot of software. This is most commonly a disadvantage.
+					Bloat can arise due to a number of reasons, some of which are:
+					<itemizedlist>
+						<listitem><para>Following current popular coding trends</para></listitem>
+						<listitem><para>Focusing on additional features that would be used 
+						by a small subset of users</para></listitem>
+						<listitem><para>Automatic generation of code through additional 
+						packages</para></listitem>
+						<listitem><para>Duplication of exiting features</para></listitem>
+					</itemizedlist>
+					This situation with not occur with this framework. In some circumstances
+					automatic code code can provide some advantages, but the benefits
+					found within this framework will in many cases outweigh these. Any
+					further functionality can be provided through plugins. 
 				</para>
 			</sect3>
 		</sect2>
@@ -114,15 +117,16 @@
 		<sect2>
 			<title>Developers, developers, developers</title>
 			<para>
-				We think the developers (the users of our product) are the most important people in the world.
-				Therefore we always listen carefully to their inputs and provide help whenever possible.
-				You can find help by contacting us directly, through a mailing list, IRC,
-				but also by opening tickets asking for more documentation or tutorials.
+				The developers who make use of this product are considered to be the most important 
+				people in the world by its creators. Therefore any feedback and queries from developers 
+				is considered and responded to whenever possible. 
+				Comments and help requests can be sent directly via email, through a mailing list, IRC 
+				and also by opening tickets requesting further documentation or tutorials.
 			</para>
 			<para>
-				We also need your help.
-				Please forward us comments or suggestions so we can improve the product.
-				We are listening.
+				Additionaly, any further help with this product is appreciated. Comments and 
+				suggestions for improvements to the product are always welcome and will be 
+				taken into consideration.
 			</para>
 		</sect2>
 	</sect1>
