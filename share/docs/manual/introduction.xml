@@ -6,7 +6,7 @@
 	<title>Introduction</title>
 	<para>
 		Web:Extend is an open source PHP5 framework focused on ease of use and efficiency. It is licensed under the LGPL.
-		The main contributor of the project is the company <ulink url="http://dev-extend.eu">Dev:Extend</ulink>.
+		The main contributor to the project is the company <ulink url="http://dev-extend.eu">Dev:Extend</ulink>.
 	</para>
 
 	<sect1 id="introduction_philosophy">
@@ -135,29 +135,30 @@
 		<title>Goals</title>
 		<para>
 			Web:Extend was officially created in 2006.
-			Work began in 2005 on various modules that would lead to the creation of the framework.
+			Work began in 2005 on various modules that would lead to the creation of this framework.
 			The goal at the time was to make a form generator to simplify form handling and validation.
-			This form generator was rewritten 3 times up to this day,
+			This form generator has since been rewritten three times,
 			leading to the current implementation that uses XSL stylesheets to transform an XML into HTML,
 			along with <ulink url="http://php.net/simplexml">SimpleXML</ulink> for manipulation and validation.
 		</para>
 		<para>
-			Web:Extend was created because no framework used all the power of PHP5 at the time.
-			We believe it's still true today. Most of the power of PHP5 comes from the
+			Web:Extend was created because no framework used the full power of PHP5 at the time, and
+			in many respects this remains true today. Most of the power of PHP5 comes from the
 			<ulink url="http://php.net/spl">SPL</ulink> and from the SimpleXML extensions.
-			Interfaces like <ulink url="http://php.net/iterator">Iterator</ulink> or
-			<ulink url="http://php.net/arrayaccess">ArrayAccess</ulink> simplify everything.
-			That's why we use them everywhere it makes sense to.
+			Interfaces such as <ulink url="http://php.net/iterator">Iterator</ulink> and
+			<ulink url="http://php.net/arrayaccess">ArrayAccess</ulink> are incorporated to simplify 
+			the process. They are frequently used throughout this product as this is considered 
+			to be the most sensible option.
 		</para>
 		<para>
 			The current goals are:
 			<itemizedlist>
 				<listitem><para>To provide a simple, consistent but also powerful API for common operations</para></listitem>
-				<listitem><para>To reduce the development times using the framework</para></listitem>
+				<listitem><para>To reduce development time using the framework</para></listitem>
 				<listitem><para>To build a high-performance application framework</para></listitem>
 				<listitem><para>To allow extensibility through a simple-to-use plugin system</para></listitem>
 				<listitem><para>To enhance security through the inclusion of automated prevention mechanisms</para></listitem>
-				<listitem><para>To write great resources around it including documentation and tutorials</para></listitem>
+				<listitem><para>To make available extensive resources to accompany the framework, including documentation and tutorials</para></listitem>
 			</itemizedlist>
 		</para>
 	</sect1>
