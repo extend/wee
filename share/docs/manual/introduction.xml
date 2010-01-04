@@ -81,13 +81,15 @@
 			<sect3>
 				<title>Loose coupling</title>
 				<para>
-					Each module of the framework is loosely coupled.
-					This means you can choose to use any module you want.
-					If you don't want to use the MVC architecture, you don't have to.
-					You can directly access the database instead of using models,
-					or you can write a script using only the database and mail modules to send emails to all your users.
-					You are free to use the code the way you want to, without any restriction.
-					And if you find out you can't do that for some reason, you should consider reporting it as a bug.
+					Each module of the framework is loosely coupled, which means a given module can 
+					be used without requiring any other. 
+					For example, if the MVC architecture is not desired it can be ignored. 
+					The database can be accessed directly rather than via models, 
+					or scripts can be created using only the database and mail modules 
+					to send data via email to all system users. 
+					The code can be use freely as required, without any restrictions. 
+					And if it emerges that this is not possible for some reason, this can be reported 
+					as a bug.
 				</para>
 			</sect3>
 			<sect3>
