@@ -28,7 +28,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	operation does nothing.
 */
 
-class weeTextEncoder implements weeEncoder
+class weeTextEncoder extends weeEncoder
 {
 	/**
 		Decode a given value.

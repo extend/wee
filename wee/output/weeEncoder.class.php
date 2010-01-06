@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base interface for encoders
 */
 
-interface weeEncoder
+abstract class weeEncoder
 {
 	/**
 		Decode a given value.
@@ -34,7 +34,7 @@ interface weeEncoder
 		@return	mixed	The decoded value.
 	*/
 
-	public function decode($sValue);
+	public abstract function decode($sValue);
 
 	/**
 		Encode a given value.
@@ -43,7 +43,24 @@ interface weeEncoder
 		@return	string	The encoded value.
 	*/
 
-	public function encode($mValue);
+	public abstract function encode($mValue);
+
+	/**
+		Recursively encode a given array.
+
+		@param	array The array to encode.
+		@return array The encoded array.
+	*/
+
+	public function encodeArray($aValue)
+	{
+		foreach ($aValue as &$mValue)
+			if (!is_array($mValue))
+				$mValue = $this->encode($mValue);
+			else
+				$mValue = $this->encodeArray($mValue);
+		return $aValue;
+	}
 
 	/**
 		Return the MIME type of the format which uses this encoding.
@@ -51,5 +68,5 @@ interface weeEncoder
 		@return string The MIME type of the format which uses this encoding.
 	*/
 
-	public function getMIMEType();
+	public abstract function getMIMEType();
 }

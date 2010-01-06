@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	@todo Handle different encodings.
 */
 
-class weeXMLEncoder implements weeEncoder
+class weeXMLEncoder extends weeEncoder
 {
 	/**
 		Decode a given value.

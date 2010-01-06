@@ -25,7 +25,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base interface for encoders
 */
 
-class weeLaTeXEncoder implements weeEncoder
+class weeLaTeXEncoder extends weeEncoder
 {
 	/**
 		Decode a given value.
