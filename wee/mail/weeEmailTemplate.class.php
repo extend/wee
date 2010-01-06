@@ -88,20 +88,4 @@ class weeEmailTemplate extends weeTemplate
 		foreach ($aHeaders as $sName => $sValue)
 			$this->header($sName, $sValue);
 	}
-
-	/**
-		Return the template as a string after extracting the headers
-		from the template and making them accessible through getHeaders.
-
-		@return string The template.
-	*/
-
-	public function toString()
-	{
-		$oOutput = weeOutput::select(new weeTextOutput);
-		$sEmail = parent::toString();
-		weeOutput::select($oOutput);
-
-		return $sEmail;
-	}
 }

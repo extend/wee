@@ -49,7 +49,7 @@ abstract class weeEncoder
 		Recursively encode a given array.
 
 		@param	array The array to encode.
-		@return array The encoded array.
+		@return	array The encoded array.
 	*/
 
 	public function encodeArray($aValue)
