@@ -47,6 +47,11 @@ class weePDODatabase extends weeDatabase
 		 * user:		The user for the database.
 		 * password:	The password of the user.
 
+		If you have pdo_mysql installed but it doesn't want to connect,
+		consider adding the path to the mysql.sock file in your `dsn`.
+		For example on Ubuntu you would add ";unix_socket=/var/run/mysqld/mysqld.sock".
+		This forces the driver to use that socket to connect to the server.
+
 		@param	$aParams					The parameters of the driver.
 		@throw	ConfigurationException		The PDO PHP extension is missing.
 		@throw	InvalidArgumentException	Parameter "dsn" is missing.
@@ -77,6 +82,11 @@ class weePDODatabase extends weeDatabase
 			$this->sDBMS = 'mssql';
 		else
 			$this->sDBMS = $sDriver;
+
+		// By default SQLite 2 returns full column names when there's joins
+		// For better interoperability with other DBMS we prefer short names
+		if ($sDriver == 'sqlite2')
+			$this->doQuery('PRAGMA short_column_names = ON');
 	}
 
 	/**
@@ -88,9 +98,11 @@ class weePDODatabase extends weeDatabase
 
 	protected function doEscape($mValue)
 	{
-		// see http://wee.extend.ws/ticket/73
+		// Convert bool to int for PostgreSQL, as the PHP driver returns
+		// the character F for false and T for true, which is impractical
 		if ($this->sDBMS == 'pgsql' && is_bool($mValue))
 			$mValue = (int)$mValue;
+
 		return $this->oDb->quote($mValue);
 	}
 

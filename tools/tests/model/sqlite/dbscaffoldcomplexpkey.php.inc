@@ -1,7 +1,5 @@
 <?php
 
-require(ROOT_PATH . 'tools/tests/db/mysql/connect.php.inc');
-
 if (!class_exists('myDbScaffoldModelComplexPKey')) {
 	class myDbScaffoldModelComplexPKey extends weeDbModelScaffold
 	{
@@ -27,8 +25,10 @@ if (!class_exists('myDbScaffoldModelComplexPKey')) {
 	}
 }
 
+$oDb->query('BEGIN');
+
 try {
-	$oDb->query('CREATE TABLE IF NOT EXISTS dbscaffoldcomplexkey (pkey integer, pkeyvarchar varchar(50), other integer, PRIMARY KEY (pkey, pkeyvarchar))');
+	$oDb->query('CREATE TABLE dbscaffoldcomplexkey (pkey integer, pkeyvarchar varchar(50), other integer, PRIMARY KEY (pkey, pkeyvarchar))');
 
 	$oSet = new myDbScaffoldSetComplexPKey;
 	$oSet->setDb($oDb);
@@ -36,18 +36,18 @@ try {
 	// weeDbSetScaffold::count, weeDbSetScaffold::delete, weeDbSetScaffold::insert
 
 	for ($i = 1; $i <= 42; $i++)
-		$oSet->insert(array('pkey' => $i, 'pkeyvarchar' => str_repeat('x', $i)));
+		$oSet->insert(array('pkey' => $i, 'pkeyvarchar' => str_pad('x', $i)));
 
 	$this->isEqual(42, $oSet->count(),
 		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
 
 	// This one do not delete anything
-	$oSet->delete(array('pkey' => 33, 'pkeyvarchar' => str_repeat('x', 27)));
+	$oSet->delete(array('pkey' => 33, 'pkeyvarchar' => str_pad('x', 27)));
 
 	$this->isEqual(42, $oSet->count(),
 		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
 
-	$oSet->delete(array('pkey' => 18, 'pkeyvarchar' => str_repeat('x', 18)));
+	$oSet->delete(array('pkey' => 18, 'pkeyvarchar' => str_pad('x', 18)));
 
 	$this->isEqual(41, $oSet->count(),
 		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
@@ -72,17 +72,17 @@ try {
 
 	// weeDbSetScaffold::fetch
 
-	$oModel = $oSet->fetch(array('pkey' => 42, 'pkeyvarchar' => str_repeat('x', 42)));
+	$oModel = $oSet->fetch(array('pkey' => 42, 'pkeyvarchar' => str_pad('x', 42)));
 	$this->isEqual(42, $oModel['pkey'], _WT('weeDbSetScaffold::fetch returned the wrong answer to the forgotten question.'));
 
 	try {
-		$oSet->fetch(array('pkey' => 18, 'pkeyvarchar' => str_repeat('x', 18)));
+		$oSet->fetch(array('pkey' => 18, 'pkeyvarchar' => str_pad('x', 18)));
 		$this->fail(_WT('weeDbSetScaffold::fetch should have failed when trying to fetch a deleted row.'));
 	} catch (DatabaseException $e) {
 	}
 
 	try {
-		$oSet->fetch(array('pkey' => 18, 'pkeyvarchar' => str_repeat('x', 42)));
+		$oSet->fetch(array('pkey' => 18, 'pkeyvarchar' => str_pad('x', 42)));
 		$this->fail(_WT('weeDbSetScaffold::fetch should have failed when trying to fetch a non-existent row.'));
 	} catch (DatabaseException $e) {
 	}
@@ -127,16 +127,16 @@ try {
 	$this->isEqual('', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'ASC'));
-	$this->isEqual('`pkey` ASC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('[pkey] ASC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'DESC'));
-	$this->isEqual('`pkey` DESC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('[pkey] DESC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'DESC', 'other'));
-	$this->isEqual('`pkey` DESC, `other`', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('[pkey] DESC, [other]', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	$oSet->orderBy(array('pkey' => 'DESC', 'other' => 'DESC'));
-	$this->isEqual('`pkey` DESC, `other` DESC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
+	$this->isEqual('[pkey] DESC, [other] DESC', $oSet->buildOrderBy(), _WT('The weeDbSetScaffold::orderBy method built a bad ORDER BY expression.'));
 
 	try {
 		$oSet->orderBy(array('pkey' => 'BAD'));
@@ -168,23 +168,23 @@ try {
 
 	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => 'IS NOT NULL'));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE `pkey` IS NOT NULL', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE [pkey] IS NOT NULL', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('!=', 17)));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE `pkey` != \'17\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE [pkey] != \'17\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('IN', 1, 3, 5, 7, 9)));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE `pkey` IN (\'1\',\'3\',\'5\',\'7\',\'9\')', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE [pkey] IN (\'1\',\'3\',\'5\',\'7\',\'9\')', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSetComplexPKey(array('other' => array('LIKE', '%test%')));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE `other` LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE [other] LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	$oSubset = new myDbScaffoldSetComplexPKey(array('pkey' => array('NOT IN', 1, 3, 5, 7, 9), 'other' => array('LIKE', '%test%')));
 	$oSubset->setDb($oDb);
-	$this->isEqual(' WHERE `pkey` NOT IN (\'1\',\'3\',\'5\',\'7\',\'9\') AND `other` LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
+	$this->isEqual(' WHERE [pkey] NOT IN (\'1\',\'3\',\'5\',\'7\',\'9\') AND [other] LIKE \'%test%\'', $oSubset->buildWhere(), _WT('The weeDbSetScaffold::buildWhere method returned an incorrect WHERE clause.'));
 
 	// subset operations
 
@@ -195,19 +195,19 @@ try {
 
 	// weeDbModelScaffold::update
 
-	$oModel = $oSet->fetch(array('pkey' => 10, 'pkeyvarchar' => str_repeat('x', 10)));
+	$oModel = $oSet->fetch(array('pkey' => 10, 'pkeyvarchar' => str_pad('x', 10)));
 	$oModel['other'] = 462;
 	$oModel['not_a_column'] = 'And testing it ignoring values not part of the table.';
 	$oModel->setDb($oDb)->update();
 
-	$oModel = $oSet->fetch(array('pkey' => 10, 'pkeyvarchar' => str_repeat('x', 10)));
+	$oModel = $oSet->fetch(array('pkey' => 10, 'pkeyvarchar' => str_pad('x', 10)));
 	$this->isEqual(462, $oModel['other'], _WT('The weeDbModelScaffold::update method did not save the data correctly.'));
 
 	try {
-		$oModel['other'] = 'This is not failing in MySQL because it automatically cast to integer.';
+		$oModel['other'] = 'This is not failing in SQLite because it automatically cast to integer.';
 		$oModel->setDb($oDb)->update();
 	} catch (DatabaseException $e) {
-		$this->fail(_WT('The weeDbModelScaffold::update method should not throw a DatabaseException in MySQL when data type is incorrect.'));
+		$this->fail(_WT('The weeDbModelScaffold::update method should not throw a DatabaseException in SQLite when data type is incorrect.'));
 	}
 
 	$oModel = new myDbScaffoldModelComplexPKey(array());
@@ -219,7 +219,6 @@ try {
 
 } catch (Exception $oException) {}
 
-$oDb->query('DROP TABLE IF EXISTS dbscaffoldcomplexkey');
-
+$oDb->query('ROLLBACK');
 if (isset($oException))
 	throw $oException;

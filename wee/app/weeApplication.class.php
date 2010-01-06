@@ -32,8 +32,8 @@ if (!defined('WEE_CONF_FILE'))
 	Main class of a wee application.
 
 	This class basically translate events and redirect them.
-	It also loads a configuration file and acts as a central point
-	for various application components, like database and session.
+	It also can act as a central point for various application
+	components, like database and session.
 */
 
 class weeApplication
@@ -57,47 +57,21 @@ class weeApplication
 	protected $oFrame;
 
 	/**
-		Instance of the current singleton.
-		There can only be one.
+		Current shared instance.
 	*/
 
-	protected static $oSingleton;
+	protected static $oSharedInstance;
 
 	/**
-		Load the configuration file WEE_CONF_FILE and initialize
-		automatically the various components of the application.
+		Initialize automatically the various components of the application
+		according to the configuration data.
+
+		@param $aConfig The configuration data for this application.
 	*/
 
-	protected function __construct()
+	public function __construct($aConfig)
 	{
-		// Loads from cache if possible, otherwise tries to load the configuration file
-		// and then, if cache is enabled, cache the configuration array
-
-		if (!defined('DEBUG') && !defined('NO_CACHE') && defined('WEE_CONF_CACHE') && is_readable(WEE_CONF_CACHE))
-			$this->aConfig = require(WEE_CONF_CACHE);
-		else try {
-			$oConfigFile = new weeConfigFile(WEE_CONF_FILE);
-			$this->aConfig = $oConfigFile->toArray();
-
-			if (!defined('DEBUG') && defined('WEE_CONF_CACHE')) {
-				file_put_contents(WEE_CONF_CACHE, '<?php return ' . var_export($this->aConfig, true) . ';');
-				chmod(WEE_CONF_CACHE, 0600);
-			}
-		} catch (FileNotFoundException $e) {
-			// No configuration file. Stop here and display a friendly message.
-
-			if (defined('WEE_CLI'))
-				echo _WT('The configuration file was not found.'), "\n",
-					_WT('Please consult the documentation for more information.'), "\n";
-			else {
-				if (defined('DEBUG'))
-					FirePHP::getInstance(true)->fb($e);
-
-				header('HTTP/1.0 500 Internal Server Error');
-				require(ROOT_PATH . 'res/wee/noconfig.htm');
-			}
-			exit;
-		}
+		$this->aConfig = $aConfig;
 
 		// Add path to autoload
 		// - All path are separated by : like in PATH environment variable
@@ -114,20 +88,17 @@ class weeApplication
 		if (!empty($this->aConfig['app.timezone']))
 			date_default_timezone_set($this->aConfig['app.timezone']);
 
+		// Define the default error page from the configuration
+
+		if (!empty($this->aConfig['app.error.default']))
+			weeException::setErrorPage($this->aConfig['app.error.default']);
+
 		// Force selected drivers to start
 
 		$aStart = $this->cnfArray('start');
 		foreach ($aStart as $sName => $b)
 			if (!empty($b))
 				$this->__get($sName);
-	}
-
-	/**
-		Because there can only be one application object, we disable cloning.
-	*/
-
-	final private function __clone()
-	{
 	}
 
 	/**
@@ -226,81 +197,6 @@ class weeApplication
 	}
 
 	/**
-		Returns the path information with some path translation.
-		The path information is the text after the file and before the query string in an URI.
-		Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
-
-		@return	string The path information
-	*/
-
-	public static function getPathInfo()
-	{
-		$sPathInfo = null;
-
-		if (isset($_SERVER['PATH_INFO']))
-			$sPathInfo = $_SERVER['PATH_INFO'];
-		elseif (isset($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] != $_SERVER['PHP_SELF'])
-			$sPathInfo = $_SERVER['ORIG_PATH_INFO'];
-		elseif (isset($_SERVER['REDIRECT_URL']))
-			$sPathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
-
-		if ($sPathInfo !== null) {
-			// We found the path info from either PATH_INFO or PHP_SELF server variables.
-
-			if (empty($_SERVER['QUERY_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
-				// If the query string is empty, but that an interrogation mark has been
-				// explicitely included in the request URI, we keep it.
-				$sPathInfo .= '?';
-
-			return $sPathInfo;
-		}
-
-		// The path info begins after the script name part of the request URI.
-		
-		$iScriptLength	= strlen($_SERVER['SCRIPT_NAME']);
-		$sName			= basename($_SERVER['SCRIPT_NAME']);
-		$iNameLength	= strlen($sName);
-		$sPathInfo		= substr($_SERVER['REQUEST_URI'], $iScriptLength - $iNameLength);
-
-		if (substr($sPathInfo, 0, $iNameLength) == $sName)
-			$sPathInfo	= substr($sPathInfo, $iNameLength);
-
-		if (!empty($_SERVER['QUERY_STRING'])) {
-			// We need to remove the query string from the path info.
-			$i = strlen($_SERVER['QUERY_STRING']);
-			if (substr($sPathInfo, -$i) == $_SERVER['QUERY_STRING'])
-				$sPathInfo = substr($sPathInfo, 0, -$i - 1);
-		}
-
-		return urldecode($sPathInfo);
-	}
-
-	/**
-		Returns an instance of the weeApplication singleton.
-
-		At the time of the first call of this method, a shortcut function to this method called weeApp is created.
-
-		@return weeApplication The weeApplication object for this process
-	*/
-
-	public static function instance()
-	{
-		if (self::$oSingleton === null) {
-			static $iInstance = 0;
-			$iInstance++ == 0 or
-				burn('IllegalStateException',
-					_WT('Trying to instanciate weeApplication within its own constructor. ' .
-						'This error can happen if you inherited a class created in the constructor ' .
-						'and put logic that uses weeApplication in it (models, for example).'));
-
-			function weeApp() { return weeApplication::instance(); }
-			self::$oSingleton = new self;
-		}
-
-		return self::$oSingleton;
-	}
-
-	/**
 		Load and initialize the specified frame.
 
 		@param	$sFrame						Frame's class name
@@ -326,21 +222,51 @@ class weeApplication
 
 	public function main()
 	{
-		$aEvent = $this->translateEvent();
+		$this->dispatchEvent($this->translateEvent());
 
-		$this->dispatchEvent($aEvent);
+		if ($this->oFrame->getStatus() != weeFrame::UNAUTHORIZED_ACCESS)
+			return $this->oFrame->render();
 
-		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
-			if (defined('WEE_CLI'))
-				echo _WT('You are not allowed to access the specified frame/event.'), "\n";
-			else {
-				header('HTTP/1.0 403 Forbidden');
-				require(ROOT_PATH . 'res/wee/unauthorized.htm');
-			}
-			exit;
+		// Otherwise an UnauthorizedAccessException was thrown; show an error and exit.
+
+		if (defined('WEE_CLI'))
+			echo _WT('You are not allowed to access the specified frame/event.'), "\n";
+		else {
+			header('HTTP/1.0 403 Forbidden');
+
+			$sPath = $this->cnf('app.error.unauthorized');
+			empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
+
+			require($sPath);
 		}
 
 		weeOutput::output($this->oFrame);
+		exit;
+	}
+
+	/**
+		Set the shared instance for this object.
+		@param $oInstance The shared instance.
+	*/
+
+	public static function setSharedInstance(weeApplication $oInstance)
+	{
+		self::$oSharedInstance = $oInstance;
+	}
+
+	/**
+		Return the current shared instance for this object.
+		@return weeApplication The weeApplication object for this process
+	*/
+
+	public static function sharedInstance()
+	{
+		self::$oSharedInstance === null && burn('IllegalStateException',
+			_WT('No shared instance for weeApplication currently exists. ' .
+				'This error can happen if you inherited a class created in the constructor ' .
+				'and put logic that uses weeApplication in it (models, for example).'));
+
+		return self::$oSharedInstance;
 	}
 
 	/**
@@ -371,7 +297,7 @@ class weeApplication
 			$aEvent['method']	= strtolower($_SERVER['REQUEST_METHOD']);
 		}
 
-		$sPathInfo = substr(self::getPathInfo(), 1);
+		$sPathInfo = substr(safe_path_info(), 1);
 
 		// Apply the locale found in the pathinfo if the locale module is started
 		if (!empty($sPathInfo) && !empty($this->aDrivers['locale']))

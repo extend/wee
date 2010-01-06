@@ -2,18 +2,7 @@
 
 function_exists('ldap_connect') or $this->skip();
 
-try {
-	require(ROOT_PATH . 'tools/tests/ldap/init.php.inc');
-
-	$o = new weeLDAP(array(
-		'host'		=> '127.0.0.1',
-		'port'		=> 389,
-		'rdn'		=> 'cn=admin,dc=example,dc=com',
-		'password'	=> 'wee',
-	));
-} catch (LDAPException $e) {
-	$this->fail('Should not throw an LDAPException.');
-}
+require(ROOT_PATH . 'tools/tests/ldap/init.php.inc');
 
 try {
 	$oAuth = new weeAuthLDAP(array(

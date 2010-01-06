@@ -104,9 +104,9 @@ try {
 	// weeDbSetScaffold::buildJoin
 
 	$this->isEqual(
-		' LEFT OUTER JOIN ' . $aProfileMeta['table'] . ' ON (TRUE AND ' . $aMeta['table'] . '."profile_id"=' . $aProfileMeta['table'] . '."profile_id")' . 
-		' LEFT OUTER JOIN ' . $aRankMeta['table'] . ' ON (TRUE AND ' . $aMeta['table'] . '."rank_id"=' . $aRankMeta['table'] . '."rank_id" AND ' . $aMeta['table'] . '."rank_type"=' . $aRankMeta['table'] . '."rank_type")' . 
-		' LEFT OUTER JOIN ' . $aCountryMeta['table'] . ' ON (TRUE AND ' . $aMeta['table'] . '."country"=' . $aCountryMeta['table'] . '."country_id" AND ' . $aMeta['table'] . '."year"=' . $aCountryMeta['table'] . '."country_year")',
+		' LEFT OUTER JOIN ' . $aProfileMeta['table'] . ' ON (' . $aMeta['table'] . '."profile_id"=' . $aProfileMeta['table'] . '."profile_id")' . 
+		' LEFT OUTER JOIN ' . $aRankMeta['table'] . ' ON (' . $aMeta['table'] . '."rank_id"=' . $aRankMeta['table'] . '."rank_id" AND ' . $aMeta['table'] . '."rank_type"=' . $aRankMeta['table'] . '."rank_type")' . 
+		' LEFT OUTER JOIN ' . $aCountryMeta['table'] . ' ON (' . $aMeta['table'] . '."country"=' . $aCountryMeta['table'] . '."country_id" AND ' . $aMeta['table'] . '."year"=' . $aCountryMeta['table'] . '."country_year")',
 		$oSet->buildJoin($oSet->getMeta()),
 		_WT('weeDbSetScaffold::buildJoin failed to build the correct statement.')
 	);
@@ -122,7 +122,7 @@ try {
 	// weeDbSetScaffold::fetch
 
 	$oResult = $oSet->fetch(1);
-	$this->isEqual($oResult->toArray(), array(
+	$this->isEqual(array(
 		'pkey'			=> 1,
 		'profile_id'	=> 1,
 		'rank_id'		=> 2,
@@ -134,10 +134,10 @@ try {
 		'country_id'	=> 3,
 		'country_year'	=> 2008,
 		'country_label'	=> 'Moon',
-	), _WT('weeDbSetScaffold::fetch returned bad data when also fetching reference tables.'));
+	), $oResult->toArray(), _WT('weeDbSetScaffold::fetch returned bad data when also fetching reference tables.'));
 
 	$oResult = $oSet->fetch(6);
-	$this->isEqual($oResult->toArray(), array(
+	$this->isEqual(array(
 		'pkey'			=> 6,
 		'profile_id'	=> null,
 		'rank_id'		=> null,
@@ -149,7 +149,7 @@ try {
 		'country_id'	=> null,
 		'country_year'	=> null,
 		'country_label'	=> null,
-	), _WT('weeDbSetScaffold::fetch returned bad data when the keys to reference tables are NULL.'));
+	), $oResult->toArray(), _WT('weeDbSetScaffold::fetch returned bad data when the keys to reference tables are NULL.'));
 
 	// weeDbSetScaffold's subsets
 

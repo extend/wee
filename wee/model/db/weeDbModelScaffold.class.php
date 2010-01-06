@@ -24,6 +24,8 @@ if (!defined('ALLOW_INCLUSION')) die;
 /**
 	Scaffolding for database elements.
 
+	This class currently supports PostgreSQL, MySQL and SQLite.
+
 	To use it, simply extend it and define the $sSet property to the name of the weeDbSetScaffold class.
 */
 
@@ -72,9 +74,13 @@ abstract class weeDbModelScaffold extends weeDbModel
 			if (in_array($sName, $this->aMeta['columns']) && !in_array($sName, $this->aMeta['primary']))
 				$sQuery .= $oDb->escapeIdent($sName) . '=' . $oDb->escape($this->aData[$sName]) . ', ';
 
-		$sQuery = substr($sQuery, 0, -2) . ' WHERE TRUE';
-		foreach ($this->aMeta['primary'] as $sName)
-			$sQuery .= ' AND ' . $oDb->escapeIdent($sName) . '=' . $oDb->escape($this->aData[$sName]);
+		$sQuery = substr($sQuery, 0, -2) . ' WHERE';
+		$sAnd = '';
+
+		foreach ($this->aMeta['primary'] as $sName) {
+			$sQuery .= $sAnd . $oDb->escapeIdent($sName) . '=' . $oDb->escape($this->aData[$sName]);
+			$sAnd = ' AND ';
+		}
 
 		$this->query($sQuery);
 	}

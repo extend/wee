@@ -27,15 +27,13 @@ if (version_compare(phpversion(), '5.2.0', '<')) die('PHP 5.2.x or greater is re
 !defined('MAGIC_STRING') or MAGIC_STRING != 'This is a magic string used to salt various hash throughout the framework.'
 	or die('The constant MAGIC_STRING defined in your script is using the default value. Please change its value before retrying.');
 
-// Enable/disable error reporting depending on DEBUG
+// Enable error reporting; errors are displayed depending on DEBUG.
+// Note that we always keep the environment strict even without DEBUG
+// because some features rely on error_reporting being non-null.
+// Technically, at least E_WARNING is required, but better be safe than sorry.
 
-if (defined('DEBUG')) {
-	error_reporting(E_ALL | E_STRICT);
-	ini_set('display_errors', 1);
-} else {
-	error_reporting(0);
-	ini_set('display_errors', 0);
-}
+error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', (int)defined('DEBUG'));
 
 // Define the framework's version
 // Its format is compatible with PHP's version_compare function
@@ -320,6 +318,56 @@ function array_value($aArray, $sKey, $mIfNotSet = null)
 	if (isset($aArray[$sKey]))
 		return $aArray[$sKey];
 	return $mIfNotSet;
+}
+
+/**
+	Returns the path information with some path translation.
+	The path information is the text after the file and before the query string in an URI.
+	Example: http://example.com/my.php/This_is_the_path_info/Another_level/One_more?query_string
+
+	@return string The path information.
+*/
+
+function safe_path_info()
+{
+	$sPathInfo = null;
+
+	if (isset($_SERVER['PATH_INFO']))
+		$sPathInfo = $_SERVER['PATH_INFO'];
+	elseif (isset($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] != $_SERVER['PHP_SELF'])
+		$sPathInfo = $_SERVER['ORIG_PATH_INFO'];
+	elseif (isset($_SERVER['REDIRECT_URL']))
+		$sPathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
+
+	if ($sPathInfo !== null) {
+		// We found the path info from either PATH_INFO or PHP_SELF server variables.
+
+		if (empty($_SERVER['QUERY_STRING']) && substr($_SERVER['REQUEST_URI'], -1) == '?')
+			// If the query string is empty, but that an interrogation mark has been
+			// explicitely included in the request URI, we keep it.
+			$sPathInfo .= '?';
+
+		return $sPathInfo;
+	}
+
+	// The path info begins after the script name part of the request URI.
+
+	$iScriptLength	= strlen($_SERVER['SCRIPT_NAME']);
+	$sName			= basename($_SERVER['SCRIPT_NAME']);
+	$iNameLength	= strlen($sName);
+	$sPathInfo		= substr($_SERVER['REQUEST_URI'], $iScriptLength - $iNameLength);
+
+	if (substr($sPathInfo, 0, $iNameLength) == $sName)
+		$sPathInfo	= substr($sPathInfo, $iNameLength);
+
+	if (!empty($_SERVER['QUERY_STRING'])) {
+		// We need to remove the query string from the path info.
+		$i = strlen($_SERVER['QUERY_STRING']);
+		if (substr($sPathInfo, -$i) == $_SERVER['QUERY_STRING'])
+			$sPathInfo = substr($sPathInfo, 0, -$i - 1);
+	}
+
+	return urldecode($sPathInfo);
 }
 
 /**

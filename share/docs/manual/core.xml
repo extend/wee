@@ -71,6 +71,8 @@
 				<listitem><para><literal>array_value</literal>: shortcut for <literal>if (isset($a['key'])) return $a['key']; else return 'default';</literal></para></listitem>
 				<listitem><para><literal>burn</literal>: safely throw an exception (<link linkend="core_exceptions">see the exceptions documentation</link>)</para></listitem>
 				<listitem><para><literal>rmdir_recursive</literal>: recursively remove a directory</para></listitem>
+				<listitem><para><literal>safe_header</literal>: same as <literal>header</literal>, but also prevent attacks like HTTP splitting and header injections</para></listitem>
+				<listitem><para><literal>safe_path_info</literal>: returns a correct PATHINFO based on many parameters</para></listitem>
 				<listitem><para><literal>xmlspecialchars</literal>: convert special characters to XML entities</para></listitem>
 				<listitem><para><literal>weeLog</literal>: <link linkend="core_log">see the log function documentation</link></para></listitem>
 			</itemizedlist>

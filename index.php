@@ -33,11 +33,51 @@ define('WEE_AUTOLOAD_CACHE', getcwd() . '/app/tmp/autoload.php');
 
 // define('MAGIC_STRING', 'This is a magic string used to salt various hash throughout the framework.');
 
+/*
+	CONFIGURATION ENDS HERE. BOOTSTRAP CODE FOLLOWS.
+
+	You shouldn't need to edit past this point unless you have very specific needs.
+*/
+
 // Load Web:Extend
 
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 
-// Start the application
+// Load the configuration and create the default application object.
 
-weeApplication::instance()->main();
+try {
+	$aConfig = weeConfigFile::cachedLoad(WEE_CONF_FILE, WEE_CONF_CACHE);
+} catch (FileNotFoundException $e) {
+	// The configuration file doesn't exist. Stop here and display a friendly message.
+
+	if (defined('WEE_CLI'))
+		echo _WT('The configuration file was not found.'), "\n",
+			_WT('Please consult the documentation for more information.'), "\n";
+	else {
+		if (defined('DEBUG'))
+			FirePHP::getInstance(true)->fb($e);
+
+		header('HTTP/1.0 500 Internal Server Error');
+		require(ROOT_PATH . 'res/wee/noconfig.htm');
+	}
+
+	exit;
+}
+
+weeApplication::setSharedInstance(new weeApplication($aConfig));
+unset($aConfig); // Clean-up.
+
+/**
+	The shorthand function to get the shared application instance.
+	@return The shared weeApplication instance.
+	@see weeApplication::sharedInstance
+*/
+
+function weeApp() {
+	return weeApplication::sharedInstance();
+}
+
+// Everything is ready, start the application.
+
+weeApplication::sharedInstance()->main();

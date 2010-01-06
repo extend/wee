@@ -78,6 +78,10 @@ class weeSQLiteDatabase extends weeDatabase
 		$oDb !== null or burn('DatabaseException',
 			_WT('Failed to connect to the database with the following error:') . "\n" . $sLastError);
 
+		// By default SQLite 2 returns full column names when there's joins
+		// For better interoperability with other DBMS we prefer short names
+		$oDb->query('PRAGMA short_column_names = ON');
+
 		$this->oDb = $oDb;
 	}
 

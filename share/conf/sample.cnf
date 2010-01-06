@@ -6,6 +6,8 @@
 app.timezone		= UTC
 app.toppage			= toppage
 app.autoload.path	= //app/php
+# app.error.default			= //res/wee/error.htm
+app.error.unauthorized	= //res/wee/unauthorized.htm
 
 # Force drivers to start before running the application
 

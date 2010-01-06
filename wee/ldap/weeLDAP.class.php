@@ -50,6 +50,10 @@ class weeLDAP
 		$this->rLink = ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
 		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->aParams['host']));
 
+		// OpenLDAP2 requires the protocol version to be set
+		// TODO: test if this is compatible with other different LDAP servers
+		ldap_set_option($this->rLink, LDAP_OPT_PROTOCOL_VERSION, 3);
+
 		$b = ldap_bind($this->rLink, array_value($this->aParams, 'rdn'), array_value($this->aParams, 'password'));
 		if ($b === false)
 			throw new LDAPException(
@@ -83,6 +87,10 @@ class weeLDAP
 
 		$this->rLink = ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
 		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->aParams['host']));
+
+		// OpenLDAP2 requires the protocol version to be set
+		// TODO: test if this is compatible with other different LDAP servers
+		ldap_set_option($this->rLink, LDAP_OPT_PROTOCOL_VERSION, 3);
 
 		$b = ldap_bind($this->rLink, array_value($this->aParams, 'rdn'), array_value($this->aParams, 'password'));
 		if ($b === false)
@@ -216,8 +224,8 @@ class weeLDAP
 	{
 		is_array($aEntry) or burn('InvalidArgumentException', 'The aEntry parameter must be an array.');
 
-		$b = ldap_add($this->rLink, $sDN, $aEntry); 
-		if ($b === false) 
+		$b = ldap_add($this->rLink, $sDN, $aEntry);
+		if ($b === false)
 			throw new LDAPException(
 				_WT('Can not add entry to the specified DN "%s".') . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
