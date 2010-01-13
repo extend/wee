@@ -18,9 +18,9 @@
 		<sect2>
 			<title>Simplicity</title>
 			<para>
-				<ulink url="http://en.wikipedia.org/wiki/Simplicity">Simplicity</ulink> is the property,
-				condition, or quality of being straightforward or uncomplicated. In some circumstances it 
-				denotes beauty,	purity or clarity. Simple things are usually easier to explain and understand 
+				<ulink url="http://en.wikipedia.org/wiki/Simplicity">Simplicity</ulink> normally indicates
+				a state of clarity and straightforwardness, or in other circumstances an absense of complexity.
+				Simple concepts and situations are commonly easier to explain and understand 
 				than complicated ones, and can indicate freedom from hardship, effort or confusion.
 			</para>
 			<para>
@@ -28,7 +28,7 @@
 				requirements into a finished application with minimal planning and implementation.
 				Ideally, the developer should not have to focus on anything other than the requirements themselves.
 				The tools available should be easy to use and understand, and should also present as few 
-				disruptions as possible in the implemtation of any task.
+				disruptions as possible in the implementation of any task.
 			</para>
 		</sect2>
 
@@ -37,18 +37,19 @@
 			<sect3>
 				<title>Passive View MVC</title>
 				<para>
-                    The framework provides a method of using a variation of the MVC (Model-View-Controller) pattern.
-                    This variant is explained in detail by <ulink url="http://martinfowler.com">Martin Fowler</ulink>
-                    in his <ulink url="http://martinfowler.com/eaaDev/PassiveScreen.html">Passive View article</ulink>.
-                    It is designed to enhance testability, but it also provides a much simpler approach to MVC.
-                    The Passive View receives data from the controller and from this renders the page. No further
-                    action is carried out by the Passive View, as further access to the model or the controller 
+					The framework provides an implementation of the MVC (Model-View-Controller) pattern, albeit
+					a variation on the standard pattern. This variant is explained in detail by
+					<ulink url="http://martinfowler.com">Martin Fowler</ulink> in his
+                    <ulink url="http://martinfowler.com/eaaDev/PassiveScreen.html">Passive View article</ulink>.
+					It is designed to enhance testability, but it also provides a much simpler approach to MVC.
+					The Passive View receives data from the controller and from this renders the page. No further
+					action is carried out by the Passive View, as further access to the model or the controller 
 					is deemed to be unnecessary. Further information regarding this structure is available in 
 					<xref linkend="mod_app_mvc"/>.
 				</para>
 			</sect3>
 			<sect3>
-				<title>Minimal Interface</title>
+				etitle>Minimal Interface</title>
 				<para>
 					The framework is designed using the 
 					<ulink url="http://martinfowler.com/bliki/MinimalInterface.html">Minimal Interface</ulink> 
@@ -106,7 +107,7 @@
 						packages</para></listitem>
 						<listitem><para>Duplication of exiting features</para></listitem>
 					</itemizedlist>
-					This situation with not occur with this framework. In some circumstances
+					This situation will not occur with this framework. In some circumstances
 					automatic code code can provide some advantages, but the benefits
 					found within this framework will in many cases outweigh these. Any
 					further functionality can be provided through plugins. 
@@ -147,7 +148,7 @@
 			<ulink url="http://php.net/spl">SPL</ulink> and from the SimpleXML extensions.
 			Interfaces such as <ulink url="http://php.net/iterator">Iterator</ulink> and
 			<ulink url="http://php.net/arrayaccess">ArrayAccess</ulink> are incorporated to simplify 
-			the process. They are frequently used throughout this product as this is considered 
+			the process. They are frequently used throughout this product when this is considered 
 			to be the most sensible option.
 		</para>
 		<para>
