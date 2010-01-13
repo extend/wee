@@ -49,7 +49,7 @@
 				</para>
 			</sect3>
 			<sect3>
-				etitle>Minimal Interface</title>
+				<title>Minimal Interface</title>
 				<para>
 					The framework is designed using the 
 					<ulink url="http://martinfowler.com/bliki/MinimalInterface.html">Minimal Interface</ulink> 
