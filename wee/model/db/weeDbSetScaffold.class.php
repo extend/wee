@@ -28,6 +28,12 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 	To use it, simply extend it and define the $sModel property to the name of the weeDbModelScaffold class,
 	and the $sTableName to the name of the table in the database represented by this set.
+
+	Some operations done by this class may have a higher cost than using a normal weeDbSet and
+	writing SQL queries directly. This class is mainly a scaffold for 90% of the common operations
+	done with a database. It's highly useful to quickly start a project, and can be used without
+	any problem on most applications. If you need high performance for some operations you might
+	consider writing those queries manually and using the scaffolding for all other operations.
 */
 
 abstract class weeDbSetScaffold extends weeDbSet implements Countable
@@ -95,6 +101,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		'AND',		// intersection of A and B
 		'AND NOT',	// complement of B in A (in other words: A - B)
 		'XOR',		// symmetric difference of A and B
+		'NOT',		// logical negation of A
 	);
 
 	/**
@@ -324,6 +331,8 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	/**
 		Build a logical part of a WHERE clause.
 
+		All the logical operators expect 2 arguments except NOT, which explains the special cases for it.
+
 		@see weeDbSetScaffold::__construct
 		@param $oDb The database associated with this set.
 		@param $aCriteria The logical criteria.
@@ -336,19 +345,24 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		in_array($aCriteria[0], $this->aValidCriteriaLogicalOperators) or burn('InvalidArgumentException',
 			sprintf(_WT('The criteria logical operator given, "%s", do not exist.'), $aCriteria[0]));
 
-		$sWhere = '(';
+		if ($aCriteria[0] == 'NOT')
+			$sWhere = 'NOT (';
+		else
+			$sWhere = '(';
 
 		if (is_int(key($aCriteria[1])))
 			$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[1]);
 		else
 			$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[1]);
 
-		$sWhere .= ') ' . $aCriteria[0] . ' (';
+		if ($aCriteria[0] != 'NOT') {
+			$sWhere .= ') ' . $aCriteria[0] . ' (';
 
-		if (is_int(key($aCriteria[2])))
-			$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[2]);
-		else
-			$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[2]);
+			if (is_int(key($aCriteria[2])))
+				$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[2]);
+			else
+				$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[2]);
+		}
 
 		return $sWhere . ')';
 	}
@@ -583,6 +597,9 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		ASC or DESC currently. If only the value is provided without a key, it is used as the field name
 		and the order will default to ASC.
 
+		Note that creating subsets do not carry the order set previously, as it is not possible to know
+		in advance which set should be used as a base. This can be carried over manually though.
+
 		@param $mOrderBy The order in which the rows should be sorted.
 		@return $this
 	*/
@@ -594,44 +611,53 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	}
 
 	/**
-		Create a new subset based on a logical operation between two sets.
-		The logical operation is: A op B. Set A is the $this object.
-		Set B is the set given with the $mSet argument.
+		Convenience function to create subsets. Create a new set with the given criteria.
 
-		@param $sLogical The logical operation to perform between the two sets.
-		@param $mSet Set B of the operation. This can be either a criteria array or a weeDbSetScaffold object.
+		@param $aCriteria The criteria to filter with.
 		@return weeDbSetScaffold The subset created as a result of the operation.
 	*/
 
-	protected function subset($sLogical, $mSet)
+	protected function subset($aCriteria)
 	{
-		if (is_object($mSet))
-			$mSet = $mSet->getSubsetCriteria();
-
 		$sClass = get_class($this);
-		$o = new $sClass(array(
-			$sLogical,
-			$this->aSubsetCriteria,
-			$mSet,
-		));
-		$o->setDb($this->getDb());
-		return $o;
+		$o = new $sClass($aCriteria);
+		return $o->setDb($this->getDb());
 	}
 
 	/**
 		Returns a subset representing the complement of $mSet in $this. In other words: $this - $mSet.
 
+		If the criteria for $mSet is empty, we throw a DomainException. Technically the expression
+		will always evaluate to 'FALSE' in that case, which isn't wrong per se, but there isn't
+		much point performing queries when we can know easily that there will be no results returned.
+
+		If the criteria for $this is empty, the logical expression becomes 'TRUE AND NOT x', or
+		in other words 'NOT x'. We return a set evaluating to 'NOT x' directly.
+
 		@param $mSet The set to obtain the complement of.
 		@return weeDbSetScaffold The subset created as a result of the operation.
+		@throw DomainException The result is the empty set.
 	*/
 
 	public function subsetComplementOf($mSet)
 	{
-		return $this->subset('AND NOT', $mSet);
+		if (is_object($mSet))
+			$mSet = $mSet->getSubsetCriteria();
+
+		empty($mSet) and burn('DomainException',
+			_WT('The complement is the empty set. It cannot match any row in the table.'));
+
+		if (empty($this->aSubsetCriteria))
+			return $this->subset(array('NOT', $mSet));
+
+		return $this->subset(array('AND NOT', $this->aSubsetCriteria, $mSet));
 	}
 
 	/**
 		Returns a subset representing the intersection of $mSet and $this.
+
+		If either of the sets criteria is empty, we simply create a new set with the other criteria,
+		because the logical expression 'TRUE AND x' evaluates to 'x'.
 
 		@param $mSet The set to intersect with.
 		@return weeDbSetScaffold The subset created as a result of the operation.
@@ -639,23 +665,63 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 	public function subsetIntersect($mSet)
 	{
-		return $this->subset('AND', $mSet);
+		if (is_object($mSet))
+			$mSet = $mSet->getSubsetCriteria();
+
+		$aCriteria = null;
+
+		if (empty($mSet))
+			$aCriteria = $this->aSubsetCriteria;
+		elseif (empty($this->aSubsetCriteria))
+			$aCriteria = $mSet;
+
+		if ($aCriteria !== null)
+			return $this->subset($aCriteria);
+
+		return $this->subset(array('AND', $this->aSubsetCriteria, $mSet));
 	}
 
 	/**
 		Returns a subset representing the symmetric difference of $mSet and $this.
 
+		If both sets are empty, we throw an DomainException. Technically the expression
+		will always evaluate to 'FALSE' in that case, which isn't wrong per se, but there isn't
+		much point performing queries when we can know easily that there will be no results returned.
+
+		If either of the sets criteria is empty, the logical expression becomes 'TRUE XOR x',
+		which can be transformed into 'NOT x'. We return a set evaluating to 'NOT x' directly.
+
 		@param $mSet The set to do the symmetric difference with.
 		@return weeDbSetScaffold The subset created as a result of the operation.
+		@throw DomainException The result is the empty set.
 	*/
 
 	public function subsetSymDiff($mSet)
 	{
-		return $this->subset('XOR', $mSet);
+		if (is_object($mSet))
+			$mSet = $mSet->getSubsetCriteria();
+
+		empty($mSet) && empty($this->aSubsetCriteria) and burn('DomainException',
+			_WT('The symmetric difference is the empty set. It cannot match any row in the table.'));
+
+		$aCriteria = null;
+
+		if (empty($mSet))
+			$aCriteria = $this->aSubsetCriteria;
+		elseif (empty($this->aSubsetCriteria))
+			$aCriteria = $mSet;
+
+		if ($aCriteria !== null)
+			return $this->subset(array('NOT', $aCriteria));
+
+		return $this->subset(array('XOR', $this->aSubsetCriteria, $mSet));
 	}
 
 	/**
 		Returns a subset representing the union of $mSet and $this.
+
+		If either of the sets criteria is empty, the logical expression becomes 'TRUE OR x',
+		which always evaluates to 'TRUE'. We return a set evaluating to 'TRUE' directly.
 
 		@param $mSet The set to unite with.
 		@return weeDbSetScaffold The subset created as a result of the operation.
@@ -663,6 +729,12 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 	public function subsetUnion($mSet)
 	{
-		return $this->subset('OR', $mSet);
+		if (is_object($mSet))
+			$mSet = $mSet->getSubsetCriteria();
+
+		if (empty($mSet) || empty($this->aSubsetCriteria))
+			return $this->subset(array());
+
+		return $this->subset(array('OR', $this->aSubsetCriteria, $mSet));
 	}
 }
