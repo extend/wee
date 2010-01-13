@@ -26,13 +26,14 @@
 		<title>Installation</title>
 		<para>
 			You can download Web:Extend from <ulink url="http://github.com/essen/wee/downloads">GitHub</ulink>.
+			The files can be extracted to a suitable location on your web server.
 		</para>
 		<para>
-			The only extra installation step required after getting the source is to make
-			the <filename>app/tmp</filename> folder writable by the web server.
+			The only configuration required following this is to ensure
+			the <filename>app/tmp</filename> folder is writable by the web server.
 		</para>
 		<para>
-			Before starting any development you are advised to uncomment the <literal>DEBUG</literal>
+			Before beginning any development it is advisable to uncomment the <literal>DEBUG</literal>
 			line in the <filename>index.php</filename> file.
 		</para>
 	</sect1>
