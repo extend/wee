@@ -8,16 +8,17 @@
 	<sect1 id="gettingstarted_requirements">
 		<title>Requirements</title>
 		<para>
-			Web:Extend currently requires at least PHP 5.2.
-			It might work with an older version, but we can not give any guarantee about it.
-			It requires the <ulink url="http://php.net/spl">SPL extension</ulink> to be enabled (it is by default).
+			Web:Extend currently requires PHP 5.2.
+			It may function with an older version of PHP, but we can provide no guarantee of this.
+			Additionally, it requires the <ulink url="http://php.net/spl">SPL extension</ulink> to be
+		   	enabled (which is the default configuration).
 		</para>
 		<para>
-			Other requirements depends on the modules you intend to use.
-			We recommend you to enable at least <ulink url="http://php.net/intl">intl</ulink>,
-			<ulink url="http://php.net/simplexml">SimpleXML</ulink> and <ulink url="http://php.net/xsl">XSL</ulink>,
-			along with the extension for the database you intend to use.
-			Most of the common databases are supported.
+			Other requirements depend on the modules you intend to use.
+			We recommend you enable the <ulink url="http://php.net/intl">intl</ulink>,
+			<ulink url="http://php.net/simplexml">SimpleXML</ulink> and <ulink url="http://php.net/xsl">XSL</ulink>
+			extensions to begin with, along with the extension for the database you intend to use.
+			Most common database types are supported.
 		</para>
 	</sect1>
 
