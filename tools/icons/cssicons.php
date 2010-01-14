@@ -1,7 +1,7 @@
 <?php
 
 /*
-	Web:Extend
+	Web:Extend cssicons tool
 	Copyright (c) 2006-2010 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
@@ -28,10 +28,6 @@ if (!isset($aOptions['f']) || !isset($aOptions['n'])) {
 	echo "usage: php cssicons.php -f icons_path -n css_name\n";
 	return -1;
 }
-
-define('ALLOW_INCLUSION', 1);
-define('ROOT_PATH', '../../');
-require(ROOT_PATH . 'wee/wee.php');
 
 $aFiles = array_merge(
 	glob($aOptions['f'] . '/actions/*.png'),
