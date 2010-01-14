@@ -137,7 +137,7 @@ app/tpl/
 			<para>
 				It is highly recommended to keep your database schema under version control.
 				You are also advised to keep upgrade scripts from one version to another when you make
-				changes to the database schema.	This will mean that applying updates to the project a
+				changes to the database schema.	This will mean that applying updates to the project is a
 				much easier process when working within a team, or when applying any changes to the 
 				production environment.
 				You can use the folder <filename>app/sql</filename> for this purpose.
