@@ -41,7 +41,7 @@ $aFiles = array_merge(
 	glob($aOptions['f'] . '/status/*.png')
 );
 
-$sCSS = '.icon{background:url(' . $aOptions['n'] . '.png) no-repeat;display:inline-block;height:16px;line-height:16px;overflow:hidden;position:relative;top:2px;width:16px}';
+$sCSS = '.icon{background:url(' . $aOptions['n'] . '.png) no-repeat;display:inline;height:16px;overflow:hidden;padding-left:16px;padding-bottom:2px;width:16px}';
 $sHTML = '<html><head><title>Icons test page: ' . $aOptions['n'] . '</title><link rel="stylesheet" type="text/css"  href="' . $aOptions['n'] . '.css"/></head><body>';
 
 $rBigFile = imagecreatetruecolor(16, 16 * count($aFiles));
@@ -67,3 +67,13 @@ file_put_contents($aOptions['n'] . '.css', $sCSS);
 // We could compress more, but it doesn't decrease the size significantly
 imagepng($rBigFile, $aOptions['n'] . '.png', 1);
 imagedestroy($rBigFile);
+
+// We also want an array of all the mimetypes icons
+
+$sPHP = '<?php return array(';
+$aFiles = glob($aOptions['f'] . '/mimetypes/*.png');
+
+foreach ($aFiles as $sFilename)
+	$sPHP .= "'" . substr(strrchr($sFilename, '/'), 1, -4) . "',";
+
+file_put_contents($aOptions['n'] . '-mimetypes.php', $sPHP . ');');
