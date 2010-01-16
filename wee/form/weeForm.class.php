@@ -340,6 +340,15 @@ class weeForm implements Printable
 	}
 
 	/**
+		Output the form.
+	*/
+
+	public function render()
+	{
+		echo $this->toString();
+	}
+
+	/**
 		Set the output encoding to use when calling toString.
 
 		@param	$sEncoding The new encoding to use.
@@ -379,6 +388,23 @@ class weeForm implements Printable
 		$oDoc->loadXML($this->buildXSLStylesheet());
 		$oXSL->importStyleSheet($oDoc); // time consuming
 
+		// If we have any error we put a friendly message on top
+		// $oErrorOl created here is also used to display global error messages
+
+		if (!empty($this->aErrors)) {
+			$oNode = $this->xpathOne('//widgets');
+			$oNode = dom_import_simplexml($oNode);
+
+			$oErrorOl = $oNode->ownerDocument->createElement('ol');
+			$oErrorOl->setAttribute('class', 'error');
+
+			$oNode->insertBefore($oErrorOl, $oNode->firstChild);
+			$oErrorOl = simplexml_import_dom($oErrorOl);
+
+			$o = $oErrorOl->addChild('li');
+			$o->addChild('strong', _WT('One or more errors have been detected.'));
+		}
+
 		// Fill in the values and errors if any
 
 		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
@@ -388,21 +414,6 @@ class weeForm implements Printable
 			// an ordered list at the beginning of the form and put the errors inside it.
 
 			if (empty($sName)) {
-				$a = $this->xpath('//widgets/ol[class="errors"]');
-
-				if (!empty($a))
-					$oErrorDiv = $a[0];
-				else {
-					$oNode = $this->xpathOne('//widgets');
-					$oNode = dom_import_simplexml($oNode);
-
-					$oErrorOl = $oNode->ownerDocument->createElement('ol');
-					$oErrorOl->setAttribute('class', 'errors');
-
-					$oNode->insertBefore($oErrorOl, $oNode->firstChild);
-					$oErrorOl = simplexml_import_dom($oErrorOl);
-				}
-
 				if (is_array($this->aErrors[$sName]))
 					foreach ($this->aErrors[$sName] as $sMsg)
 						$oErrorOl->addChild('li', $sMsg);
