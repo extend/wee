@@ -5,6 +5,7 @@
 	<xsl:call-template name="label">
 		<xsl:with-param name="name" select="name"/>
 		<xsl:with-param name="help" select="help"/>
+		<xsl:with-param name="required" select="@required"/>
 	</xsl:call-template>
 
 	<xsl:text> </xsl:text>

@@ -388,17 +388,35 @@ class weeForm implements Printable
 		$oDoc->loadXML($this->buildXSLStylesheet());
 		$oXSL->importStyleSheet($oDoc); // time consuming
 
+		$oWidgetsNode = $this->xpathOne('//widgets');
+		$oWidgetsNode = dom_import_simplexml($oWidgetsNode);
+
+		// If some fields are required we put a label on top to inform the user
+
+		if (count($this->oXML->xpath('//widget[@required]')) > 0) {
+			$oOwnerDoc = $oWidgetsNode->ownerDocument;
+
+			$oNode = $oOwnerDoc->createElement('ol');
+			$oNode->setAttribute('class', 'notice required');
+			$oWidgetsNode->insertBefore($oNode, $oWidgetsNode->firstChild);
+
+			$o = $oOwnerDoc->createElement('li');
+			$oNode->appendChild($o);
+
+			$aNotice = explode('*', _WT('The fields marked with * are required.'));
+			$o->appendChild($oOwnerDoc->createTextNode($aNotice[0]));
+			$o->appendChild($oOwnerDoc->createElement('em', '*'));
+			$o->appendChild($oOwnerDoc->createTextNode($aNotice[1]));
+		}
+
 		// If we have any error we put a friendly message on top
 		// $oErrorOl created here is also used to display global error messages
 
 		if (!empty($this->aErrors)) {
-			$oNode = $this->xpathOne('//widgets');
-			$oNode = dom_import_simplexml($oNode);
-
-			$oErrorOl = $oNode->ownerDocument->createElement('ol');
+			$oErrorOl = $oWidgetsNode->ownerDocument->createElement('ol');
 			$oErrorOl->setAttribute('class', 'error');
 
-			$oNode->insertBefore($oErrorOl, $oNode->firstChild);
+			$oWidgetsNode->insertBefore($oErrorOl, $oWidgetsNode->firstChild);
 			$oErrorOl = simplexml_import_dom($oErrorOl);
 
 			$o = $oErrorOl->addChild('li');
@@ -527,12 +545,12 @@ class weeForm implements Printable
 					(is_string($aData[(string)$oNode->name]) && !strlen($aData[(string)$oNode->name])) ||
 					(is_array($aData[(string)$oNode->name]) && empty($aData[(string)$oNode->name])))
 				{
-					if (!empty($oNode['required']))
+					if (!empty($oNode['required']) && $oNode['type'] != 'fileinput')
 					{
 						if (!empty($oNode['required_error']))
 							$oException->addError((string)$oNode->name, _T($oNode['required_error']));
 						else
-							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for the field %s.'), (string)$oNode->label));
+							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for the field "%s".'), (string)$oNode->label));
 					}
 
 					continue;

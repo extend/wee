@@ -26,6 +26,7 @@ form.block legend,
 form.block label	{display:inline-block;font-size:1em;font-weight:normal;min-width:30%;vertical-align:top}
 form.block fieldset	{border:0;margin:0;padding:0}
 
+form.block li.invisible					{display:none}
 form.block label.checkbox				{margin-left:30%;padding:0;width:auto}
 form.block fieldset.checklist>ol,
 form.block fieldset.radiobox>ol			{margin-left:30%}
@@ -35,5 +36,8 @@ form.block fieldset.radiobox li.group	{margin:0 0 0 5em}
 form.block fieldset.buttonsfieldset ol	{margin:.5em 0 0 30%}
 form.block fieldset.buttonsfieldset li	{border:0;display:inline;margin-left:3px}
 
-form.block ol.error li	{margin:0 .5em}
-form.block li.invisible	{display:none}
+form.block ol.error,
+form.block ol.required		{margin:1em 0;padding:0 .8em}
+form.block .required em,
+form.block em.required		{color:red}
+form.hide-required .required{display:none}
