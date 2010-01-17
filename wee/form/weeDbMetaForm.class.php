@@ -23,8 +23,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	Generate a form from a database set using the dbmeta API.
-
-	@todo ::toXML for easy replacement with a custom form?
 */
 
 class weeDbMetaForm extends weeForm
