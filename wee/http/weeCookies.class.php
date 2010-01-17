@@ -47,36 +47,18 @@ class weeCookies implements ArrayAccess
 
 	public function __construct($aParams = array())
 	{
-		$this->sCookiePath = empty($aParams['path']) ? $this->getDefaultPath() : $aParams['path'];
-	}
-
-	/**
-		Return the default cookie path.
-
-		This method will return APP_PATH if a custom APP_PATH has been defined.
-		Otherwise it will return the full path to the application.
-
-		@return Default cookie path.
-		@todo This might be nice at a later time to just have APP_PATH use this form and use it directly.
-	*/
-
-	protected function getDefaultPath()
-	{
-		$sPath = parse_url(APP_PATH, PHP_URL_PATH);
-		if ($sPath != BASE_PATH && $sPath != BASE_PATH . ROOT_PATH)
-			return $sPath; // A custom APP_PATH was defined, use it
-
-		$iCount = substr_count(substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])), '/')
-			- (int)(isset($_SERVER['REDIRECT_URL']));
-		$sPath = str_replace('\\', '/', dirname((isset($_SERVER['REDIRECT_URL'])) ? $_SERVER['REDIRECT_URL'] : $_SERVER['PHP_SELF']));
-
-		for ($i = 0; $i < $iCount; $i++)
-			$sPath = dirname($sPath);
-
-		if (substr($sPath, -1) != '/')
-			$sPath .= '/';
-
-		return $sPath;
+		if (!empty($aParams['path']))
+			$this->sCookiePath = $aParams['path'];
+		else {
+			// Check if a custom cookie path was defined and use it
+			$this->sCookiePath = parse_url(APP_PATH, PHP_URL_PATH);
+			if ($this->sCookiePath == BASE_PATH || $this->sCookiePath == BASE_PATH . ROOT_PATH) {
+				// Otherwise it's basically APP_PATH without the http://host part
+				$this->sCookiePath = dirname($_SERVER['SCRIPT_NAME']);
+				if ($this->sCookiePath != '/')
+					$this->sCookiePath .= '/';
+			}
+		}
 	}
 
 	/**

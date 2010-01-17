@@ -16,7 +16,7 @@ try {
 
 	$o = new testCookies;
 
-	$sCheck = dirname($_SERVER['REQUEST_URI']) . '/';
+	$sCheck = dirname($_SERVER['SCRIPT_NAME']) . '/';
 	$o->sCookiePath == $sCheck or burn('UnitTestException',
 		sprintf(_WT('Cookie path "%s" should have been "%s".'), $o->sCookiePath, $sCheck));
 
