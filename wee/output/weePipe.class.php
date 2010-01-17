@@ -46,6 +46,15 @@ abstract class weePipe
 	}
 
 	/**
+		Return the MIME type of the producted output.
+
+		@return	string the MIME type of the produced output.
+		@see	http://www.iana.org/assignments/media-types/
+	*/
+
+	abstract public function getMIMEType();
+
+	/**
 		Initialise the pipe.
 
 		This method should start output buffering with whatever parameters

@@ -159,6 +159,8 @@ abstract class weeFrame implements weeRenderer
 	{
 		if ($this->sContext == 'xmlhttprequest' && $this->oTaconite !== null)
 			return $this->oTaconite->getMIMEType();
+		elseif (!empty($this->aPipes))
+		    return end($this->aPipes)->getMIMEType();
 		return $this->getRenderer()->getMIMEType();
 	}
 

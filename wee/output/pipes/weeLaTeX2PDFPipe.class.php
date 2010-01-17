@@ -51,6 +51,18 @@ class weeLaTeX2PDFPipe extends weePipe
 	}
 
 	/**
+		Return the MIME type of the producted output.
+
+		@return	string application/pdf
+		@see	http://www.iana.org/assignments/media-types/
+	*/
+
+	public function getMIMEType()
+	{
+	    return 'application/pdf';
+	}
+
+	/**
 		Initialise the pipe.
 
 		This method should start output buffering with whatever parameters
