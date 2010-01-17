@@ -8,9 +8,14 @@
 	<script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
 
 	<script type="text/javascript">
+nbSkipped = 0;
+
 function run(t) {
 	var result = $.ajax({url:t,async:false}).responseText;
-	ok(result == 'success', result);
+	if (result == 'skip')
+		nbSkipped++;
+	else
+		ok(result == 'success', result);
 }
 
 function batch(n, t) {
@@ -60,6 +65,10 @@ $aTests = array_keys($aTests);
 foreach ($aTests as $i => $sPath):?>
 	test('<?php echo substr($sPath, strlen(getcwd() . '/../tests/'))?>', function() {run('cli.php?t=<?php echo $i?>');});
 <?php endforeach?>
+
+	QUnit.done = function() {
+		$('#qunit-testresult').append('<br/>' + nbSkipped + ' tests have been skipped.');
+	};
 });
 	</script>
 </head>
