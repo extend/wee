@@ -223,7 +223,7 @@ abstract class weeFrame implements weeRenderer
 
 		if (empty($this->oTaconite)) {
 			if (empty($this->aPipes))
-				return weeOutput::output($this->getRenderer());
+				return $this->getRenderer()->render();
 
 			foreach (array_reverse($this->aPipes) as $oPipe)
 				$oPipe->init();

@@ -57,15 +57,12 @@ class weeLaTeX2PDFPipe extends weePipe
 	}
 
 	/**
-		Initialise the pipe.
-
-		This method should start output buffering with whatever parameters
-		needed by this pipe.
+		Start buffering.
 	*/
 
 	public function init()
 	{
-		weeOutput::bufferize();
+		ob_start();
 	}
 
 	/**

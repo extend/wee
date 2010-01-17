@@ -228,6 +228,18 @@ class weeApplication
 
 	public function main()
 	{
+		$bCLI = defined('WEE_CLI');
+		$bGZIP = !$bCLI && $this->cnf('app.gzip') && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+			&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
+
+        $bCompress = false;
+		if (ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
+			ob_start();
+		else {
+			ob_start('ob_gzhandler');
+			$bCompress = true;
+		}
+
 		$this->dispatchEvent($this->translateEvent());
 
 		if ($this->oFrame->getStatus() != weeFrame::UNAUTHORIZED_ACCESS)
@@ -246,10 +258,12 @@ class weeApplication
 			require($sPath);
 		}
 
-		if (!defined('WEE_CLI')) {
+		if (!$bCLI) {
 			safe_header('Content-Type: ' . $oRenderer->getMIMEType());
 			if ($this->sFilename !== null)
 			    safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
+			if ($bCompress)
+			    safe_header('Content-Encoding: gzip');
 		}
 		$oRenderer->render();
 		exit;
