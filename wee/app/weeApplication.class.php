@@ -242,31 +242,31 @@ class weeApplication
 
 		$this->dispatchEvent($this->translateEvent());
 
-		if ($this->oFrame->getStatus() != weeFrame::UNAUTHORIZED_ACCESS)
-			return $this->oFrame->render();
+		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
+			// An UnauthorizedAccessException was thrown; show an error and exit.
 
-		// Otherwise an UnauthorizedAccessException was thrown; show an error and exit.
+			if (defined('WEE_CLI'))
+				echo _WT('You are not allowed to access the specified frame/event.'), "\n";
+			else {
+				header('HTTP/1.0 403 Forbidden');
 
-		if (defined('WEE_CLI'))
-			echo _WT('You are not allowed to access the specified frame/event.'), "\n";
-		else {
-			header('HTTP/1.0 403 Forbidden');
+				$sPath = $this->cnf('app.error.unauthorized');
+				empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
 
-			$sPath = $this->cnf('app.error.unauthorized');
-			empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
+				require($sPath);
+			}
 
-			require($sPath);
+			exit;
 		}
 
 		if (!$bCLI) {
-			safe_header('Content-Type: ' . $oRenderer->getMIMEType());
+			safe_header('Content-Type: ' . $this->oFrame->getMIMEType());
 			if ($this->sFilename !== null)
 			    safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
 			if ($bCompress)
 			    safe_header('Content-Encoding: gzip');
 		}
-		$oRenderer->render();
-		exit;
+		return $this->oFrame->render();
 	}
 
     /**
