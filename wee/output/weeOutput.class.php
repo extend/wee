@@ -48,20 +48,4 @@ abstract class weeOutput
 			define('WEE_GZIP', 1);
 		}
 	}
-
-	/**
-		Output a renderer.
-
-		This method sends an appropriate Content-Type header with the MIME type
-		of its given renderer if WEE_CLI is not defined.
-
-		@param $oRenderer The renderer.
-	*/
-
-	public static function output(weeRenderer $oRenderer)
-	{
-		if (!defined('WEE_CLI'))
-			header('Content-Type: ' . $oRenderer->getMIMEType());
-		$oRenderer->render();
-	}
 }

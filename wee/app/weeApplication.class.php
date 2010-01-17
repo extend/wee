@@ -50,6 +50,12 @@ class weeApplication
 
 	protected $aDrivers = array();
 
+    /**
+        The filename used if the frame is to be served as a file.
+    */
+
+    protected $sFilename;
+
 	/**
 		The frame object that will be displayed.
 	*/
@@ -240,9 +246,25 @@ class weeApplication
 			require($sPath);
 		}
 
-		weeOutput::output($this->oFrame);
+		if (!defined('WEE_CLI')) {
+			safe_header('Content-Type: ' . $oRenderer->getMIMEType());
+			if ($this->sFilename !== null)
+			    safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
+		}
+		$oRenderer->render();
 		exit;
 	}
+
+    /**
+        Serve the frame as a file.
+
+        @param $sFilename The filename to be used.
+    */
+
+    public function serveAsFile($sFilename)
+    {
+        $this->sFilename = $sFilename;
+    }
 
 	/**
 		Set the shared instance for this object.
