@@ -28,12 +28,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 class weeLaTeX2PDFPipe extends weePipe
 {
 	/**
-		The pipe parameters.
-	*/
-
-	protected $aParams = array('filename' => 'file.pdf');
-
-	/**
 		Construct a new LaTeX to PDF pipe.
 
 		This pipe accepts two parameters:
@@ -101,9 +95,7 @@ class weeLaTeX2PDFPipe extends weePipe
 
 		// Send the PDF to the browser
 
-		safe_header('Content-Type: application/pdf');
 		safe_header('Content-Length: ' . filesize($sTmpFilename . '.pdf'));
-		safe_header('Content-Disposition: attachment; filename="' . $this->aParams['filename'] . '"');
 
 		readfile($sTmpFilename . '.pdf');
 
