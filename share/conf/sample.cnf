@@ -12,7 +12,6 @@ app.error.unauthorized	= //res/wee/unauthorized.htm
 # Force drivers to start before running the application
 
 start.locale	= 0
-start.output	= 1
 start.session	= 0
 
 # Cookies settings
@@ -34,13 +33,6 @@ db.dbname	= dbname
 locale.driver	= weeLocale
 locale.auto		= 1
 locale.default	=
-
-# Output settings
-
-output.driver		= weeXHTMLOutput
-output.buffer		= 0
-output.buffer.gzip	= 1
-# output.encoding		= 
 
 # Session settings
 
