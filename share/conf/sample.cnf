@@ -3,7 +3,8 @@
 
 # Application settings
 
-app.gzip			= 1
+app.output.buffer	= 1
+app.output.gzip		= 1
 app.timezone		= UTC
 app.toppage			= toppage
 app.autoload.path	= //app/php

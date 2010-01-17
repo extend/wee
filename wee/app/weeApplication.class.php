@@ -229,15 +229,17 @@ class weeApplication
 	public function main()
 	{
 		$bCLI = defined('WEE_CLI');
-		$bGZIP = !$bCLI && $this->cnf('app.gzip') && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+		$bGZIP = !$bCLI && $this->cnf('app.output.gzip') && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
 			&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
 
-        $bCompress = false;
-		if (ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
-			ob_start();
-		else {
-			ob_start('ob_gzhandler');
-			$bCompress = true;
+		if ($this->cnf('app.output.buffer')) {
+			$bCompress = false;
+			if (ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
+				ob_start();
+			else {
+				ob_start('ob_gzhandler');
+				$bCompress = true;
+			}
 		}
 
 		$this->dispatchEvent($this->translateEvent());
