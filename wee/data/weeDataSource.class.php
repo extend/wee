@@ -39,26 +39,27 @@ abstract class weeDataSource
 	/**
 		Encode an array.
 
-		@param	$aValue	The array to encode.
+		@param	$a		The array to encode.
 		@return	array	The encoded array.
 		@throw	IllegalStateException This source does not have an encoder.
 	*/
 
-	protected function encodeArray($mValue)
+	protected function encodeArray($a)
 	{
 		$this->getEncoder() !== null or burn('IllegalStateException',
 			_WT('This data source does not have an encoder.'));
 
-		foreach ($a as &$mValue)
-			if ($mValue instanceof self)
+		foreach ($a as $mName => $mValue) {
+			if ($mValue instanceof weeDataSource)
 				$mValue->encodeData($this->oEncoder);
 			elseif (is_object($mValue))
 				continue;
 			elseif (is_array($mValue))
-				$mValue = $this->encodeArray($mValue);
+				$a[$mName] = $this->encodeArray($mValue);
 			else
-				$mValue = $this->getEncoder()->encode($mValue);
-    
+				$a[$mName] = $this->getEncoder()->encode($mValue);
+		}
+
 		return $a;
 	}
 
