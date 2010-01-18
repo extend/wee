@@ -247,7 +247,7 @@ class weeApplication
 		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
 			// An UnauthorizedAccessException was thrown; show an error and exit.
 
-			if (defined('WEE_CLI'))
+			if ($bCLI)
 				echo _WT('You are not allowed to access the specified frame/event.'), "\n";
 			else {
 				header('HTTP/1.0 403 Forbidden');
