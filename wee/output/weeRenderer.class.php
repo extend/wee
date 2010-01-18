@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
 	Web:Extend
 	Copyright (c) 2006-2010 Dev:Extend
 
@@ -22,42 +22,25 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	LaTeX output driver.
+	A renderer.
+
+	A renderer is an object that produces an output of a given MIME type.
 */
 
-class weeLaTeXOutput extends weeOutput
+interface weeRenderer extends Printable
 {
 	/**
-		Decode a given value.
+		Return the MIME type of the producted output.
 
-		@param	$mValue	The value to decode.
-		@return	string	The decoded value.
+		@return	string the MIME type of the produced output.
+		@see	http://www.iana.org/assignments/media-types/
 	*/
 
-	public function decode($mValue)
-	{
-		return str_replace(
-			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
-			array('\\', '#', '$', '%', '&', '~', '_', '^', '{', '}'),
-			$mValue
-		);
-	}
+	public function getMIMEType();
 
 	/**
-		Encode data to be displayed.
-
-		According to the LaTeX tutorial, the following need escaping: # $ % & ~ _ ^ \ { }
-
-		@param	$mValue	Data to encode.
-		@return	string	Data encoded.
+		Render the output and print it.
 	*/
 
-	public function encode($mValue)
-	{
-		return str_replace(
-			array('\\', '#', '$', '%', '&', '~', '_', '^', '{', '}'),
-			array('\textbackslash ', '\\#', '\\$', '\\%', '\\&', '\\~', '\\_', '\\^', '\\{', '\\}'),
-			$mValue
-		);
-	}
+	public function render();
 }

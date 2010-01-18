@@ -25,16 +25,42 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Base class for data source objects.
 	These object are required to encode the data when needed.
 
-	Use weeOutput::instance()->encode or weeOutput::instance()->encodeArray to encode it.
+	Use the attached encoder to encode it.
 */
 
 abstract class weeDataSource
 {
 	/**
-		Whether to automatically encode the data before returning it.
+		The encoder used to encode the data.
 	*/
 
-	protected $bMustEncodeData = false;
+	protected $oEncoder;
+
+	/**
+		Encode an array.
+
+		@param	$aValue	The array to encode.
+		@return	array	The encoded array.
+		@throw	IllegalStateException This source does not have an encoder.
+	*/
+
+	protected function encodeArray($mValue)
+	{
+		$this->getEncoder() !== null or burn('IllegalStateException',
+			_WT('This data source does not have an encoder.'));
+
+		foreach ($a as &$mValue)
+			if ($mValue instanceof self)
+				$mValue->encodeData($this->oEncoder);
+			elseif (is_object($mValue))
+				continue;
+			elseif (is_array($mValue))
+				$mValue = $this->encodeArray($mValue);
+			else
+				$mValue = $this->getEncoder()->encode($mValue);
+    
+		return $a;
+	}
 
 	/**
 		Tells the object to automatically encode the data before returning it.
@@ -42,9 +68,20 @@ abstract class weeDataSource
 		@return $this
 	*/
 
-	public function encodeData()
+	public function encodeData(weeEncoder $oEncoder)
 	{
-		$this->bMustEncodeData = true;
+		$this->oEncoder = $oEncoder;
 		return $this;
+	}
+
+	/**
+		Return the encoder used by this data source.
+
+		@return weeEncoder The encoder used by this data source.
+	*/
+
+	public function getEncoder()
+	{
+		return $this->oEncoder;
 	}
 }

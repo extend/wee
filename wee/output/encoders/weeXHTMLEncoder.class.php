@@ -1,8 +1,8 @@
 <?php
 
-/*
+/**
 	Web:Extend
-	Copyright (c) 2006-2010 Dev:Extend
+	Copyright (c) 2006-2009 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -22,39 +22,23 @@
 if (!defined('ALLOW_INCLUSION')) die;
 
 /**
-	XHTML output driver.
+	An XHTML encoder.
+
+	@todo Handle different encodings.
 */
 
-class weeXHTMLOutput extends weeOutput
+class weeXHTMLEncoder extends weeEncoder
 {
-	/**
-		Encoding used by the encode method.
-	*/
-
-	protected $sEncoding = 'utf-8';
-
-	/**
-		Initialize the output driver. Start output buffering if requested.
-	*/
-
-	public function __construct($aParams = array())
-	{
-		parent::__construct($aParams);
-
-		if (!empty($aParams['encoding']))
-			$this->sEncoding = $aParams['encoding'];
-	}
-
 	/**
 		Decode a given value.
 
-		@param	$mValue	The value to decode.
+		@param	$sValue	The value to decode.
 		@return	string	The decoded value.
 	*/
 
-	public function decode($mValue)
+	public function decode($sValue)
 	{
-		return htmlspecialchars_decode($mValue, ENT_COMPAT);
+		return htmlspecialchars_decode($sValue, ENT_COMPAT);
 	}
 
 	/**
@@ -66,6 +50,17 @@ class weeXHTMLOutput extends weeOutput
 
 	public function encode($mValue)
 	{
-		return htmlspecialchars($mValue, ENT_COMPAT, $this->sEncoding);
+		return htmlspecialchars($mValue, ENT_COMPAT);
+	}
+
+	/**
+		Return the MIME type of the format which uses this encoding.
+
+		@return string The MIME type of the format which uses this encoding.
+	*/
+
+	public function getMIMEType()
+	{
+		return 'text/html';
 	}
 }

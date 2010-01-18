@@ -445,6 +445,21 @@ function xmlspecialchars($sText)
 	return str_replace('&#039;', '&apos;', htmlspecialchars($sText, ENT_QUOTES, 'utf-8'));
 }
 
+/**
+	Convert special XML entities back to characters.
+
+	This function is the opposite of htmlspecialchars(). It converts special HTML
+	entities back to characters.
+
+	@param	$sText	The text to decode.
+	@return	string	The decoded text.
+*/
+
+function xmlspecialchars_decode($sText)
+{
+	return htmlspecialchars_decode(str_replace('&apos;', '&#039;', $sText), ENT_QUOTES);
+}
+
 // Core components
 
 /**

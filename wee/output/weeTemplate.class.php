@@ -29,7 +29,7 @@ if (!defined('TPL_EXT'))	define('TPL_EXT',	'.tpl');
 	Load, configure and display templates.
 */
 
-class weeTemplate extends weeDataHolder implements Printable
+class weeTemplate extends weeDataHolder implements weeRenderer
 {
 	/**
 		Filename of the template, including path and extension.
@@ -42,6 +42,12 @@ class weeTemplate extends weeDataHolder implements Printable
 	*/
 
 	protected $aLinkArgs = array();
+
+	/**
+		The MIME Type of the template.
+	*/
+
+	protected $sMIMEType;
 
 	/**
 		Configure the filename and the data for this template.
@@ -58,6 +64,7 @@ class weeTemplate extends weeDataHolder implements Printable
 			sprintf(_WT('The file %s does not exist.'), $this->sFilename));
 
 		parent::__construct($aData);
+		$this->setMIMEType('text/html');
 	}
 
 	/**
@@ -91,6 +98,19 @@ class weeTemplate extends weeDataHolder implements Printable
 	}
 
 	/**
+		Return the MIME type of the output of the template.
+
+		The default MIME type is text/html.
+
+		@return string the MIME type of the output of the template.
+	*/
+
+	public function getMIMEType()
+	{
+		return $this->sMIMEType;
+	}
+
+	/**
 		Create a link using a base url (which may or may not contain parameters)
 		and the values predefined previously and/or given by the $aArgs arguments.
 
@@ -103,8 +123,8 @@ class weeTemplate extends weeDataHolder implements Printable
 	{
 		$aArgs = $aArgs + $this->aLinkArgs;
 
-		if (empty($aArgs))
-			return weeOutput::instance()->encode($sLink);
+		if (empty($aArgs) && $this->getEncoder() !== null)
+			return $this->getEncoder()->encode($sLink);
 
 		$aHash = explode('#', $sLink, 2);
 		$aURL = explode('?', $aHash[0], 2);
@@ -122,10 +142,14 @@ class weeTemplate extends weeDataHolder implements Printable
 			if ($sValue instanceof Printable)
 				$sValue = $sValue->toString();
 
-			$sLink .= $sName . '=' . urlencode(weeOutput::instance()->decode($sValue)) . '&';
+			if ($this->getEncoder() !== null)
+				$sValue = $this->getEncoder()->decode($sValue);
+			$sLink .= $sName . '=' . urlencode($sValue) . '&';
 		}
 
-		$sLink = weeOutput::instance()->encode(substr($sLink, 0, -1));
+		$sLink = substr($sLink, 0, -1);
+		if ($this->getEncoder() !== null)
+			$sLink = $this->getEncoder()->encode($sLink);
 
 		if (sizeof($aHash) > 1)
 			$sLink .= '#' . $aHash[1];
@@ -139,8 +163,35 @@ class weeTemplate extends weeDataHolder implements Printable
 
 	public function render()
 	{
-		extract(weeOutput::instance()->encodeArray($this->aData));
+		extract($this->toArray());
 		require($this->sFilename);
+	}
+
+	/**
+		Set the MIME type of the template.
+
+		If the new MIME type is known to weeTemplate, a correct encoder is
+		automatically selected.
+
+		@param $sMIMEType The MIME type of the template.
+	*/
+
+	public function setMIMEType($sMIMEType)
+	{
+		if ($sMIMEType == $this->sMIMEType)
+			return;
+
+		static $aEncoders = array(
+			'application/x-latex'	=> 'weeLaTeXEncoder',
+			'application/xml'		=> 'weeXMLEncoder',
+			'text/html'		=> 'weeXHTMLEncoder',
+			'text/plain'	=> 'weeTextEncoder',
+		);
+
+		$this->sMIMEType = $sMIMEType;
+		$this->encodeData(isset($aEncoders[$sMIMEType])
+			? new $aEncoders[$sMIMEType]
+			: null);
 	}
 
 	/**
@@ -155,6 +206,7 @@ class weeTemplate extends weeDataHolder implements Printable
 	{
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
 		$o->addLinkArgs($this->aLinkArgs);
+		$o->setMIMEType($this->getMIMEType());
 		$o->render();
 	}
 

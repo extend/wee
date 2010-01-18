@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	TODO:function to set feed/entry language? Another way to do that?
 */
 
-abstract class weeFeed implements Printable
+abstract class weeFeed implements weeRenderer
 {
 	/**
 		Contains the feed-related data.
@@ -163,8 +163,11 @@ abstract class weeFeed implements Printable
 	}
 
 	/**
-		Output the feed and send the required Content-Type header.
+		Output the feed.
 	*/
 
-	public abstract function render();
+	public function render()
+	{
+		echo $this->toString();
+	}
 }

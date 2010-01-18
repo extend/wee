@@ -39,6 +39,17 @@ class weeAtomFeed extends weeFeed
 	}
 
 	/**
+		Return the MIME type of the taconite object.
+
+		@return string application/atom+xml.
+	*/
+
+	public function getMIMEType()
+	{
+		return 'application/atom+xml';
+	}
+
+	/**
 		Converts an element to its XML equivalent.
 		Called when generating the feed's XML.
 
@@ -111,17 +122,6 @@ class weeAtomFeed extends weeFeed
 		$sEncodedIRI	= urlencode(substr($sIRI, strpos($sIRI, '/') + 1));
 
 		return 'http://' . substr($sIRI, 0, strpos($sIRI, '/') + 1) . $sEncodedIRI;
-	}
-
-	/**
-		Output the feed as application/atom+xml.
-		This method sends the required header automatically.
-	*/
-
-	public function render()
-	{
-		header('Content-Type: application/atom+xml');
-		echo $this->toString();
 	}
 
 	/**

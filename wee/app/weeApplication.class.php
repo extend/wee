@@ -50,6 +50,12 @@ class weeApplication
 
 	protected $aDrivers = array();
 
+    /**
+        The filename used if the frame is to be served as a file.
+    */
+
+    protected $sFilename;
+
 	/**
 		The frame object that will be displayed.
 	*/
@@ -222,26 +228,59 @@ class weeApplication
 
 	public function main()
 	{
-		$this->dispatchEvent($this->translateEvent());
+		$bCLI = defined('WEE_CLI');
+		$bCompress = false;
+		if ($this->cnf('app.output.buffer')) {
+			$bGZIP = !$bCLI && $this->cnf('app.output.gzip') && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+				&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
 
-		if ($this->oFrame->getStatus() != weeFrame::UNAUTHORIZED_ACCESS)
-			return $this->oFrame->render();
-
-		// Otherwise an UnauthorizedAccessException was thrown; show an error and exit.
-
-		if (defined('WEE_CLI'))
-			echo _WT('You are not allowed to access the specified frame/event.'), "\n";
-		else {
-			header('HTTP/1.0 403 Forbidden');
-
-			$sPath = $this->cnf('app.error.unauthorized');
-			empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
-
-			require($sPath);
+			if (ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
+				ob_start();
+			else {
+				ob_start('ob_gzhandler');
+				$bCompress = true;
+			}
 		}
 
-		exit;
+		$this->dispatchEvent($this->translateEvent());
+
+		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
+			// An UnauthorizedAccessException was thrown; show an error and exit.
+
+			if (defined('WEE_CLI'))
+				echo _WT('You are not allowed to access the specified frame/event.'), "\n";
+			else {
+				header('HTTP/1.0 403 Forbidden');
+
+				$sPath = $this->cnf('app.error.unauthorized');
+				empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
+
+				require($sPath);
+			}
+
+			exit;
+		}
+
+		if (!$bCLI) {
+			safe_header('Content-Type: ' . $this->oFrame->getMIMEType());
+			if ($this->sFilename !== null)
+				safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
+			if ($bCompress)
+				safe_header('Content-Encoding: gzip');
+		}
+		return $this->oFrame->render();
 	}
+
+    /**
+        Serve the frame as a file.
+
+        @param $sFilename The filename to be used.
+    */
+
+    public function serveAsFile($sFilename)
+    {
+        $this->sFilename = $sFilename;
+    }
 
 	/**
 		Set the shared instance for this object.

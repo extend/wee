@@ -104,8 +104,8 @@ class weePgSQLResult extends weeDatabaseResult
 		$m = pg_fetch_all($this->rResult);
 
 		if ($m) {
-			if ($this->bMustEncodeData)
-				return weeOutput::instance()->encodeArray($m);
+			if ($this->getEncoder() !== null)
+				return $this->encodeArray($m);
 			return $m;
 		}
 

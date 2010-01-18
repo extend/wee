@@ -277,9 +277,9 @@ final class weeException
 		if (defined('WEE_GZIP'))
 			ob_start('ob_gzhandler');
 
-		// Switch output to XHTML and encode the debug array
-		weeOutput::select(new weeXHTMLOutput);
-		$aDebug = weeOutput::instance()->encodeArray($aDebug);
+		// Encode the debug array for XHTML
+		$oEncoder = new weeXHTMLEncoder;
+		$aDebug = $oEncoder->encodeArray($aDebug);
 
 		require(self::$sErrorPagePath);
 	}

@@ -95,8 +95,8 @@ class weeDatabaseDummyResult extends weeDatabaseResult
 		if ($this->sRowClass !== null)
 			return parent::fetchAll();
 
-		if ($this->bMustEncodeData)
-			return weeOutput::instance()->encodeArray($this->aRows);
+		if ($this->getEncoder() !== null)
+			return $this->encodeArray($this->aRows);
 		return $this->aRows;
 	}
 }

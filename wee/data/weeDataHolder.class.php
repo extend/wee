@@ -71,8 +71,8 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
 		$this->offsetExists($sKey) or burn('InvalidArgumentException',
 			sprintf(_WT('Key "%s" does not exist.'), $sKey));
 
-		if ($this->bMustEncodeData)
-			return weeOutput::instance()->encode($this->aData[$sKey]);
+		if ($this->getEncoder() !== null)
+			return $this->getEncoder()->encode($this->aData[$sKey]);
 		return $this->aData[$sKey];
 	}
 
@@ -136,8 +136,8 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
 
 	public function toArray()
 	{
-		if ($this->bMustEncodeData)
-			return weeOutput::instance()->encodeArray($this->aData);
+		if ($this->getEncoder() !== null)
+			return $this->encodeArray($this->aData);
 		return $this->aData;
 	}
 }

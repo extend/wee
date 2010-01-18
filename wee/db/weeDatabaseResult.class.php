@@ -175,13 +175,8 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 		if ($this->sRowClass !== null)
 			$aRow = new $this->sRowClass($aRow);
 
-		if ($this->bMustEncodeData)
-		{
-			if ($aRow instanceof weeDataSource)
-				return $aRow->encodeData();
-
-			return weeOutput::instance()->encodeArray($aRow);
-		}
+		if ($this->getEncoder() != null)
+			return $this->encodeArray($aRow);
 
 		return $aRow;
 	}
