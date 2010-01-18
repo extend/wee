@@ -27,7 +27,7 @@ if (!defined('ALLOW_INCLUSION')) die;
 	Values can be accessed like an array.
 */
 
-class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
+class weeDataHolder extends weeDataSource implements ArrayAccess, IteratorAggregate, Mappable
 {
 	/**
 		The data.
@@ -44,6 +44,16 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, Mappable
 	public function __construct(array $aData = array())
 	{
 		$this->aData = $aData;
+	}
+
+	/**
+		Returns an external iterator.
+		@return ArrayObject The data to iterate.
+	*/
+
+	public function getIterator()
+	{
+		return new ArrayObject($this->aData);
 	}
 
 	/**
