@@ -51,8 +51,12 @@ class weeACLDbTable
 			$aParams['role_field'] = 'role_id';
 		if (empty($aParams['operation_field']))
 			$aParams['operation_field'] = 'perm_operation';
+
 		if (empty($aParams['resource_fields']))
 			$aParams['resource_fields'] = array('perm_resource');
+		// We also accept the resource_fields parameter as a string of fields delimited by a coma
+		elseif (is_string($aParams['resource_fields']))
+			$aParams['resource_fields'] = explode(',', $aParams['resource_fields']);
 
 		$this->aParams = $aParams;
 	}
@@ -206,7 +210,7 @@ class weeACLDbTable
 
 		foreach ($this->aParams['resource_fields'] as $sField) {
 			if (isset($mResource[$sField]))
-				$sSQL .= ' AND rp.' . $oDb->escapeIdent($sField) . '=' . $oDb->escapeIdent($mResource[$sField]);
+				$sSQL .= ' AND rp.' . $oDb->escapeIdent($sField) . '=' . $oDb->escape($mResource[$sField]);
 			else
 				$sSQL .= ' AND rp.' . $oDb->escapeIdent($sField) . ' IS NULL';
 		}
