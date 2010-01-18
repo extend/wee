@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2009 Dev:Extend
+	Copyright (c) 2006-2010 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -56,6 +56,12 @@ class weeTestSuite implements Mappable, Printable
 	protected $aResults = array();
 
 	/**
+		Array containing the execution times of all the successful tests.
+	*/
+
+	protected $aTimeResults = array();
+
+	/**
 		Initialize the test suite.
 
 		@param $sTestsPath Path to the unit test cases.
@@ -100,22 +106,30 @@ class weeTestSuite implements Mappable, Printable
 
 		@param	$sFile			The filename of the unit test case.
 		@param	$mResult		The result of the unit test case.
+		@param	$fTime			Execution time of the test.
 		@throw	DomainException	$mResult is not a valid result.
 	*/
 
-	protected function addResult($sFile, $mResult)
+	protected function addResult($sFile, $mResult, $fTime = 0)
 	{
 		$mResult == 'success' or $mResult == 'skip' or is_object($mResult) and $mResult instanceof Exception
 			or burn('DomainException', _WT('$mResult is not a valid result.'));
 
 		$this->aResults[$sFile] = $mResult;
 
+		// Shorten the filename by limiting it to ROOT_PATH when we are inside ROOT_PATH
+		// Just improves the display, don't change it for the $aResults array
+		$sFile = str_replace(realpath(ROOT_PATH) . '/', '', $sFile);
+
 		if (!is_string($this->mLastResult) || !is_string($mResult))
 			echo "--\n";
-		echo $sFile, ': ';
+		echo $sFile . ': ';
 
-		if ($mResult === 'success' || $mResult === 'skip')
-			echo _WT($mResult), "\n";
+		if ($mResult === 'success') {
+			echo _WT($mResult) . ' [' . round($fTime, 2) . "s]\n";
+			$this->aTimeResults[$sFile] = $fTime;
+		} elseif ($mResult === 'skip')
+			echo _WT($mResult) . "\n";
 		elseif ($mResult instanceof ErrorException) {
 			echo _WT('error'), "\n",
 				_WT('Message: '), $mResult->getMessage(), "\n",
@@ -280,9 +294,10 @@ class weeTestSuite implements Mappable, Printable
 		foreach ($this->aResults as $sPath => $mResult) {
 			try {
 				$oTest = new weeUnitTestCase($sPath);
-				$oTest->run();
 
-				$this->addResult($sPath, 'success');
+				$fBefore = xdebug_time_index();
+				$oTest->run();
+				$this->addResult($sPath, 'success', xdebug_time_index() - $fBefore);
 
 				if ($oTest->hasExtData())
 					$this->aExtData[$sPath] = $oTest->getExtData();
@@ -338,7 +353,7 @@ class weeTestSuite implements Mappable, Printable
 			}
 		}
 
-		// Count the number of test failed, succeeded and skipped and output a summary
+		// Count the number of tests failed, succeeded and skipped and output a summary
 
 		// The array contains "skip" and "success" values but also instances of Exception,
 		// array_count_values triggers a warning when one of the values in the array cannot
@@ -360,6 +375,22 @@ class weeTestSuite implements Mappable, Printable
 
 		if ($aCounts['skip'] != 0)
 			$s .= sprintf(_WT(' (%d skipped)'), $aCounts['skip']);
+
+		// And finally we output the tests that took the most time to run (and are probably inefficient in various ways)
+
+		$s .= "\n\nList of tests with the biggest execution time:";
+
+		arsort($this->aTimeResults);
+
+		$iTotal = count($this->aTimeResults);
+		if ($iTotal > 10)
+			$iTotal = 10;
+
+		reset($this->aTimeResults);
+		for ($i = 1; $i <= $iTotal; $i++) {
+			$s .= "\n" . $i . '- ' . key($this->aTimeResults) . ': ' . round(current($this->aTimeResults), 2) . 's';
+			next($this->aTimeResults);
+		}
 
 		return $s . "\n";
 	}

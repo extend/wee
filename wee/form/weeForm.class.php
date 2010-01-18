@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2009 Dev:Extend
+	Copyright (c) 2006-2010 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -340,6 +340,15 @@ class weeForm implements Printable
 	}
 
 	/**
+		Output the form.
+	*/
+
+	public function render()
+	{
+		echo $this->toString();
+	}
+
+	/**
 		Set the output encoding to use when calling toString.
 
 		@param	$sEncoding The new encoding to use.
@@ -379,6 +388,41 @@ class weeForm implements Printable
 		$oDoc->loadXML($this->buildXSLStylesheet());
 		$oXSL->importStyleSheet($oDoc); // time consuming
 
+		$oWidgetsNode = $this->xpathOne('//widgets');
+		$oWidgetsNode = dom_import_simplexml($oWidgetsNode);
+
+		// If some fields are required we put a label on top to inform the user
+
+		if (count($this->oXML->xpath('//widget[@required]')) > 0) {
+			$oOwnerDoc = $oWidgetsNode->ownerDocument;
+
+			$oNode = $oOwnerDoc->createElement('ol');
+			$oNode->setAttribute('class', 'notice required');
+			$oWidgetsNode->insertBefore($oNode, $oWidgetsNode->firstChild);
+
+			$o = $oOwnerDoc->createElement('li');
+			$oNode->appendChild($o);
+
+			$aNotice = explode('*', _WT('The fields marked with * are required.'));
+			$o->appendChild($oOwnerDoc->createTextNode($aNotice[0]));
+			$o->appendChild($oOwnerDoc->createElement('em', '*'));
+			$o->appendChild($oOwnerDoc->createTextNode($aNotice[1]));
+		}
+
+		// If we have any error we put a friendly message on top
+		// $oErrorOl created here is also used to display global error messages
+
+		if (!empty($this->aErrors)) {
+			$oErrorOl = $oWidgetsNode->ownerDocument->createElement('ol');
+			$oErrorOl->setAttribute('class', 'error');
+
+			$oWidgetsNode->insertBefore($oErrorOl, $oWidgetsNode->firstChild);
+			$oErrorOl = simplexml_import_dom($oErrorOl);
+
+			$o = $oErrorOl->addChild('li');
+			$o->addChild('strong', _WT('One or more errors have been detected.'));
+		}
+
 		// Fill in the values and errors if any
 
 		$aKeys = array_keys(array_merge($this->aData, $this->aErrors));
@@ -388,21 +432,6 @@ class weeForm implements Printable
 			// an ordered list at the beginning of the form and put the errors inside it.
 
 			if (empty($sName)) {
-				$a = $this->xpath('//widgets/ol[class="errors"]');
-
-				if (!empty($a))
-					$oErrorDiv = $a[0];
-				else {
-					$oNode = $this->xpathOne('//widgets');
-					$oNode = dom_import_simplexml($oNode);
-
-					$oErrorOl = $oNode->ownerDocument->createElement('ol');
-					$oErrorOl->setAttribute('class', 'errors');
-
-					$oNode->insertBefore($oErrorOl, $oNode->firstChild);
-					$oErrorOl = simplexml_import_dom($oErrorOl);
-				}
-
 				if (is_array($this->aErrors[$sName]))
 					foreach ($this->aErrors[$sName] as $sMsg)
 						$oErrorOl->addChild('li', $sMsg);
@@ -516,12 +545,12 @@ class weeForm implements Printable
 					(is_string($aData[(string)$oNode->name]) && !strlen($aData[(string)$oNode->name])) ||
 					(is_array($aData[(string)$oNode->name]) && empty($aData[(string)$oNode->name])))
 				{
-					if (!empty($oNode['required']))
+					if (!empty($oNode['required']) && $oNode['type'] != 'fileinput')
 					{
 						if (!empty($oNode['required_error']))
 							$oException->addError((string)$oNode->name, _T($oNode['required_error']));
 						else
-							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for the field %s.'), (string)$oNode->label));
+							$oException->addError((string)$oNode->name, sprintf(_WT('Input is required for the field "%s".'), (string)$oNode->label));
 					}
 
 					continue;

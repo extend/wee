@@ -2,7 +2,7 @@
 
 /**
 	Web:Extend
-	Copyright (c) 2006-2009 Dev:Extend
+	Copyright (c) 2006-2010 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -160,7 +160,6 @@ class weeConfigFile implements Mappable
 		@param	$sInstruction	The 'instruction' string
 		@return	bool			Whether this system is the targeted system
 		@warning				The function name must not have spaces
-		@todo More targets
 	*/
 
 	protected function isTargetedSystem($sInstruction)

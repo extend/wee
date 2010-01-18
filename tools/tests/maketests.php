@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2009 Dev:Extend
+	Copyright (c) 2006-2010 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ if (!isset($aOptions['f'])) {
 if (isset($aOptions['c']))
 	define('WEE_CODE_COVERAGE', 1);
 
-define('DEBUG', 1);
+// define('DEBUG', 1);
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
 

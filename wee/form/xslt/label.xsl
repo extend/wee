@@ -4,6 +4,7 @@
 <xsl:template name="label">
 	<xsl:param name="name"/>
 	<xsl:param name="help"/>
+	<xsl:param name="required"/>
 
 	<label>
 		<xsl:attribute name="for">
@@ -17,6 +18,10 @@
 		</xsl:if>
 
 		<xsl:value-of select="label"/>
+
+		<xsl:if test="$required">
+			<em class="required"> *</em>
+		</xsl:if>
 	</label>
 </xsl:template>
 

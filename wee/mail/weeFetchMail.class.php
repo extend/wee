@@ -2,7 +2,7 @@
 
 /*
 	Web:Extend
-	Copyright (c) 2006-2009 Dev:Extend
+	Copyright (c) 2006-2010 Dev:Extend
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -75,7 +75,16 @@ class weeFetchMail
 			$sConnection .= $aParams['flags'];
 		$sConnection .= '}' . $aParams['mailbox'];
 
-		$this->rLink = imap_open($sConnection, $aParams['user'], $aParams['password'], OP_READONLY, 1);
+		$this->rLink = @imap_open($sConnection, $aParams['user'], $aParams['password'], OP_READONLY, 1);
+
+		// We must clear the errors and alerts or they'll be thrown separately, possibly multiple times.
+		// Despite their names, those functions also clear the errors buffer.
+		imap_alerts();
+		$a = imap_errors();
+
+		// Then we only output the first error from the array we retrieved (usually good enough).
+		$this->rLink === false and burn('UnexpectedValueException',
+			_WT("Couldn't open stream '" . $sConnection . "'. " . $a[0]));
 	}
 
 	/**

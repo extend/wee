@@ -4,11 +4,18 @@
 	<title>Web:Extend - QUnit Test Suite</title>
 	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-	<link type="text/css" rel="stylesheet" href="http://dev.jquery.com/view/trunk/qunit/testsuite.css" media="screen"/>
+	<link type="text/css" rel="stylesheet" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" media="screen"/>
+	<script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
+
 	<script type="text/javascript">
+nbSkipped = 0;
+
 function run(t) {
 	var result = $.ajax({url:t,async:false}).responseText;
-	ok(result == 'success', result);
+	if (result == 'skip')
+		nbSkipped++;
+	else
+		ok(result == 'success', result);
 }
 
 function batch(n, t) {
@@ -38,7 +45,6 @@ $(function() {
 
 	module('CLI');
 <?php
-define('DEBUG', 1);
 define('ALLOW_INCLUSION', 1);
 define('ROOT_PATH', '../../');
 require(ROOT_PATH . 'wee/wee.php');
@@ -58,16 +64,18 @@ $aTests = array_keys($aTests);
 foreach ($aTests as $i => $sPath):?>
 	test('<?php echo substr($sPath, strlen(getcwd() . '/../tests/'))?>', function() {run('cli.php?t=<?php echo $i?>');});
 <?php endforeach?>
+
+	QUnit.done = function() {
+		$('#qunit-testresult').append('<br/>' + nbSkipped + ' tests have been skipped.');
+	};
 });
 	</script>
 </head>
 
 <body>
-	<script type="text/javascript" src="http://jqueryjs.googlecode.com/svn/trunk/qunit/qunit.js"></script>
-	<h1>Web:Extend - QUnit Test Suite</h1>
-	<h2 id="banner"></h2>
-	<h2 id="userAgent"></h2>
+	<h1 id="qunit-header">Web:Extend - QUnit Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
-	<div id="main"></div>
 </body>
 </html>
