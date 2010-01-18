@@ -189,7 +189,7 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 		);
 
 		$this->sMIMEType = $sMIMEType;
-		$this->encodeData(isset($aEncoders[$sMIMEType])
+		$this->setEncoder(isset($aEncoders[$sMIMEType])
 			? new $aEncoders[$sMIMEType]
 			: null);
 	}

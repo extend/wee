@@ -51,7 +51,7 @@ abstract class weeDataSource
 
 		foreach ($a as $mName => $mValue) {
 			if ($mValue instanceof weeDataSource)
-				$mValue->encodeData($this->oEncoder);
+				$mValue->setEncoder($this->oEncoder);
 			elseif (is_object($mValue))
 				continue;
 			elseif (is_array($mValue))
@@ -62,19 +62,6 @@ abstract class weeDataSource
 
 		return $a;
 	}
-
-	/**
-		Tells the object to automatically encode the data before returning it.
-
-		@return $this
-	*/
-
-	public function encodeData(weeEncoder $oEncoder)
-	{
-		$this->oEncoder = $oEncoder;
-		return $this;
-	}
-
 	/**
 		Return the encoder used by this data source.
 
@@ -84,5 +71,17 @@ abstract class weeDataSource
 	public function getEncoder()
 	{
 		return $this->oEncoder;
+	}
+
+	/**
+		Define the encoder to be used to automatically encode data.
+
+		@return $this
+	*/
+
+	public function setEncoder($oEncoder)
+	{
+		$this->oEncoder = $oEncoder;
+		return $this;
 	}
 }
