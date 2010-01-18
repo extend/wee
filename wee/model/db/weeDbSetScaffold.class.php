@@ -448,11 +448,25 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 	/**
 		Alias of fetchSubset with default values. Fetch all rows in the table.
+
+		@return mixed An instance of weeDatabaseResult.
 	*/
 
 	public function fetchAll()
 	{
 		return $this->fetchSubset();
+	}
+
+	/**
+		Alias of fetchSubset(0, 1)->fetch(). Fetch the first result only.
+
+		@return mixed An instance of weeDatabaseResult.
+		@throw DatabaseException The result set does not contain exactly one row.
+	*/
+
+	public function fetchOne()
+	{
+		return $this->fetchSubset(0, 1)->fetch();
 	}
 
 	/**
