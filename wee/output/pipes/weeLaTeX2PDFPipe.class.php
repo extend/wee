@@ -82,18 +82,18 @@ class weeLaTeX2PDFPipe extends weePipe
 		// Convert it to PDF
 
 		$sTmpDir = sys_get_temp_dir();
-		chdir($sTmpDir);
 
-		$sPdfLatex = 'pdflatex ' . array_value($this->aParams, 'options') . ' ' . $sTmpFilename;
+		$sPdfLatex = 'cd ' . $sTmpDir . ' && pdflatex ' . array_value($this->aParams, 'options') . ' ' . $sTmpFilename;
 		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex1.log');
 		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex2.log');
 
-		// TODO: Throw an exception or something if the PDF generation isnt completed
+		$iSize = @filesize($sTmpFilename . '.pdf');
+		$iSize === false and burn('UnexpectedValueException',
+			_WT('The conversion from LaTeX to PDF failed.'));
 
 		// Send the PDF to the browser
 
-		safe_header('Content-Length: ' . filesize($sTmpFilename . '.pdf'));
-
+		safe_header('Content-Length: ' . $iSize);
 		readfile($sTmpFilename . '.pdf');
 
 		// Cleanup the temporary directory
