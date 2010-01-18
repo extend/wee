@@ -270,6 +270,12 @@ final class weeException
 		while (ob_get_level())
 			ob_end_clean();
 
+		// Try to set headers to sane values
+		// Silenced the calls in case unbuffered output has already been sent
+		@safe_header('Content-Type: text/html');
+		@safe_header('Content-Disposition: inline');
+		@safe_header('Content-Encoding: identity');
+
 		if (empty(self::$sErrorPagePath))
 			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';
 
