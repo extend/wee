@@ -229,11 +229,11 @@ class weeApplication
 	public function main()
 	{
 		$bCLI = defined('WEE_CLI');
-		$bGZIP = !$bCLI && $this->cnf('app.output.gzip') && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
-			&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
-
+		$bCompress = false;
 		if ($this->cnf('app.output.buffer')) {
-			$bCompress = false;
+			$bGZIP = !$bCLI && $this->cnf('app.output.gzip') && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+				&& in_array('gzip', explode(',', str_replace(', ', ',', $_SERVER['HTTP_ACCEPT_ENCODING'])));
+
 			if (ini_get('output_buffering') || ini_get('zlib.output_compression') || !$bGZIP)
 				ob_start();
 			else {
@@ -264,9 +264,9 @@ class weeApplication
 		if (!$bCLI) {
 			safe_header('Content-Type: ' . $this->oFrame->getMIMEType());
 			if ($this->sFilename !== null)
-			    safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
+				safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
 			if ($bCompress)
-			    safe_header('Content-Encoding: gzip');
+				safe_header('Content-Encoding: gzip');
 		}
 		return $this->oFrame->render();
 	}
