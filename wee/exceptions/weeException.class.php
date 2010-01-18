@@ -273,10 +273,6 @@ final class weeException
 		if (empty(self::$sErrorPagePath))
 			self::$sErrorPagePath = ROOT_PATH . 'res/wee/error.htm';
 
-		// Restart the gzip handler if it was started before
-		if (defined('WEE_GZIP'))
-			ob_start('ob_gzhandler');
-
 		// Encode the debug array for XHTML
 		$oEncoder = new weeXHTMLEncoder;
 		$aDebug = $oEncoder->encodeArray($aDebug);
