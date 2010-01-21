@@ -22,7 +22,7 @@ $this->isNull(test_url_to_string(),
 $this->isEqual('/foo', test_url_to_string('/foo'),
 	_WT('weeURL::toString should return the link as-is if there is no data.'));
 
-$this->isEqual('/fée', test_url_to_string('/fée'),
+$this->isEqual('/fÃ©e', test_url_to_string('/fÃ©e'),
 	_WT('weeURL::toString should not encode unicode characters.'));
 
 $this->isEqual('/foo&/bar?<=blah&answer=42', test_url_to_string('/foo&/bar', array('<' => 'blah', 'answer' => 42)),
@@ -69,7 +69,7 @@ $this->isNull(test_encoded_url_to_string(),
 $this->isEqual('/foo', test_encoded_url_to_string('/foo'),
 	_WT('weeURL::toString should return the link as-is if there is no data.'));
 
-$this->isEqual('/fée', test_encoded_url_to_string('/fée'),
+$this->isEqual('/fÃ©e', test_encoded_url_to_string('/fÃ©e'),
 	_WT('weeURL::toString should not encode unicode characters.'));
 
 $this->isEqual('/foo&amp;/bar?&lt;=blah&amp;answer=42', test_encoded_url_to_string('/foo&/bar', array('<' => 'blah', 'answer' => 42)),
