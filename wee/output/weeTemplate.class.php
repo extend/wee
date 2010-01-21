@@ -38,12 +38,6 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 	protected $sFilename;
 
 	/**
-		Array containing predefined values to be added to the link parameters.
-	*/
-
-	protected $aLinkArgs = array();
-
-	/**
 		The MIME Type of the template.
 	*/
 
@@ -65,18 +59,6 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 
 		parent::__construct($aData);
 		$this->setMIMEType('text/html');
-	}
-
-	/**
-		Add new values to the parameters to be added to links created
-		using the method mkLink.
-
-		@param $aArgs Parameters to be added.
-	*/
-
-	public function addLinkArgs($aArgs)
-	{
-		$this->aLinkArgs = $aArgs + $this->aLinkArgs;
 	}
 
 	/**
@@ -108,53 +90,6 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 	public function getMIMEType()
 	{
 		return $this->sMIMEType;
-	}
-
-	/**
-		Create a link using a base url (which may or may not contain parameters)
-		and the values predefined previously and/or given by the $aArgs arguments.
-
-		@param	$sLink Base URL, in its non-encoded form.
-		@param	$aArgs Parameters to be added.
-		@return string Link newly created with the given parameters added.
-	*/
-
-	protected function mkLink($sLink, $aArgs = array())
-	{
-		$aArgs = $aArgs + $this->aLinkArgs;
-
-		if (empty($aArgs) && $this->getEncoder() !== null)
-			return $this->getEncoder()->encode($sLink);
-
-		$aHash = explode('#', $sLink, 2);
-		$aURL = explode('?', $aHash[0], 2);
-
-		if (sizeof($aURL) > 1) {
-			$aOldArgs = array();
-			parse_str($aURL[1], $aOldArgs);
-			$aArgs = $aArgs + $aOldArgs;
-		}
-
-		$sLink = $aURL[0] . '?';
-
-		foreach ($aArgs as $sName => $sValue)
-		{
-			if ($sValue instanceof Printable)
-				$sValue = $sValue->toString();
-
-			if ($this->getEncoder() !== null)
-				$sValue = $this->getEncoder()->decode($sValue);
-			$sLink .= $sName . '=' . urlencode($sValue) . '&';
-		}
-
-		$sLink = substr($sLink, 0, -1);
-		if ($this->getEncoder() !== null)
-			$sLink = $this->getEncoder()->encode($sLink);
-
-		if (sizeof($aHash) > 1)
-			$sLink .= '#' . $aHash[1];
-
-		return $sLink;
 	}
 
 	/**
@@ -205,7 +140,6 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 	protected function template($sTemplate, array $aData = array())
 	{
 		$o = new weeTemplate($sTemplate, $aData + $this->aData);
-		$o->addLinkArgs($this->aLinkArgs);
 		$o->setMIMEType($this->getMIMEType());
 		$o->render();
 	}
@@ -221,5 +155,20 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 		ob_start();
 		$this->render();
 		return ob_get_clean();
+	}
+
+	/**
+		Creates a new weeURL object.
+		Use this from the inside of the template instead of creating the object directly.
+
+		@return weeURL The weeURL object newly created.
+	*/
+
+	protected function url($sBaseURL = null, $aData = array())
+	{
+		$oURL = new weeURL($sBaseURL);
+		$oURL->setEncoder($this->getEncoder());
+		$oURL->addData($aData);
+		return $oURL;
 	}
 }
