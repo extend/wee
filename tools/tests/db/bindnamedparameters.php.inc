@@ -10,8 +10,8 @@ if (!class_exists('weeDatabase_testBindNamedParameters', false)) {
 			$this->oDb = $oDb;
 		}
 
-		public function bindNamedParameters($aArguments) {
-			return $this->oDb->bindNamedParameters($aArguments);
+		public function bindNamedParameters($sQueryString, $aParameters) {
+			return $this->oDb->bindNamedParameters($sQueryString, $aParameters);
 		}
 
 		// abstract methods of weeDatabase
@@ -30,19 +30,19 @@ $oDb = new weeDatabase_testBindNamedParameters($oDb);
 // Test the method weeDatabase::bindNamedParameters
 
 try {
-	$oDb->bindNamedParameters(array(
+	$oDb->bindNamedParameters(
 		'SELECT * FROM table WHERE my_string=:my_string AND my_int=:my_int AND my_float=:my_float LIMIT 1',
-		array('my_string' => 'eggs are good, yup, yum', 'my_int' => 42, 'my_float' => 2008.2008),
-	));
+		array('my_string' => 'eggs are good, yup, yum', 'my_int' => 42, 'my_float' => 2008.2008)
+	);
 } catch (DatabaseException $e) {
 	$this->fail(_WT('weeDatabase::bindNamedParameters should not throw an exception for a random value.'));
 }
 
 try {
-	$oDb->bindNamedParameters(array(
+	$oDb->bindNamedParameters(
 		'SELECT * FROM table WHERE my_field=:my_value LIMIT 1',
-		array('my_value' => null),
-	));
+		array('my_value' => null)
+	);
 } catch (DatabaseException $e) {
 	$this->fail(_WT('weeDatabase::bindNamedParameters should not throw an exception for null values.'));
 }

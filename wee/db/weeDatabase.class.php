@@ -73,26 +73,29 @@ abstract class weeDatabase
 		Common function for building queries that use named parameters placeholders.
 		Used to replace all the named parameters in the query by the specified arguments, escaped as needed.
 
-		@param	$aArguments	The query and the array of arguments passed to the query method
-		@return	string		The query safely build
+		@param $sQueryString The query string.
+		@param $aParameters Associative array of parameters to bind into the query.
+		@return string The query safely built.
 	*/
 
-	protected function bindNamedParameters($aArguments)
+	public function bindNamedParameters($sQueryString, $aParameters)
 	{
-		$sQueryString = $aArguments[0];
-
 		$aMatches = array();
 		preg_match_all('/:([\w_]+)/', $sQueryString, $aMatches);
+
+		// We must reverse-order the matches to prevent issues that can happen
+		// if we have a parameter name matching the beginning of another parameter name.
+		// For example, :my and :mystuff.
 		arsort($aMatches[1]);
 
 		foreach ($aMatches[1] as $sName)
 		{
 			// see http://blog.extend.ws/2008/03/01/arrayaccess-quirks/
-			is_array($aArguments[1]) ? array_key_exists($sName, $aArguments[1]) : isset($aArguments[1][$sName])
+			is_array($aParameters) ? array_key_exists($sName, $aParameters) : isset($aParameters[$sName])
 				or burn('InvalidArgumentException',
 					sprintf(_WT('Could not bind the parameter "%s" because its value was not given in the arguments.'), $sName));
 
-			$sQueryString = str_replace(':' . $sName, $this->escape($aArguments[1][$sName]), $sQueryString);
+			$sQueryString = str_replace(':' . $sName, $this->escape($aParameters[$sName]), $sQueryString);
 		}
 
 		return $sQueryString;
@@ -102,23 +105,24 @@ abstract class weeDatabase
 		Common function for building queries that use question marks placeholders.
 		Used to replace all the ? in the query by the specified arguments, escaped as needed.
 
-		@param	$aArguments	The query and the arguments passed to the query method
-		@return	string		The query safely built
+		@param $sQueryString The query string.
+		@param $aParameters Indexed array (starting at 1) of parameters to bind into the query.
+		@return string The query safely built.
 	*/
 
-	protected function bindQuestionMarks($aArguments)
+	public function bindQuestionMarks($sQueryString, $aParameters)
 	{
-		$aParts		= explode('?', $aArguments[0]);
+		$aParts		= explode('?', $sQueryString);
 
 		$iNbParts	= sizeof($aParts);
-		$iNbArgs	= sizeof($aArguments);
+		$iNbArgs	= sizeof($aParameters);
 
 		$iNbParts == $iNbArgs or burn('UnexpectedValueException',
 			_WT('The number of placeholders in the query does not match the number of arguments.'));
 
 		$s = $aParts[0];
-		for ($i = 1; $i < sizeof($aArguments); $i++)
-			$s .= $this->escape($aArguments[$i]) . $aParts[$i];
+		for ($i = 1; $i < sizeof($aParameters); $i++)
+			$s .= $this->escape($aParameters[$i]) . $aParts[$i];
 
 		return $s;
 	}
@@ -304,12 +308,13 @@ abstract class weeDatabase
 
 	public function query($mQueryString)
 	{
-		if (func_num_args() > 1)
-		{
-			if (strpos($mQueryString, '?') !== false)
-				$mQueryString = $this->bindQuestionMarks(func_get_args());
+		if (func_num_args() > 1) {
+			$aArgs = func_get_args();
+
+			if (strpos($mQueryString, '?') === false)
+				$mQueryString = $this->bindNamedParameters($aArgs[0], $aArgs[1]);
 			else
-				$mQueryString = $this->bindNamedParameters(func_get_args());
+				$mQueryString = $this->bindQuestionMarks($aArgs[0], $aArgs);
 		}
 
 		return $this->doQuery($mQueryString);
