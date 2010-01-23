@@ -62,6 +62,7 @@ abstract class weeDataSource
 
 		return $a;
 	}
+
 	/**
 		Return the encoder used by this data source.
 

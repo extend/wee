@@ -9,4 +9,4 @@ $this->isNull($o->getEncoder(),
 $oEncoder = new weeTextEncoder;
 $o->setEncoder($oEncoder);
 $this->isEqual($oEncoder, $o->getEncoder(),
-	_WT('weeDataSource::getEncoder should be return the encoder given to weeDataSource::encodeData.'));
+	_WT('weeDataSource::getEncoder should be return the encoder given to weeDataSource::setEncoder.'));
