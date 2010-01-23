@@ -158,10 +158,12 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 	}
 
 	/**
-		Creates a new weeURL object.
+		Output a correctly encoded URL.
 		Use this from the inside of the template instead of creating the object directly.
 
-		@return weeURL The weeURL object newly created.
+		@param $sBaseURL The base of the resulting URL.
+		@param $aData The data to be appended.
+		@see weeURL
 	*/
 
 	protected function url($sBaseURL = null, $aData = array())
@@ -169,6 +171,6 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 		$oURL = new weeURL($sBaseURL);
 		$oURL->setEncoder($this->getEncoder());
 		$oURL->addData($aData);
-		return $oURL;
+		echo $oURL->toString();
 	}
 }
