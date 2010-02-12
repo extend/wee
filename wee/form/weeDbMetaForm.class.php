@@ -228,8 +228,8 @@ class weeDbMetaForm extends weeForm
 				sprintf(_WT('The reference table %s do not have a primary key.'), $aRefMeta['table']));
 
 			if (empty($aRef['key'])) {
-				count($aRefMeta['primary']) == 1 or burn('UnexpectedValueException', 'Multiple columns for a primary key are not supported yet.'); //TODO
-				$aMap[$aRefMeta['primary'][0]] = array('set' => $oRefSet, 'meta' => $aRefMeta, 'key' => $aRefMeta['primary'][0]);
+				if (count($aRefMeta['primary']) == 1)
+					$aMap[$aRefMeta['primary'][0]] = array('set' => $oRefSet, 'meta' => $aRefMeta, 'key' => $aRefMeta['primary'][0]);
 			} elseif (count($aRef['key']) == 1) {
 				$aKeys = array_keys($aRef['key']);
 				$aValues = array_values($aRef['key']);
