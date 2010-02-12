@@ -14,7 +14,7 @@ try {
 	$o->addTag('append', 'root', ' &eagrave;');
 	$s = $o->applyTo('<!DOCTYPE dummy SYSTEM ""><root>&eacute;</root>');
 } catch (BadXMLException $e) {
-	echo $e, "\n";
+	echo $e . "\n";
 	$this->fail(_WT('weeTaconite does not ignore undeclared entities in the document to transform.'));
 }
 

@@ -1,3 +1,3 @@
 <?php
 
-echo 'File: ', $oAttach->getFilename(), "\n", $oAttach->getData(), "\n";
+echo 'File: ' . $oAttach->getFilename() . "\n" . $oAttach->getData() . "\n";

@@ -145,7 +145,7 @@ class weeTestSuite implements Mappable, Printable
 			if ($mResult instanceof ComparisonTestException) {
 				echo _WT('Expected: ');
 				var_export($mResult->getExpected());
-				echo "\n", _WT('Actual: ');
+				echo "\n" . _WT('Actual: ');
 				var_export($mResult->getActual());
 				echo "\n";
 			}
