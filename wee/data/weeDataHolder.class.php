@@ -81,8 +81,12 @@ class weeDataHolder extends weeDataSource implements ArrayAccess, IteratorAggreg
 		$this->offsetExists($sKey) or burn('InvalidArgumentException',
 			sprintf(_WT('Key "%s" does not exist.'), $sKey));
 
-		if ($this->getEncoder() !== null)
+		if ($this->getEncoder() !== null) {
+			if (is_array($this->aData[$sKey]) || is_object($this->aData[$sKey]))
+				return $this->encodeArray($this->aData[$sKey]);
 			return $this->getEncoder()->encode($this->aData[$sKey]);
+		}
+
 		return $this->aData[$sKey];
 	}
 
