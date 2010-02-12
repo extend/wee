@@ -200,9 +200,9 @@ class weeLDAPResult implements Iterator, Countable
 	}
 
 	/**
-		Check if there is a current element after calls to rewind() or next().
+		Check if there is a current element after calls to rewind or next.
 
-		@return bool whether there is a current element after calls to rewind() or next().
+		@return bool whether there is a current element after calls to rewind or next.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 

@@ -207,7 +207,7 @@ abstract class weeDatabaseResult extends weeDataSource implements Countable, Ite
 	}
 
 	/**
-		Returns whether there is a current row after calls to rewind() or next().
+		Returns whether there is a current row after calls to rewind or next.
 
 		@see	http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/

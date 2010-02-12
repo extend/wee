@@ -239,9 +239,9 @@ class weeLDAPEntry implements ArrayAccess, Iterator, Mappable
 	}
 
 	/**
-		Check if there is a current attribute after calls to rewind() or next().
+		Check if there is a current attribute after calls to rewind or next.
 
-		@return bool Whether there is a current attribute after calls to rewind() or next().
+		@return bool Whether there is a current attribute after calls to rewind or next.
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
 

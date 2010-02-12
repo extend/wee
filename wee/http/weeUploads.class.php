@@ -223,7 +223,7 @@ class weeUploads implements Iterator
 	}
 
 	/**
-		Check if there is a current element after calls to rewind() or next().
+		Check if there is a current element after calls to rewind or next.
 
 		@see http://www.php.net/~helly/php/ext/spl/interfaceIterator.html
 	*/
