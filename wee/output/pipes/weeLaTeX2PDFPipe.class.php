@@ -87,6 +87,7 @@ class weeLaTeX2PDFPipe extends weePipe
 		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex1.log');
 		exec($sPdfLatex . ' > ' . $sTmpDir . '/pdflatex2.log');
 
+		// filesize will trigger a warning if the file couldn't be stat'd (usually because it doesn't exist).
 		$iSize = @filesize($sTmpFilename . '.pdf');
 		$iSize === false and burn('UnexpectedValueException',
 			_WT(sprintf('The conversion of file "%s" from LaTeX to PDF failed.', $sTmpFilename)));

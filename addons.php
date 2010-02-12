@@ -139,6 +139,7 @@ function wee_addons_remove($sAddon)
 
 	rsort($aDirs);
 	foreach ($aDirs as $sFile) {
+		// rmdir triggers a warning when the directory could not be removed (usually because it's not empty).
 		if (@rmdir($sFile))
 			echo 'Remove directory ' . $sFile . "\n";
 		else
