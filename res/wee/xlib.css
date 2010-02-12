@@ -1,0 +1,39 @@
+/*
+	Web:Extend
+	Copyright (c) 2006-2010 Dev:Extend
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+ul.item-pagination {margin:0;text-align:right}
+ul.item-pagination li {display:inline;margin-right:.5em}
+ul.item-pagination li.disabled {color:#888}
+ul.item-pagination li.first *:before {content:" << "}
+ul.item-pagination li.prev *:before {content:" < "}
+ul.item-pagination li.next *:after {content:" > "}
+ul.item-pagination li.last *:after {content:" >> "}
+
+tr.empty-list {font-style:italic;text-align:center}
+tr.global-actions ul {float:right}
+table.data_list th {text-align:center}
+table.data_list th, table.data_list td {padding:.2em}
+table.files_list .size {width:55px}
+table.files_list td.size {text-align:right}
+table.files_list .type {width:150px}
+table.files_list .date {width:100px}
+
+ul.actions {margin:0}
+ul.actions li {display:inline;list-style:none;margin:0 .5em;padding:0}
+ul.actions li form {display:inline;margin:0;padding:0}
