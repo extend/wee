@@ -1,0 +1,3 @@
+category: performance
+You shouldn't changes the elements of an array iteratively using foreach.
+A simple for loop over all the array keys is a lot more efficient.

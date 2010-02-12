@@ -1,0 +1,4 @@
+function\s*goto
+function\s*namespace
+class\s*goto
+class\s*namespace

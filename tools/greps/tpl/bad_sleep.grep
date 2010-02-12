@@ -1,0 +1,4 @@
+<\?[^>]*\bsleep\s*\(
+<\?[^>]*\busleep\s*\(
+<\?[^>]*\btime_nanosleep\s*\(
+<\?[^>]*\btime_sleep_until\s*\(

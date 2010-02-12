@@ -1,0 +1,4 @@
+category: good practice
+The silence operator should be avoided whenever possible. It will hide bugs
+that should be fixed. Do not use it unless expressely required, in which case
+you should put a comment above it to explain why you used it.

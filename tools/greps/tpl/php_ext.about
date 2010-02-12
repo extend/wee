@@ -1,0 +1,4 @@
+category: good practice
+It is recommended to hide the PHP extension to the user. Therefore you should
+avoid printing it in templates. Instead use url rewriting (see share/apache
+for an example of configuration).

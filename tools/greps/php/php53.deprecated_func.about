@@ -1,0 +1,3 @@
+category: deprecated
+These functions are deprecated as of PHP 5.3.
+See http://fr.php.net/manual/en/migration53.deprecated.php

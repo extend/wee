@@ -1,0 +1,4 @@
+category: security
+Building links manually is insecure as you could forget to properly urlencode
+the parameters. Instead you should use weeURL or the method $this->url from
+inside the template.

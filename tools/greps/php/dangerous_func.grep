@@ -1,0 +1,12 @@
+\bputenv\s*\(
+\bchdir\s*\(
+\bdl\s*\(
+=[^;\n]*`.+`
+\bshell_exec\s*\(
+\bexec\s*\(
+\bsystem\s*\(
+\bpassthru\s*\(
+\bpopen\s*\(
+\bproc_open\s*\(
+\bset_time_limit\s*\(
+\bmax_execution_time\b

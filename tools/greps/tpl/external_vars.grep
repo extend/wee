@@ -1,0 +1,13 @@
+<\?[^>]*\s*$GLOBALS\[
+<\?[^>]*\s*$_SERVER\[
+<\?[^>]*\s*$_GET\[
+<\?[^>]*\s*$_POST\[
+<\?[^>]*\s*$_FILES\[
+<\?[^>]*\s*$_COOKIE\[
+<\?[^>]*\s*$_SESSION\[
+<\?[^>]*\s*$_REQUEST\[
+<\?[^>]*\s*$_ENV\[
+<\?[^>'"]*\s+global
+<\?[^>]*\s*ini_get
+<\?[^>]*\s*get_cfg_var
+<\?[^>]*\s*weeApp

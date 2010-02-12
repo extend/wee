@@ -1,0 +1,4 @@
+category: good practice
+You shouldn't use any inline CSS or JavaScript in your templates.
+Instead, consider putting them into separate files and include the
+files in your HTML header.

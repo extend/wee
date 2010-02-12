@@ -1,0 +1,4 @@
+category: common error
+You don't need to call echo or print when calling an object's render method
+or the template's template or url methods. They already perform an echo and
+do not return anything.

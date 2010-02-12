@@ -1,0 +1,5 @@
+category: good practice
+You should avoid using function aliases; use the real function instead.
+Aliases make the code harder to follow and are only good for possible
+backward compatibility. Avoid them anytime you can. Exceptions include
+"die" and "_" (gettext).

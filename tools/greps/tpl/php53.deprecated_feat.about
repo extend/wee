@@ -1,0 +1,6 @@
+category: deprecated
+The following features are deprecated as of PHP 5.3:
+ * Assigning the return value of new by reference is now deprecated. 
+ * Call-time pass-by-reference is now deprecated. 
+ * The use of {} to access string offsets is deprecated. Use [] instead.
+See http://fr.php.net/manual/en/migration53.deprecated.php

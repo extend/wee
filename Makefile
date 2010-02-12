@@ -34,6 +34,9 @@ tools/api/api.xml:
 test: clean
 	@@time php tools/tests/maketests.php -f tools/tests/
 
+grep: clean
+	@@php tools/greps/makegreps.php -f ./ -g tools/greps
+
 clean:
 	@@-rm -rf app/tmp/*
 

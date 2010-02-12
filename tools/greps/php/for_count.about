@@ -1,0 +1,3 @@
+category: performance
+It is highly inefficient to call count or sizeof in a for loop test.
+You should assign this value to a variable and use the variable in the test.

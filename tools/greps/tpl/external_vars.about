@@ -1,0 +1,6 @@
+category: security
+When inside a template it is highly insecure to use external variables
+as they will not be encoded and might introduce XSS vulnerabilities.
+The safe practice is to pass all the variables you need to the template
+from your PHP script, generally inside the frame. Doing so also ensure
+the reusability of the templates.

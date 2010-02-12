@@ -1,0 +1,4 @@
+category: good practice
+Using sleep functions is a very bad practice and should never happen.
+If you find out that a bug doesn't happen anymore if you add a sleep call,
+find out and fix the real bug instead of hiding it.

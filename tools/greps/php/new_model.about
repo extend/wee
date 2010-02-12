@@ -1,0 +1,2 @@
+category: good practice
+You shouldn't create a model directly; create it from its associated set.

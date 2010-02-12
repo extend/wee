@@ -1,0 +1,3 @@
+category: good practice
+Email addresses should be put in a configuration file instead of writing
+them directly in your code.

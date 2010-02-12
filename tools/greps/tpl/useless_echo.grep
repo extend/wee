@@ -1,0 +1,1 @@
+<\?[^>]*\s*(echo|print)\s+\$\w+->(render|template|url)

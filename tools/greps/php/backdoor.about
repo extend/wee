@@ -1,0 +1,4 @@
+category: security
+You have a potential backdoor in your code. It may be used to bypass any
+kind of authentication in your application and give complete access to
+an attacker.

@@ -1,0 +1,3 @@
+category: common error
+When a render method is available in an object you should call it directly
+rather than using echo $o->toString.

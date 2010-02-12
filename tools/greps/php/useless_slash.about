@@ -1,0 +1,4 @@
+category: common error
+You don't need to add a slash after the constants APP_PATH, BASE_PATH
+or ROOT_PATH. Their last character will *always* be a slash. When
+defining such constants manually don't forget the slash at the end!

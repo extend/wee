@@ -1,0 +1,4 @@
+category: performance
+Using comma with echo causes a performance hit. It is recommended to use
+a dot to concatenate strings rather than a comma. Same effect without CPU
+cycles wasted.

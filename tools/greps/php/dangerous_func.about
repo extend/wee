@@ -1,0 +1,6 @@
+category: security
+These functions are dangerous and should be avoided whenever possible.
+If you *must* use them, make sure that all the parameters have been
+correctly filtered and validated to prevent vulnerabilities. Note that
+the backtick operator should always be avoided and the shell_exec function
+be used in its place for better lisibility.

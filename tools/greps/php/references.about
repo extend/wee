@@ -1,0 +1,4 @@
+category: good practice
+References should generally be avoided as they can lead to unmaintainable
+code. Exception to this is a function defined with parameters passed by
+reference, but even that should be avoided whenever possible.

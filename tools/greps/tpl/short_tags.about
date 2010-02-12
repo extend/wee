@@ -1,0 +1,3 @@
+category: portability
+Short tags can be disabled in the PHP configuration and therefore should be
+avoided if the script will be used in uncontrolled environments.

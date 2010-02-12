@@ -1,0 +1,5 @@
+category: security
+It is very insecure to create an object from a template. If this object is
+used to retrieve external data, such data will not be automatically encoded
+and it could lead to XSS vulnerabilities. Not using new also ensure
+the reusability of the templates.
