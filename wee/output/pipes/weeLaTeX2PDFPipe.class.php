@@ -89,7 +89,7 @@ class weeLaTeX2PDFPipe extends weePipe
 
 		$iSize = @filesize($sTmpFilename . '.pdf');
 		$iSize === false and burn('UnexpectedValueException',
-			_WT('The conversion from LaTeX to PDF failed.'));
+			_WT(sprintf('The conversion of file "%s" from LaTeX to PDF failed.', $sTmpFilename)));
 
 		// Send the PDF to the browser
 
