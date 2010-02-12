@@ -38,11 +38,14 @@ file_put_contents(
 		->docFunc('burn')
 		->docFunc('_T')
 		->docFunc('_WT')
+		->docFunc('weeLog')
 		->docFunc('array_value')
 		->docFunc('rmdir_recursive')
 		->docFunc('safe_header')
+		->docFunc('safe_path_info')
 		->docFunc('safe_session_start')
 		->docFunc('xmlspecialchars')
+		->docFunc('xmlspecialchars_decode')
 		->toString()
 );
 
