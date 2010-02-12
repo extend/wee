@@ -64,7 +64,7 @@ foreach ($o->getTargetFunctions(true) as $sFunction => $sEval)
 	$sFunctionCall = preg_replace('/:\d+/', '"\0"', $sEval) . ';';
 	$i = 0;
 
-	// Swallow the system() call output...
+	// Swallow the system call output...
 	ob_start();
 	system('echo ' . escapeshellarg($sFunctionCall) . ' | php -l', $i);
 	// ...and then discard it.
