@@ -57,7 +57,6 @@
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_model.xml"/>
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_output.xml"/>
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_tests.xml"/>
-	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_ui.xml"/>
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="mod_validators.xml"/>
 	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools.xml"/>
 </book>
