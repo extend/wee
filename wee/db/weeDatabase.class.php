@@ -121,7 +121,8 @@ abstract class weeDatabase
 			_WT('The number of placeholders in the query does not match the number of arguments.'));
 
 		$s = $aParts[0];
-		for ($i = 1; $i < count($aParameters); $i++)
+		$iCount = count($aParameters);
+		for ($i = 1; $i < $iCount; $i++)
 			$s .= $this->escape($aParameters[$i]) . $aParts[$i];
 
 		return $s;
