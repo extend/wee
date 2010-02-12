@@ -1,7 +1,9 @@
 /*
  * jQuery history plugin
+ * 
+ * sample page: http://www.mikage.to/jquery/jquery_history.html
  *
- * Copyright (c) 2006 Taku Sano (Mikage Sawatari)
+ * Copyright (c) 2006-2009 Taku Sano (Mikage Sawatari)
  * Licensed under the MIT License:
  *   http://www.opensource.org/licenses/mit-license.php
  *
@@ -12,37 +14,43 @@
 
 jQuery.extend({
 	historyCurrentHash: undefined,
-	
 	historyCallback: undefined,
+	historyIframeSrc: undefined,
+	historyNeedIframe: jQuery.browser.msie && (jQuery.browser.version < 8 || document.documentMode < 8),
 	
-	historyInit: function(callback){
+	historyInit: function(callback, src){
 		jQuery.historyCallback = callback;
-		var current_hash = location.hash;
+		if (src) jQuery.historyIframeSrc = src;
+		var current_hash = location.hash.replace(/\?.*$/, '');
 		
 		jQuery.historyCurrentHash = current_hash;
-		if(jQuery.browser.msie) {
+		if (jQuery.historyNeedIframe) {
 			// To stop the callback firing twice during initilization if no hash present
 			if (jQuery.historyCurrentHash == '') {
-			jQuery.historyCurrentHash = '#';
-		}
+				jQuery.historyCurrentHash = '#';
+			}
 		
 			// add hidden iframe for IE
-			$("body").prepend('<iframe id="jQuery_history" style="display: none;"></iframe>');
-			var ihistory = $("#jQuery_history")[0];
+			jQuery("body").prepend('<iframe id="jQuery_history" style="display: none;"'+
+				' src="javascript:false;"></iframe>'
+			);
+			var ihistory = jQuery("#jQuery_history")[0];
 			var iframe = ihistory.contentWindow.document;
 			iframe.open();
 			iframe.close();
 			iframe.location.hash = current_hash;
 		}
-		else if ($.browser.safari) {
+		else if (jQuery.browser.safari) {
 			// etablish back/forward stacks
 			jQuery.historyBackStack = [];
 			jQuery.historyBackStack.length = history.length;
 			jQuery.historyForwardStack = [];
+			jQuery.lastHistoryLength = history.length;
 			
 			jQuery.isFirst = true;
 		}
-		jQuery.historyCallback(current_hash.replace(/^#/, ''));
+		if(current_hash)
+			jQuery.historyCallback(current_hash.replace(/^#/, ''));
 		setInterval(jQuery.historyCheck, 100);
 	},
 	
@@ -55,11 +63,11 @@ jQuery.extend({
 	},
 	
 	historyCheck: function(){
-		if(jQuery.browser.msie) {
+		if (jQuery.historyNeedIframe) {
 			// On IE, check for location.hash of iframe
-			var ihistory = $("#jQuery_history")[0];
+			var ihistory = jQuery("#jQuery_history")[0];
 			var iframe = ihistory.contentDocument || ihistory.contentWindow.document;
-			var current_hash = iframe.location.hash;
+			var current_hash = iframe.location.hash.replace(/\?.*$/, '');
 			if(current_hash != jQuery.historyCurrentHash) {
 			
 				location.hash = current_hash;
@@ -67,9 +75,13 @@ jQuery.extend({
 				jQuery.historyCallback(current_hash.replace(/^#/, ''));
 				
 			}
-		} else if ($.browser.safari) {
+		} else if (jQuery.browser.safari) {
+			if(jQuery.lastHistoryLength == history.length && jQuery.historyBackStack.length > jQuery.lastHistoryLength) {
+				jQuery.historyBackStack.shift();
+			}
 			if (!jQuery.dontCheck) {
 				var historyDelta = history.length - jQuery.historyBackStack.length;
+				jQuery.lastHistoryLength = history.length;
 				
 				if (historyDelta) { // back or forward button has been pushed
 					jQuery.isFirst = false;
@@ -82,16 +94,17 @@ jQuery.extend({
 					}
 					var cachedHash = jQuery.historyBackStack[jQuery.historyBackStack.length - 1];
 					if (cachedHash != undefined) {
-						jQuery.historyCurrentHash = location.hash;
+						jQuery.historyCurrentHash = location.hash.replace(/\?.*$/, '');
 						jQuery.historyCallback(cachedHash);
 					}
 				} else if (jQuery.historyBackStack[jQuery.historyBackStack.length - 1] == undefined && !jQuery.isFirst) {
 					// back button has been pushed to beginning and URL already pointed to hash (e.g. a bookmark)
 					// document.URL doesn't change in Safari
-					if (document.URL.indexOf('#') >= 0) {
-						jQuery.historyCallback(document.URL.split('#')[1]);
-					} else {
+					if (location.hash) {
 						var current_hash = location.hash;
+						jQuery.historyCallback(location.hash.replace(/^#/, ''));
+					} else {
+						var current_hash = '';
 						jQuery.historyCallback('');
 					}
 					jQuery.isFirst = true;
@@ -99,7 +112,7 @@ jQuery.extend({
 			}
 		} else {
 			// otherwise, check for location.hash
-			var current_hash = location.hash;
+			var current_hash = location.hash.replace(/\?.*$/, '');
 			if(current_hash != jQuery.historyCurrentHash) {
 				jQuery.historyCurrentHash = current_hash;
 				jQuery.historyCallback(current_hash.replace(/^#/, ''));
@@ -108,6 +121,7 @@ jQuery.extend({
 	},
 	historyLoad: function(hash){
 		var newhash;
+		hash = decodeURIComponent(hash.replace(/\?.*$/, ''));
 		
 		if (jQuery.browser.safari) {
 			newhash = hash;
@@ -118,12 +132,13 @@ jQuery.extend({
 		}
 		jQuery.historyCurrentHash = newhash;
 		
-		if(jQuery.browser.msie) {
-			var ihistory = $("#jQuery_history")[0];
+		if (jQuery.historyNeedIframe) {
+			var ihistory = jQuery("#jQuery_history")[0];
 			var iframe = ihistory.contentWindow.document;
 			iframe.open();
 			iframe.close();
 			iframe.location.hash = newhash;
+			jQuery.lastHistoryLength = history.length;
 			jQuery.historyCallback(hash);
 		}
 		else if (jQuery.browser.safari) {
