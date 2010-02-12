@@ -614,8 +614,8 @@ class weeForm implements Printable
 	public function xpathOne($sPath)
 	{
 		$a = $this->xpath($sPath);
-		$a === false || sizeof($a) != 1 and burn('UnexpectedValueException',
-			sprintf(_WT('weeForm::xpathOne expects one and only one result; it retrieved %d.'), $a === false ? 0 : sizeof($a)));
+		$a === false || count($a) != 1 and burn('UnexpectedValueException',
+			sprintf(_WT('weeForm::xpathOne expects one and only one result; it retrieved %d.'), $a === false ? 0 : count($a)));
 		return $a[0];
 	}
 }

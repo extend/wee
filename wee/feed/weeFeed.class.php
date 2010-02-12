@@ -63,7 +63,7 @@ abstract class weeFeed implements weeRenderer
 		(empty($sName) || !ctype_alpha(str_replace(':', '', $sName))) and burn('InvalidArgumentException',
 			_WT('$sName must be defined and contain only alpha characters or a colon.'));
 		$this->isElementValid($sName) or burn('BadMethodCallException', sprintf(_WT('"%s" is not a valid feed element name.'), $sName));
-		sizeof($aArgs) == 1 or burn('InvalidArgumentException', sprintf(_WT('The method "%s" accepts only one argument.'), $sName));
+		count($aArgs) == 1 or burn('InvalidArgumentException', sprintf(_WT('The method "%s" accepts only one argument.'), $sName));
 
 		$this->aFeed[$sName] = $aArgs[0];
 

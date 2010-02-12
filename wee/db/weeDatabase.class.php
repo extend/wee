@@ -114,14 +114,14 @@ abstract class weeDatabase
 	{
 		$aParts		= explode('?', $sQueryString);
 
-		$iNbParts	= sizeof($aParts);
-		$iNbArgs	= sizeof($aParameters);
+		$iNbParts	= count($aParts);
+		$iNbArgs	= count($aParameters);
 
 		$iNbParts == $iNbArgs or burn('UnexpectedValueException',
 			_WT('The number of placeholders in the query does not match the number of arguments.'));
 
 		$s = $aParts[0];
-		for ($i = 1; $i < sizeof($aParameters); $i++)
+		for ($i = 1; $i < count($aParameters); $i++)
 			$s .= $this->escape($aParameters[$i]) . $aParts[$i];
 
 		return $s;

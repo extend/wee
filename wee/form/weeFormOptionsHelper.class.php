@@ -150,7 +150,7 @@ class weeFormOptionsHelper
 
 		if ($aOptions === false)
 			return false;
-		return sizeof($aOptions) != 0;
+		return count($aOptions) != 0;
 	}
 
 	/**
@@ -169,7 +169,7 @@ class weeFormOptionsHelper
 
 		if ($aOptions === false)
 			return false;
-		return sizeof($aOptions) != 0;
+		return count($aOptions) != 0;
 	}
 
 	/**
@@ -216,7 +216,7 @@ class weeFormOptionsHelper
 			'.//item[(not(@value) and @label="' . $sEscapedValue . '" or @value="' . $sEscapedValue . '") and not(@disabled)]'
 		);
 
-		$iSize = sizeof($aOption);
+		$iSize = count($aOption);
 		$iSize > 1 and burn('BadXMLException',
 			_WT('The value was found more than once in the options.'));
 
@@ -250,8 +250,8 @@ class weeFormOptionsHelper
 			return $this->oXML->options;
 
 		$aDest = $this->oXML->options->xpath($sDestXPath);
-		($aDest === false || sizeof($aDest) != 1) and burn('BadXMLException',
-			sprintf(_WT('The XPath statement "%s" must return exactly 1 result, %d were returned.'), $sDestXPath, sizeof($aDest)));
+		($aDest === false || count($aDest) != 1) and burn('BadXMLException',
+			sprintf(_WT('The XPath statement "%s" must return exactly 1 result, %d were returned.'), $sDestXPath, count($aDest)));
 
 		return $aDest[0];
 	}

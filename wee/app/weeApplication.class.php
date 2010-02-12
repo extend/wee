@@ -399,7 +399,7 @@ class weeApplication
 			if ($iCount > 0) {
 				$aRoute = explode('?', $sTranslatedRoute, 2);
 
-				if (sizeof($aRoute) > 1) {
+				if (count($aRoute) > 1) {
 					$aNewGet = array();
 					parse_str($aRoute[1], $aNewGet);
 					$aGet = $aNewGet + $aGet;
