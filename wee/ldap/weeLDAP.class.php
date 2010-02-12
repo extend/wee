@@ -161,7 +161,7 @@ class weeLDAP
 		$sFromDN === $sToDN and burn('InvalidArgumentException', 
 			'The DN source and destination must be different');
 
-		$aFromDN = split(',', $sFromDN, 2);
+		$aFromDN = explode(',', $sFromDN, 2);
 		$oFromEntry = $this->search($aFromDN[1], $aFromDN[0], false)->fetch();
 
 		$this->insert($sToDN, $oFromEntry->toArray());
@@ -293,7 +293,7 @@ class weeLDAP
 				ldap_errno($this->rLink)
 			);
 
-		$aToRDN = split(',', $sToDN, 2);
+		$aToRDN = explode(',', $sToDN, 2);
 		$b = ldap_rename($this->rLink, $sFromDN, $aToRDN[0], $aToRDN[1], true);
 		if ($b === false)
 			throw new LDAPException(
