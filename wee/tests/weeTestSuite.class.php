@@ -168,7 +168,7 @@ class weeTestSuite implements Mappable, Printable
 	{
 		$aCoveredCode = array();
 
-		foreach ($this->aExtData as $sTestFile => &$aCoveredFiles) {
+		foreach ($this->aExtData as $sTestFile => $aCoveredFiles) {
 			foreach ($aCoveredFiles as $sFile => $aData)
 				if (is_array($aData) && array_key_exists(0, $aData) && array_key_exists(1, $aData))
 					if ($aData[0] === 'weeCoveredCode') {
@@ -185,7 +185,7 @@ class weeTestSuite implements Mappable, Printable
 
 			// Clean-up
 
-			if (empty($aCoveredFiles))
+			if (empty($this->aExtData[$sTestFile]))
 				unset($this->aExtData[$sTestFile]);
 		}
 
