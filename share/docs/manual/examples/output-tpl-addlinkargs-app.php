@@ -1,12 +1,17 @@
 <?php
 
-public function defaultEvent($aEvent)
+class myFrame extends weeFrame
 {
-	if (empty($this->oTpl))
-		$this->loadTemplate();
+	// ...
 
-	$this->oTpl->addLinkArgs(array(
-		'location' => $oUser->getLocation(),
-		'year'     => $oUser->getYearActive(),
-	));
+	public function defaultEvent($aEvent)
+	{
+		if (empty($this->oTpl))
+			$this->loadTemplate();
+
+		$this->oTpl->addLinkArgs(array(
+			'location' => $oUser->getLocation(),
+			'year'     => $oUser->getYearActive(),
+		));
+	}
 }

@@ -2,12 +2,14 @@
 
 class myFrame extends weeFrame implements weeFailSafeRouting
 {
-	protected defaultEvent($aEvent)
+	// ...
+
+	protected function defaultEvent($aEvent)
 	{
 		doSomething();
 	}
 
-	protected eventSave($aEvent)
+	protected function eventSave($aEvent)
 	{
 		doSave();
 	}
