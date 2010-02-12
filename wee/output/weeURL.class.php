@@ -66,7 +66,7 @@ class weeURL extends weeDataSource implements Printable
 		Add new data to be appended to the resulting URL.
 
 		@param $aNewData Data to be added.
-		@return $this
+		@return weeURL Clone of $this after the change has been made.
 	*/
 
 	public function addData($aNewData)
@@ -78,7 +78,7 @@ class weeURL extends weeDataSource implements Printable
 				$aNewData[$sName] = $oEncoder->decode($sValue);
 
 		$this->aData = $aNewData + $this->aData;
-		return $this;
+		return clone $this;
 	}
 
 	/**
@@ -88,7 +88,7 @@ class weeURL extends weeDataSource implements Printable
 		An example of base URL would be "test.php#hello" or "http://example.org/baseurl", for example.
 
 		@param $sNewBaseURL The new base of the resulting URL.
-		@return $this
+		@return weeURL Clone of $this after the change has been made.
 	*/
 
 	public function setURL($sNewBaseURL)
@@ -97,7 +97,7 @@ class weeURL extends weeDataSource implements Printable
 			_WT('The base URL must not contain any parameter. Only hashes are allowed.'));
 
 		$this->sBaseURL = $sNewBaseURL;
-		return $this;
+		return clone $this;
 	}
 
 	/**
