@@ -50,11 +50,11 @@ class weeApplication
 
 	protected $aDrivers = array();
 
-    /**
-        The filename used if the frame is to be served as a file.
-    */
+	/**
+		The filename used if the frame is to be served as a file.
+	*/
 
-    protected $sFilename;
+	protected $sFilename;
 
 	/**
 		The frame object that will be displayed.
@@ -97,7 +97,7 @@ class weeApplication
 		// Define the default error page from the configuration
 
 		if (!empty($this->aConfig['app.error.default']))
-			weeException::setErrorPage($this->aConfig['app.error.default']);
+			weeException::setErrorPage(str_replace('//', ROOT_PATH, $this->aConfig['app.error.default']));
 
 		// Force selected drivers to start
 
@@ -252,7 +252,7 @@ class weeApplication
 			else {
 				header('HTTP/1.0 403 Forbidden');
 
-				$sPath = $this->cnf('app.error.unauthorized');
+				$sPath = str_replace('//', ROOT_PATH, $this->aConfig['app.error.unauthorized']);
 				empty($sPath) and burn(_WT('"app.error.unauthorized" must not be empty.'));
 
 				require($sPath);
@@ -268,19 +268,20 @@ class weeApplication
 			if ($bCompress)
 				safe_header('Content-Encoding: gzip');
 		}
-		return $this->oFrame->render();
+
+		$this->oFrame->render();
 	}
 
-    /**
-        Serve the frame as a file.
+	/**
+		Serve the frame as a file.
 
-        @param $sFilename The filename to be used.
-    */
+		@param $sFilename The filename to be used.
+	*/
 
-    public function serveAsFile($sFilename)
-    {
-        $this->sFilename = $sFilename;
-    }
+	public function serveAsFile($sFilename)
+	{
+		$this->sFilename = $sFilename;
+	}
 
 	/**
 		Set the shared instance for this object.
