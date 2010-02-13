@@ -52,8 +52,8 @@ try {
 	// The configuration file doesn't exist. Stop here and display a friendly message.
 
 	if (defined('WEE_CLI'))
-		echo _WT('The configuration file was not found.'), "\n",
-			_WT('Please consult the documentation for more information.'), "\n";
+		echo _WT('The configuration file was not found.') . "\n" .
+			_WT('Please consult the documentation for more information.') . "\n";
 	else {
 		if (defined('DEBUG'))
 			FirePHP::getInstance(true)->fb($e);

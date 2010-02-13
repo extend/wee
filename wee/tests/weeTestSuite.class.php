@@ -132,22 +132,22 @@ class weeTestSuite implements Mappable, Printable
 		echo $sFile . ': ';
 
 		if ($mResult === 'success') {
-			echo _WT($mResult) . ' [' . round($fTime, 2) . "s]\n";
+			echo _WT('success') . ' [' . round($fTime, 2) . "s]\n";
 			$this->aMemoryResults[$sFile] = $iMemoryUsed;
 			$this->aTimeResults[$sFile] = $fTime;
 		} elseif ($mResult === 'skip')
-			echo _WT($mResult) . "\n";
+			echo _WT('skip') . "\n";
 		elseif ($mResult instanceof ErrorException) {
-			echo _WT('error'), "\n",
-				_WT('Message: '), $mResult->getMessage(), "\n",
-				_WT('Level: '), weeException::getLevelName($mResult->getSeverity()), "\n",
-				_WT('File: '), $mResult->getFile(), "\n",
-				_WT('Line: '), $mResult->getLine(), "\n";
+			echo _WT('error') . "\n" .
+				_WT('Message: ') . $mResult->getMessage() . "\n" .
+				_WT('Level: ') . weeException::getLevelName($mResult->getSeverity()) . "\n" .
+				_WT('File: ') . $mResult->getFile() . "\n" .
+				_WT('Line: ') . $mResult->getLine() . "\n";
 		} elseif ($mResult instanceof UnitTestException) {
 			$aTrace = $mResult->getTrace();
 
-			echo _WT('failure'), "\n", _WT('Message: '), $mResult->getMessage(), "\n",
-				_WT('Line: '), array_value($aTrace[0], 'line', '?'), "\n";
+			echo _WT('failure') . "\n" . _WT('Message: ') . $mResult->getMessage() . "\n" .
+				_WT('Line: ') . array_value($aTrace[0], 'line', '?') . "\n";
 
 			if ($mResult instanceof ComparisonTestException) {
 				echo _WT('Expected: ');
@@ -157,9 +157,9 @@ class weeTestSuite implements Mappable, Printable
 				echo "\n";
 			}
 		} else {
-			echo get_class($mResult), "\n",
-				_WT('Message: '), $mResult->getMessage(), "\n",
-				_WT('Trace:'), "\n", $mResult->getTraceAsString(), "\n";
+			echo get_class($mResult) . "\n" .
+				_WT('Message: ') . $mResult->getMessage() . "\n" .
+				_WT('Trace:') . "\n" . $mResult->getTraceAsString() . "\n";
 		}
 
 		$this->mLastResult = $mResult;
