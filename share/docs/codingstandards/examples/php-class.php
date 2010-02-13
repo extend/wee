@@ -1,28 +1,31 @@
 <?php
 
-class myClassName [extends myParentClass[, ...]] [implements myInterface[, ...]]
+class myClassName // [extends myParentClass[, ...]] [implements myInterface[, ...]]
 {
-	[/**
+	/**
 		DocComment
 	*/
 
-	const MY_CONSTANT = 42;]
-	[...]
+	const MY_CONSTANT = 42;
 
-	[/**
+	// more constants...
+
+	/**
 		DocComment
 	*/
 
-	public/protected/private $iMyInt = 42;]
-	[...]
+	public /* OR protected OR private */ $iMyInt = 42;
 
-	[/**
+	// more properties...
+
+	/**
 		DocComment
 	*/
 
-	public/protected/private [static] function myMethod([parameters])
+	public /* OR protected OR private [static] */ function myMethod(/* [parameters] */)
 	{
 		return 42;
-	}]
-	[...]
+	}
+
+	// more methods...
 }
