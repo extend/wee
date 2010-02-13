@@ -140,7 +140,7 @@
 				There is no need to encode the data passed to the template using the <literal>set</literal> method.
 				All data is encoded automatically according to the output driver you selected.
 				You must however encode data if it is not processed by the <literal>set</literal> method.
-				You must also encode data passed using the <literal>set</literal> method as an object that doesn't extend the <ulink url="http://api.extend.ws/#weeDataSource">weeDataSource class</ulink>.
+				You must also encode data passed using the <literal>set</literal> method as an object that doesn't extend the <ulink url="http://extend.ws/api/HEAD/#weeDataSource">weeDataSource class</ulink>.
 				The best way to write secure template is to write them completely standalone, requiring only input from the <literal>set</literal> method.
 			</para>
 			<para>

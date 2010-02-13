@@ -92,7 +92,7 @@ class weePgSQLDatabase extends weeDatabase
 
 	public function doEscape($mValue)
 	{
-		// see http://wee.extend.ws/ticket/73
+		// Bool isn't supported directly, cast to int
 		if (is_bool($mValue))
 			$mValue = (int)$mValue;
 		return "'" . pg_escape_string($mValue) . "'";

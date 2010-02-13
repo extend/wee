@@ -71,7 +71,7 @@ class weePDOStatement extends weeDatabaseStatement
 	protected function doBind($aParameters)
 	{
 		foreach ($aParameters as $sName => $mValue) {
-			// see http://wee.extend.ws/ticket/73
+			// Bool isn't supported directly, cast to int
 			if ($this->oDb->is('pgsql') && is_bool($mValue))
 				$mValue = (int)$mValue;
 			$this->oStatement->bindValue(':' . $sName, $mValue);

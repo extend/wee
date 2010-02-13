@@ -138,7 +138,6 @@ class weePDODatabase extends weeDatabase
 		@param	$oStatement		The PDO statement.
 		@param	$bIsPrepared	Whether $oStatement comes from a prepared statement.
 		@return	int				The number of affected rows by the last execution of the statement.
-		@see	http://wee.extend.ws/ticket/71
 	*/
 
 	public function doRowCount(PDOStatement $oStatement, $bIsPrepared = false)

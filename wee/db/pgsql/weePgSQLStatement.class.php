@@ -112,7 +112,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 	{
 		foreach ($aParameters as $m => $mValue)
 			if (isset($this->aParametersMap[$m]))
-				// see http://wee.extend.ws/ticket/73
+				// Bool isn't supported directly, cast to int
 				$this->aParameters[$this->aParametersMap[$m]] = is_bool($mValue) ? (int)$mValue : $mValue;
 	}
 

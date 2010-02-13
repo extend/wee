@@ -51,7 +51,7 @@
 		<title>LDAP driver</title>
 		<para>
 			The LDAP authentication driver allows you to authenticate users against
-			entries in an <ulink url="http://wee.extend.ws/wiki/Documentation/Modules/LDAP">LDAP directory</ulink>.
+			entries in an LDAP directory (see <xref linkend="mod_ldap"></xref>).
 			The attribute used as the identifier is the <literal>common name (cn)</literal>.
 		</para>
 		<para>

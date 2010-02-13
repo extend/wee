@@ -407,7 +407,7 @@
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-orderby.php.xml"/>
 			</para>
 			<para>
-				I suppose you get it. For more information you can look at the <ulink url="http://api.extend.ws/#weeDbSetScaffold/orderBy">orderBy method in the API</ulink>.
+				I suppose you get it. For more information you can look at the <ulink url="http://extend.ws/api/HEAD/#weeDbSetScaffold/orderBy">orderBy method in the API</ulink>.
 			</para>
 		</sect2>
 
@@ -487,7 +487,7 @@
 			</para>
 			<para>
 				To create a subset, simply give a criteria to its constructor.
-				See the <ulink url="http://api.extend.ws/#weeDbSetScaffold">weeDbSetScaffold::__construct</ulink> API for more information.
+				See the <ulink url="http://extend.ws/api/HEAD/#weeDbSetScaffold">weeDbSetScaffold::__construct</ulink> API for more information.
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/model-scaffold-subset.php.xml"/>
 			</para>
 			<para>
