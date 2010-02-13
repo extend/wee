@@ -60,6 +60,7 @@ foreach ($aOptions['f'] as $sPath) {
 			$aFiles[] = $sFilename;
 		}
 
+		sort($aFiles);
 		foreach ($aFiles as $sFilename)
 			$aText = array_merge($aText, xgettext_file($sFilename, $sFunc));
 	}
