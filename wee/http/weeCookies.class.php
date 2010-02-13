@@ -52,6 +52,7 @@ class weeCookies implements ArrayAccess
 		else {
 			// Check if a custom cookie path was defined and use it
 			$this->sCookiePath = parse_url(APP_PATH, PHP_URL_PATH);
+			// TODO: this might be problematic on certain hosts...
 			if ($this->sCookiePath == BASE_PATH || $this->sCookiePath == BASE_PATH . ROOT_PATH) {
 				// Otherwise it's basically APP_PATH without the http://host part
 				$this->sCookiePath = dirname($_SERVER['SCRIPT_NAME']);

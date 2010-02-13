@@ -337,7 +337,6 @@ abstract class weeFrame implements weeRenderer
 
 	protected function translateEventName($sName)
 	{
-		//TODO:test weeFailSafeRouting
 		if (empty($sName) || ($this instanceof weeFailSafeRouting && !is_callable(array($this, 'event' . $sName))))
 			return 'defaultEvent';
 		return 'event' . $sName;

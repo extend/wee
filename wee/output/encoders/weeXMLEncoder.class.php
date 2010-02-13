@@ -23,8 +23,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	An XML encoder.
-
-	@todo Handle different encodings.
 */
 
 class weeXMLEncoder extends weeEncoder

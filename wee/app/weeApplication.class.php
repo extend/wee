@@ -329,9 +329,6 @@ class weeApplication
 			$aEvent['context']	= 'cli';
 			$aEvent['method']	= defined('STDIN') ? 'put' : 'get';
 		} else {
-			// TODO:sometimes we may want to only accept xmlhttprequest when the
-			// request comes from a user who we know is using this application,
-			// and not some random other webserver using it for its own purpose...
 			$aEvent['context']	= (array_value($_SERVER, 'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest') ? 'xmlhttprequest' : 'http';
 			$aEvent['method']	= strtolower($_SERVER['REQUEST_METHOD']);
 		}

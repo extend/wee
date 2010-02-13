@@ -23,8 +23,6 @@ if (!defined('ALLOW_INCLUSION')) die;
 
 /**
 	An XHTML encoder.
-
-	@todo Handle different encodings.
 */
 
 class weeXHTMLEncoder extends weeEncoder

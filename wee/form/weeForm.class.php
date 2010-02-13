@@ -231,7 +231,6 @@ class weeForm implements Printable
 
 		Currently the only external source type available is the 'set' source type.
 		@see weeForm::loadExternalsFromSet
-		@todo Write unit tests.
 	*/
 
 	protected function loadExternals()
