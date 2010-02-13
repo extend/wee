@@ -21,7 +21,7 @@ $sMsg = $mPK === null
 	? _WT('weeDatabase::getPKId did not return the expected previous sequence value + 1')
 	: sprintf(_WT('weeDatabase::getPKId did not return the expected previous value + 1 for the sequence "%s".'), $mPK);
 
-for ($i = 0; $i < 100; $i++) {
+for ($i = 0; $i < 10; $i++) {
 	$oDb->query('INSERT INTO ' . (isset($sTable) ? $oDb->escapeIdent($sTable) : 'getpkid') . ' (pk_value) VALUES (?)', $i);
 	$iCurrent = $oDb->getPKId($mPK);
 	$this->isEqual($iPrevious + 1, $iCurrent, $sMsg);
