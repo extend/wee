@@ -68,10 +68,9 @@ class weePgSQLDatabase extends weeDatabase
 		$sEncoding = array_value($aParams, 'encoding', 'UNICODE');
 		unset($aParams['encoding']);
 
-		//TODO:maybe quote & escape values...
 		$sConnection = null;
 		foreach ($aParams as $sKey => $sValue)
-			$sConnection .= $sKey . '=' . $sValue . ' ';
+			$sConnection .= $sKey . "='" . str_replace(array("'", "\\"), array("\\'", "\\\\"), $sValue) . "' ";
 
 		// pg_connect triggers a warning if the connection failed.
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
