@@ -233,12 +233,12 @@ class weeTestSuite implements Mappable, Printable
 			// and if there's any dead code remaining, we output it.
 
 			if (in_array(-2, $aLines)) {
-				// TODO: Find why this file call needs to be silenced.
-				$aFile = @file($sFilename, FILE_IGNORE_NEW_LINES);
-				if ($aFile !== false)
+				if (is_file($sFilename)) {
+					$aFile = file($sFilename, FILE_IGNORE_NEW_LINES);
 					foreach ($aLines as $iLine => $iValue)
 						if (isset($aFile[$iLine - 1]) && trim($aFile[$iLine - 1]) == '}')
 							unset($aLines[$iLine]);
+				}
 			}
 
 			if (in_array(-2, $aLines)) {
