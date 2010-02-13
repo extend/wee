@@ -47,9 +47,8 @@ abstract class weeFormValidator extends weeValidator
 
 	public function validate()
 	{
-		$this->oWidget !== null
-			or burn('IllegalStateException',
-				_WT('The validator is not attached to a form widget.'));
+		$this->oWidget !== null or burn('IllegalStateException',
+			_WT('The validator is not attached to a form widget.'));
 
 		return parent::validate();
 	}
@@ -61,14 +60,14 @@ abstract class weeFormValidator extends weeValidator
 		@param	$oWidget				The widget to validate.
 		@param	$aData					The data to check, if applicable.
 		@throw	IllegalStateException	The validator has already been attached to a form widget.
-		@todo							Check that the given SimpleXMLElement is a 'widget' element.
 	*/
 
 	public function setFormData(SimpleXMLElement $oWidget, array $aData)
 	{
-		$this->oWidget === null
-			or burn('IllegalStateException',
-				_WT('The validator has already been attached to a form widget.'));
+		$this->oWidget === null or burn('IllegalStateException',
+			_WT('The validator has already been attached to a form widget.'));
+		$oWidget->getName() === 'widget' or burn('InvalidArgumentException',
+			_WT('The $oWidget argument must be a widget element.'));
 
 		$this->aData	= $aData;
 		$this->oWidget	= $oWidget;
