@@ -42,6 +42,12 @@ class weeUnitTestCase
 	protected $sFilename;
 
 	/**
+		Memory used by the test.
+	*/
+
+	protected $iMemoryUsed;
+
+	/**
 		Creates a test case based on the given filename.
 
 		@param $sTestFilename Filename to the unit test file.
@@ -282,10 +288,9 @@ class weeUnitTestCase
 
 	/**
 		Runs this unit test case.
-
 		If code coverage is enabled, send the code coverage data as extended data.
 
-		@return bool True if test completed, false it must be skipped.
+		@return The amount of memory used by the test. This includes loading and parsing the test file in memory.
 	*/
 
 	public function run()
@@ -296,12 +301,16 @@ class weeUnitTestCase
 			xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE);
 		}
 
+		$this->iMemoryUsed = memory_get_usage();
 		require($this->sFilename);
+		$this->iMemoryUsed = memory_get_usage() - $this->iMemoryUsed;
 
 		if (defined('WEE_CODE_COVERAGE')) {
 			$this->addExtValue('weeCoveredCode', xdebug_get_code_coverage());
 			xdebug_stop_code_coverage();
 		}
+
+		return $this->iMemoryUsed;
 	}
 
 	/**

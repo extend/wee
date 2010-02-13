@@ -50,6 +50,12 @@ class weeTestSuite implements Mappable, Printable
 	protected $mLastResult = '';
 
 	/**
+		Array containing the memory usages of all the successful tests.
+	*/
+
+	protected $aMemoryResults = array();
+
+	/**
 		Array containing the results of the unit test suite, after its completion.
 	*/
 
@@ -110,7 +116,7 @@ class weeTestSuite implements Mappable, Printable
 		@throw	DomainException	$mResult is not a valid result.
 	*/
 
-	protected function addResult($sFile, $mResult, $fTime = 0)
+	protected function addResult($sFile, $mResult, $fTime = 0, $iMemoryUsed = 0)
 	{
 		$mResult == 'success' or $mResult == 'skip' or is_object($mResult) and $mResult instanceof Exception
 			or burn('DomainException', _WT('$mResult is not a valid result.'));
@@ -127,6 +133,7 @@ class weeTestSuite implements Mappable, Printable
 
 		if ($mResult === 'success') {
 			echo _WT($mResult) . ' [' . round($fTime, 2) . "s]\n";
+			$this->aMemoryResults[$sFile] = $iMemoryUsed;
 			$this->aTimeResults[$sFile] = $fTime;
 		} elseif ($mResult === 'skip')
 			echo _WT($mResult) . "\n";
@@ -295,9 +302,9 @@ class weeTestSuite implements Mappable, Printable
 			try {
 				$oTest = new weeUnitTestCase($sPath);
 
-				$fBefore = xdebug_time_index();
-				$oTest->run();
-				$this->addResult($sPath, 'success', xdebug_time_index() - $fBefore);
+				$fBefore = microtime(true);
+				$iMemoryUsed = $oTest->run();
+				$this->addResult($sPath, 'success', microtime(true) - $fBefore, $iMemoryUsed);
 
 				if ($oTest->hasExtData())
 					$this->aExtData[$sPath] = $oTest->getExtData();
@@ -353,6 +360,40 @@ class weeTestSuite implements Mappable, Printable
 			}
 		}
 
+		// Output the tests that took the most time to run
+
+		$s = "\nList of tests with the biggest execution time:";
+
+		arsort($this->aTimeResults);
+
+		$iTotal = count($this->aTimeResults);
+		if ($iTotal > 10)
+			$iTotal = 10;
+
+		reset($this->aTimeResults);
+		for ($i = 1; $i <= $iTotal; $i++) {
+			$s .= "\n" . sprintf('%2s', $i) . '- ' . key($this->aTimeResults) . ': ' . round(current($this->aTimeResults), 2) . 's';
+			next($this->aTimeResults);
+		}
+
+		// Output the tests that used the most memory
+
+		$s .= "\n\nList of tests with the biggest memory consumption at the end of the test:";
+
+		arsort($this->aMemoryResults);
+
+		$iTotal = count($this->aMemoryResults);
+		if ($iTotal > 10)
+			$iTotal = 10;
+
+		reset($this->aMemoryResults);
+		for ($i = 1; $i <= $iTotal; $i++) {
+			$s .= "\n" . sprintf('%2s', $i) . '- ' . key($this->aMemoryResults) . ': ' . current($this->aMemoryResults) . ' bytes';
+			next($this->aMemoryResults);
+		}
+
+		$s .= "\nPeak memory usage: " . memory_get_peak_usage() . " bytes\n\n";
+
 		// Count the number of tests failed, succeeded and skipped and output a summary
 
 		// The array contains "skip" and "success" values but also instances of Exception,
@@ -362,8 +403,6 @@ class weeTestSuite implements Mappable, Printable
 
 		if (!isset($aCounts['skip']))
 			$aCounts['skip'] = 0;
-
-		$s = "\n";
 
 		$iSkippedAndSucceededCount	= $aCounts['success'] + $aCounts['skip'];
 		$iTestsCount				= count($this->aResults);
@@ -375,22 +414,6 @@ class weeTestSuite implements Mappable, Printable
 
 		if ($aCounts['skip'] != 0)
 			$s .= sprintf(_WT(' (%d skipped)'), $aCounts['skip']);
-
-		// And finally we output the tests that took the most time to run (and are probably inefficient in various ways)
-
-		$s .= "\n\nList of tests with the biggest execution time:";
-
-		arsort($this->aTimeResults);
-
-		$iTotal = count($this->aTimeResults);
-		if ($iTotal > 10)
-			$iTotal = 10;
-
-		reset($this->aTimeResults);
-		for ($i = 1; $i <= $iTotal; $i++) {
-			$s .= "\n" . $i . '- ' . key($this->aTimeResults) . ': ' . round(current($this->aTimeResults), 2) . 's';
-			next($this->aTimeResults);
-		}
 
 		return $s . "\n";
 	}
