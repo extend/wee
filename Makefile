@@ -1,4 +1,4 @@
-#	
+#
 #	Web:Extend
 #	Copyright (c) 2006-2010 Dev:Extend
 #
@@ -36,6 +36,12 @@ test: clean
 
 grep: clean
 	@@php tools/greps/makegreps.php -f ./ -g tools/greps
+
+xgettext: clean
+	@@echo "# Web:Extend" >> wee.po
+	@@echo "# Copyright (c) 2006-2010 Dev:Extend" >> wee.po
+	@@echo "" >> wee.po
+	@@php tools/xgettext/xgettext.php -f addons.php -f index.php -f share -f wee >> wee.po
 
 clean:
 	@@-rm -rf app/tmp/*
