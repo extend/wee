@@ -43,6 +43,7 @@ define('WEE_AUTOLOAD_CACHE', getcwd() . '/app/tmp/autoload.php');
 
 define('ALLOW_INCLUSION', 1);
 require('wee/wee.php');
+require('wee/weexlib.php');
 
 // Load the configuration and create the default application object.
 
