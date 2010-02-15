@@ -70,7 +70,7 @@ class weeOracleStatement extends weeDatabaseStatement
 
 		$this->rStatement = oci_parse($rLink, $sQuery);
 		$this->rStatement !== false or burn('DatabaseException',
-			_WT('Failed to parse the given query with the following message:') . "\n" . array_value(oci_error($rLink), 'message'));
+			sprintf(_WT("Failed to parse the query with the following error:\n%s"), array_value(oci_error($rLink), 'message')));
 	}
 
 	/**
@@ -85,8 +85,7 @@ class weeOracleStatement extends weeDatabaseStatement
 			if (isset($this->aParameters[$sName]))
 				// Don't use $mValue here because oci_bind_by_name binds by reference.
 				oci_bind_by_name($this->rStatement, ':' . $sName, $aParameters[$sName]) or burn('DatabaseException',
-					sprintf(_WT('Failed to bind parameter "%s" with the following message:'), $sName)
-						. "\n" . array_value(oci_error($this->rStatement), 'message'));
+					sprintf(_WT("Failed to bind the parameter \"%s\" with the following error:\n%s"), $sName, array_value(oci_error($this->rStatement), 'message')));
 	}
 
 	/**
@@ -99,7 +98,7 @@ class weeOracleStatement extends weeDatabaseStatement
 	{
 		// oci_execute triggers a warning when the statement could not be executed.
 		@oci_execute($this->rStatement, OCI_DEFAULT) or burn('DatabaseException',
-			_WT('Failed to execute the given query with the following message:') . "\n" . array_value(oci_error($this->rStatement), 'message'));
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), array_value(oci_error($this->rStatement), 'message')));
 
 		$this->iNumAffectedRows = oci_num_rows($this->rStatement);
 		if (oci_num_fields($this->rStatement) > 0) {

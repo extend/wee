@@ -137,10 +137,10 @@ class weeAPC implements weeCache
 		$m = apc_fetch($sKey, $bSuccess);
 
 		$bSuccess or burn('CacheException',
-			sprintf(_WT('An error occurred while trying to retrieve the key "%s"..'), $sKey));
+			sprintf(_WT('An error occurred while trying to retrieve the key "%s".'), $sKey));
 
 		$m === false and burn('CacheException',
-			sprintf(_WT('The key "%s" do not exist.'), $sKey));
+			sprintf(_WT('The key "%s" does not exist.'), $sKey));
 
 		$m = unserialize($m);
 		$this->aData[$sKey] = $m;

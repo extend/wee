@@ -114,10 +114,10 @@ try {
 	// weeDbSetScaffold::count
 
 	$oSet->sJoinType = 'INNER JOIN';
-	$this->isEqual(5, count($oSet), _WT('weeDbSetScaffold::count do not return the correct number of queries for INNER JOIN.'));
+	$this->isEqual(5, count($oSet), _WT('weeDbSetScaffold::count does not return the correct number of queries for INNER JOIN.'));
 
 	$oSet->sJoinType = 'LEFT OUTER JOIN';
-	$this->isEqual(6, count($oSet), _WT('weeDbSetScaffold::count do not return the correct number of queries for LEFT OUTER JOIN.'));
+	$this->isEqual(6, count($oSet), _WT('weeDbSetScaffold::count does not return the correct number of queries for LEFT OUTER JOIN.'));
 
 	// weeDbSetScaffold::fetch
 

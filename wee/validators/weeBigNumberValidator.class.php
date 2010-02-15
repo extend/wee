@@ -72,21 +72,18 @@ class weeBigNumberValidator extends weeValidator
 	{
 		!isset($aArgs['format']) or $aArgs['format'] == 'int' or $aArgs['format'] == 'float'
 			or burn('InvalidArgumentException',
-				_WT('The `format` argument must be either "int" or "float".'));
+				_WT('The "format" argument must be of type int or float.'));
 
 		!isset($aArgs['min']) or is_string($aArgs['min']) and $this->isValidInput($aArgs['min'])
-			or burn('DomainException',
-				_WT('The `min` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'min'));
 
 		!isset($aArgs['max']) or is_string($aArgs['max']) and $this->isValidInput($aArgs['max'])
-			or burn('DomainException',
-				_WT('The `max` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'max'));
 
 		if (isset($aArgs['min'], $aArgs['max']))
 		{
-			$this->compare($aArgs['min'], $aArgs['max']) < 0
-				or burn('InvalidArgumentException',
-					_WT('The `min` and `max` arguments do not form a valid number range.'));
+			$this->compare($aArgs['min'], $aArgs['max']) < 0 or burn('InvalidArgumentException',
+				_WT('The "min" and "max" arguments do not form a valid range.'));
 		}
 
 		parent::__construct($aArgs);

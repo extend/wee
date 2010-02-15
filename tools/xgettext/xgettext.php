@@ -38,7 +38,7 @@ else
 function xgettext_file($sFilename, $sFunc)
 {
 	$aMatches = array();
-	preg_match_all('/(?<=' . $sFunc . "\\(('|\")).+?(?=\\1)/", file_get_contents($sFilename), $aMatches, PREG_PATTERN_ORDER);
+	preg_match_all('/(?<=' . $sFunc . "\\()('|\").+?[^\\\\]{1}(?=\\1)/", file_get_contents($sFilename), $aMatches, PREG_PATTERN_ORDER);
 	return $aMatches[0];
 }
 
@@ -68,6 +68,8 @@ foreach ($aOptions['f'] as $sPath) {
 
 $aText = array_unique($aText);
 foreach ($aText as $s) {
-	$s = str_replace('"', '\"', $s);
+	if ($s[0] == "'")
+		$s = str_replace('"', '\"', $s);
+	$s = substr($s, 1);
 	echo 'msgid "' . $s . "\"\nmsgstr \"" . $s . "\"\n\n";
 }

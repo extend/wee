@@ -448,7 +448,7 @@ abstract class weeDocumentor implements Mappable, Printable
 
 		$iPos = strpos($sLine, ')');
 		$iPos === false and burn('UnexpectedValueException',
-			_WT('The overloaded method prototype does not have a closing parenthese'));
+			_WT('The overloaded method prototype does not have a closing parenthesis.'));
 
 		$sFunc		= substr($sLine, 0, $iPos);
 		$sComment	= trim(substr($sLine, $iPos + 1));

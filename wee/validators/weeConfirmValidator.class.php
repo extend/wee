@@ -55,9 +55,8 @@ class weeConfirmValidator extends weeFormValidator
 
 	public function __construct(array $aArgs = array())
 	{
-		!empty($aArgs['with'])
-			or burn('InvalidArgumentException',
-				_WT('The argument `with` is mandatory.'));
+		empty($aArgs['with']) and burn('InvalidArgumentException',
+			_WT('The argument "with" is mandatory.'));
 
 		parent::__construct($aArgs);
 	}

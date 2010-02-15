@@ -62,7 +62,7 @@ class weeSQLiteDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('sqlite_factory') or burn('ConfigurationException',
-			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'SQLite'));
+			sprintf(_WT('The "%s" PHP extension is required by this database driver.'), 'SQLite'));
 
 		isset($aParams['file']) or burn('InvalidArgumentException',
 			sprintf(_WT('Parameter "%s" is missing.'), 'file'));
@@ -76,7 +76,7 @@ class weeSQLiteDatabase extends weeDatabase
 
 		$oDb = sqlite_factory($aParams['file'], 0666, $sLastError);
 		$oDb !== null or burn('DatabaseException',
-			_WT('Failed to connect to the database with the following error:') . "\n" . $sLastError);
+			sprintf(_WT("Failed to connect to the database with the following error:\n%s"), $sLastError));
 
 		// By default SQLite 2 returns full column names when there's joins
 		// For better interoperability with other DBMS we prefer short names
@@ -110,11 +110,10 @@ class weeSQLiteDatabase extends weeDatabase
 		// SQLiteDatabase::query triggers a warning when the query could not be executed.
 		$m = @$this->oDb->query($sQuery, SQLITE_ASSOC, $sLastError);
 
-		if ($m === false)
-		{
+		if ($m === false) {
 			if ($sLastError === null)
 				$sLastError = sqlite_error_string($this->oDb->lastError());
-			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $sLastError);
+			burn('DatabaseException', sprintf(_WT("Failed to execute the query with the following error:\n%s"), $sLastError));
 		}
 
 		$this->iNumAffectedRows = $this->oDb->changes();

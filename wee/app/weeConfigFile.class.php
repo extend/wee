@@ -169,19 +169,14 @@ class weeConfigFile implements Mappable
 
 		$i !== false
 			or burn('UnexpectedValueException',
-				_WT('The targeted system instruction is missing the closing parenthese.'));
+				_WT('The targeted system instruction is missing the closing parenthesis.'));
 
 		$sInstruction	= trim(substr($sInstruction, 0, $i));
 		$aFuncs			= $this->getTargetFunctions();
 		$i				= strpos($sInstruction, ' ');
 
-		$i !== false
-			or burn('UnexpectedValueException',
-				_WT('The instruction does not have a wanted value.'));
-
-		$i != 0
-			or burn('UnexpectedValueException',
-				_WT('The instruction does not have a target function.'));
+		empty($i) and burn('UnexpectedValueException',
+			_WT('The instruction does not have a target function.'));
 
 		$sFunction = substr($sInstruction, 0, $i);
 		isset($aFuncs[$sFunction])

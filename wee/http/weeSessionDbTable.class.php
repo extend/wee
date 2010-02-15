@@ -73,7 +73,7 @@ class weeSessionDbTable extends weeSession
 	{
 		// We are required to include this class now in case it is needed
 		// when this object gets destroyed at the end of the script.
-		// Autoload do not work if the script is terminating, resulting in a fatal error.
+		// Autoload does not work if the script is terminating, resulting in a fatal error.
 		class_exists('DatabaseException');
 
 		session_set_save_handler(

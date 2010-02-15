@@ -39,18 +39,18 @@ try {
 		$oSet->insert(array('pkey' => $i, 'pkeyvarchar' => str_pad('x', $i)));
 
 	$this->isEqual(42, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
-	// This one do not delete anything
+	// This one does not delete anything
 	$oSet->delete(array('pkey' => 33, 'pkeyvarchar' => str_pad('x', 27)));
 
 	$this->isEqual(42, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
 	$oSet->delete(array('pkey' => 18, 'pkeyvarchar' => str_pad('x', 18)));
 
 	$this->isEqual(41, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
 	try {
 		$oSet->delete(array());

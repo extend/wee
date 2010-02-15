@@ -94,7 +94,7 @@ class weeCookies implements ArrayAccess
 		Send a cookie to the browser.
 
 		This aliases weeCookies::set with a default 3rd parameter.
-		This do NOT add the value directly in the cookies array.
+		This does NOT add the value directly in the cookies array.
 		The value is only accessible on the next request from this user.
 
 		@param	$offset	Offset name.
@@ -110,7 +110,7 @@ class weeCookies implements ArrayAccess
 	/**
 		Delete the specified cookie.
 
-		This do NOT remove the value directly from the cookies array.
+		This does NOT remove the value directly from the cookies array.
 		The value will be deleted on the next request from this user.
 
 		@param	$offset	Offset name.
@@ -120,7 +120,7 @@ class weeCookies implements ArrayAccess
 	public function offsetUnset($offset)
 	{
 		headers_sent() and burn('IllegalStateException',
-			_WT('You cannot delete a cookie if headers are already sent.'));
+			_WT('The HTTP headers have already been sent.'));
 
 		setcookie($offset, '', 0, $this->sCookiePath);
 	}
@@ -136,7 +136,7 @@ class weeCookies implements ArrayAccess
 	public function set($sName, $sValue, $iExpire = 0)
 	{
 		headers_sent() and burn('IllegalStateException',
-			_WT('You cannot set a cookie if headers are already sent.'));
+			_WT('The HTTP headers have already been sent.'));
 
 		setcookie($sName, $sValue, $iExpire, $this->sCookiePath);
 	}

@@ -67,7 +67,7 @@ class weeMSSQLDbMetaColumn extends weeDbMetaColumn
 		$this->hasDefault() or burn('IllegalStateException',
 			_WT('The column does not have a default value.'));
 
-		// Strip wrapping parentheses.
+		// Strip wrapping parenthesis.
 		$i = strspn($this->aData['default'], '(');
 		return substr($this->aData['default'], $i, - $i);
 	}

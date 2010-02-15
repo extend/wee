@@ -63,27 +63,22 @@ class weeStringValidator extends weeValidator
 	public function __construct(array $aArgs = array())
 	{
 		!isset($aArgs['len']) or filter_var($aArgs['len'], FILTER_VALIDATE_INT) !== false and $aArgs['len'] >= 0
-			or burn('DomainException',
-				_WT('The `len` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'len'));
 
 		!isset($aArgs['min']) or filter_var($aArgs['min'], FILTER_VALIDATE_INT) !== false and $aArgs['min'] >= 0
-			or burn('DomainException',
-				_WT('The `min` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'min'));
 
 		!isset($aArgs['max']) or filter_var($aArgs['max'], FILTER_VALIDATE_INT) !== false and $aArgs['max'] >= 0
-			or burn('DomainException',
-				_WT('The `max` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'max'));
 
 		if (isset($aArgs['min'], $aArgs['max']))
 		{
-			(int)$aArgs['min'] < $aArgs['max']
-				or burn('InvalidArgumentException',
-					_WT('The `min` and `max` arguments do not form a valid length range.'));
+			(int)$aArgs['min'] < $aArgs['max'] or burn('InvalidArgumentException',
+				_WT('The "min" and "max" arguments do not form a valid range.'));
 		}
 
-		!isset($aArgs['len']) or !isset($aArgs['min']) and !isset($aArgs['max'])
-			or burn('InvalidArgumentException',
-				_WT('The `len` and one of the `min` or `max` arguments are both specified.'));
+		!isset($aArgs['len']) or !isset($aArgs['min']) and !isset($aArgs['max']) or burn('InvalidArgumentException',
+			_WT('The "len" argument should not be specified when "min" or "max" is defined.'));
 
 		parent::__construct($aArgs);
 	}

@@ -263,7 +263,7 @@ class weeForm implements Printable
 	{
 		list($sClass, $sMethod) = explode('::', (string)$oNode['source']);
 		class_exists($sClass) or burn('BadXMLException',
-			sprintf(_WT('The set class "%s" do not exist.'), $sClass));
+			sprintf(_WT('The set class "%s" does not exist.'), $sClass));
 
 		$oNode = dom_import_simplexml($oNode);
 

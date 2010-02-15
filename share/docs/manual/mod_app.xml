@@ -515,7 +515,7 @@ routing.strict = 1
 					</programlisting>
 				</para>
 				<para>
-					When a request do not match any route, a <literal>RouteNotFoundException</literal> will be thrown.
+					When a request does not match any route, a <literal>RouteNotFoundException</literal> will be thrown.
 				</para>
 			</sect3>
 		</sect2>
@@ -552,7 +552,7 @@ routing.strict = 1
 		</para>
 		<para>
 			As the most common updates can be performed both server and client-side, this tool greatly reduces the need of specific and duplicate code for AJAX requests.
-			If the user do not have javascript available, weeTaconite will gracefully handle the request by regenerating the page and applying any DOM update on the server-side;
+			If the user does not have javascript available, weeTaconite will gracefully handle the request by regenerating the page and applying any DOM update on the server-side;
 			otherwise only the XML Taconite document is sent to the user which is then processed locally.
 			This behaviour lighten the server charge in both processor time and bandwidth volume, as only the XML Taconite is returned.
 		</para>

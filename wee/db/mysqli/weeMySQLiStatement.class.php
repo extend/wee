@@ -90,7 +90,7 @@ class weeMySQLiStatement extends weeDatabaseStatement
 
 		$s = 'PREPARE ' . $this->sStatementName . ' FROM ' . $this->oDb->escape($s);
 		$oMySQLi->real_query($s) or burn('DatabaseException',
-			_WT('Failed to prepare the given query with the following message:') . $oMySQLi->error);
+			sprintf(_WT("Failed to prepare the query with the following error:\n%s"), $oMySQLi->error));
 	}
 
 	/**
@@ -107,8 +107,7 @@ class weeMySQLiStatement extends weeDatabaseStatement
 					$mValue = (int)$mValue;
 				$sQuery = 'SET @_wee_' . md5($this->sStatementName . '_' . $sName) . ' = ' . $this->oDb->escape($mValue);
 				$this->oMySQLi->real_query($sQuery) or burn('DatabaseException',
-					sprintf(_WT('Failed to bind parameter "%s" with the following message:'), $sName)
-					. "\n" . $this->oMySQLi->error);
+					sprintf(_WT("Failed to bind the parameter \"%s\" with the following error:\n%s"), $sName, $this->oMySQLi->error));
 			}
 	}
 
@@ -130,7 +129,7 @@ class weeMySQLiStatement extends weeDatabaseStatement
 
 		$mResult = $this->oMySQLi->query($sQuery);
 		$mResult !== false or burn('DatabaseException',
-			_WT('Failed to execute the statement with the following message:') . "\n" . $this->oMySQLi->error);
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), $this->oMySQLi->error));
 
 		$this->iNumAffectedRows	= $this->oMySQLi->affected_rows;
 		if ($mResult !== true)

@@ -17,7 +17,7 @@
 			for removing the temporary files, and for grep-ing files looking for <literal>todo</literal> comments.
 		</para>
 		<para>
-			The Makefile currently do not work fully on Windows.
+			The Makefile currently does not work fully on Windows.
 			You are welcome to help improve it.
 		</para>
 		<para>
@@ -274,7 +274,7 @@ Dead code: 73-74;
 		</para>
 		<para>
 			If a test can't be ran on your configuration, it may fail with the message "skip".
-			This means that your configuration do not allow for the test to be ran.
+			This means that your configuration does not allow for the test to be ran.
 		</para>
 
 		<sect2>

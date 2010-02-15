@@ -1,5 +1,5 @@
 <ul class="item-pagination">
-	<li class="page"><?php echo sprintf(_WT('%d-%d of %d'), $pagination['from'] + 1, min($pagination['from'] + $pagination['max'], $pagination['total']), $pagination['total'])?></li>
+	<li class="page"><?php echo sprintf(_WT('Items %d-%d of %d'), $pagination['from'] + 1, min($pagination['from'] + $pagination['max'], $pagination['total']), $pagination['total'])?></li>
 	<li class="first<?php if ($pagination['from'] == 0) echo ' disabled'?>">
 		<?php if ($pagination['from'] > 0):?><a href="<?php echo $pagination['url']->addData(array('from' => 0))->toString()?>"><?php else:?><span><?php endif?> 
 		<?php echo _WT('First')?> 

@@ -94,7 +94,7 @@
 		<para>
 			This means the view is only responsible for outputting everything.
 			As opposed to other implementations of the <literal>MVC</literal> design pattern,
-			the view do not have to retrieve data, the view actually expects that all data it requires has been provided to it.
+			the view does not have to retrieve data, the view actually expects that all data it requires has been provided to it.
 			Missing data will produce an <link linkend="core_exceptions_default">error page</link>.
 		</para>
 

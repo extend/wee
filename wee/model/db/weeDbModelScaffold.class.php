@@ -56,7 +56,7 @@ abstract class weeDbModelScaffold extends weeDbModel
 
 	public function update()
 	{
-		empty($this->aData) and burn('IllegalStateException', _WT('The model do not contain any data.'));
+		empty($this->aData) and burn('IllegalStateException', _WT('The model does not contain any data.'));
 
 		$oDb = $this->getDb();
 

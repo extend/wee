@@ -109,7 +109,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator, Mappable
 		$sDN = ldap_get_dn($this->rLink, $this->rEntry);
 		if ($sDN === false)
 			throw new LDAPException(
-				_WT('Can not get the DN for the current entry.') . "\n" . ldap_error($this->rLink), 
+				_WT('Could not get the DN for the current entry.') . "\n" . ldap_error($this->rLink), 
 				ldap_errno($this->rLink)
 			);
 
@@ -233,7 +233,7 @@ class weeLDAPEntry implements ArrayAccess, Iterator, Mappable
 		$b = ldap_mod_replace($this->rLink, $this->getDN(), $this->aAttributes);
 		if ($b === false)
 			throw new LDAPException(
-				_WT('Can not save the attributes for the current DN.') . "\n" . ldap_error($this->rLink),
+				_WT('Could not save the attributes for the current DN.') . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}

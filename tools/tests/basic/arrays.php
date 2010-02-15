@@ -80,7 +80,7 @@ $this->isTrue(basic_arrays_real_array_key_exist('null', $o1), 'real_array_key_ex
 $this->isFalse(basic_arrays_real_array_key_exist('doesntexist', $a), 'real_array_key_exists $a doesntexist');
 $this->isFalse(basic_arrays_real_array_key_exist('doesntexist', $o1), 'real_array_key_exists $a doesntexist');
 
-// To check if a key do NOT exist, it becomes the following:
+// To check if a key does NOT exist, it becomes the following:
 //      ((is_array($m) && !array_key_exists($sKey, $m))
 //       || (!is_array($m) && !isset($m[$sKey])))
 

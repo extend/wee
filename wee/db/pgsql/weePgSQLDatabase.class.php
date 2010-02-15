@@ -63,7 +63,7 @@ class weePgSQLDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('pg_connect') or burn('ConfigurationException',
-			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'PostgreSQL'));
+			sprintf(_WT('The "%s" PHP extension is required by this database driver.'), 'PostgreSQL'));
 
 		$sEncoding = array_value($aParams, 'encoding', 'UNICODE');
 		unset($aParams['encoding']);
@@ -75,8 +75,7 @@ class weePgSQLDatabase extends weeDatabase
 		// pg_connect triggers a warning if the connection failed.
 		$this->rLink = @pg_connect($sConnection, PGSQL_CONNECT_FORCE_NEW);
 		$this->rLink === false and burn('DatabaseException',
-			_WT('Failed to connect to database with the following message:')
-				. "\n" . array_value(error_get_last(), 'message'));
+			sprintf(_WT("Failed to connect to the database with the following error:\n%s"), array_value(error_get_last(), 'message')));
 
 		pg_set_client_encoding($this->rLink, $sEncoding) != -1 or burn('InvalidArgumentException',
 			sprintf(_WT('Encoding "%s" is invalid.'), $sEncoding));
@@ -108,8 +107,8 @@ class weePgSQLDatabase extends weeDatabase
 	{
 		// pg_query triggers a warning when the query could not be executed.
 		$rResult = @pg_query($this->rLink, $sQueryString);
-		$rResult === false and burn('DatabaseException', _WT('Failed to execute the given query:')
-			. "\n" . pg_last_error($this->rLink));
+		$rResult === false and burn('DatabaseException',
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), pg_last_error($this->rLink)));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);
@@ -169,11 +168,10 @@ class weePgSQLDatabase extends weeDatabase
 		$r = pg_get_result($this->rLink);
 
 		$mSQLState = pg_result_error_field($r, PGSQL_DIAG_SQLSTATE);
-		if ($mSQLState == '55000')
-			burn('IllegalStateException', sprintf(_WT('%s has not yet generated a value for the given sequence in this session.'), 'PostgreSQL'));
-		elseif ($mSQLState !== null)
-			burn('DatabaseException', sprintf(_WT('%s failed to return the value of the given sequence with the following message:'), 'PostgreSQL')
-				. "\n" . pg_last_error($this->rLink));
+		$mSQLState == '55000' and burn('IllegalStateException',
+			_WT('PostgreSQL has not yet generated a value for the given sequence in this session.'));
+		$mSQLState === null or burn('DatabaseException',
+			sprintf(_WT("PostgreSQL failed to return the value of the given sequence with the following message:\n%s"), pg_last_error($this->rLink)));
 
 		return pg_fetch_result($r, 0, 0);
 	}

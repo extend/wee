@@ -87,10 +87,10 @@ class weePDOStatement extends weeDatabaseStatement
 	public function execute()
 	{
 		$this->oStatement->execute();
-		
+
 		$a = $this->oStatement->errorInfo();
 		$a[0] == '0000' or burn('DatabaseException',
-			_WT('Failed to execute the statement with the following message:') . "\n" . $a[2]);
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), $a[2]));
 
 		$this->iNumAffectedRows = $this->oDb->doRowCount($this->oStatement, true);
 		if ($this->oStatement->columnCount())

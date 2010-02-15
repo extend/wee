@@ -225,7 +225,7 @@ class weeDbMetaForm extends weeForm
 			$aRefMeta = $oRefSet->getMeta();
 
 			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
-				sprintf(_WT('The reference table %s do not have a primary key.'), $aRefMeta['table']));
+				sprintf(_WT('The reference table %s does not have a primary key.'), $aRefMeta['table']));
 
 			if (empty($aRef['key'])) {
 				if (count($aRefMeta['primary']) == 1)

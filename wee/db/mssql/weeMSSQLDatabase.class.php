@@ -63,14 +63,14 @@ class weeMSSQLDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('mssql_connect') or burn('ConfigurationException',
-			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'MSSQL'));
+			sprintf(_WT('The "%s" PHP extension is required by this database driver.'), 'MSSQL'));
 
 		// mssql_connect triggers a warning if the connection failed.
 		// Don't use mssql_get_last_message here as it does not always return
 		// something useful on connection failure.
 		$this->rLink = mssql_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'), true);
 		$this->rLink !== false or burn('DatabaseException',
-			_WT('Failed to connect to database with the following message:') . "\n" . array_value(error_get_last(), 'message'));
+			sprintf(_WT("Failed to connect to the database with the following error:\n%s"), array_value(error_get_last(), 'message')));
 	
 		if (isset($aParams['dbname']))
 			$this->selectDb($aParams['dbname']);
@@ -102,8 +102,8 @@ class weeMSSQLDatabase extends weeDatabase
 	{
 		// mssql_query triggers a warning when the query could not be executed.
 		$m = @mssql_query($sQueryString, $this->rLink);
-		$m === false and burn('DatabaseException', _WT('Failed to execute the given query with the following message:')
-			. "\n" . mssql_get_last_message());
+		$m === false and burn('DatabaseException',
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), mssql_get_last_message()));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = mssql_rows_affected($this->rLink);

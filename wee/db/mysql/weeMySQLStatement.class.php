@@ -96,7 +96,7 @@ class weeMySQLStatement extends weeDatabaseStatement
 
 		$s = 'PREPARE ' . $this->sStatementName . ' FROM ' . $this->oDb->escape($s);
 		mysql_unbuffered_query($s, $this->rLink) !== false or burn('DatabaseException',
-			_WT('Failed to prepare the given query with the following message:') . "\n" . mysql_error($this->rLink));
+			sprintf(_WT("Failed to prepare the query with the following error:\n%s"), mysql_error($this->rLink)));
 	}
 
 	/**
@@ -113,8 +113,7 @@ class weeMySQLStatement extends weeDatabaseStatement
 					$mValue = (int)$mValue;
 				$sQuery = 'SET @_wee_' . md5($this->sStatementName . '_' . $sName) . ' = ' . $this->oDb->escape($mValue);
 				mysql_unbuffered_query($sQuery, $this->rLink) !== false or burn('DatabaseException',
-					sprintf(_WT('Failed to bind parameter "%s" with the following message:'), $sName)
-					. "\n" . mysql_error($this->rLink));
+					sprintf(_WT("Failed to bind the parameter \"%s\" with the following error:\n%s"), $sName, mysql_error($this->rLink)));
 			}
 	}
 
@@ -136,7 +135,7 @@ class weeMySQLStatement extends weeDatabaseStatement
 
 		$mResult = mysql_query($sQuery, $this->rLink);
 		$mResult !== false or burn('DatabaseException',
-			_WT('Failed to execute the statement with the following message:') . "\n" . mysql_error($this->rLink));
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), mysql_error($this->rLink)));
 
 		$this->iNumAffectedRows	= mysql_affected_rows($this->rLink);
 		if ($mResult !== true)

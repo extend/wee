@@ -69,8 +69,8 @@ class weeMSSQLStatement extends weeDatabaseDummyStatement
 	{
 		// mssql_query triggers a warning when the query could not be executed.
 		$m = @mssql_query($sQuery, $this->rLink);
-		$m === false and burn('DatabaseException', _WT('Failed to execute the given query:')
-			. "\n" . mssql_get_last_message());
+		$m === false and burn('DatabaseException',
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), mssql_get_last_message()));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = mssql_rows_affected($this->rLink);

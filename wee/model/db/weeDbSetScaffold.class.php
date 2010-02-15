@@ -192,7 +192,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			$aRefMeta = $oRefSet->getMeta();
 
 			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
-				sprintf(_WT('The reference table %s do not have a primary key.'), $aRefMeta['table']));
+				sprintf(_WT('The reference table %s does not have a primary key.'), $aRefMeta['table']));
 
 			$sJoin .= ' ' . $this->sJoinType . ' ' . $aRefMeta['table'] . ' ON (';
 			$sAnd = '';
@@ -252,7 +252,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 			if (!$bNoValue) {
 				in_array(strtoupper($mValue), $this->aValidOrderByModifiers)
-					or burn('InvalidArgumentException', sprintf(_WT('The ORDER BY modifier requested, %s, do not exist.'), $mValue));
+					or burn('InvalidArgumentException', sprintf(_WT('The ORDER BY modifier requested, %s, does not exist.'), $mValue));
 
 				$sOrderBy .= ' ' . $mValue;
 			}
@@ -304,7 +304,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 			if (is_array($mOperation)) {
 				in_array($mOperation[0], $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
-					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation[0]));
+					sprintf(_WT('The criteria operation requested, "%s", does not exist.'), $mOperation[0]));
 
 				$sWhere .= $mOperation[0] . ' ';
 
@@ -319,7 +319,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 				}
 			} else {
 				in_array($mOperation, $this->aValidCriteriaOperators) or burn('InvalidArgumentException',
-					sprintf(_WT('The criteria operation requested, "%s", do not exist.'), $mOperation));
+					sprintf(_WT('The criteria operation requested, "%s", does not exist.'), $mOperation));
 
 				$sWhere .= $mOperation;
 			}
@@ -343,7 +343,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	protected function buildWhereLogical($oDb, $aCriteria)
 	{
 		in_array($aCriteria[0], $this->aValidCriteriaLogicalOperators) or burn('InvalidArgumentException',
-			sprintf(_WT('The criteria logical operator given, "%s", do not exist.'), $aCriteria[0]));
+			sprintf(_WT('The criteria logical operator given, "%s", does not exist.'), $aCriteria[0]));
 
 		if ($aCriteria[0] == 'NOT')
 			$sWhere = 'NOT (';
@@ -572,7 +572,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	/**
 		Insert a new row in the database, and return the model object for the inserted row.
 
-		The model returned do not contain any other value that could be assigned to the
+		The model returned does not contain any other value that could be assigned to the
 		row when doing the INSERT operation. If you need that kind of behavior, because
 		you have a table with a sequenced primary key for example, you need to extend this
 		method to retrieve the value. This usually means using $this->getDb()->getPKId().

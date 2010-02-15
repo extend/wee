@@ -52,7 +52,7 @@ abstract class weeDbMeta
 	public function __construct(weeDatabase $oDb)
 	{
 		$this->mDBMS !== null or burn('IllegalStateException',
-			sprintf(_WT('Property $%s is missing.'), 'mDBMS'));
+			sprintf(_WT('The property $%s must not be empty.'), 'mDBMS'));
 		(is_string($this->mDBMS) ? $oDb->is($this->mDBMS) : in_array($oDb->is(), $this->mDBMS)) or burn('InvalidArgumentException',
 			_WT('The underlying DBMS of the given database is not handled by this class.'));
 		$this->oDb = $oDb;

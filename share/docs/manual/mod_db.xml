@@ -41,7 +41,7 @@
 				You only need to modify the configuration file in order to connect to a database.
 				You only need to fill the connection settings that will be used to connect to the database when you first try to access it.
 				Note that the framework will never connect to the database until you need it.
-				If your script use the application module but do not access the database, it will not try to connect.
+				If your script use the application module but does not access the database, it will not try to connect.
 			</para>
 			<para>
 				The parameters can vary depending on the database driver.
@@ -71,7 +71,7 @@
 			<para>
 				To connect without the application module you need to create the database driver yourself.
 				It takes an <ulink url="http://php.net/manual/en/language.types.array.php">associative array</ulink> containing the settings as a parameter.
-				The parameters are the same 4 we already discussed, except their name do not include the <literal>db.</literal> part.
+				The parameters are the same 4 we already discussed, except their names do not include the <literal>db.</literal> part.
 				This is demonstrated by the following example, where we connect to a PostgreSQL database:
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/db-connection-no-app.php.xml"/>
 			</para>

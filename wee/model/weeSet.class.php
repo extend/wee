@@ -44,7 +44,7 @@ abstract class weeSet extends weeDataSource
 	public function getModelName()
 	{
 		empty($this->sModel) and burn('IllegalStateException',
-			_WT('The property $sModel must not be empty.'));
+			sprintf(_WT('The property $%s must not be empty.'), 'sModel'));
 
 		return $this->sModel;
 	}

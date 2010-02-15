@@ -38,7 +38,7 @@ class weeACLDbTable
 			$aParams['db'] = weeApp()->db;
 
 		is_object($aParams['db']) && $aParams['db'] instanceof weeDatabase or burn('InvalidArgumentException',
-			sprintf(_WT('Parameter "%s" must be an instance of %s.'), 'db', 'weeDatabase'));
+			sprintf(_WT('Parameter "%s" must be an instance of "%s".'), 'db', 'weeDatabase'));
 
 		empty($aParams['sr_table']) and burn('InvalidArgumentException',
 			_WT('You must provide a parameter "sr_table" containing the name of the subject-role table in your database.'));
@@ -74,7 +74,7 @@ class weeACLDbTable
 	{
 		$oDb = $this->getDb();
 
-		// First we check if a role already exists as we don't want dupes
+		// First we check if a role already exists as we don't want duplicates
 
 		try {
 			$iRole = $this->fetchRole($oDb, $sOperation, $mResource);

@@ -39,23 +39,23 @@ try {
 		$oSet->insert(array('pkey' => $i));
 
 	$this->isEqual(42, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
-	// This one do not delete anything
+	// This one does not delete anything
 	$oSet->delete(0);
 
 	$this->isEqual(42, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
 	$oSet->delete(33);
 
 	$this->isEqual(41, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
 	$oSet->delete(array('pkey' => 18));
 
 	$this->isEqual(40, $oSet->count(),
-		_WT('weeDbSetScaffold::count do not return the correct number of rows.'));
+		_WT('weeDbSetScaffold::count does not return the correct number of rows.'));
 
 	try {
 		$oSet->delete(null);

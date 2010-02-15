@@ -67,11 +67,10 @@ class weeSQLiteStatement extends weeDatabaseDummyStatement
 		// SQLiteDatabase::query triggers a warning when the query could not be executed.
 		$m = @$this->oSQLiteDb->query($sQuery, SQLITE_ASSOC, $sLastError);
 
-		if ($m === false)
-		{
+		if ($m === false) {
 			if ($sLastError === null)
 				$sLastError = sqlite_error_string($this->oSQLiteDb->lastError());
-			burn('DatabaseException', _WT('Failed to execute the query with the following error:') . "\n" . $sLastError);
+			burn('DatabaseException', sprintf(_WT("Failed to execute the query with the following error:\n%s"), $sLastError));
 		}
 
 		$this->iNumAffectedRows = $this->oSQLiteDb->changes();

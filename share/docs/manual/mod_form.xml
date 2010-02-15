@@ -342,7 +342,7 @@ table, tbody, td, tfoot, th, thead, tr, tt, ul, var
 			<para>
 				A target action identifies the action that will be performed after the form is submitted.
 				For example a form can be used to <literal>add</literal> or <literal>update</literal> a record in a database.
-				Some of your form's widgets can be removed automatically if their target action do not match,
+				Some of your form's widgets can be removed automatically if their target action does not match,
 				allowing you to use the same form file for <literal>add</literal>, <literal>update</literal> and any other actions you may need.
 			</para>
 			<para>
@@ -423,14 +423,14 @@ table, tbody, td, tfoot, th, thead, tr, tt, ul, var
 			<title>Filtering data</title>
 			<para>
 				The first thing to do is to make sure that the data you just received
-				do not contain additional fields that were absent from the original form.
+				does not contain additional fields that were absent from the original form.
 				It's an important step, as it will protect your application from attackers
 				that might try to add fields in the hope that they will be saved into the database,
 				despite not being in the form originally.
 				If you had a field <literal>user_admin</literal> in your <literal>users</literal> table,
 				and you built to insert query dynamically,
 				a malicious user might be able to gain administrator rights by adding this field to its POST request.
-				With filtering, you are sure that the data do not contain unwanted fields.
+				With filtering, you are sure that the data does not contain unwanted fields.
 			</para>
 			<para>
 				The <literal>filter</literal> method will filter the array given and return an array
@@ -1326,7 +1326,7 @@ Input is required for Profile.
 			</para>
 			<para>
 				To add a new widget the method is exactly the same.
-				The only difference is that the widget type do not exist in the standard stylesheets.
+				The only difference is that the widget type does not exist in the standard stylesheets.
 			</para>
 		</sect2>
 	</sect1>

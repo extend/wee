@@ -96,10 +96,8 @@ class weePgSQLStatement extends weeDatabaseStatement
 		$this->rLink			= $rLink;
 
 		$rResult = pg_prepare($this->rLink, $this->sStatementName, $sQueryString);
-		$rResult !== false
-			or burn('DatabaseException',
-				_WT('PostgreSQL failed to prepare the given query with the following message:')
-					. "\n" . pg_last_error($this->rLink));
+		$rResult !== false or burn('DatabaseException',
+			sprintf(_WT("Failed to prepare the query with the following error:\n%s"), pg_last_error($this->rLink)));
 	}
 
 	/**
@@ -137,8 +135,7 @@ class weePgSQLStatement extends weeDatabaseStatement
 		// pg_execute triggers a warning if the statement could not be executed.
 		$rResult = @pg_execute($this->rLink, $this->sStatementName, $this->aParameters);
 		$rResult !== false or burn('DatabaseException',
-				_WT('PostgreSQL failed to execute the prepared statement with the following message:')
-					. "\n" . pg_last_error($this->rLink));
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), pg_last_error($this->rLink)));
 
 		// Get it now since it can be wrong if numAffectedRows is called after getPKId
 		$this->iNumAffectedRows = pg_affected_rows($rResult);

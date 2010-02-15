@@ -55,7 +55,7 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 		$this->sFilename = TPL_PATH . $sTemplate . TPL_EXT;
 
 		file_exists($this->sFilename) or burn('FileNotFoundException',
-			sprintf(_WT('The file %s does not exist.'), $this->sFilename));
+			sprintf(_WT('The file "%s" does not exist.'), $this->sFilename));
 
 		parent::__construct($aData);
 		$this->setMIMEType('text/html');

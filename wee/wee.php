@@ -407,7 +407,7 @@ function rmdir_recursive($sPath, $bOnlyContents = false)
 function safe_header($sString, $bReplace = true)
 {
 	headers_sent() and burn('IllegalStateException',
-		_WT('You cannot add another header to be sent to browser if they are already sent.'));
+		_WT('The HTTP headers have already been sent.'));
 	(strpos($sString, "\r") !== false || strpos($sString, "\n") !== false) and burn('UnexpectedValueException',
 		_WT('Line breaks are not allowed in headers to prevent HTTP Response Splitting.'));
 	strpos($sString, "\0") !== false and burn('UnexpectedValueException',

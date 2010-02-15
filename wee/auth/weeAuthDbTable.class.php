@@ -47,7 +47,7 @@ class weeAuthDbTable extends weeAuth
 			$aParams['db'] = weeApp()->db;
 
 		is_object($aParams['db']) && $aParams['db'] instanceof weeDatabase or burn('InvalidArgumentException',
-			sprintf(_WT('Parameter "%s" must be an instance of %s.'), 'db', 'weeDatabase'));
+			sprintf(_WT('Parameter "%s" must be an instance of "%s".'), 'db', 'weeDatabase'));
 
 		empty($aParams['table']) and burn('InvalidArgumentException',
 			_WT('You must provide a parameter "table" containing the name of the credentials table in your database.'));
@@ -59,8 +59,8 @@ class weeAuthDbTable extends weeAuth
 		if (empty($aParams['password_treatment']))
 			$aParams['password_treatment'] = 'sha1';
 		else
-			is_callable($aParams['password_treatment'])
-				or burn('InvalidArgumentException', _WT('The `password_treatment` parameter must be a valid callback.'));
+			is_callable($aParams['password_treatment']) or burn('InvalidArgumentException',
+				sprintf(_WT('The "%s" parameter must be a valid callback.'), 'password_treatment'));
 
 		parent::__construct($aParams);
 	}
@@ -93,7 +93,7 @@ class weeAuthDbTable extends weeAuth
 			throw new AuthenticationException('The credentials provided were incorrect.');
 
 		count($oResults) == 1 or burn('UnexpectedValueException',
-			_WT('The authentication query returned more than 1 result. Your table most likely contains dupes.'));
+			_WT('The authentication query returned more than 1 result. Your table most likely contains duplicates.'));
 
 		$aData = $oResults->fetch();
 		unset($aData[$this->aParams['password_field']]);
@@ -129,7 +129,7 @@ class weeAuthDbTable extends weeAuth
 			_WT('The provided credentials were incorrect.'));
 
 		count($oResults) == 1 or burn('UnexpectedValueException',
-			_WT('The authentication query returned more than 1 result. Your table most likely contains dupes.'));
+			_WT('The authentication query returned more than 1 result. Your table most likely contains duplicates.'));
 
 		$aData = $oResults->fetch();
 		$sFunc = $this->aParams['hash_treatment'];

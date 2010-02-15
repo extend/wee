@@ -38,7 +38,7 @@ try {
 
 	$this->isIdentical(array('ref_id' => null, 'dmf_number' => '12', 'dmf_text' => array(1, 3, 5, '')),
 		$oForm->filter(array('ref_id' => '', 'dmf_number' => '12', 'dmf_text' => array(1, 3, 5, ''), 'unknown_value' => 'the sleeper has overslept')),
-		_WT('weeDbMetaForm::filter do not convert correctly empty strings to NULL.'));
+		_WT('weeDbMetaForm::filter does not convert correctly empty strings to NULL.'));
 
 } catch (Exception $oException) {
 }

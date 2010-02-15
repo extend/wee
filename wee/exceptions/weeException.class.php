@@ -184,14 +184,16 @@ final class weeException
 	{
 		try {
 			if (defined('WEE_CLI')) {
-				$sError = $eException instanceof ErrorException
-					? sprintf(_WT('Error: %s'), self::getLevelName($eException->getSeverity()))
-					: sprintf(_WT('Exception: %s'), get_class($eException));
+				if ($eException instanceof ErrorException) {
+					$sBase = _WT("Error: %s\nMessage: %s\n\nTrace:\n%s");
+					$sName = self::getLevelName($eException->getSeverity());
+				} else {
+					$sBase = _WT("Exception: %s\nMessage: %s\n\nTrace:\n%s");
+					$sName = get_class($eException);
+				}
 
-				$sError .= "\n" . sprintf(_WT('Message: %s'), $eException->getMessage()) . "\n";
-				$sError .= "\n" . _WT('Trace:') . "\n" . self::formatTrace(self::filterTrace($eException->getTrace()));
-
-				self::printError($sError);
+				self::printError(sprintf($sBase, $sName, $eException->getMessage(),
+					self::formatTrace(self::filterTrace($eException->getTrace()))));
 			} else {
 				if (!headers_sent()) {
 					if ($eException instanceof RouteNotFoundException)

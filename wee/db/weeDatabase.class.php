@@ -93,7 +93,7 @@ abstract class weeDatabase
 			// see http://blog.extend.ws/2008/03/01/arrayaccess-quirks/
 			is_array($aParameters) ? array_key_exists($sName, $aParameters) : isset($aParameters[$sName])
 				or burn('InvalidArgumentException',
-					sprintf(_WT('Could not bind the parameter "%s" because its value was not given in the arguments.'), $sName));
+					sprintf(_WT('Could not bind the parameter "%s" because its value was not provided in the arguments.'), $sName));
 
 			$sQueryString = str_replace(':' . $sName, $this->escape($aParameters[$sName]), $sQueryString);
 		}

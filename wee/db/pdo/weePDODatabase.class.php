@@ -61,7 +61,7 @@ class weePDODatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		class_exists('PDO', false) or burn('ConfigurationException',
-			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'PDO'));
+			sprintf(_WT('The "%s" PHP extension is required by this database driver.'), 'PDO'));
 
 		isset($aParams['dsn']) or burn('InvalidArgumentException',
 			sprintf(_WT('Parameter "%s" is missing.'), 'dsn'));
@@ -71,8 +71,7 @@ class weePDODatabase extends weeDatabase
 		} catch (PDOException $e) {
 			if ($e->getCode() == 'IM003')
 				burn('ConfigurationException', _WT('The requested PDO driver is missing.'));
-			burn('DatabaseException', _WT('Failed to connect to the database with the following message:')
-				. "\n" . $e->getMessage());
+			burn('DatabaseException', sprintf(_WT("Failed to connect to the database with the following error:\n%s"), $e->getMessage()));
 		}
 
 		$sDriver = $this->oDb->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -119,8 +118,8 @@ class weePDODatabase extends weeDatabase
 		// PDO::query triggers a warning when calling an undefined stored procedure when
 		// used with PDO_DBLIB driver.
 		$m = @$this->oDb->query($sQuery);
-		$m !== false or burn('DatabaseException', _WT('Failed to execute the query with the following error:')
-			. "\n" . array_value($this->oDb->errorInfo(), 2));
+		$m !== false or burn('DatabaseException',
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), array_value($this->oDb->errorInfo(), 2)));
 
 		$this->iNumAffectedRows = $this->doRowCount($m);
 		// PDO_DBLIB always return 0 for the column count of an empty result set,

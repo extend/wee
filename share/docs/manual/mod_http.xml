@@ -76,7 +76,7 @@
 			</para>
 			<para>
 				However these variables won't be available for this request.
-				The cookies object do not store the variables you set:
+				The cookies object does not store the variables you set:
 				it sends them to the browser, which will send them back on the next request.
 				So <literal>my_str</literal> won't be available until the next request.
 			</para>

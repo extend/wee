@@ -67,15 +67,15 @@ class weeMySQLiDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('mysqli_real_connect') or burn('ConfigurationException',
-			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'MySQLi'));
+			sprintf(_WT('The "%s" PHP extension is required by this database driver.'), 'MySQLi'));
 
 		$this->oDb = new mysqli;
 		$this->oDb->init();
 
 		// mysqli_real_connect returns false and triggers a warning if the connection failed.
 		@$this->oDb->real_connect(array_value($aParams, 'host'), array_value($aParams, 'user'), array_value($aParams, 'password'))
-			or burn('DatabaseException',
-				_WT('Failed to connect to the database with the following message:') . "\n" . $this->oDb->connect_error);
+			or burn('DatabaseException', 
+				sprintf(_WT("Failed to connect to the database with the following error:\n%s"), $this->oDb->connect_error));
 
 		if (isset($aParams['encoding']))
 			$this->oDb->set_charset($aParams['encoding']) or burn('InvalidArgumentException',
@@ -108,7 +108,7 @@ class weeMySQLiDatabase extends weeDatabase
 	{
 		$m = $this->oDb->query($sQuery);
 		$m !== false or burn('DatabaseException',
-			_WT('Failed to execute the given query with the following message:') . "\n" . $this->oDb->error);
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), $this->oDb->error));
 
 		$this->iNumAffectedRows = $this->oDb->affected_rows;
 		if ($m !== true)

@@ -137,30 +137,23 @@ class weeTestSuite implements Mappable, Printable
 			$this->aTimeResults[$sFile] = $fTime;
 		} elseif ($mResult === 'skip')
 			echo _WT('skip') . "\n";
-		elseif ($mResult instanceof ErrorException) {
-			echo _WT('error') . "\n" .
-				_WT('Message: ') . $mResult->getMessage() . "\n" .
-				_WT('Level: ') . weeException::getLevelName($mResult->getSeverity()) . "\n" .
-				_WT('File: ') . $mResult->getFile() . "\n" .
-				_WT('Line: ') . $mResult->getLine() . "\n";
-		} elseif ($mResult instanceof UnitTestException) {
+		elseif ($mResult instanceof UnitTestException) {
 			$aTrace = $mResult->getTrace();
 
-			echo _WT('failure') . "\n" . _WT('Message: ') . $mResult->getMessage() . "\n" .
-				_WT('Line: ') . array_value($aTrace[0], 'line', '?') . "\n";
+			echo _WT('failure') . "\n" . sprintf(_WT("Message: %s\nLine: %s\n"),
+				$mResult->getMessage(), array_value($aTrace[0], 'line', '?'));
 
-			if ($mResult instanceof ComparisonTestException) {
-				echo _WT('Expected: ');
-				var_export($mResult->getExpected());
-				echo "\n" . _WT('Actual: ');
-				var_export($mResult->getActual());
-				echo "\n";
-			}
-		} else {
-			echo get_class($mResult) . "\n" .
-				_WT('Message: ') . $mResult->getMessage() . "\n" .
-				_WT('Trace:') . "\n" . $mResult->getTraceAsString() . "\n";
-		}
+			if ($mResult instanceof ComparisonTestException)
+				echo sprintf(_WT("Expected: %s\nActual: %s\n"),
+					var_export($mResult->getExpected()), var_export($mResult->getActual()));
+		} elseif ($mResult instanceof ErrorException)
+			echo _WT('error') . "\n" . sprintf(_WT("Class: ErrorException\nMessage: %s\nLevel: %s\nFile: %s\nLine: %s\n"),
+				$mResult->getMessage(), weeException::getLevelName($mResult->getSeverity()),
+				$mResult->getFile(), $mResult->getLine());
+		else
+			echo _WT('error') . "\n" . sprintf(_WT("Class: %s\nMessage: %s\nFile: %s\nLine: %s\nTrace:\n%s\n"),
+				get_class($mResult), $mResult->getMessage(), $mResult->getFile(),
+				$mResult->getLine(), $mResult->getTraceAsString());
 
 		$this->mLastResult = $mResult;
 	}
@@ -207,22 +200,21 @@ class weeTestSuite implements Mappable, Printable
 
 	protected function printCodeCoverage($aCoveredCode = array())
 	{
-		echo "\nCode coverage:\n";
+		echo "\n" . _WT('Code coverage report:') . "\n";
 
 		ksort($aCoveredCode);
-
 		foreach ($aCoveredCode as $sFilename => $aLines) {
 			echo "\n" . $sFilename;
 
 			if (in_array(1, $aLines)) {
-				echo "\nCovered: ";
+				echo "\n" . _WT('Covered lines:') . ' ';
 				$this->printFileCoverage($aLines, 1);
 			} else {
-				echo "\nNO CODE COVERED";
+				echo "\n" . _WT('No code covered.');
 			}
 
 			if (in_array(-1, $aLines)) {
-				echo "\nNon-covered: ";
+				echo "\n" . _WT('Non-covered lines:') . ' ';
 				$this->printFileCoverage($aLines, -1);
 			}
 
@@ -242,7 +234,7 @@ class weeTestSuite implements Mappable, Printable
 			}
 
 			if (in_array(-2, $aLines)) {
-				echo "\nDead code: ";
+				echo "\n" . _WT('Dead code:') . ' ';
 				$this->printFileCoverage($aLines, -2);
 			}
 		}
@@ -344,7 +336,7 @@ class weeTestSuite implements Mappable, Printable
 		// Output the extended data returned by the test cases
 
 		if (!empty($this->aExtData)) {
-			echo "\nExtended data:\n\n";
+			echo "\n" . _WT('Extended data:') . "\n\n";
 
 			foreach ($this->aExtData as $sFile => $aTestData) {
 				echo $sFile . "\n";
@@ -362,7 +354,7 @@ class weeTestSuite implements Mappable, Printable
 
 		// Output the tests that took the most time to run
 
-		$s = "\nList of tests with the biggest execution time:";
+		$s = "\n" . _WT('List of tests with the biggest execution time:');
 
 		arsort($this->aTimeResults);
 
@@ -378,7 +370,7 @@ class weeTestSuite implements Mappable, Printable
 
 		// Output the tests that used the most memory
 
-		$s .= "\n\nList of tests with the biggest memory consumption at the end of the test:";
+		$s .= "\n\n" . _WT('List of tests with the biggest memory consumption at the end of the test:');
 
 		arsort($this->aMemoryResults);
 
@@ -392,7 +384,7 @@ class weeTestSuite implements Mappable, Printable
 			next($this->aMemoryResults);
 		}
 
-		$s .= "\nPeak memory usage: " . memory_get_peak_usage() . " bytes\n\n";
+		$s .= "\n" . sprintf(_WT('Peak memory usage: %d bytes'), memory_get_peak_usage()) . "\n\n";
 
 		// Count the number of tests failed, succeeded and skipped and output a summary
 
@@ -404,8 +396,8 @@ class weeTestSuite implements Mappable, Printable
 		if (!isset($aCounts['skip']))
 			$aCounts['skip'] = 0;
 
-		$iSkippedAndSucceededCount	= $aCounts['success'] + $aCounts['skip'];
-		$iTestsCount				= count($this->aResults);
+		$iSkippedAndSucceededCount = $aCounts['success'] + $aCounts['skip'];
+		$iTestsCount = count($this->aResults);
 
 		if ($iSkippedAndSucceededCount == $iTestsCount)
 			$s .= sprintf(_WT('All %d tests succeeded!'), $aCounts['success']);
@@ -413,7 +405,7 @@ class weeTestSuite implements Mappable, Printable
 			$s .= sprintf(_WT('%d of %d tests failed.'), $iTestsCount - $iSkippedAndSucceededCount, $iTestsCount - $aCounts['skip']);
 
 		if ($aCounts['skip'] != 0)
-			$s .= sprintf(_WT(' (%d skipped)'), $aCounts['skip']);
+			$s .= ' ' . sprintf(_WT('%d tests have been skipped.'), $aCounts['skip']);
 
 		return $s . "\n";
 	}

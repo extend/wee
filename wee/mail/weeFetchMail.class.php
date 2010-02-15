@@ -84,7 +84,7 @@ class weeFetchMail
 
 		// Then we only output the first error from the array we retrieved (usually good enough).
 		$this->rLink === false and burn('UnexpectedValueException',
-			_WT("Couldn't open stream '" . $sConnection . "'. " . $a[0]));
+			_WT("Couldn't open stream \"%s\" with the following error:\n%s", $sConnection, $a[0]));
 	}
 
 	/**

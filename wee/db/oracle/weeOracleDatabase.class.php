@@ -61,7 +61,7 @@ class weeOracleDatabase extends weeDatabase
 	public function __construct($aParams = array())
 	{
 		function_exists('oci_new_connect') or burn('ConfigurationException',
-			sprintf(_WT('The %s PHP extension is required by this database driver.'), 'OCI8'));
+			sprintf(_WT('The "%s" PHP extension is required by this database driver.'), 'OCI8'));
 
 		// oci_new_connect triggers a warning when the connection failed.
 		$this->rLink = @oci_new_connect(
@@ -72,7 +72,7 @@ class weeOracleDatabase extends weeDatabase
 		);
 
 		$this->rLink !== false or burn('DatabaseException',
-			_WT('Failed to connect to database with the following message:') . "\n" . array_value(oci_error(), 'message'));
+			sprintf(_WT("Failed to connect to the database with the following error:\n%s"), array_value(oci_error(), 'message')));
 	}
 
 	/**
@@ -98,11 +98,11 @@ class weeOracleDatabase extends weeDatabase
 	{
 		$rStatement = oci_parse($this->rLink, $sQueryString);
 		$rStatement !== false or burn('DatabaseException',
-			_WT('Failed to parse the given query with the following message:') . "\n" . array_value(oci_error($this->rLink), 'message'));
+			sprintf(_WT("Failed to parse the query with the following error:\n%s"), array_value(oci_error($this->rLink), 'message')));
 
 		// oci_execute triggers a warning when the statement could not be executed.
 		@oci_execute($rStatement, OCI_DEFAULT) or burn('DatabaseException',
-			_WT('Failed to execute the given query with the following message:') . "\n" . array_value(oci_error($rStatement), 'message'));
+			sprintf(_WT("Failed to execute the query with the following error:\n%s"), array_value(oci_error($rStatement), 'message')));
 
 		$this->iNumAffectedRows = oci_num_rows($rStatement);
 		if (oci_num_fields($rStatement) > 0) {

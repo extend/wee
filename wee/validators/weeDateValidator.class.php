@@ -61,12 +61,10 @@ class weeDateValidator extends weeValidator
 	public function __construct(array $aArgs = array())
 	{
 		!isset($aArgs['min']) or is_string($aArgs['min']) and ($aArgs['min'] == 'current' or $this->isValidInput($aArgs['min']))
-			or burn('DomainException',
-				_WT('The `min` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'min'));
 
 		!isset($aArgs['max']) or is_string($aArgs['max']) and ($aArgs['max'] == 'current' or $this->isValidInput($aArgs['max']))
-			or burn('DomainException',
-				_WT('The `max` argument is invalid.'));
+			or burn('DomainException', sprintf(_WT('The "%s" argument is invalid.'), 'max'));
 
 		if (isset($aArgs['min'], $aArgs['max']))
 		{
@@ -76,9 +74,8 @@ class weeDateValidator extends weeValidator
 			$sMin = $aArgs['min'] == 'current' ? $sToday : $aArgs['min'];
 			$sMax = $aArgs['max'] == 'current' ? $sToday : $aArgs['max'];
 
-			$sMin < $sMax
-				or burn('InvalidArgumentException',
-					_WT('The `min` and `max` arguments do not form a valid date range.'));
+			$sMin < $sMax or burn('InvalidArgumentException',
+				_WT('The "min" and "max" arguments do not form a valid range.'));
 		}
 
 		parent::__construct($aArgs);

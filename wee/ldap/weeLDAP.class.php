@@ -48,7 +48,7 @@ class weeLDAP
 	public function __clone()
 	{
 		$this->rLink = ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
-		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->aParams['host']));
+		$this->rLink === false and burn('LDAPException', sprintf(_WT('Failed to connect to "%s".'), $this->aParams['host']));
 
 		// OpenLDAP2 requires the protocol version to be set
 		// TODO: test if this is compatible with other different LDAP servers
@@ -57,7 +57,7 @@ class weeLDAP
 		$b = ldap_bind($this->rLink, array_value($this->aParams, 'rdn'), array_value($this->aParams, 'password'));
 		if ($b === false)
 			throw new LDAPException(
-				sprintf(_WT('Can not bind the RDN "%s".'), array_value($this->aParams, 'rdn')) . "\n" . ldap_error($this->rLink),
+				sprintf(_WT('Could not bind the RDN "%s".'), array_value($this->aParams, 'rdn')) . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
@@ -86,7 +86,7 @@ class weeLDAP
 		empty($aParams['host']) and burn('InvalidArgumentException', 'The host parameter must not be empty.');
 
 		$this->rLink = ldap_connect($this->aParams['host'], array_value($this->aParams, 'port', 389));
-		$this->rLink === false and burn('LDAPException', sprintf(_WT('Can not connect to "%s"'), $this->aParams['host']));
+		$this->rLink === false and burn('LDAPException', sprintf(_WT('Failed to connect to "%s".'), $this->aParams['host']));
 
 		// OpenLDAP2 requires the protocol version to be set
 		// TODO: test if this is compatible with other different LDAP servers
@@ -95,7 +95,7 @@ class weeLDAP
 		$b = ldap_bind($this->rLink, array_value($this->aParams, 'rdn'), array_value($this->aParams, 'password'));
 		if ($b === false)
 			throw new LDAPException(
-				sprintf(_WT('Can not bind the RDN "%s".'), array_value($this->aParams, 'rdn')) . "\n" . ldap_error($this->rLink),
+				sprintf(_WT('Could not bind the RDN "%s".'), array_value($this->aParams, 'rdn')) . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
@@ -227,7 +227,7 @@ class weeLDAP
 		$b = ldap_add($this->rLink, $sDN, $aEntry);
 		if ($b === false)
 			throw new LDAPException(
-				_WT('Can not add entry to the specified DN "%s".') . "\n" . ldap_error($this->rLink),
+				_WT('Could not add the entry to the specified DN "%s".') . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}
@@ -315,7 +315,7 @@ class weeLDAP
 		$b = ldap_bind($this->rLink, $sRDN, $sPassword);
 		if ($b === false)
 			throw new LDAPException(
-				sprintf(_WT('Can not bind the RDN "%s".'), $sRDN) . "\n" . ldap_error($this->rLink),
+				sprintf(_WT('Could not bind the RDN "%s".'), $sRDN) . "\n" . ldap_error($this->rLink),
 				ldap_errno($this->rLink)
 			);
 	}

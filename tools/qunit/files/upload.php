@@ -31,7 +31,7 @@ try {
 			exit;
 		} else {
 			$o->exists('test') or burn('UnitTestException',
-				_WT('The uploaded file "test" do not exist.'));
+				_WT('The uploaded file "test" does not exist.'));
 
 			$oFile = $o->fetch('test');
 
@@ -62,7 +62,7 @@ try {
 			empty($_GET['upload']) or burn('IllegalStateException',
 				_WT('No file was uploaded. Stopping here in order to prevent recursive execution.'));
 
-			// Note: cURL do not seem to support arrays of fields (example: more[])
+			// Note: cURL does not seem to support arrays of fields (example: more[])
 
 			$r = curl_init();
 
@@ -81,13 +81,13 @@ try {
 			exit;
 		} else {
 			$o->exists('test') or burn('UnitTestException',
-				_WT('The uploaded file "test" do not exist.'));
+				_WT('The uploaded file "test" does not exist.'));
 
 			$o->exists('more') or burn('UnitTestException',
-				_WT('The uploaded files "more" do not exist.'));
+				_WT('The uploaded files "more" does not exist.'));
 
 			$o->exists('evenmore') or burn('UnitTestException',
-				_WT('The uploaded files "more" do not exist.'));
+				_WT('The uploaded files "more" does not exist.'));
 
 			$i = 0;
 			foreach ($o as $oFile) {

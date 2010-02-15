@@ -104,7 +104,7 @@
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-schemaname.php.xml"/>
 			</para>
 			<para>
-				The only class that do not implement this method is of course the schema itself.
+				The only class that does not implement this method is of course the schema itself.
 			</para>
 		</sect2>
 
@@ -248,7 +248,7 @@
 				The returned string is an SQL expression that will vary depending on the underlying database.
 			</para>
 			<para>
-				If the column do not have a default value, an <literal>IllegalStateException</literal> is thrown.
+				If the column does not have a default value, an <literal>IllegalStateException</literal> is thrown.
 				<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="examples/build/dbmeta-defaultvalue.php.xml"/>
 			</para>
 		</sect2>

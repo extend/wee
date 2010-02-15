@@ -213,7 +213,7 @@ class weeApplication
 	protected function loadFrame($sFrame)
 	{
 		class_exists($sFrame) && is_subclass_of($sFrame, 'weeFrame') or burn('RouteNotFoundException',
-			sprintf(_WT('The frame %s does not exist.'), $sFrame));
+			sprintf(_WT('The frame "%s" does not exist.'), $sFrame));
 
 		return new $sFrame($this);
 	}
@@ -301,9 +301,7 @@ class weeApplication
 	public static function sharedInstance()
 	{
 		self::$oSharedInstance === null && burn('IllegalStateException',
-			_WT('No shared instance for weeApplication currently exists. ' .
-				'This error can happen if you inherited a class created in the constructor ' .
-				'and put logic that uses weeApplication in it (models, for example).'));
+			_WT('No shared instance for weeApplication currently exists.'));
 
 		return self::$oSharedInstance;
 	}

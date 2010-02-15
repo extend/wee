@@ -47,8 +47,8 @@ abstract class weeAuth
 		if (empty($aParams['hash_treatment']))
 			$aParams['hash_treatment'] = 'sha1';
 		else
-			is_callable($aParams['hash_treatment'])
-				or burn('InvalidArgumentException', _WT('The `hash_treatment` parameter must be a valid callback.'));
+			is_callable($aParams['hash_treatment']) or burn('InvalidArgumentException',
+				sprintf(_WT('The "%s" parameter must be a valid callback.'), 'hash_treatment'));
 
 		$this->aParams = $aParams;
 	}
