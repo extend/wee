@@ -156,7 +156,7 @@ final class weeException
 	{
 		// Return directly if @ was used: this error has been masked.
 		if (error_reporting() == 0)
-			return;
+			return false;
 		throw new ErrorException($sMessage, 0, $iLevel, $sFile, $iLine);
 	}
 
