@@ -90,7 +90,7 @@ class weeConfigFile implements Mappable
 
 		// Configuration file has been loaded, cache it for later if possible
 
-		if ($bCacheEnabled) {
+		if ($bCacheEnabled && is_writable(dirname($sCacheFilename))) {
 			file_put_contents($sCacheFilename, '<?php return ' . var_export($aConfig, true) . ';');
 			chmod($sCacheFilename, 0600);
 		}
