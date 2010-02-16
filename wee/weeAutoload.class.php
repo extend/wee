@@ -150,10 +150,17 @@ if (function_exists('__autoload'))
 
 // Handle cache loading and saving
 
-if (!defined('DEBUG') && defined('WEE_AUTOLOAD_CACHE') && !defined('NO_CACHE'))
-{
-	if (is_readable(WEE_AUTOLOAD_CACHE))
-		weeAutoload::loadFromCache(WEE_AUTOLOAD_CACHE);
-	else
-		register_shutdown_function(array('weeAutoload', 'saveToCache'), WEE_AUTOLOAD_CACHE);
+if (defined('WEE_AUTOLOAD_CACHE')) {
+	if (defined('DEBUG') || defined('NO_CACHE')) {
+		// Delete the cache file if it exists and DEBUG or NO_CACHE is enabled.
+		// This eases the transition from one mode to another without having to clean-up files manually.
+
+		if (is_file(WEE_AUTOLOAD_CACHE))
+			unlink(WEE_AUTOLOAD_CACHE);
+	} else {
+		if (is_readable(WEE_AUTOLOAD_CACHE))
+			weeAutoload::loadFromCache(WEE_AUTOLOAD_CACHE);
+		else
+			register_shutdown_function(array('weeAutoload', 'saveToCache'), WEE_AUTOLOAD_CACHE);
+	}
 }

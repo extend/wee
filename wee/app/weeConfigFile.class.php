@@ -70,19 +70,27 @@ class weeConfigFile implements Mappable
 
 	public static function cachedLoad($sFilename, $sCacheFilename)
 	{
+		$bCacheEnabled = !(defined('DEBUG') || defined('NO_CACHE'));
+
 		// Load from the cache if possible
 
-		if (!defined('DEBUG') && !defined('NO_CACHE') && is_readable($sCacheFilename))
+		if ($bCacheEnabled && is_readable($sCacheFilename))
 			return require($sCacheFilename);
 
-		// Otherwise try to load the configuration file
+		// Delete the cache file if it exists and DEBUG or NO_CACHE is enabled.
+		// This eases the transition from one mode to another without having to clean-up files manually.
+
+		if (is_file($sCacheFilename))
+			unlink($sCacheFilename);
+
+		// Load the configuration file
 
 		$oConfigFile = new weeConfigFile($sFilename);
 		$aConfig = $oConfigFile->toArray();
 
 		// Configuration file has been loaded, cache it for later if possible
 
-		if (!defined('DEBUG')) {
+		if ($bCacheEnabled) {
 			file_put_contents($sCacheFilename, '<?php return ' . var_export($aConfig, true) . ';');
 			chmod($sCacheFilename, 0600);
 		}
