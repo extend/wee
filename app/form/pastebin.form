@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <form>
-	<formkey>0</formkey>
 	<method>post</method>
 
 	<widgets>
 		<widget type="fieldset">
 			<widget type="textarea" required="required">
-				<name>data_text</name>
+				<name>pastebin_text</name>
 				<label>Pasted text :</label>
 			</widget>
 

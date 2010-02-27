@@ -1,0 +1,10 @@
+app/conf/wee.cnf
+app/form/pastebin.form
+app/php/toppage.class.php
+app/php/pastebin/
+app/php/pastebin/pastebin.class.php
+app/php/pastebin/pastebinSet.class.php
+app/sql/pastebin.sql
+app/tpl/pastebin.tpl
+app/tpl/pastebin_download.tpl
+app/tpl/toppage.tpl
