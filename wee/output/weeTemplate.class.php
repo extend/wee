@@ -80,6 +80,23 @@ class weeTemplate extends weeDataHolder implements weeRenderer
 	}
 
 	/**
+		Create and initialize an helper for use in a template.
+
+		@param $sHelper Class name of the helper you want to create.
+		@return object The helper of the type requested.
+	*/
+
+	protected function helper($sHelper)
+	{
+		$oHelper = new $sHelper;
+
+		if ($oHelper instanceof weeDataSource)
+			$oHelper->setEncoder($this->oEncoder);
+
+		return $oHelper;
+	}
+
+	/**
 		Return the MIME type of the output of the template.
 
 		The default MIME type is text/html.
