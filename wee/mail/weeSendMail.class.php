@@ -31,10 +31,12 @@ class weeSendMail extends PHPMailer
 {
 	/**
 		Initialize PHPMailer.
+		Enable the throwing of exceptions instead of using return values.
 	*/
 
 	public function __construct()
 	{
+		parent::__construct(true);
 		$this->PluginDir = WEE_PATH . 'vendor/phpmailer/';
 	}
 
