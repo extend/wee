@@ -145,7 +145,7 @@ class weeTestSuite implements Mappable, Printable
 
 			if ($mResult instanceof ComparisonTestException)
 				echo sprintf(_WT("Expected: %s\nActual: %s\n"),
-					var_export($mResult->getExpected()), var_export($mResult->getActual()));
+					var_export($mResult->getExpected(), true), var_export($mResult->getActual(), true));
 		} elseif ($mResult instanceof ErrorException)
 			echo _WT('error') . "\n" . sprintf(_WT("Class: ErrorException\nMessage: %s\nLevel: %s\nFile: %s\nLine: %s\n"),
 				$mResult->getMessage(), weeException::getLevelName($mResult->getSeverity()),
