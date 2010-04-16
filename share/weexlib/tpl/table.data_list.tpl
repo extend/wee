@@ -15,17 +15,15 @@
 	<tbody>
 		<?php if (count($data_list['data']) == 0):?> 
 			<tr class="empty-list"><td colspan="<?php echo count($data_list['columns']) + (int)!empty($items_actions)?>"><?php echo _WT('The list is empty.')?></td></tr>
-		<?php else: foreach ($data_list['data'] as $item):?> 
-			<tr>
-				<?php foreach ($data_list['columns'] as $name):?> 
-					<td><?php echo $item[$name]?></td>
-				<?php endforeach?> 
+		<?php else: $i = 1; foreach ($data_list['data'] as $item):?><tr<?php if ($i++ % 2 == 0):?> class="even"<?php endif?>>
+			<?php foreach ($data_list['columns'] as $name):?> 
+				<td><?php echo $item[$name]?></td>
+			<?php endforeach?> 
 
-				<?php if (!empty($item['row_actions'])):?> 
-					<td><?php $this->template('weexlib/actions', array('actions' => $item['row_actions']))?></td>
-				<?php endif?> 
-			</tr>
-		<?php endforeach; endif?> 
+			<?php if (!empty($item['row_actions'])):?> 
+				<td><?php $this->template('weexlib/actions', array('actions' => $item['row_actions']))?></td>
+			<?php endif?> 
+		</tr><?php endforeach; endif?> 
 	</tbody>
 
 	<?php if (!empty($data_list['actions'])):?><tfoot><tr class="global-actions">
