@@ -20,6 +20,39 @@
 */
 
 /**
+	Load a CSV file and return the contents as an array.
+
+	If the second argument is given, the function also tries to map the
+	values from the CSV file to an associated array with named keys. This
+	array takes the form of $iColumn => $sName, for any values you want to
+	name. Values without name are dropped.
+
+	@param $sFilename Path to the CSV file.
+	@param $aMap Array to map columns to an associated array.
+	@return array Complete data from the CSV file.
+*/
+
+function file_load_csv($sFilename, $aMap = array())
+{
+	$aData = array();
+
+	$rFile = fopen($sFilename, 'r');
+	while (($a = fgetcsv($rFile)) !== false)
+		$aData[] = $a;
+	fclose($rFile);
+
+	if (empty($aMap))
+		return $aData;
+
+	$aMappedData = array();
+	foreach ($aData as $i => $s)
+		if (isset($aMap[$i]))
+			$aMappedData[$aMap[$i]] = $s;
+
+	return $aMappedData;
+}
+
+/**
 	List all files in a directory and store various informations about them in the resulting array.
 
 	@param $sPath Path to the directory to list.
