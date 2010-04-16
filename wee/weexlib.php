@@ -156,7 +156,7 @@ function set_data_list($oSet, $aEvent, $aColumns = null) {
 
 		$aData[$i]['row_actions'] = array(
 			array('label' => _WT('Update'), 'url' => new weeURL(APP_PATH . $aEvent['frame'] . '/update', $aPKey)),
-			array('label' => _WT('Delete'), 'url' => new weeURL(APP_PATH . $aEvent['frame'] . '/delete', $aPKey), 'method' => 'post'),
+			array('label' => _WT('Delete'), 'url' => new weeURL(APP_PATH . $aEvent['frame'] . '/delete'), 'method' => 'post', 'data' => $aPKey),
 		);
 	}
 
