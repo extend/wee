@@ -187,40 +187,66 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 			empty($aRef['set']) and burn('InvalidArgumentException', _WT('No set was given.'));
 
-			$oRefSet = new $aRef['set'];
-			$oRefSet->setDb($oDb);
-			$aRefMeta = $oRefSet->getMeta();
-
-			empty($aRefMeta['primary']) and burn('InvalidArgumentException',
-				sprintf(_WT('The reference table %s does not have a primary key.'), $aRefMeta['table']));
-
-			$sJoin .= ' ' . $this->sJoinType . ' ' . $aRefMeta['table'] . ' ON (';
-			$sAnd = '';
-
-			if (empty($aRef['key'])) {
-				// Use the linked set's primary key columns names
-
-				foreach ($aRefMeta['primary'] as $sColumn) {
-					$this->aJoinAmbiguousKeys[$sColumn] = $aMeta['table'];
-
-					$sColumn = $oDb->escapeIdent($sColumn);
-					$sJoin .= $sAnd . $aMeta['table'] . '.' . $sColumn . '=' . $aRefMeta['table'] . '.' . $sColumn;
-					$sAnd = ' AND ';
-				}
-			} else {
-				// Use the given column names association
-
-				foreach ($aRef['key'] as $sColumn => $sRefColumn) {
-					$sJoin .= $sAnd . $aMeta['table'] . '.' . $oDb->escapeIdent($sColumn)
-						. '=' . $aRefMeta['table'] . '.' . $oDb->escapeIdent($sRefColumn);
-					$sAnd = ' AND ';
-				}
-			}
-
-			$sJoin .= ')';
+			$sJoin .= $this->buildJoinWith($oDb, $aRef['set'], $aMeta, array_value($aRef, 'key'));
 		}
 
 		return $sJoin;
+	}
+
+	/**
+		Build a JOIN using the two given metadata.
+
+		@param $oDb The database associated with this set.
+		@param $aMeta The name of the set or its metadata to join with.
+		@param $aUsingMeta The metadata of the set used to build the join condition.
+		@param $aKeys Keys to use instead of the primary keys for the join. Optionnal.
+		@return The JOIN built according to the given metadata.
+		@see weeDbSetScaffold::buildJoin
+	*/
+
+	protected function buildJoinWith($oDb, $aMeta, $aUsingMeta, $aKeys = null)
+	{
+		if (is_string($aMeta)) {
+			$oSet = new $aMeta;
+			$oSet->setDb($oDb);
+			$aMeta = $oSet->getMeta();
+		}
+
+		if (is_string($aUsingMeta)) {
+			$oSet = new $aUsingMeta;
+			$oSet->setDb($oDb);
+			$aUsingMeta = $oSet->getMeta();
+		}
+
+		$sJoin = ' ' . $this->sJoinType . ' ' . $aMeta['table'] . ' ON (';
+		$sAnd = '';
+
+		if (empty($aKeys)) {
+			// Use the linked set's primary key columns names
+
+			empty($aMeta['primary']) and burn('InvalidArgumentException',
+				sprintf(_WT('The table "%s" does not have a primary key.'), $aMeta['table']));
+			empty($aUsingMeta['primary']) and burn('InvalidArgumentException',
+				sprintf(_WT('The table "%s" does not have a primary key.'), $aUsingMeta['table']));
+
+			foreach ($aMeta['primary'] as $sColumn) {
+				$this->aJoinAmbiguousKeys[$sColumn] = $aUsingMeta['table'];
+
+				$sColumn = $oDb->escapeIdent($sColumn);
+				$sJoin .= $sAnd . $aUsingMeta['table'] . '.' . $sColumn . '=' . $aMeta['table'] . '.' . $sColumn;
+				$sAnd = ' AND ';
+			}
+		} else {
+			// Use the given column names association
+
+			foreach ($aKeys as $sColumn => $sRefColumn) {
+				$sJoin .= $sAnd . $aUsingMeta['table'] . '.' . $oDb->escapeIdent($sColumn)
+					. '=' . $aMeta['table'] . '.' . $oDb->escapeIdent($sRefColumn);
+				$sAnd = ' AND ';
+			}
+		}
+
+		return $sJoin . ')';
 	}
 
 	/**
@@ -259,6 +285,21 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		}
 
 		return substr($sOrderBy, 2);
+	}
+
+	/**
+		Build the SELECT expression of the query.
+
+		Allows greater control over what is being returned by queries,
+		even allowing sets to define subqueries performing various aggregations of data.
+
+		@param $aMeta The metadata for the table associated with this set.
+		@return string The SELECT expression of the query. Defaults to '*'.
+	*/
+
+	protected function buildSelectExpression($aMeta)
+	{
+		return '*';
 	}
 
 	/**
@@ -344,6 +385,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 	{
 		in_array($aCriteria[0], $this->aValidCriteriaLogicalOperators) or burn('InvalidArgumentException',
 			sprintf(_WT('The criteria logical operator given, "%s", does not exist.'), $aCriteria[0]));
+		// TODO: check that the number of arguments is valid
 
 		if ($aCriteria[0] == 'NOT')
 			$sWhere = 'NOT (';
@@ -356,12 +398,15 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 			$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[1]);
 
 		if ($aCriteria[0] != 'NOT') {
-			$sWhere .= ') ' . $aCriteria[0] . ' (';
+			$iCount = count($aCriteria);
+			for ($i = 2; $i < $iCount; $i++) {
+				$sWhere .= ') ' . $aCriteria[0] . ' (';
 
-			if (is_int(key($aCriteria[2])))
-				$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[2]);
-			else
-				$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[2]);
+				if (is_int(key($aCriteria[$i])))
+					$sWhere .= $this->buildWhereLogical($oDb, $aCriteria[$i]);
+				else
+					$sWhere .= $this->buildWhereCriteria($oDb, $aCriteria[$i]);
+			}
 		}
 
 		return $sWhere . ')';
@@ -431,7 +476,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 		$aMeta = $this->getMeta();
 		$mPrimaryKey = $this->filterPrimaryKey($mPrimaryKey, $aMeta);
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE';
+		$sQuery = 'SELECT ' . $this->buildSelectExpression($aMeta) . ' FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . ' WHERE';
 		$sAnd = '';
 
 		foreach ($aMeta['primary'] as $sField) {
@@ -488,7 +533,7 @@ abstract class weeDbSetScaffold extends weeDbSet implements Countable
 
 		$aMeta = $this->getMeta();
 
-		$sQuery = 'SELECT * FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . $this->buildWhere();
+		$sQuery = 'SELECT ' . $this->buildSelectExpression($aMeta) . ' FROM ' . $aMeta['table'] . $this->buildJoin($aMeta) . $this->buildWhere();
 		if (!empty($this->mOrderBy))
 			$sQuery .= ' ORDER BY ' . $this->buildOrderBy();
 		if (!empty($iCount))
