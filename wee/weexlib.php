@@ -131,6 +131,31 @@ function human_size($iSize) {
 }
 
 /**
+	Generate a password.
+
+	@param $iPwLength Length of the password.
+	@param $bAllowSymbols Whether to allow symbol characters in the password.
+	@return string The generated password.
+*/
+
+function pw_gen($iPwLength = 8, $bAllowSymbols = false)
+{
+	$sChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	$iTotal = 61; // 10 + 26 + 26 - 1 (starts at 0)
+
+	if ($bAllowSymbols) {
+		$sChars .= '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~';
+		$iTotal += 32;
+	}
+
+	$sRet = '';
+	while ($iPwLength--)
+		$sRet .= $sChars[rand(0, $iTotal)];
+
+	return $sRet;
+}
+
+/**
 	List data in a scaffold set. Meant for use in a frame.
 
 	@param $oSet The scaffold set.
