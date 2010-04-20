@@ -1,0 +1,100 @@
+<appendix id="ap-contrib">
+	<title>Contributing to Web:Extend</title>
+
+	<sect1 id="ap-contrib-tests">
+		<title>Testing Web:Extend</title>
+
+		<para>The most immediate contribution anyone can make is by running
+		the test suite on all environments they have available. The test suite
+		will run without any configuration required, but will skip a large
+		amount of tests if extensions aren't available. No need to worry about
+		the ones you don't need though. The only thing you'll want to setup
+		is the database that will be used for the database tests. To do so,
+		just create a database named <literal>wee_tests</literal> and a user
+		named <literal>wee</literal> with a password <literal>wee</literal>
+		and give it full access to the <literal>wee_tests</literal>
+		database.</para>
+
+		<para>To launch the test suite, go to the Web:Extend folder and type
+		the following line in your terminal:</para>
+
+<screen>
+$ <userinput>php tools/tests/maketests.php -f tools/tests/</userinput></screen>
+
+		<para>Or alternatively if you have <command>make</command> available
+		you can just type:</para>
+
+<screen>
+$ <userinput>make test</userinput></screen>
+
+		<para>You should get a very long output, one line per test, with a
+		summary at the end.</para>
+
+		<para>If all tests pass, then it's all good! Feel free to tell us it
+		worked for you. If it didn't though, you should submit a bug report
+		to our issue tracker or send us an email at
+		<email>wee-users@googlegroups.com</email>.</para>
+	</sect1>
+
+	<sect1 id="ap-contrib-bugs">
+		<title>Reporting bugs</title>
+
+		<para>Feedback is the most important contribution you can make to the
+		project. A good bug report includes an explanation of what you tried
+		to achieve along with the error encountered. The error can be obtained
+		by repeating the action with <literal>DEBUG</literal> mode enabled.
+		This usually is more than enough for us to resolve the bug. In the
+		case that this isn't enough and that we need to contact you, it is best
+		that you also provide an email address where we can join you.</para>
+
+		<para>We currently use the github issue tracking system. This is not
+		a perfect solution, but until we have one that's what we'll be using.
+		If you don't want to register an account just to report a bug, you
+		can simply send an email at
+		<email>wee-users@googlegroups.com</email>.</para>
+	</sect1>
+
+	<sect1 id="ap-contrib-src">
+		<title>Contributing source code</title>
+
+		<para>All source code contributions are welcome. If you wish to add
+		a feature to the framework, contact us first in case we already had
+		plans. Patches can be sent directly to the issue tracking system or
+		to <email>wee-users@googlegroups.com</email>.</para>
+
+		<para>Later you will be able to create and manage your own addons.
+		If you plan to do so in the future, you can contact us and work with
+		us to setup the best addons manager for your purpose.</para>
+	</sect1>
+
+	<sect1 id="ap-contrib-docs">
+		<title>Improving the documentation</title>
+
+		<para>You can improve the documentation in various ways. The simplest
+		way is by sending us your feedback along with suggestions, by email to
+		<email>wee-users@googlegroups.com</email>. We are interested in any
+		kind of feedback.</para>
+
+		<para>You can also contribute new material to the guide, by writing a
+		new chapter or improving an existing one. It is best that you contact
+		us before starting though, to avoid duplicating efforts.</para>
+
+		<para>Finally you can write tutorials or tips on your own and send us
+		the links; we will display them on the documentation page along with
+		the official documentation.</para>
+
+		<para>The documentation can also be translated.</para>
+	</sect1>
+
+	<sect1 id="ap-contrib-l10n">
+		<title>Translating Web:Extend</title>
+
+		<para>Considering the framework is still in beta, we have no plans
+		to translate the framework or this guide just yet. But since we
+		will at some point, you should contact us if you are interested.
+		Note that right now everything could change and it could become
+		more work than for a stable release. If you are interested in
+		translating Web:Extend eventually, contact us by email at
+		<email>wee-users@googlegroups.com</email>.</para>
+	</sect1>
+</appendix>

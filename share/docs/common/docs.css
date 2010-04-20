@@ -1,0 +1,14 @@
+body {padding:0 20px}
+a, a:visited {color:#b90300}
+a:hover, a:visited:hover {color:#b90300;text-decoration:underline !important;text-shadow:#b90300 0 0 10px}
+div.table table, div.table th, div.table td {border:1px solid #ddd;border-collapse:collapse;padding:.1em .5em}
+div.table thead {background:#f8f8f8}
+br.table-break {display:none}
+
+div.caution, div.warning {background:#fda;border:1px solid #888;padding:0 1em}
+div.note {background:#fffacd;border:1px solid #888;padding:0 1em}
+
+pre.programlisting, pre.screen {background:#f8f8f8;border:1px solid #ddd;padding:.5em}
+pre.programlisting span.emphasis {color:#090}
+pre.programlisting span.strong {color:#900}
+pre.screen strong.userinput {color:#009}

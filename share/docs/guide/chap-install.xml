@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="chap-install">
+	<title>Installing Web:Extend</title>
+
+	<sect1 id="chap-install-req">
+		<title>Requirements</title>
+
+		<para>Web:Extend currently requires PHP 5.2. It may work with older
+		versions of PHP but they are not officially supported so we cannot
+		provide any guarantee.</para>
+
+		<para>Web:Extend requires the following extensions:</para>
+
+		<itemizedlist>
+			<listitem><para>
+				A database extension (recommended:
+				<ulink url="http://php.net/pgsql">PostgreSQL</ulink>)
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/simplexml">SimpleXML</ulink>
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/spl">SPL</ulink>
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/xsl">XSL</ulink>
+			</para></listitem>
+		</itemizedlist>
+
+		<para>There's a driver available for most databases, including
+		PostgreSQL, MySQL, SQLite, Oracle, MSSQL. PDO is also supported
+		and all the PDO drivers are expected to work.</para>
+
+		<para>The following extensions are required by some of the less
+		used features of the framework, but you might not need them:</para>
+
+		<itemizedlist>
+			<listitem><para>
+				<ulink url="http://php.net/curl">CURL</ulink>
+				for the QUnit test suite
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/fileinfo">fileinfo</ulink>
+				for file management in the extra library
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/imap">IMAP</ulink>
+				for IMAP mailboxes access
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/intl">intl</ulink>
+				for localization
+			</para></listitem>
+		</itemizedlist>
+
+		<para>Finally, the following extensions are highly recommended:</para>
+
+		<itemizedlist>
+			<listitem><para>
+				<ulink url="http://php.net/apc">APC</ulink>
+				for file and data cache
+			</para></listitem>
+
+			<listitem><para>
+				<ulink url="http://php.net/gettext">gettext</ulink>
+				for faster string translation functions
+			</para></listitem>
+		</itemizedlist>
+
+		<para>If you intend to generate PDF files, you will be required to
+		add the <command>pdflatex</command> command to your PATH. This command
+		can be found in the texlive package, or in any other LaTeX
+		distribution.</para>
+
+		<para>If your application needs to send emails, you'll want to install
+		an MTA at least in the production environment. We recommend
+		<application>postfix</application> as it doesn't require any particular
+		configuration if you only need to send emails.</para>
+	</sect1>
+
+	<sect1 id="chap-install-before">
+		<title>Preliminary considerations</title>
+
+		<para>Before performing any configuration you should probably ask
+		yourself a few questions about your project. These considerations
+		are applicable for both new and existing projects.</para>
+
+		<itemizedlist>
+			<listitem><para>
+				What environment am I targetting?
+				Development, test, production?
+			</para></listitem>
+
+			<listitem><para>
+				What web server am I using?
+			</para></listitem>
+
+			<listitem><para>
+				Does the project use a database?
+				Do I have the connection information?
+			</para></listitem>
+
+			<listitem><para>
+				Does the project need any cron jobs installed?
+			</para></listitem>
+		</itemizedlist>
+
+		<para>Some of those considerations will be walked through in the
+		following chapters. We'll explain the more general configuration
+		right away though.</para>
+	</sect1>
+
+	<sect1 id="chap-install-webserv">
+		<title>Web server configuration</title>
+
+		<para>The configuration depends on which web server you are using.
+		Since all the developers are using Apache 2.2, we are going to explain
+		how to configure it. Feel free to submit guidelines to get Web:Extend
+		working with other web servers. See <xref linkend="ap-contrib"/>
+		for more information.</para>
+
+		<para>First of all it is recommended that you enable mod_rewrite. While
+		not mandatory, mod_rewrite allows you to write clean URLs. No need to
+		reload Apache yet, we still have to configure the site for the
+		application:</para>
+
+<screen>
+# <userinput>a2enmod rewrite</userinput>
+Enabling module rewrite.
+Run '/etc/init.d/apache2 restart' to activate new configuration!</screen>
+
+		<note>
+			<title>Development environment</title>
+
+			<para>It is good practice to create a local domain name for each
+			of the applications you are working on. A local domain name allows
+			you to test the application just like it would be on the production
+			server.</para>
+
+			<para>While they were only tested on Ubuntu, the following
+			guidelines should work for most unix systems. You only have to add
+			a new local host to your <filename>/etc/hosts</filename> file.
+			Open it with the editor of your choice and add a line below the
+			localhost one for your own local domain name:</para>
+
+<screen>
+127.0.0.1   localhost
+<userinput>127.0.0.2   myapp</userinput></screen>
+
+			<para>Use a different IP than localhost (or other domains you may
+			have) so that Apache can distinguish between the two domains.
+			If you're worried about conflicting domain names on your network,
+			you can use <literal>myapp.localhost</literal> instead.</para>
+
+			<para>Then configure Apache like you would otherwise, using the
+			local domain name newly created.</para>
+		</note>
+
+		<para>We recommend that you configure Apache log files per application
+		(or per domain if your site has multiple domains). This allows you to
+		easily check for errors or generate stats for the application.</para>
+
+		<para>The following file will configure the application
+		<literal>myapp</literal> fully, by defining the folders, rewrite rules
+		and log files. Don't forget to change the paths to the actual paths on
+		your environment.</para>
+
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+			href="examples/build/chap-install-apache.xml.xml"/>
+
+		<para>This file should be saved in the
+		<filename>sites-available/</filename> Apache subdirectory on
+		Debian-based distributions. Then use the following command to enable
+		the site:</para>
+
+<screen>
+# <userinput>a2ensite myapp</userinput>
+Enabling site myapp.
+Run '/etc/init.d/apache2 reload' to activate new configuration!</screen>
+
+		<para>On other systems you might have to append it to an existing
+		configuration file. In this case no need to call
+		<command>a2ensite</command>.</para>
+
+		<para>Now that everything is set, reload Apache:</para>
+
+<screen>
+# <userinput>/etc/init.d/apache2 reload</userinput>
+ * Reloading web server config apache2               [ OK ]</screen>
+
+		<para>If you made a mistake in the configuration, Apache will warn
+		you and will ignore your request. Correct your errors and try again
+		until you get it working.</para>
+
+		<note><para>
+			You can also use the <filename>.htaccess</filename> file available
+			in the <filename>share/apache/</filename> folder of your Web:Extend
+			installation. Note that it only defines the rules for URL
+			rewriting, and it can be used when accessing the application as a
+			subfolder of a domain. Still, it is recommended to configure a
+			site in Apache directly.
+		</para></note>
+	</sect1>
+
+	<sect1 id="chap-install-db">
+		<title>Database configuration</title>
+
+		<para>Almost all projects require some form of database. Depending on
+		your application you'll prefer one over another, but in general we
+		tend to recommend PostgreSQL as it is a solid all-purpose open-source
+		relational database available on all the common platforms.</para>
+
+		<caution>
+			<para>We recommend not using MySQL if you need a relational
+			database. MySQL will allow more or less control over the
+			relationships between tables depending on the backend storage used,
+			often with additional restrictions on other components. You can
+			still use it, of course, but it'll take extra care in designing and
+			writing your application. </para>
+		</caution>
+
+		<para>To install PostgreSQL on a Debian-based system, please follow
+		the guide. On other systems the installation and configuration should
+		be relatively similar, refer to your vendor's documentation for more
+		information.</para>
+
+		<para>First you need to install the PostgreSQL package:</para>
+
+<screen>
+# <userinput>apt-get install postgresql</userinput>
+Setting up postgresql ...</screen>
+
+		<para>The latest stable version will be automatically installed. Then
+		you need to create a database and a user to access it. All PostgreSQL
+		administration operations can be performed directly from the
+		postgresql system account. Just log on this account and create what
+		you need:</para>
+
+<screen>
+# <userinput>su - postgres</userinput>
+$ <userinput>createdb mydb</userinput>
+$ <userinput>createuser -P myuser</userinput>
+Enter password for new role: 
+Enter it again: 
+Shall the new role be a superuser? (y/n) <userinput>n</userinput>
+Shall the new role be allowed to create databases? (y/n) <userinput>n</userinput>
+Shall the new role be allowed to create more new roles? (y/n) <userinput>n</userinput></screen>
+
+		<para>It is recommended that the user of your application isn't a
+		superuser. Remember, if there's a security vulnerability in your
+		application and the attacker can execute any query he wishes,
+		he would have access to all your databases on this server if you made
+		a superuser. The easiest solution for a start is to grant all
+		privileges on your database, although it's possible to further restrict
+		the privileges depending on your application's needs.</para>
+
+		<para>You can grant privileges to users using <command>psql</command>.
+		<command>psql</command> is the PostgreSQL command-line shell, allowing
+		you to write SQL queries directly.</para>
+
+<screen>
+$ <userinput>psql</userinput>
+psql (8.4.2)
+Type "help" for help.
+
+postgres=# <userinput>GRANT ALL ON DATABASE mydb TO myuser WITH GRANT OPTION;</userinput>
+GRANT
+postgres=# <userinput>\q</userinput>
+$ <userinput>exit</userinput></screen>
+
+		<para>You should now be able to connect to the database
+		<literal>mydb</literal> with the user <literal>myuser</literal> and the
+		password you entered earlier.</para>
+	</sect1>
+
+	<sect1 id="chap-install-rm-examples">
+		<title>Examples removal</title>
+
+		<para>Depending on the package you downloaded, Web:Extend will
+		feature examples as the default application. You can take a look
+		at them by pointing your browser to the website URL you previously
+		configured (<literal>http://myapp/</literal> in our example).
+		When you are done with them, you'll probably want to start
+		using the framework.</para>
+
+		<para>Thankfully the examples are included as an addon. Therefore they
+		can be removed with a single command:</para>
+
+<screen>
+# <userinput>php addons.php -r examples</userinput></screen>
+
+		<note><para>
+			Many components of the Web:Extend framework are simply addons.
+			For an explanation of addons installation, removal and maintenance,
+			please see <xref linkend="chap-addons"/>.
+		</para></note>
+	</sect1>
+</chapter>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<book id="guide">
+	<bookinfo>
+		<title>The Web:Extend Guide</title>
+
+		<authorgroup>
+			<author>
+				<firstname>Lo&iuml;c</firstname>
+				<surname>Hoguin</surname>
+			</author>
+
+			<author>
+				<firstname>Anthony</firstname>
+				<surname>Ramine</surname>
+			</author>
+
+			<author>
+				<firstname>Youssef</firstname>
+				<surname>Leulmi</surname>
+			</author>
+		</authorgroup>
+
+		<copyright>
+			<year>2009</year>
+			<year>2010</year>
+			<holder>Dev:Extend</holder>
+		</copyright>
+
+		<legalnotice><para>
+			This work is licensed under a
+			<ulink url="http://creativecommons.org/licenses/by/3.0/">Creative
+			Commons Attribution 3.0 Unported License</ulink>.
+		</para></legalnotice>
+	</bookinfo>
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+		href="preface.xml"/>
+
+	<part id="part-about">
+		<title>About Web:Extend</title>
+
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+			href="chap-about.xml"/>
+	</part>
+
+	<part id="part-install">
+		<title>Installation and related issues</title>
+
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+			href="chap-install.xml"/>
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+			href="chap-addons.xml"/>
+	</part>
+
+	<part id="part-intro">
+		<title>Development using Web:Extend</title>
+
+		<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+			href="chap-intro.xml"/>
+	</part>
+
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+		href="ap-contrib.xml"/>
+</book>

@@ -183,7 +183,8 @@ app/tpl/
 	<sect1 id="gettingstarted_helloworld">
 		<title>Hello, world</title>
 		<para>
-			TODO
+			The framework is distributed with various examples. Simply point your browser to the folder where
+			you installed the framework and follow the instructions.
 		</para>
 	</sect1>
 </chapter>

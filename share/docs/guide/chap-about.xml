@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="chap-about">
+	<title>What is Web:Extend?</title>
+
+	<para>Web:Extend is a simple, modern, powerful PHP web framework.</para>
+
+	<sect1 id="chap-about-history">
+		<title>Project history</title>
+
+		<para>The initial work on Web:Extend was performed summer 2005
+		and focused on automating the creation, handling and validation
+		of web forms. The source from this library went on to become
+		Web:Extend a few months later and saw the addition of many other
+		solutions to automate and simplify the development process of
+		web applications.</para>
+
+		<para>After becoming a framework, Web:Extend focused on harnessing
+		the power of the <ulink url="http://php.net/spl">SPL</ulink> to
+		simplify the writing of code. It also changed the error handling
+		to use exceptions everywhere, and made use of autoload to eliminate
+		the need to manually include files.</para>
+
+		<para>More recently, the ability to query databases metadata was
+		added. The scaffolding components were built on this mechanism,
+		allowing developers for example to simply specify a table name
+		to create a fully functional domain model, but also to create
+		fully functional forms to interact with this table. In addition
+		all the scaffolding components operate live on the database,
+		meaning that any modification of a table while developing is
+		immediately taken into account without requiring the developer's
+		intervention.</para>
+	</sect1>
+
+	<sect1 id="chap-about-features">
+		<title>Features</title>
+
+		<para>Web:Extend focuses on simplicity. Simplicity indicates a state
+		of clarity and straightforwardness. Simple concepts and situations are
+		commonly easier to explain and understand than complicated ones. They
+		allow the developer to become free from hardship, effort and
+		confusion.</para>
+
+		<para>Simplicity allows the developer to focus on the requirements
+		of his project rather than on its implementation. The developer can
+		focus on the business logic of his application rather than on technical
+		details, which allows him to deliver a finished product much faster
+		and at lower costs.</para>
+
+		<para>In that end, Web:Extend includes the following features:</para>
+
+		<itemizedlist>
+			<listitem><para>
+				Code quality and correctness
+			</para></listitem>
+
+			<listitem><para>
+				Secure defaults
+			</para></listitem>
+
+			<listitem><para>
+				Minimal interface
+			</para></listitem>
+
+			<listitem><para>
+				Loose coupling
+			</para></listitem>
+
+			<listitem><para>
+				A passive view MVC pattern
+			</para></listitem>
+
+			<listitem><para>
+				Live scaffolding using the database metadata
+			</para></listitem>
+		</itemizedlist>
+
+		<para>To achieve this quality, Web:Extend has developed various tools,
+		including a unit test suite designed specifically for the framework's
+		needs and a grep engine capable of detecting many inappropriate uses
+		of PHP and the framework.</para>
+
+		<para>Another key feature is that Web:Extend has no hesitation to
+		kill off or rewrite inadequate experimental code. Experimental code
+		usually gets included in a beta release, is used by our developers
+		in real projects, and depending on the feedback received may be killed
+		off in the next release. An experimental addition that is too confusing
+		always gets killed or rewritten.</para>
+	</sect1>
+
+	<sect1 id="chap-about-goals">
+		<title>Goals</title>
+
+		<para>At this point the Web:Extend core is very stable. The only
+		changes planned are relatively small. Amongst the remaining tasks
+		include improving support for various configurations and giving the
+		developer better debugging tools.</para>
+
+		<para>Work has begun on an optional extra library distributed with
+		the framework. This library, <emphasis>weexlib</emphasis>, gives a
+		set of functions and templates that can be readily used to speed-up
+		development using the Web:Extend framework.</para>
+
+		<para>Other additions will come under the form of addons. We are
+		currently working on an addons manager that would allow anyone to
+		easily install, update but also write and publish addons. At a later
+		time an addons repository will be made available to everyone.</para>
+	</sect1>
+
+	<sect1 id="chap-about-target">
+		<title>Target audience</title>
+
+		<para>Web:Extend is targeted at experienced PHP5 developers. It can
+		be used in many kinds of projects with various sizes and performance
+		requirements. Being an open-source product licensed under the LGPL,
+		it can also be used in commercial solutions as long as the license is
+		respected.</para>
+
+		<para>Its most common use will be for web application projects,
+		websites, CMS, and the likes. Web:Extend has the potential to scale
+		to a lot of traffic but currently hasn't been used in projects with
+		more than a few hundred hits per second, so additional testing and
+		tweaks are probably required in that domain.</para>
+	</sect1>
+
+	<sect1 id="chap-about-download">
+		<title>Downloading Web:Extend</title>
+
+		<para>Web:Extend can be downloaded from the project's github, either
+		by cloning the repository or by downloading a release tarball.</para>
+
+		<para>The current version of the framework can be retrieved using the
+		following command:</para>
+
+<screen>
+# <userinput>git clone http://github.com/essen/wee.git</userinput></screen>
+
+		<para>By default you will have the latest source available, which is
+		intended for development of the framework and not for production. You
+		can however switch to a release tag by listing the tags available and
+		picking the one you want. From the cloned folder:</para>
+
+<screen>
+# <userinput>git tag -l</userinput>
+wee-0.1.0
+wee-0.2.0
+wee-0.3.0
+wee-0.4.0
+wee-0.5.0
+wee-0.6.0
+# <userinput>git checkout wee-0.6.0</userinput></screen>
+
+		<para>If you can't or don't want to use <application>git</application>,
+		you can simply head over to the project's download page and pick the
+		version you need: <ulink url="http://github.com/essen/wee/downloads">
+		http://github.com/essen/wee/downloads</ulink>.</para>
+
+		<caution>
+			<para>It is highly recommended that you download the latest release
+			as older versions may not contain all the enhancements and are thus
+			not representative of the Web:Extend product today.</para>
+
+			<para>Older releases might also not be supported anymore and could
+			contain security vulnerabilities.</para>
+		</caution>
+	</sect1>
+
+	<sect1 id="chap-about-community">
+		<title>The Web:Extend Community</title>
+
+		<para>The Web:Extend developers rely on the community's feedback
+		to improve the framework. Any feedback or queries from users is
+		always considered and is responded to whenever possible.</para>
+
+		<para>The Web:Extend developers can be contacted through various
+		channels. We currently have an IRC channel and mailing lists, and
+		can be contacted directly through github either using the issues
+		tracker or by private message. Based on feedback received, a user
+		wiki will also be opened in the near future.</para>
+
+		<para>The IRC channel is <literal>#webextend</literal> on
+		<literal>irc.freenode.net</literal>. All other community outposts
+		can be found by browsing the project's website available at
+		<ulink url="http://extend.ws">http://extend.ws</ulink>.</para>
+	</sect1>
+</chapter>

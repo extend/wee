@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="chap-addons">
+	<title>Addons management</title>
+
+	<para>Addons are currently an <emphasis>experimental feature</emphasis> of
+	the Web:Extend framework. An appropriate guide will be written when the
+	feature becomes stable. Until then you can take a look inside the
+	<filename>addons.php</filename> file to learn how it works, or just run it
+	without parameters:</para>
+
+<screen>
+$ <userinput>php addons.php</userinput>
+Usage: addons.php [options] [addon]
+...</screen>
+
+	<para>We don't recommend using the addons management system yet. It will
+	however become an important feature of the framework in the following
+	releases.</para>
+</chapter>

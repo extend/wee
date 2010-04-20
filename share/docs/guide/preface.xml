@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<preface id="preface">
+	<title>Purpose of this guide</title>
+
+	<para>This guide describes the installation and usage of the
+	Web:Extend PHP framework. It is an introductory guide rather
+	than a complete reference, addressed primarily to new Web:Extend
+	developers.</para>
+
+	<para>This guide is not a PHP tutorial: knowledge of the PHP5
+	language is required. Although we provide an explanatory chapter,
+	it is also recommended to understand the concepts of relational
+	databases and their use in web applications.</para>
+
+	<para>You are welcome to contribute to this guide through
+	additions, corrections or translations. See <xref linkend="ap-contrib"/>
+	for more information.</para>
+</preface>
