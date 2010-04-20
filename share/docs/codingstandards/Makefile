@@ -18,13 +18,13 @@
 #
 
 all: clean
-	-mkdir build
-	-mkdir examples/build
-	source-highlight --output-dir=examples/build -f docbook examples/*.php
-	xmlto -o build/ xhtml toppage.xml
+	-mkdir build/ examples/build/
+	source-highlight --output-dir=examples/build/ -f docbook examples/*.php
+	cp ../common/docs.css build/
+	xmlto -m ../common/docs.xsl -o build/ xhtml codingstandards.xml
 
 clean:
-	-rm -rf examples/build
+	-rm -rf examples/build/
 
 fclean: clean
-	-rm -rf build
+	-rm -rf build/
