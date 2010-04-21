@@ -228,8 +228,6 @@ class weeApplication
 
 	public function main()
 	{
-		$bCLI = defined('WEE_CLI');
-		$bCompress = false;
 		if ($this->cnf('app.output.buffer')) {
 			if (ini_get('output_buffering') || ini_get('zlib.output_compression')
 				|| !$this->cnf('app.output.gzip') || false === ob_start('ob_gzhandler'))
@@ -241,7 +239,7 @@ class weeApplication
 		if ($this->oFrame->getStatus() == weeFrame::UNAUTHORIZED_ACCESS) {
 			// An UnauthorizedAccessException was thrown; show an error and exit.
 
-			if ($bCLI)
+			if (defined('WEE_CLI'))
 				echo _WT('You are not allowed to access the specified frame/event.') . "\n";
 			else {
 				header('HTTP/1.0 403 Forbidden');
@@ -255,7 +253,7 @@ class weeApplication
 			exit;
 		}
 
-		if (!$bCLI) {
+		if (!defined('WEE_CLI')) {
 			safe_header('Content-Type: ' . $this->oFrame->getMIMEType());
 			if ($this->sFilename !== null)
 				safe_header('Content-Disposition: attachment; filename="' . urlencode($this->sFilename) . '"');
