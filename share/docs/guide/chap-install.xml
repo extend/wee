@@ -33,6 +33,9 @@
 			</para></listitem>
 		</itemizedlist>
 
+		<para>The database extension is only required if your project
+		requires a database.</para>
+
 		<para>There's a driver available for most databases, including
 		PostgreSQL, MySQL, SQLite, Oracle, MSSQL. PDO is also supported
 		and all the PDO drivers are expected to work.</para>
@@ -85,6 +88,15 @@
 		an MTA at least in the production environment. We recommend
 		<application>postfix</application> as it doesn't require any particular
 		configuration if you only need to send emails.</para>
+
+		<para>You will also need <application>git</application> if you plan to
+		download the framework using git.</para>
+
+		<para>The following command will install all the essential packages on
+		a newly installed Ubuntu Hardy server:</para>
+
+<screen>
+# <userinput>apt-get install apache2 php5 php5-cli php5-pgsql php5-xsl postgresql make git-core curl</userinput></screen>
 	</sect1>
 
 	<sect1 id="chap-install-before">
@@ -209,6 +221,13 @@ Run '/etc/init.d/apache2 reload' to activate new configuration!</screen>
 			subfolder of a domain. Still, it is recommended to configure a
 			site in Apache directly.
 		</para></note>
+
+		<para>You also need to make sure the <filename>app/tmp/</filename>
+		folder is writable by the web server. On Debian-based distributions,
+		the following command can be ran from your project's folder:</para>
+
+<screen>
+# <userinput>chown www-data:www-data app/tmp/</userinput></screen>
 	</sect1>
 
 	<sect1 id="chap-install-db">
