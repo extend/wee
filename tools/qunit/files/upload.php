@@ -6,8 +6,8 @@ define('ROOT_PATH', '../../../');
 require(ROOT_PATH . 'wee/wee.php');
 $iStep = array_value($_GET, 'step', 1);
 
-function_exists('curl_init') or burn('ConfigurationException',
-	'The cURL PHP extension is required to run this test.');
+// The cURL PHP extension is required to run this test.
+function_exists('curl_init') or die('skip');
 
 try {
 	$o = new weeUploads;
