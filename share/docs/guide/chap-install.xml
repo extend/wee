@@ -352,6 +352,30 @@ $ <userinput>exit</userinput></screen>
 			<literal>mydb</literal> with the user <literal>myuser</literal> and the
 			password you entered earlier.</para>
 		</sect2>
+
+		<sect2 id="chap-install-db-sqlite">
+			<title>SQLite</title>
+
+			<para>Web:Extend supports both versions 2 and 3 of SQLite. Note though
+			that SQLite 3 can only be accessed through the PDO driver. We are
+			recommending the use of SQLite 3 for your new developments.</para>
+
+			<para>To install SQLite 2 on Debian-based systems, use the following
+			command:</para>
+
+<screen>
+# <userinput>sudo apt-get install php5-sqlite</userinput></screen>
+
+			<para>There's only one little difference for SQLite 3:</para>
+
+<screen>
+# <userinput>sudo apt-get install php5-sqlite3</userinput></screen>
+
+			<para>Don't forget to reload Apache to load the extensions after the
+			installation completed.</para>
+
+<!-- TODO: help about setting up and handling the database -->
+		</sect2>
 	</sect1>
 
 	<sect1 id="chap-install-rm-examples">

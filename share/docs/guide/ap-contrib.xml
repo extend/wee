@@ -12,7 +12,8 @@
 		<para>Database testing requires some little configuration. All drivers
 		run their tests inside the <literal>wee_tests</literal> database,
 		using an user named <literal>wee</literal> who has full access to that
-		database using the password <literal>wee</literal>.</para>
+		database using the password <literal>wee</literal>. Note though that
+		testing SQLite do not require you to create a database.</para>
 
 		<para>See <xref linkend="chap-install-db"/> for explanations on how to
 		setup this database.</para>
