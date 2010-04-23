@@ -236,7 +236,8 @@ Run '/etc/init.d/apache2 reload' to activate new configuration!</screen>
 		<para>Almost all projects require some form of database. Depending on
 		your application you'll prefer one over another, but in general we
 		tend to recommend PostgreSQL as it is a solid all-purpose open-source
-		relational database available on all the common platforms.</para>
+		relational database available on all the common platforms. See
+		<xref linkend="chap-install-db-pgsql"/>.</para>
 
 		<caution>
 			<para>We recommend not using MySQL if you need a relational
@@ -247,22 +248,73 @@ Run '/etc/init.d/apache2 reload' to activate new configuration!</screen>
 			writing your application. </para>
 		</caution>
 
-		<para>To install PostgreSQL on a Debian-based system, please follow
-		the guide. On other systems the installation and configuration should
-		be relatively similar, refer to your vendor's documentation for more
-		information.</para>
+		<sect2 id="chap-install-db-mysql">
+			<title>MySQL</title>
 
-		<para>First you need to install the PostgreSQL package:</para>
+			<para>First you need to install the MySQL package. On Debian-based
+			systems, the following command should do the trick:</para>
 
 <screen>
-# <userinput>apt-get install postgresql</userinput>
+# <userinput>apt-get install mysql-server php5-mysql</userinput>
+Setting up mysql-server ...</screen>
+
+			<para>You will need to enter a password for the mysql
+			<literal>root</literal> user.</para>
+
+			<para>When the installation is completed, reload Apache, or PHP
+			won't be able to use the newly installed extension.</para>
+
+			<para>Then all you need is to create your database and create
+			an user to access it through your application. This user should
+			not be a superuser; it should only have access to the database
+			for your application. The following commands create the database
+			<literal>mydb</literal> and the user <literal>myuser</literal>
+			with a password <literal>mypassword</literal>. The user will
+			only be able to connect from <literal>localhost</literal>.</para>
+
+<screen>
+$ <userinput>mysql -u root -p</userinput>
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 1
+Server version: 5.0.51a-3ubuntu5.5 (Ubuntu)
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+
+mysql> <userinput>CREATE DATABASE mydb;</userinput>
+Query OK, 1 row affected (0.00 sec)
+
+mysql> <userinput>GRANT ALL ON mydb.* TO myuser@localhost IDENTIFIED BY "mypassword";</userinput>
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> <userinput>\q</userinput>
+Bye</screen>
+
+			<para>You should now be able to connect to your newly created
+			database.</para>
+		</sect2>
+
+		<sect2 id="chap-install-db-pgsql">
+			<title>PostgreSQL</title>
+
+			<para>To install PostgreSQL on a Debian-based system, please follow
+			the guide. On other systems the installation and configuration should
+			be relatively similar. Refer to your vendor's documentation for more
+			information.</para>
+
+			<para>First you need to install the PostgreSQL package, if you haven't
+			done so already:</para>
+
+<screen>
+# <userinput>apt-get install postgresql php5-pgsql</userinput>
 Setting up postgresql ...</screen>
 
-		<para>The latest stable version will be automatically installed. Then
-		you need to create a database and a user to access it. All PostgreSQL
-		administration operations can be performed directly from the
-		postgresql system account. Just log on this account and create what
-		you need:</para>
+			<para>The latest stable version will be automatically installed. You
+			will need to reload Apache for the changes to take effect. Then
+			you need to create a database and a user to access it. All PostgreSQL
+			administration operations can be performed directly from the
+			postgresql system account. Just log on this account and create what
+			you need:</para>
 
 <screen>
 # <userinput>su - postgres</userinput>
@@ -274,17 +326,17 @@ Shall the new role be a superuser? (y/n) <userinput>n</userinput>
 Shall the new role be allowed to create databases? (y/n) <userinput>n</userinput>
 Shall the new role be allowed to create more new roles? (y/n) <userinput>n</userinput></screen>
 
-		<para>It is recommended that the user of your application isn't a
-		superuser. Remember, if there's a security vulnerability in your
-		application and the attacker can execute any query he wishes,
-		he would have access to all your databases on this server if you made
-		a superuser. The easiest solution for a start is to grant all
-		privileges on your database, although it's possible to further restrict
-		the privileges depending on your application's needs.</para>
+			<para>It is recommended that the user of your application isn't a
+			superuser. Remember, if there's a security vulnerability in your
+			application and the attacker can execute any query he wishes,
+			he would have access to all your databases on this server if you made
+			a superuser. The easiest solution for a start is to grant all
+			privileges on your database, although it's possible to further restrict
+			the privileges depending on your application's needs.</para>
 
-		<para>You can grant privileges to users using <command>psql</command>.
-		<command>psql</command> is the PostgreSQL command-line shell, allowing
-		you to write SQL queries directly.</para>
+			<para>You can grant privileges to users using <command>psql</command>.
+			<command>psql</command> is the PostgreSQL command-line shell, allowing
+			you to write SQL queries directly.</para>
 
 <screen>
 $ <userinput>psql</userinput>
@@ -296,9 +348,10 @@ GRANT
 postgres=# <userinput>\q</userinput>
 $ <userinput>exit</userinput></screen>
 
-		<para>You should now be able to connect to the database
-		<literal>mydb</literal> with the user <literal>myuser</literal> and the
-		password you entered earlier.</para>
+			<para>You should now be able to connect to the database
+			<literal>mydb</literal> with the user <literal>myuser</literal> and the
+			password you entered earlier.</para>
+		</sect2>
 	</sect1>
 
 	<sect1 id="chap-install-rm-examples">
