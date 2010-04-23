@@ -7,13 +7,15 @@
 		<para>The most immediate contribution anyone can make is by running
 		the test suite on all environments they have available. The test suite
 		will run without any configuration required, but will skip a large
-		amount of tests if extensions aren't available. No need to worry about
-		the ones you don't need though. The only thing you'll want to setup
-		is the database that will be used for the database tests. To do so,
-		just create a database named <literal>wee_tests</literal> and a user
-		named <literal>wee</literal> with a password <literal>wee</literal>
-		and give it full access to the <literal>wee_tests</literal>
-		database.</para>
+		amount of tests if extensions aren't available.</para>
+
+		<para>Database testing requires some little configuration. All drivers
+		run their tests inside the <literal>wee_tests</literal> database,
+		using an user named <literal>wee</literal> who has full access to that
+		database using the password <literal>wee</literal>.</para>
+
+		<para>See <xref linkend="chap-install-db"/> for explanations on how to
+		setup this database.</para>
 
 		<para>To launch the test suite, go to the Web:Extend folder and type
 		the following line in your terminal:</para>
