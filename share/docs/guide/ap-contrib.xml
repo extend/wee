@@ -17,6 +17,14 @@
 		<para>See <xref linkend="chap-install-db"/> for explanations on how to
 		setup this database.</para>
 
+		<para>The translation functions' unit tests require the package
+		<application>gettext</application> to be installed in order to create
+		the gettext files. On Debian-based systems, you can use the following
+		command to install it:</para>
+
+<screen>
+# <userinput>apt-get install gettext</userinput></screen>
+
 		<para>To launch the test suite, go to the Web:Extend folder and type
 		the following line in your terminal:</para>
 
