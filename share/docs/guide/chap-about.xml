@@ -18,10 +18,10 @@
 		web applications.</para>
 
 		<para>After becoming a framework, Web:Extend focused on harnessing
-		the power of the <ulink url="http://php.net/spl">SPL</ulink> to
-		simplify the writing of code. It also changed the error handling
-		to use exceptions everywhere, and made use of autoload to eliminate
-		the need to manually include files.</para>
+		the power of the <ulink url="http://php.net/spl">Standard PHP
+		Library</ulink> to simplify the writing of code. It also changed
+		the error handling to use exceptions everywhere, and made use of
+		autoload to eliminate the need to manually include files.</para>
 
 		<para>More recently, the ability to query databases metadata was
 		added. The scaffolding components were built on this mechanism,
@@ -69,7 +69,8 @@
 			</para></listitem>
 
 			<listitem><para>
-				A passive view MVC pattern
+				A passive view <ulink url="http://en.wikipedia.org/wiki/MVC">MVC
+				pattern</ulink>
 			</para></listitem>
 
 			<listitem><para>
