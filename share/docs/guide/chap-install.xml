@@ -109,7 +109,7 @@
 
 		<itemizedlist>
 			<listitem><para>
-				What environment am I targetting?
+				What environment am I targeting?
 				Development, test, production?
 			</para></listitem>
 
@@ -243,7 +243,7 @@ Run '/etc/init.d/apache2 reload' to activate new configuration!</screen>
 		<caution>
 			<para>You shouldn't use MySQL. MySQL can be used as a relational
 			database, but it isn't very good at it. It will always impose some
-			additional constraints, varying depending on the storage backend
+			additional constraints, varying depending on the storage back end
 			used. If you don't really need a relational database, MySQL can
 			still be used, but we think that there's better alternatives
 			available that you should consider.</para>
