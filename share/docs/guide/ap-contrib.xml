@@ -90,6 +90,14 @@ $ <userinput>make test</userinput></screen>
 		new chapter or improving an existing one. It is best that you contact
 		us before starting though, to avoid duplicating efforts.</para>
 
+		<para>Make sure you check your changes against a spell checker. We
+		recommend <ulink url="http://aspell.net/">GNU Aspell</ulink> for that
+		purpose. You can then check a documentation file from the command line
+		with the following command:</para>
+
+<screen>
+$ <userinput>aspell -H check filename.xml</userinput></screen>
+
 		<para>Finally you can write tutorials or tips on your own and send us
 		the links; we will display them on the documentation page along with
 		the official documentation.</para>
