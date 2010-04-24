@@ -240,12 +240,12 @@ Run '/etc/init.d/apache2 reload' to activate new configuration!</screen>
 		<xref linkend="chap-install-db-pgsql"/>.</para>
 
 		<caution>
-			<para>We recommend not using MySQL if you need a relational
-			database. MySQL will allow more or less control over the
-			relationships between tables depending on the backend storage used,
-			often with additional restrictions on other components. You can
-			still use it, of course, but it'll take extra care in designing and
-			writing your application. </para>
+			<para>You shouldn't use MySQL. MySQL can be used as a relational
+			database, but it isn't very good at it. It will always impose some
+			additional constraints, varying depending on the storage backend
+			used. If you don't really need a relational database, MySQL can
+			still be used, but we think that there's better alternatives
+			available that you should consider.</para>
 		</caution>
 
 		<sect2 id="chap-install-db-mysql">
