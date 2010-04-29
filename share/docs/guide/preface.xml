@@ -7,13 +7,13 @@
 
 	<para>This guide describes the installation and usage of the
 	Web:Extend PHP framework. It is an introductory guide rather
-	than a complete reference, addressed primarily to new Web:Extend
+	than a complete reference, intended primarily for new Web:Extend
 	developers.</para>
 
 	<para>This guide is not a PHP tutorial: knowledge of the PHP5
 	language is required. Although we provide an explanatory chapter,
-	it is also recommended to understand the concepts of relational
-	databases and their use in web applications.</para>
+	an understaning of the concepts of relational databases and their
+	use in web applications is recommended.</para>
 
 	<para>You are welcome to contribute to this guide through
 	additions, corrections or translations. See <xref linkend="ap-contrib"/>
