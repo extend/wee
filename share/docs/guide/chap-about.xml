@@ -115,16 +115,17 @@
 		<title>Target audience</title>
 
 		<para>Web:Extend is targeted at experienced PHP5 developers. It can
-		be used in many kinds of projects with various sizes and performance
+		be used in many kinds of projects of various sizes and performance
 		requirements. Being an open-source product licensed under the LGPL,
 		it can also be used in commercial solutions as long as the license is
 		respected.</para>
 
 		<para>Its most common use will be for web application projects,
 		websites, CMS, and the likes. Web:Extend has the potential to scale
-		to a lot of traffic but currently hasn't been used in projects with
-		more than a few hundred hits per second, so additional testing and
-		tweaks are probably required in that domain.</para>
+		to a significant amount of traffic but currently has yet to be used
+		in projects with more than a few hundred hits per second.
+		Additional testing and tweaks are probably required in that
+		domain.</para>
 	</sect1>
 
 	<sect1 id="chap-about-download">
@@ -164,7 +165,7 @@ wee-0.6.0
 			as older versions may not contain all the enhancements and are thus
 			not representative of the Web:Extend product today.</para>
 
-			<para>Older releases might also not be supported anymore and could
+			<para>Older releases may also not be supported anymore and could
 			contain security vulnerabilities.</para>
 		</caution>
 	</sect1>
@@ -174,7 +175,8 @@ wee-0.6.0
 
 		<para>The Web:Extend developers rely on the community's feedback
 		to improve the framework. Any feedback or queries from users is
-		always considered and is responded to whenever possible.</para>
+		always taken into consideration and is responded to whenever
+		possible.</para>
 
 		<para>The Web:Extend developers can be contacted through various
 		channels. We currently have an IRC channel and mailing lists, and
