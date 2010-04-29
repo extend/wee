@@ -49,7 +49,7 @@
 		details, which allows him to deliver a finished product much faster
 		and at lower costs.</para>
 
-		<para>In that end, Web:Extend includes the following features:</para>
+		<para>To that end, Web:Extend includes the following features:</para>
 
 		<itemizedlist>
 			<listitem><para>
@@ -83,12 +83,12 @@
 		needs and a grep engine capable of detecting many inappropriate uses
 		of PHP and the framework.</para>
 
-		<para>Another key feature is that Web:Extend has no hesitation to
-		kill off or rewrite inadequate experimental code. Experimental code
-		usually gets included in a beta release, is used by our developers
-		in real projects, and depending on the feedback received may be killed
-		off in the next release. An experimental addition that is too confusing
-		always gets killed or rewritten.</para>
+		<para>Another key feature is that Web:Extend does not hesitate to
+		remove or rewrite inadequate experimental code. Experimental code
+		is usually included in a beta release and used by our developers
+		in real projects. Depending on the feedback received, any such
+	   	code may be removed from the next release. An experimental addition
+		that is too confusing always gets killed or rewritten.</para>
 	</sect1>
 
 	<sect1 id="chap-about-goals">
