@@ -10,7 +10,7 @@
 	<sect1 id="chap-about-history">
 		<title>Project history</title>
 
-		<para>The initial work on Web:Extend was performed summer 2005
+		<para>The initial work on Web:Extend was performed during summer 2005
 		and focused on automating the creation, handling and validation
 		of web forms. The source from this library went on to become
 		Web:Extend a few months later and saw the addition of many other
@@ -23,13 +23,13 @@
 		the error handling to use exceptions everywhere, and made use of
 		autoload to eliminate the need to manually include files.</para>
 
-		<para>More recently, the ability to query databases metadata was
+		<para>More recently, the ability to query databases' metadata was
 		added. The scaffolding components were built on this mechanism,
 		allowing developers for example to simply specify a table name
-		to create a fully functional domain model, but also to create
+		to create a fully functional domain model and also to create
 		fully functional forms to interact with this table. In addition
 		all the scaffolding components operate live on the database,
-		meaning that any modification of a table while developing is
+		meaning that any modification of a table during development is
 		immediately taken into account without requiring the developer's
 		intervention.</para>
 	</sect1>
