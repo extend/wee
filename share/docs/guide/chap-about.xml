@@ -94,20 +94,21 @@
 	<sect1 id="chap-about-goals">
 		<title>Goals</title>
 
-		<para>At this point the Web:Extend core is very stable. The only
-		changes planned are relatively small. Amongst the remaining tasks
-		include improving support for various configurations and giving the
-		developer better debugging tools.</para>
+		<para>At this point the Web:Extend core is very stable. The remaining
+		changes planned are relatively small. These include improving 
+		support for various configurations and providing
+		developers with better debugging tools.</para>
 
-		<para>Work has begun on an optional extra library distributed with
+		<para>Work has also begun on an optional extra library distributed with
 		the framework. This library, <emphasis>weexlib</emphasis>, gives a
 		set of functions and templates that can be readily used to speed-up
 		development using the Web:Extend framework.</para>
 
-		<para>Other additions will come under the form of addons. We are
-		currently working on an addons manager that would allow anyone to
-		easily install, update but also write and publish addons. At a later
-		time an addons repository will be made available to everyone.</para>
+		<para>Further additions will come in the form of addons. We are
+		currently working on addon management functionality that will
+		allow anyone to	not only easily install and update addons, but
+		also write and publish them. A publicly available addon repository
+		will be made available at a later stage.</para>
 	</sect1>
 
 	<sect1 id="chap-about-target">
