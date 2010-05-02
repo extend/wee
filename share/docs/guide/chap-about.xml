@@ -138,7 +138,7 @@
 		following command:</para>
 
 <screen>
-# <userinput>git clone http://github.com/essen/wee.git</userinput></screen>
+$ <userinput>git clone http://github.com/essen/wee.git</userinput></screen>
 
 		<para>By default you will have the latest source available, which is
 		intended for development of the framework and not for production. You
@@ -146,14 +146,23 @@
 		picking the one you want. From the cloned folder:</para>
 
 <screen>
-# <userinput>git tag -l</userinput>
+$ <userinput>git tag -l</userinput>
 wee-0.1.0
 wee-0.2.0
 wee-0.3.0
 wee-0.4.0
 wee-0.5.0
 wee-0.6.0
-# <userinput>git checkout wee-0.6.0</userinput></screen>
+$ <userinput>git checkout wee-0.6.0</userinput></screen>
+
+		<para>When using the <literal>master</literal> branch, make sure to
+		initialize the submodules too:</para>
+
+<screen>
+$ <userinput>git submodule init</userinput>
+Submodule 'res/blueprint-css' registered for path 'res/blueprint-css'
+$ <userinput>git submodule update</userinput>
+Initialized empty Git repository in ...</screen>
 
 		<para>If you can't or don't want to use <application>git</application>,
 		you can simply head over to the project's download page and pick the
